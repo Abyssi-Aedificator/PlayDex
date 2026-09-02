@@ -1,0 +1,3484 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>PlayDex</title>
+<meta name="description" content="PlayDex keeps track of your game sessions, playtime by game, and daily goals. Sync your data to Dropbox and keep it across devices.">
+<meta name="theme-color" content="#0b0d14">
+<meta name="color-scheme" content="dark light">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PlayDex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root {
+    --accent-violet: #8b5cf6;
+    --accent-cyan: #22d3ee;
+    --accent-gradient: linear-gradient(135deg, #8b5cf6, #22d3ee);
+    --green: #34d399;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-lg: 16px;
+  }
+
+  :root,
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0b0d14;
+    --surface: #151823;
+    --surface2: #1e2333;
+    --surface3: #272e42;
+    --border: rgba(148, 163, 184, 0.14);
+    --border-strong: rgba(148, 163, 184, 0.28);
+    --text: #e7ecf4;
+    --text2: #98a2b8;
+    --text3: #5c6577;
+    --accent: #a78bfa;
+    --accent-dim: rgba(139, 92, 246, 0.14);
+    --green-dim: rgba(52, 211, 153, 0.12);
+    --red-dim: rgba(248, 113, 113, 0.14);
+    --yellow-dim: rgba(251, 191, 36, 0.12);
+    --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+    --shadow-soft: 0 6px 24px -10px rgba(0, 0, 0, 0.5);
+    --glass-bg: rgba(21, 24, 35, 0.72);
+    --glass-border: rgba(255, 255, 255, 0.08);
+  }
+
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #f2f4fa;
+    --surface: #ffffff;
+    --surface2: #f4f6fb;
+    --surface3: #e9edf6;
+    --border: rgba(71, 85, 105, 0.14);
+    --border-strong: rgba(71, 85, 105, 0.28);
+    --text: #0f172a;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --accent: #7c3aed;
+    --accent-dim: rgba(124, 58, 237, 0.1);
+    --green-dim: rgba(16, 185, 129, 0.12);
+    --red-dim: rgba(239, 68, 68, 0.12);
+    --yellow-dim: rgba(217, 119, 6, 0.12);
+    --shadow: 0 12px 32px -14px rgba(15, 23, 42, 0.22);
+    --shadow-soft: 0 6px 20px -12px rgba(15, 23, 42, 0.16);
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.7);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(900px 500px at 8% -8%, rgba(139, 92, 246, 0.09), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(34, 211, 238, 0.09), transparent 55%);
+    background-attachment: fixed;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  button { font-family: inherit; }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  header {
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(14px);
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .app-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .install-btn {
+    margin-left: auto;
+    padding: 6px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .install-btn:hover { background: var(--surface3); color: var(--accent); }
+
+  .version-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    padding: 2px 7px;
+    border-radius: 999px;
+    transform: translateY(1px);
+  }
+
+  .app-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px;
+    padding-bottom: 96px;
+    max-width: 620px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Tabs */
+  .tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--glass-border);
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    box-shadow: 0 -8px 30px -18px rgba(0, 0, 0, 0.4);
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px 4px 9px;
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+    transition: color 0.2s;
+  }
+
+  .tab-btn .tab-icon { font-size: 1.3rem; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .tab-btn .tab-icon svg { width: 22px; height: 22px; display: block; }
+
+  .tab-btn.active { color: var(--accent); }
+  .tab-btn.active .tab-icon { transform: translateY(-2px) scale(1.08); }
+
+  .tab-btn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 3px;
+    border-radius: 0 0 6px 6px;
+    background: var(--accent-gradient);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: panel-in 0.24s ease; }
+
+  @keyframes panel-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Smooth entrance animations (stagger lists, rise bars, pop feedback) */
+  @keyframes fade-slide-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  .fade-in {
+    animation: fade-slide-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+    animation-delay: var(--i, 0ms);
+  }
+  @keyframes rise {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+  .bar {
+    transform-origin: bottom;
+    animation: rise 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+    animation-delay: var(--i, 0ms);
+  }
+  @keyframes modal-pop {
+    from { opacity: 0; transform: translateY(10px) scale(0.97); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes overlay-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes tick {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  @keyframes card-collapse {
+    from { opacity: 1; transform: scaleY(1); max-height: var(--h, 200px); margin-bottom: 14px; }
+    to { opacity: 0; transform: scaleY(0.97); max-height: 0; margin-bottom: 0; }
+  }
+  @keyframes card-expand {
+    from { opacity: 0; transform: scaleY(0.97); max-height: 0; margin-bottom: 0; }
+    to { opacity: 1; transform: scaleY(1); max-height: var(--h, 200px); margin-bottom: 14px; }
+  }
+  .card.collapsing,
+  .card.expand-in {
+    overflow: hidden;
+    transform-origin: top;
+  }
+  .card.collapsing { animation: card-collapse 0.3s cubic-bezier(0.4, 0, 0.2, 1) both; padding-top: 0; padding-bottom: 0; }
+  .card.expand-in { animation: card-expand 0.3s cubic-bezier(0.4, 0, 0.2, 1) both; }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow);
+    border-color: var(--border-strong);
+  }
+
+  .card-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text2);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-header::before {
+    content: '';
+    width: 3px;
+    height: 13px;
+    border-radius: 3px;
+    background: var(--accent-gradient);
+    flex-shrink: 0;
+  }
+
+  /* Active session */
+  .active-session {
+    border-color: rgba(52, 211, 153, 0.4);
+    background:
+      radial-gradient(120% 120% at 50% 0%, rgba(52, 211, 153, 0.12), var(--green-dim) 60%, var(--surface2) 100%);
+    text-align: center;
+    padding: 22px 16px;
+  }
+
+  .active-session .game-name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  .active-session .live-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--green);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .active-session .elapsed {
+    font-size: 2.4rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 14px;
+  }
+  .active-session .elapsed.tick { animation: tick 0.3s ease; transform-origin: center; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, filter 0.2s;
+    font-family: inherit;
+  }
+
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(0.96); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-stop { background: var(--red); color: #fff; box-shadow: 0 6px 16px -8px var(--red); }
+  .btn-start {
+    background: var(--accent-gradient);
+    color: #fff;
+    box-shadow: 0 8px 20px -10px rgba(139, 92, 246, 0.5);
+  }
+  .btn-start-game {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    transition: border-color 0.2s, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+  }
+
+  .btn-start-game:hover { border-color: var(--accent); background: var(--accent-dim); transform: translateX(2px); }
+  .btn-start-game:active { transform: scale(0.985); }
+
+  .btn-start-game .play-icon {
+    font-size: 1.05rem;
+    color: var(--accent);
+  }
+
+  /* Today summary */
+  .big-time {
+    font-size: 2.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .big-time.tick { animation: tick 0.35s ease; }
+
+  .big-time-label {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-bottom: 14px;
+  }
+
+  .breakdown-list { list-style: none; }
+
+  .breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+
+  .breakdown-item:first-child { border-top: none; }
+  .breakdown-game { color: var(--text); font-weight: 500; }
+  .breakdown-time { color: var(--text2); font-variant-numeric: tabular-nums; }
+  .breakdown-count { font-size: 0.7rem; color: var(--text3); }
+
+  .breakdown-split {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0 8px 14px;
+    font-size: 0.75rem;
+    color: var(--text2);
+  }
+
+  .split-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .split-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .split-dot.synced { background: var(--green); }
+  .split-dot.nosync { background: var(--text3); }
+
+  .split-label { font-weight: 500; }
+  .split-count { color: var(--text3); font-size: 0.7rem; }
+
+  .split-time { font-variant-numeric: tabular-nums; }
+  .split-time.synced { color: var(--green); }
+  .split-time.nosync { color: var(--text2); }
+
+  /* Game buttons for today tab */
+  .game-buttons { display: flex; flex-direction: column; gap: 0; }
+
+  .no-games-hint {
+    color: var(--text3);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 12px;
+  }
+
+  /* Input */
+  input[type="text"], input[type="number"], input[type="time"] {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    width: 100%;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: var(--surface3);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='14' viewBox='0 0 12 14'><path d='M6 1 L11 6 H1 Z' fill='%2364748b'/><path d='M6 13 L1 8 H11 Z' fill='%2364748b'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 12px 14px;
+    border-left: 1px solid var(--border);
+    height: 100%;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button:hover,
+  input[type="number"]::-webkit-inner-spin-button:active {
+    background-color: var(--accent-dim);
+  }
+
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: var(--surface2) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1 L6 6 L11 1' fill='none' stroke='%237c8aa6' stroke-width='2' stroke-linecap='round'/></svg>") no-repeat right 14px center;
+    background-size: 12px 8px;
+    padding: 11px 38px 11px 14px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  /* Placeholder + selection theming */
+  input::placeholder, textarea::placeholder {
+    color: var(--text3);
+    opacity: 1;
+  }
+  ::selection {
+    background: var(--accent-dim);
+    color: var(--text);
+  }
+
+  /* Themed scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface3) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--surface3);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text3);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  /* Sessions list */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+
+  .filter-bar label {
+    font-size: 0.8rem;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+
+  .filter-bar .cal-field {
+    max-width: 180px;
+  }
+
+  /* Glass-themed calendar date picker (replaces native date inputs) */
+  .cal-field {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+  }
+  .cal-field.open { z-index: 30; }
+  .cal-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    user-select: none;
+  }
+  .cal-trigger:hover { border-color: var(--border-strong); }
+  .cal-trigger:focus-visible,
+  .cal-field.open .cal-trigger {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+  .cal-trigger .cal-icon {
+    flex-shrink: 0;
+    color: var(--text2);
+    display: flex;
+  }
+  .cal-trigger .cal-icon svg { width: 16px; height: 16px; display: block; }
+  .cal-label {
+    flex: 1;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cal-label.placeholder { color: var(--text3); }
+  .cal-chevron {
+    flex-shrink: 0;
+    color: var(--text2);
+    transition: transform 0.2s;
+  }
+  .cal-chevron svg { width: 12px; height: 12px; display: block; }
+  .cal-field.open .cal-chevron { transform: rotate(180deg); }
+  .time-field .cal-icon svg { width: 16px; height: 16px; display: block; }
+  .time-field .cal-trigger {
+    width: auto;
+    min-width: 132px;
+    padding: 11px 10px;
+    justify-content: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  .time-field .cal-label {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .time-field .cal-chevron svg { width: 12px; height: 8px; display: block; }
+  .time-field .cal-chevron { flex-shrink: 0; }
+  .cal-field .time-popover {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: auto;
+    min-width: 148px;
+  }
+  .time-edit {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 2px 2px;
+  }
+  input.time-input {
+    width: 42px;
+    text-align: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    font-variant-numeric: tabular-nums;
+    outline: none;
+  }
+  input.time-input::-webkit-inner-spin-button,
+  input.time-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input.time-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+  .time-colon { font-size: 1.1rem; font-weight: 700; color: var(--text3); }
+  .time-period {
+    display: flex;
+    gap: 4px;
+    margin-left: 4px;
+  }
+  .ampm-btn {
+    padding: 7px 9px;
+    background: var(--surface2);
+    color: var(--text3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .ampm-btn.on {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .field-date-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .cal-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 10px;
+    display: none;
+    box-shadow: var(--shadow);
+  }
+  .cal-field.open .cal-popover { display: block; }
+  .cal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .cal-title { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+  .cal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 1rem;
+    line-height: 1;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .cal-nav:hover { background: var(--surface3); color: var(--text); }
+  .cal-weekdays,
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+  .cal-weekdays {
+    font-size: 0.68rem;
+    opacity: 0.6;
+    color: var(--text3);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .cal-grid { gap: 2px; }
+  .cal-day {
+    aspect-ratio: 1;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .cal-day:hover { background: var(--accent-dim); }
+  .cal-day.other { color: var(--text3); opacity: 0.35; }
+  .cal-day.today { box-shadow: inset 0 0 0 1px var(--accent); }
+  .cal-day.selected { background: var(--accent-dim); color: var(--accent); font-weight: 700; }
+  .cal-foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .cal-action {
+    flex: 1;
+    padding: 7px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 0.78rem;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .cal-action:hover { background: var(--surface3); color: var(--text); }
+
+  .filter-bar .btn-clear-date {
+    padding: 10px 12px;
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: inherit;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .filter-bar .btn-clear-date:hover { border-color: var(--accent); color: var(--accent); }
+
+  .session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .session-item:last-child { border-bottom: none; }
+
+  .session-info { flex: 1; min-width: 0; }
+
+  .session-game {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .session-times {
+    font-size: 0.75rem;
+    color: var(--text2);
+  }
+
+  .session-duration {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--accent);
+    margin-left: 12px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  .session-delete {
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 6px;
+    margin-left: 8px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .session-delete:hover { color: var(--red); background: var(--red-dim); }
+  .session-delete svg { width: 14px; height: 14px; display: block; }
+
+  .session-sync {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    margin-left: 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: all 0.15s;
+    font-family: inherit;
+    flex-shrink: 0;
+  }
+
+  .session-sync:hover { border-color: var(--text2); color: var(--text2); }
+
+  .session-sync.on {
+    background: var(--green-dim);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .sync-badge { color: var(--green); font-size: 0.7rem; }
+  .sync-badge svg { width: 12px; height: 12px; display: inline-block; vertical-align: middle; }
+
+  .empty-state {
+    text-align: center;
+    color: var(--text3);
+    padding: 40px 20px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .empty-state .empty-icon { font-size: 2.4rem; margin-bottom: 10px; display: block; }
+  .empty-state .empty-icon svg { width: 44px; height: 44px; color: var(--text3); }
+
+  /* Games list */
+  .game-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .game-item:last-child { border-bottom: none; }
+
+  .game-item-info { flex: 1; min-width: 0; }
+
+  .game-item-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .game-item-count {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .game-item-actions {
+    display: flex;
+    gap: 4px;
+    margin-left: 8px;
+  }
+
+  .btn-icon {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+
+  .btn-icon:hover { border-color: var(--text2); color: var(--text); }
+
+  .btn-icon.danger:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+
+  .btn-icon svg { width: 16px; height: 16px; display: block; }
+
+  .btn-icon.archive:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  .btn-icon.restore:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+
+  .archive-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin: 18px 0 4px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .game-item.archived { opacity: 0.6; }
+  .game-item.archived .game-item-name { color: var(--text2); font-weight: 500; text-decoration: line-through; }
+  .game-item.archived .btn-icon { opacity: 1; }
+
+  /* No border on the last active game when it's followed by the Archived section (its dashed line separates them) */
+  .game-item:has(+ .archive-section-label) { border-bottom: none; }
+
+  /* Add game form */
+  .add-game-form {
+    display: flex;
+    gap: 8px;
+  }
+
+  .add-game-form input { flex: 1; }
+
+  .add-game-form .btn { flex-shrink: 0; padding: 10px 18px; }
+
+  /* Modal overlay */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; animation: overlay-fade 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: var(--shadow);
+    animation: modal-pop 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .modal h3 {
+    margin-bottom: 14px;
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
+
+  .btn-ghost {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+
+  .btn-ghost:hover { border-color: var(--text2); color: var(--text); }
+
+  .btn-danger {
+    background: var(--red);
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 6px 16px -8px var(--red);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 76px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 300;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Session edit button */
+  .session-edit {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    margin-left: 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: all 0.15s;
+    font-family: inherit;
+    flex-shrink: 0;
+  }
+
+  .session-edit:hover { border-color: var(--text2); color: var(--text2); }
+
+  /* Input row helper */
+  .field-group { margin-bottom: 12px; }
+  .field-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+
+  /* Goal progress */
+  .goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .goal-text { font-size: 0.85rem; color: var(--text2); }
+  .goal-text strong { color: var(--text); }
+
+  .progress-track {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    height: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: var(--accent-gradient);
+    transition: width 0.5s ease;
+  }
+
+  .goal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .streak-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--yellow);
+    background: var(--yellow-dim);
+    border: 1px solid var(--yellow);
+    padding: 4px 10px;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px -8px var(--yellow);
+  }
+
+  .streak-pill.off { color: var(--text3); background: var(--surface2); border-color: var(--border); }
+  .streak-pill svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .streak-pill.tick { animation: tick 0.35s ease; }
+
+  .btn-goal-edit {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .btn-goal-edit:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  /* Stats cards */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 6px; }
+
+  .stat-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .stat-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* Bar chart */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 16px 4px 0;
+  }
+
+  .bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .bar-track {
+    width: 100%;
+    max-width: 40px;
+    height: 120px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+  }
+
+  .bar {
+    width: 100%;
+    height: 0%;
+    background: linear-gradient(180deg, #c4b5fd, var(--accent-violet));
+    border-radius: 8px 8px 0 0;
+    transition: height 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+
+  .bar.today { background: linear-gradient(180deg, var(--green), rgba(52, 211, 153, 0.55)); }
+
+  .bar-value {
+    font-size: 0.65rem;
+    color: var(--text2);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .bar-label {
+    font-size: 0.7rem;
+    color: var(--text3);
+    font-weight: 600;
+  }
+
+  /* Game dashboard modal */
+  .dash-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+
+  .dash-row:first-of-type { border-top: none; }
+  .dash-label { color: var(--text2); }
+  .dash-value { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .dash-month {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 0.75rem;
+  }
+
+  .dash-month-name { color: var(--text2); width: 46px; flex-shrink: 0; }
+  .dash-month-track {
+    flex: 1;
+    height: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .dash-month-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 5px;
+  }
+
+  .dash-month-time { color: var(--text2); font-variant-numeric: tabular-nums; width: 56px; text-align: right; flex-shrink: 0; }
+
+  .dash-sessions { list-style: none; margin-top: 6px; }
+  .dash-session {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+  .dash-session-time { color: var(--text2); }
+  .dash-session-dur { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .modal-subheader {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text2);
+    margin: 14px 0 6px;
+  }
+
+  .modal .backup-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .modal .backup-hint,
+  .backup-hint {
+    font-size: 0.75rem;
+    color: var(--text3);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  /* Appearance / theme selector */
+  .theme-select {
+    display: flex;
+    gap: 8px;
+  }
+  .theme-opt {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .theme-opt:hover { border-color: var(--accent-dim); color: var(--text); }
+  .theme-opt.active {
+    background-image: var(--accent-gradient);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* Dropbox sync */
+  .dbx-status-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .dbx-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--green);
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.35);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .dbx-account {
+    font-size: 0.85rem;
+    color: var(--text2);
+  }
+  .dbx-last {
+    font-size: 0.75rem;
+    color: var(--text3);
+    margin-bottom: 14px;
+  }
+  .dbx-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .dbx-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--text2);
+  }
+  .dbx-toggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-violet);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .dbx-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  @keyframes sync-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  button.syncing .tab-icon {
+    display: inline-block;
+    animation: sync-spin 1s linear infinite;
+  }
+
+  /* Tablet adjustments */
+  @media (min-width: 768px) {
+    .app-content { padding: 28px 28px 96px; }
+    .big-time { font-size: 3.6rem; }
+    .active-session .elapsed { font-size: 3rem; }
+    .bar-chart { gap: 12px; }
+    .bar-track { height: 160px; }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="app-title">
+    <h1>PLAYDEX</h1>
+    <span class="version-badge">1.0.0</span>
+  </div>
+</header>
+
+<div class="app-content">
+  <!-- TODAY TAB -->
+  <div id="tab-today" class="tab-panel active">
+    <div id="active-session-card" class="card active-session" style="display:none">
+      <div class="live-label"><span class="live-dot"></span> LIVE</div>
+      <div class="game-name" id="active-game-name"></div>
+      <div class="elapsed" id="active-elapsed">0:00:00</div>
+      <button class="btn btn-stop" id="btn-stop">Stop Session</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Total Playtime Today</div>
+      <div class="big-time" id="today-total">0:00:00</div>
+      <div class="big-time-label" id="today-sessions-count">0 sessions</div>
+      <ul class="breakdown-list" id="today-breakdown"></ul>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Today&rsquo;s Goal</div>
+      <div class="goal-header">
+        <span class="goal-text" id="goal-text">No goal set</span>
+        <button class="btn-goal-edit" id="btn-goal-edit">Edit</button>
+      </div>
+      <div class="progress-track" id="goal-track" style="display:none">
+        <div class="progress-fill" id="goal-fill"></div>
+      </div>
+      <div class="goal-footer">
+        <span class="streak-pill off" id="streak-pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.6 3.5-1.5 5-3 7-1.8 2.4-2 4.2-2 6a5 5 0 0 0 10 0c0-1.8-.7-3.2-1.5-4.5.5 1 .7 2 .5 3a3 3 0 0 1-3 3c-.6 0-1.2-.3-1.5-.8 1.5.3 3-1 3-3 .1-2.5.1-4.3-.3-5.7C12.8 8.6 12.4 5.5 12 2z"/></svg> 0-day streak</span>
+        <span class="goal-text" id="goal-percent"></span>
+      </div>
+    </div>
+
+    <div class="card" id="start-game-card">
+      <div class="card-header">Start a Game</div>
+      <div class="game-buttons" id="start-game-buttons">
+        <div class="no-games-hint">No games yet. Add one in the Games tab.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SESSIONS TAB -->
+  <div id="tab-sessions" class="tab-panel">
+    <div class="card">
+      <div class="filter-bar">
+        <label for="filter-date">Date:</label>
+        <div class="cal-field" id="filter-date">
+          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn-clear-date" id="btn-add-session" style="margin-left:auto;">&#43; Add</button>
+      </div>
+      <div id="sessions-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Playtime by Game</div>
+      <ul class="breakdown-list" id="sessions-breakdown"></ul>
+    </div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div id="tab-stats" class="tab-panel">
+    <div class="card">
+      <div class="card-header">Last 7 Days</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-value" id="stat-week-total">0:00:00</div><div class="stat-label">This Week</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-most-played">-</div><div class="stat-label">Most Played</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-avg-session">0:00</div><div class="stat-label">Avg Session</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-session-count">0</div><div class="stat-label">Total Sessions</div></div>
+      </div>
+      <div class="bar-chart" id="week-chart"></div>
+    </div>
+  </div>
+
+  <!-- GAMES TAB -->
+  <div id="tab-games" class="tab-panel">
+    <div class="card">
+      <div class="card-header">Manage Games</div>
+      <div class="add-game-form" style="margin-bottom:14px;">
+        <input type="text" id="add-game-input" placeholder="Game name..." maxlength="50">
+        <button class="btn btn-start" id="add-game-btn">Add</button>
+      </div>
+      <div id="games-list"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div id="tab-settings" class="tab-panel">
+    <div class="card">
+      <div class="card-header">Appearance</div>
+      <div class="theme-select" id="theme-select">
+        <button class="theme-opt" data-theme-opt="system">System</button>
+        <button class="theme-opt" data-theme-opt="light">Light</button>
+        <button class="theme-opt" data-theme-opt="dark">Dark</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Dropbox Sync</div>
+      <div id="dbx-disconnected">
+        <p class="modal-subheader" style="margin:0 0 10px;">Back up your data to your own Dropbox and keep multiple devices in sync. Your data goes straight from your browser to Dropbox.</p>
+        <div class="add-game-form" style="margin-bottom:8px;">
+          <input type="text" id="dbxKey" placeholder="Dropbox App key..." maxlength="128">
+          <button class="btn btn-start" id="dbxConnectBtn" style="flex-shrink:0;">Connect</button>
+        </div>
+        <div class="backup-hint">Syncing needs HTTPS (or localhost). Register the exact URL of this page as a Redirect URI in your Dropbox App console.</div>
+      </div>
+      <div id="dbx-connected" style="display:none;">
+        <div class="dbx-status-row">
+          <span class="dbx-status" id="dbxStatus"><svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><circle cx="12" cy="12" r="5"/></svg> Connected</span>
+          <span class="dbx-account" id="dbxAccount"></span>
+        </div>
+        <div class="dbx-last" id="dbxLastSync"></div>
+        <div class="dbx-toggles">
+          <label class="dbx-toggle">
+            <input type="checkbox" id="dbxAutoUpload">
+            <span class="dbx-toggle-label">Auto-upload changes 10s after you stop editing</span>
+          </label>
+          <label class="dbx-toggle">
+            <input type="checkbox" id="dbxAutoSync">
+            <span class="dbx-toggle-label">Auto-sync newer backups when the app opens</span>
+          </label>
+        </div>
+        <div class="dbx-actions">
+          <button class="btn btn-start" id="dbxUploadBtn" style="flex:1;padding:10px 14px;font-size:0.8rem;">Upload</button>
+          <button class="btn-ghost" id="dbxDownloadBtn" style="flex:1;padding:10px 14px;font-size:0.8rem;">Download</button>
+          <button class="btn-ghost btn-danger" id="dbxDisconnectBtn" style="padding:10px 14px;font-size:0.8rem;">Disconnect</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Backup</div>
+      <p class="modal-subheader" style="margin:0 0 10px;">Export your games and sessions as a JSON file, or restore from a backup.</p>
+      <div class="backup-actions">
+        <button class="btn btn-start" id="btn-export" style="flex:1;padding:10px 14px;font-size:0.8rem;">Export</button>
+        <button class="btn-ghost" id="btn-import" style="flex:1;padding:10px 14px;font-size:0.8rem;">Import</button>
+      </div>
+      <input type="file" id="import-file" accept=".json,application/json" style="display:none">
+      <div class="backup-hint">Data is stored locally in your browser. Export regularly to back it up or move it to another device.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="today">
+    <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></span>
+    Today
+  </button>
+  <button class="tab-btn" data-tab="sessions">
+    <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+    Sessions
+  </button>
+  <button class="tab-btn" data-tab="stats">
+    <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></span>
+    Stats
+  </button>
+  <button class="tab-btn" data-tab="games">
+    <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.94 3.56L2 15.56a2.5 2.5 0 0 0 3.32 2.61l1.82-.68a1 1 0 0 1 .82 0l3.13 1.04a2.5 2.5 0 0 0 1.9 0l3.13-1.04a1 1 0 0 1 .82 0l1.82.68A2.5 2.5 0 0 0 22 15.56l-1.06-7A4 4 0 0 0 17.32 5z"/></svg></span>
+    Games
+  </button>
+  <button class="tab-btn" data-tab="settings">
+    <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+    Settings
+  </button>
+</div>
+
+<!-- Rename modal -->
+<div class="modal-overlay" id="rename-modal">
+  <div class="modal">
+    <h3>Rename Game</h3>
+    <input type="text" id="rename-input" maxlength="50">
+    <div class="modal-actions">
+      <button class="btn-ghost" id="rename-cancel">Cancel</button>
+      <button class="btn btn-start" id="rename-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete game confirm modal -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <h3>Delete Game</h3>
+    <p id="delete-msg" style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;"></p>
+    <p id="delete-warning" style="font-size:0.8rem;color:var(--yellow);display:none;"></p>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="delete-cancel">Cancel</button>
+      <button class="btn-danger" id="delete-confirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add session modal -->
+<div class="modal-overlay" id="add-session-modal">
+  <div class="modal">
+    <h3>Add Session</h3>
+    <div class="field-group">
+      <label for="add-session-game">Game</label>
+      <select id="add-session-game"></select>
+    </div>
+    <div class="field-group">
+      <label for="add-session-time">Start</label>
+      <div class="field-date-grid">
+        <div class="cal-field" id="add-session-date">
+          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+        <div class="cal-field time-field" id="add-session-time">
+          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span>
+            <span class="cal-label placeholder">--:--</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover time-popover">
+            <div class="time-edit">
+              <input class="time-input" type="text" inputmode="numeric" maxlength="2" placeholder="HH">
+              <span class="time-colon">:</span>
+              <input class="time-input" type="text" inputmode="numeric" maxlength="2" placeholder="MM">
+              <span class="time-period">
+                <button class="ampm-btn" data-a="am" type="button">AM</button>
+                <button class="ampm-btn" data-a="pm" type="button">PM</button>
+              </span>
+            </div>
+            <div class="cal-foot">
+              <button class="cal-action" data-action="now" type="button">Now</button>
+              <button class="cal-action" data-action="clear" type="button">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="field-group">
+      <label for="add-session-time-end">End</label>
+      <div class="field-date-grid">
+        <div class="cal-field" id="add-session-date-end">
+          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+        <div class="cal-field time-field" id="add-session-time-end">
+          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span>
+            <span class="cal-label placeholder">--:--</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover time-popover">
+            <div class="time-edit">
+              <input class="time-input" type="text" inputmode="numeric" maxlength="2" placeholder="HH">
+              <span class="time-colon">:</span>
+              <input class="time-input" type="text" inputmode="numeric" maxlength="2" placeholder="MM">
+              <span class="time-period">
+                <button class="ampm-btn" data-a="am" type="button">AM</button>
+                <button class="ampm-btn" data-a="pm" type="button">PM</button>
+              </span>
+            </div>
+            <div class="cal-foot">
+              <button class="cal-action" data-action="now" type="button">Now</button>
+              <button class="cal-action" data-action="clear" type="button">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="add-session-cancel">Cancel</button>
+      <button class="btn btn-start" id="add-session-save" style="padding:8px 16px;font-size:0.85rem;">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit session modal -->
+<div class="modal-overlay" id="edit-session-modal">
+  <div class="modal">
+    <h3>Edit Session</h3>
+    <div class="field-group">
+      <label for="edit-session-time">Start</label>
+      <div class="field-date-grid">
+        <div class="cal-field" id="edit-session-date">
+          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+        <div class="cal-field time-field" id="edit-session-time">
+          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span>
+            <span class="cal-label placeholder">--:--</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover time-popover">
+            <div class="time-edit">
+              <input class="time-input" type="text" inputmode="numeric" maxlength="2" placeholder="HH">
+              <span class="time-colon">:</span>
+              <input class="time-input" type="text" inputmode="numeric" maxlength="2" placeholder="MM">
+              <span class="time-period">
+                <button class="ampm-btn" data-a="am" type="button">AM</button>
+                <button class="ampm-btn" data-a="pm" type="button">PM</button>
+              </span>
+            </div>
+            <div class="cal-foot">
+              <button class="cal-action" data-action="now" type="button">Now</button>
+              <button class="cal-action" data-action="clear" type="button">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="field-group">
+      <label for="edit-session-time-end">End</label>
+      <div class="field-date-grid">
+        <div class="cal-field" id="edit-session-date-end">
+          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+        <div class="cal-field time-field" id="edit-session-time-end">
+          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span>
+            <span class="cal-label placeholder">--:--</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover time-popover">
+            <div class="time-edit">
+              <input class="time-input" type="text" inputmode="numeric" maxlength="2" placeholder="HH">
+              <span class="time-colon">:</span>
+              <input class="time-input" type="text" inputmode="numeric" maxlength="2" placeholder="MM">
+              <span class="time-period">
+                <button class="ampm-btn" data-a="am" type="button">AM</button>
+                <button class="ampm-btn" data-a="pm" type="button">PM</button>
+              </span>
+            </div>
+            <div class="cal-foot">
+              <button class="cal-action" data-action="now" type="button">Now</button>
+              <button class="cal-action" data-action="clear" type="button">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="edit-session-cancel">Cancel</button>
+      <button class="btn btn-start" id="edit-session-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Goal modal -->
+<div class="modal-overlay" id="goal-modal">
+  <div class="modal">
+    <h3>Daily Playtime Goal</h3>
+    <p style="font-size:0.8rem;color:var(--text2);margin-bottom:12px;">Set 0 to disable the goal.</p>
+    <div class="field-group">
+      <label for="goal-minutes">Minutes per day</label>
+      <input type="number" id="goal-minutes" min="0" max="1440" step="5">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="goal-cancel">Cancel</button>
+      <button class="btn btn-start" id="goal-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import confirm modal -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <h3>Import Backup</h3>
+    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;" id="import-msg">This will replace all current games, sessions, and settings.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="import-cancel">Cancel</button>
+      <button class="btn-danger" id="import-confirm">Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dropbox download confirm modal -->
+<div class="modal-overlay" id="dbx-confirm-modal">
+  <div class="modal">
+    <h3>Download from Dropbox?</h3>
+    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;">It will replace all current games, sessions, and settings on this device.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="dbx-confirm-cancel">Cancel</button>
+      <button class="btn-danger" id="dbx-confirm-download" style="padding:8px 16px;font-size:0.85rem;">Download</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dropbox newer-backup prompt -->
+<div class="modal-overlay" id="dbx-sync-modal">
+  <div class="modal">
+    <h3>Newer backup on Dropbox</h3>
+    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;" id="dbxSyncMsg">A newer backup exists on Dropbox.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="dbx-sync-later">Not now</button>
+      <button class="btn btn-start" id="dbx-sync-now" style="padding:8px 16px;font-size:0.85rem;">Sync now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Game dashboard modal -->
+<div class="modal-overlay" id="dashboard-modal">
+  <div class="modal" style="max-width:420px;">
+    <h3 id="dashboard-title"></h3>
+    <div id="dashboard-body"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="dashboard-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  // --- Storage ---
+  const KEYS = { games: 'playdex_games', sessions: 'playdex_sessions', settings: 'playdex_settings' };
+
+  function normalizeGames(arr) {
+    return (Array.isArray(arr) ? arr : []).map(g => ({ id: g.id, name: g.name, archived: !!g.archived }));
+  }
+
+  function loadGames() {
+    try { return normalizeGames(JSON.parse(localStorage.getItem(KEYS.games))); }
+    catch { return []; }
+  }
+
+  function saveGames(games) {
+    localStorage.setItem(KEYS.games, JSON.stringify(games));
+    scheduleAutoUpload();
+  }
+
+  function loadSessions() {
+    try { return JSON.parse(localStorage.getItem(KEYS.sessions)) || []; }
+    catch { return []; }
+  }
+
+  function saveSessions(sessions) {
+    localStorage.setItem(KEYS.sessions, JSON.stringify(sessions));
+    scheduleAutoUpload();
+  }
+
+  function loadSettings() {
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system' }; }
+  }
+
+  function saveSettings(settings) {
+    localStorage.setItem(KEYS.settings, JSON.stringify(settings));
+  }
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  // --- State ---
+  let games = loadGames();
+  let sessions = loadSessions();
+  let settings = loadSettings();
+  let activeSession = sessions.find(s => s.stop === null) || null;
+  let lastHadActiveSession = !!activeSession;
+  let cardAnimating = false;
+  let timerRaf = null;
+  let lastElapsedSec = -1;
+  let lastStreak = null;
+  let currentTab = 'today';
+  let filterDate = todayStr();
+  let pendingDeleteGameId = null;
+  let pendingRenameGameId = null;
+  let editSessionId = null;
+  let importData = null;
+
+  // --- Helpers ---
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function fmtDuration(ms) {
+    if (ms == null || ms < 0) ms = 0;
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    if (h > 0) return h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    return m + ':' + String(s).padStart(2,'0');
+  }
+
+  function fmtTime(iso) {
+    if (!iso) return '--:--';
+    const d = new Date(iso);
+    return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function dateKey(iso) {
+    return iso ? fmtDate(iso) : null;
+  }
+
+  function isToday(iso) {
+    return dateKey(iso) === todayStr();
+  }
+
+  function addDays(dateStr, n) {
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setDate(d.getDate() + n);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function totalMsForDate(dateStr) {
+    return sessions.filter(s => s.stop !== null && dateKey(s.start) === dateStr)
+      .reduce((sum, s) => sum + (s.durationMs || 0), 0);
+  }
+
+  function monthKey(iso) {
+    const d = new Date(iso);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  }
+
+  function fmtDurationShort(ms) {
+    if (ms == null || ms < 0) ms = 0;
+    const h = Math.floor(ms / 3600000);
+    const m = Math.round((ms % 3600000) / 60000);
+    if (h > 0 && m > 0) return h + 'h ' + m + 'm';
+    if (h > 0) return h + 'h';
+    if (m > 0) return m + 'm';
+    return Math.round(ms / 1000) + 's';
+  }
+
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2000);
+  }
+
+  // --- Theme ---
+  function resolvedTheme() {
+    if (settings.theme === 'light' || settings.theme === 'dark') return settings.theme;
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function applyTheme() {
+    const theme = resolvedTheme();
+    document.documentElement.setAttribute('data-theme', theme);
+    document.querySelectorAll('.theme-opt').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.themeOpt === settings.theme);
+    });
+  }
+
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+      if (settings.theme === 'system') applyTheme();
+    });
+  }
+
+  // --- Dropbox sync ---
+  const DBX_KEY = 'playdex.dropbox';
+  const DBX_PATH = '/playdex-backup.json';
+  let dbx;
+  try { dbx = JSON.parse(localStorage.getItem(DBX_KEY) || 'null'); } catch {}
+  if (!dbx) dbx = { appKey: '', accessToken: '', refreshToken: '', expiresAt: 0, account: '', lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, mock: false };
+  const dbxSave = () => { try { localStorage.setItem(DBX_KEY, JSON.stringify(dbx)); } catch {} };
+  const dbxRedirectUri = () => location.origin + location.pathname;
+  const dbxSnapshot = () => JSON.stringify({ games, sessions, settings });
+  let dbxSyncTimer = null, dbxSkipAutoUpload = false, dbxLastUploadedState = '';
+  let dbxSyncOps = 0, dbxPendingDownload = null;
+
+  function dbxSyncSpinning(on) {
+    dbxSyncOps += on ? 1 : -1;
+    const syncing = dbxSyncOps > 0;
+    document.querySelectorAll('#dbxUploadBtn, #dbxDownloadBtn').forEach(b => b.classList.toggle('syncing', syncing));
+  }
+
+  function b64url(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function randomString(len) {
+    const a = new Uint8Array(len); crypto.getRandomValues(a); return b64url(a).slice(0, len);
+  }
+  async function pkceChallenge(verifier) {
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+    return b64url(digest);
+  }
+
+  function updateDropboxUI() {
+    const connected = !!dbx.accessToken;
+    document.getElementById('dbx-disconnected').style.display = connected ? 'none' : '';
+    document.getElementById('dbx-connected').style.display = connected ? '' : 'none';
+    if (connected) {
+      document.getElementById('dbxAccount').textContent = 'Connected as ' + (dbx.account || 'Dropbox user');
+      document.getElementById('dbxLastSync').textContent = dbx.lastSync ? 'Last synced ' + dbx.lastSync : 'Never synced';
+      document.getElementById('dbxAutoUpload').checked = !!dbx.autoUpload;
+      document.getElementById('dbxAutoSync').checked = !!dbx.autoSync;
+      const status = document.getElementById('dbxStatus');
+      status.innerHTML = iconSvg('dbx') + ' Connected';
+    }
+  }
+
+  async function dropboxConnect() {
+    const key = document.getElementById('dbxKey').value.trim();
+    if (!key) { toast('Enter your Dropbox App key first'); return; }
+    if (key.toLowerCase() === 'mock') {
+      dbx = {
+        appKey: key, accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token',
+        expiresAt: Date.now() + 365 * 24 * 60 * 60 * 1000, account: 'demo@example.com',
+        lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, mock: true
+      };
+      dbxSave(); updateDropboxUI();
+      toast('Mock Dropbox connected \u2014 demo mode only');
+      return;
+    }
+    if (!isSecureContext) { toast('\u26A0 Dropbox sync needs HTTPS (or localhost)'); return; }
+    dbx.appKey = key; dbxSave();
+    const verifier = randomString(64);
+    sessionStorage.setItem('playdex.dbx.verifier', verifier);
+    const challenge = await pkceChallenge(verifier);
+    location.href = 'https://www.dropbox.com/oauth2/authorize?' + new URLSearchParams({
+      client_id: key, response_type: 'code', code_challenge: challenge, code_challenge_method: 'S256',
+      token_access_type: 'offline', redirect_uri: dbxRedirectUri()
+    });
+  }
+
+  async function dropboxHandleRedirect() {
+    const params = new URLSearchParams(location.search);
+    const code = params.get('code');
+    if (!code) return;
+    history.replaceState(null, '', location.pathname + location.hash);
+    const verifier = sessionStorage.getItem('playdex.dbx.verifier');
+    if (!verifier || !dbx.appKey) return;
+    try {
+      const res = await fetch('https://api.dropboxapi.com/oauth2/token', {
+        method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ code, grant_type: 'authorization_code', client_id: dbx.appKey, code_verifier: verifier, redirect_uri: dbxRedirectUri() })
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error_description || j.error || 'auth failed');
+      dbx.accessToken = j.access_token; dbx.refreshToken = j.refresh_token || dbx.refreshToken;
+      dbx.expiresAt = Date.now() + (j.expires_in || 14400) * 1000; dbxSave();
+      await dropboxFetchAccount();
+      toast('Dropbox connected');
+      updateDropboxUI();
+      dropboxCheckForUpdates();
+    } catch (err) { toast('\u26A0 Dropbox connection failed: ' + err.message); }
+    updateDropboxUI();
+  }
+
+  async function dropboxRefreshIfNeeded() {
+    try {
+      if (dbx.accessToken && Date.now() < dbx.expiresAt - 30000) return true;
+      if (!dbx.refreshToken || !dbx.appKey) return false;
+      const res = await fetch('https://api.dropboxapi.com/oauth2/token', {
+        method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: dbx.refreshToken, client_id: dbx.appKey })
+      });
+      const j = await res.json();
+      if (!res.ok) return false;
+      dbx.accessToken = j.access_token; dbx.expiresAt = Date.now() + (j.expires_in || 14400) * 1000; dbxSave();
+      return true;
+    } catch { return false; }
+  }
+
+  async function dropboxFetchAccount() {
+    try {
+      const res = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
+        method: 'POST', headers: { 'Authorization': 'Bearer ' + dbx.accessToken }
+      });
+      if (res.ok) { const j = await res.json(); dbx.account = j.email || (j.name && j.name.display_name) || ''; dbxSave(); }
+    } catch (e) {}
+  }
+
+  function dbxMarkSynced() {
+    dbx.lastSync = new Date().toLocaleString();
+    dbx.lastSyncAt = Date.now();
+    dbx.dismissedRemoteAt = 0;
+    dbxSave();
+    updateDropboxUI();
+  }
+
+  async function dropboxUpload(auto) {
+    const ok = await dropboxRefreshIfNeeded();
+    if (!ok) { toast('\u26A0 Dropbox session expired \u2014 reconnect'); return; }
+    const payload = { app: 'PlayDex', version: 1, exportedAt: new Date().toISOString(), games, sessions, settings };
+    dbxSyncSpinning(true);
+    try {
+      const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
+        method: 'POST', headers: {
+          'Authorization': 'Bearer ' + dbx.accessToken, 'Content-Type': 'application/octet-stream',
+          'Dropbox-API-Arg': JSON.stringify({ path: DBX_PATH, mode: 'overwrite', mute: true })
+        }, body: JSON.stringify(payload, null, 2)
+      });
+      if (!res.ok) throw new Error('upload failed (' + res.status + ')');
+      dbxMarkSynced();
+      dbxLastUploadedState = dbxSnapshot();
+      toast('Synced to Dropbox');
+    } catch (err) { toast('\u26A0 ' + err.message); }
+    finally { dbxSyncSpinning(false); }
+  }
+
+  function dbxApplyBackupText(text) {
+    const parsed = JSON.parse(text);
+    if (!parsed || !Array.isArray(parsed.games) || !Array.isArray(parsed.sessions)) {
+      throw new Error('not a PlayDex backup');
+    }
+    games = normalizeGames(parsed.games);
+    sessions = parsed.sessions;
+    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system' }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
+    saveGames(games);
+    saveSessions(sessions);
+    saveSettings(settings);
+    activeSession = sessions.find(s => s.stop === null) || null;
+    applyTheme();
+    render();
+    dbxSkipAutoUpload = true;
+    try { dbxLastUploadedState = dbxSnapshot(); } finally { dbxSkipAutoUpload = false; }
+  }
+
+  async function dropboxDownload(skipConfirm) {
+    const ok = await dropboxRefreshIfNeeded();
+    if (!ok) { toast('\u26A0 Dropbox session expired \u2014 reconnect'); return; }
+    dbxSyncSpinning(true);
+    try {
+      const res = await fetch('https://content.dropboxapi.com/2/files/download', {
+        method: 'POST', headers: {
+          'Authorization': 'Bearer ' + dbx.accessToken,
+          'Dropbox-API-Arg': JSON.stringify({ path: DBX_PATH })
+        }
+      });
+      if (res.status === 409) { toast('No backup in Dropbox yet \u2014 upload one first'); return; }
+      if (!res.ok) throw new Error('download failed (' + res.status + ')');
+      const text = await res.text();
+      if (skipConfirm) {
+        try {
+          dbxApplyBackupText(text);
+          dbxMarkSynced();
+          toast('Synced from Dropbox');
+        } catch (err) { toast('\u26A0 Dropbox file isn\u2019t a PlayDex backup'); }
+      } else {
+        dbxPendingDownload = text;
+        document.getElementById('dbx-confirm-modal').classList.add('open');
+      }
+    } catch (err) { toast('\u26A0 ' + err.message); }
+    finally { dbxSyncSpinning(false); }
+  }
+
+  async function dropboxCheckForUpdates() {
+    if (!dbx.accessToken) return;
+    const ok = await dropboxRefreshIfNeeded();
+    if (!ok) return;
+    try {
+      const res = await fetch('https://api.dropboxapi.com/2/files/get_metadata', {
+        method: 'POST', headers: { 'Authorization': 'Bearer ' + dbx.accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: DBX_PATH })
+      });
+      if (!res.ok) return;
+      const j = await res.json();
+      const remoteAt = Date.parse(j.server_modified || '');
+      if (!remoteAt) return;
+      if (remoteAt > dbx.lastSyncAt + 5000 && remoteAt > (dbx.dismissedRemoteAt || 0)) {
+        dbx._remoteAt = remoteAt;
+        dbxSave();
+        if (dbx.autoSync) {
+          dropboxDownload(true).catch(() => {});
+        } else {
+          document.getElementById('dbxSyncMsg').textContent = 'A newer backup exists on Dropbox (modified ' + new Date(remoteAt).toLocaleString() + ').';
+          document.getElementById('dbx-sync-modal').classList.add('open');
+        }
+      }
+    } catch (e) {}
+  }
+
+  function dropboxDisconnect() {
+    dbx.appKey = dbx.appKey || '';
+    dbx.accessToken = ''; dbx.refreshToken = ''; dbx.expiresAt = 0; dbx.account = '';
+    dbx.lastSync = ''; dbx.lastSyncAt = 0; dbx.dismissedRemoteAt = 0; dbx.autoSync = false; dbx.autoUpload = false;
+    dbxSave();
+    updateDropboxUI();
+    toast('Dropbox disconnected');
+  }
+
+  function scheduleAutoUpload() {
+    if (!dbx.accessToken || !dbx.autoUpload) return;
+    if (dbxSkipAutoUpload) return;
+    clearTimeout(dbxSyncTimer);
+    dbxSyncTimer = setTimeout(() => dropboxUpload(true), 10000);
+  }
+
+  // --- Tab switching ---
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentTab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + currentTab));
+      render();
+    });
+  });
+
+  // --- Start game ---
+  function startGame(gameId) {
+    if (activeSession) { toast('Stop the current session first'); return; }
+    const game = games.find(g => g.id === gameId);
+    if (!game) return;
+    const session = {
+      id: uid(),
+      gameId: game.id,
+      gameName: game.name,
+      start: new Date().toISOString(),
+      stop: null,
+      durationMs: null,
+      synced: false
+    };
+    sessions.push(session);
+    activeSession = session;
+    saveSessions(sessions);
+    toast('Started: ' + game.name);
+    render();
+  }
+
+  // --- Stop session ---
+  function stopSession() {
+    if (!activeSession) return;
+    const now = new Date();
+    activeSession.stop = now.toISOString();
+    activeSession.durationMs = now.getTime() - new Date(activeSession.start).getTime();
+    saveSessions(sessions);
+    activeSession = null;
+    toast('Session saved');
+    render();
+  }
+
+  // --- Render ---
+  function render() {
+    renderTodayTab();
+    renderSessionsTab();
+    renderStatsTab();
+    renderGamesTab();
+  }
+
+  function renderGoal() {
+    const goalMin = settings.dailyGoalMinutes || 0;
+    const todayTotal = todaySessionsMs();
+    const goalText = document.getElementById('goal-text');
+    const track = document.getElementById('goal-track');
+    const fill = document.getElementById('goal-fill');
+    const percentEl = document.getElementById('goal-percent');
+    const streakEl = document.getElementById('streak-pill');
+
+    if (goalMin <= 0) {
+      goalText.textContent = 'No goal set';
+      track.style.display = 'none';
+      percentEl.textContent = '';
+      streakEl.classList.add('off');
+      streakEl.innerHTML = iconSvg('streak') + ' 0-day streak';
+      lastStreak = 0;
+      return;
+    }
+
+    const goalMs = goalMin * 60000;
+    const pct = Math.min(100, Math.round(todayTotal / goalMs * 100));
+    goalText.textContent = 'Goal: ' + fmtDurationShort(goalMs);
+    track.style.display = '';
+    fill.style.width = Math.max(0, pct) + '%';
+    percentEl.textContent = fmtDurationShort(todayTotal) + ' of ' + fmtDurationShort(goalMs) + ' (' + pct + '%)';
+
+    const streak = computeStreak();
+    if (streak > 0) {
+      streakEl.classList.remove('off');
+      streakEl.innerHTML = iconSvg('streak') + ' ' + streak + '-day streak';
+    } else {
+      streakEl.classList.add('off');
+      streakEl.innerHTML = iconSvg('streak') + ' 0-day streak';
+    }
+    if (streak !== lastStreak) {
+      lastStreak = streak;
+      streakEl.classList.remove('tick');
+      void streakEl.offsetWidth;
+      streakEl.classList.add('tick');
+    }
+  }
+
+  function todaySessionsMs() {
+    return sessions.filter(s => s.stop !== null && isToday(s.start))
+      .reduce((sum, s) => sum + (s.durationMs || 0), 0);
+  }
+
+  function computeStreak() {
+    const goalMin = settings.dailyGoalMinutes || 0;
+    if (goalMin <= 0) return 0;
+    const goalMs = goalMin * 60000;
+    let streak = 0;
+    let start = todayStr();
+    if (totalMsForDate(start) < goalMs) start = addDays(start, -1);
+    for (let d = start; totalMsForDate(d) >= goalMs; d = addDays(d, -1)) streak++;
+    return streak;
+  }
+
+  function transitionCard(el, entering) {
+    if (!el) return;
+    // Measure exact height for a clean max-height fold/unfold.
+    el.style.display = '';
+    el.style.maxHeight = 'none';
+    const h = el.scrollHeight;
+    el.style.setProperty('--h', h + 'px');
+    el.style.maxHeight = '';
+    el.classList.remove('collapsing', 'expand-in');
+    void el.offsetWidth;
+    el.classList.add(entering ? 'expand-in' : 'collapsing');
+    const finish = () => {
+      if (entering) {
+        el.classList.remove('expand-in');
+        el.style.maxHeight = '';
+        el.style.removeProperty('--h');
+      } else {
+        el.classList.remove('collapsing');
+        el.style.display = 'none';
+        el.style.removeProperty('--h');
+      }
+    };
+    let done = false;
+    const cleanup = () => { if (done) return; done = true; el.removeEventListener('animationend', cleanup); finish(); };
+    el.addEventListener('animationend', cleanup);
+    setTimeout(cleanup, 350);
+  }
+
+  function renderTodayTab() {
+    const wasActive = lastHadActiveSession;
+    const isActive = !!activeSession;
+    const animating = cardAnimating;
+    lastHadActiveSession = isActive;
+    const startCard = document.getElementById('start-game-card');
+    const card = document.getElementById('active-session-card');
+
+    if (isActive) document.getElementById('active-game-name').textContent = activeSession.gameName;
+
+    if (isActive === wasActive || animating) {
+      // Steady state (or a transition is already in flight): sync visibility, no re-animation.
+      card.style.display = isActive ? '' : 'none';
+      startCard.style.display = isActive ? 'none' : '';
+    } else if (isActive) {
+      // Session started: expand Active card, collapse Start card.
+      cardAnimating = true;
+      card.style.display = '';
+      transitionCard(card, true);
+      transitionCard(startCard, false);
+      setTimeout(() => { cardAnimating = false; }, 350);
+    } else {
+      // Session stopped: collapse Active card, expand Start card.
+      cardAnimating = true;
+      transitionCard(card, false);
+      startCard.style.display = '';
+      transitionCard(startCard, true);
+      setTimeout(() => { cardAnimating = false; }, 350);
+    }
+
+    // Today totals
+    const todaySessions = sessions.filter(s => s.stop !== null && isToday(s.start));
+    let totalMs = 0;
+    const byGame = {};
+    todaySessions.forEach(s => {
+      totalMs += s.durationMs || 0;
+      if (!byGame[s.gameName]) byGame[s.gameName] = 0;
+      byGame[s.gameName] += s.durationMs || 0;
+    });
+
+    const ttEl = document.getElementById('today-total');
+    ttEl.textContent = fmtDuration(totalMs);
+    ttEl.classList.remove('tick');
+    void ttEl.offsetWidth;
+    ttEl.classList.add('tick');
+    document.getElementById('today-sessions-count').textContent = todaySessions.length + ' session' + (todaySessions.length !== 1 ? 's' : '');
+
+    const bl = document.getElementById('today-breakdown');
+    const sorted = Object.entries(byGame).sort((a,b) => b[1] - a[1]);
+    bl.innerHTML = sorted.map(([name, ms], i) =>
+      '<li class="breakdown-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms"><span class="breakdown-game">' + escHtml(name) + '</span><span class="breakdown-time">' + fmtDuration(ms) + '</span></li>'
+    ).join('');
+
+    // Start game buttons
+    const container = document.getElementById('start-game-buttons');
+    const activeGames = games.filter(g => !g.archived);
+    if (activeGames.length === 0) {
+      container.innerHTML = '<div class="no-games-hint">No games yet. Add one below.</div>';
+    } else {
+      container.innerHTML = activeGames.map((g, i) =>
+        '<button class="btn btn-start-game fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms" data-game-id="' + g.id + '">' +
+        '<span>' + escHtml(g.name) + '</span>' +
+        '<span class="play-icon">&#9654;</span>' +
+        '</button>'
+      ).join('');
+      container.querySelectorAll('.btn-start-game').forEach(btn => {
+        btn.addEventListener('click', () => startGame(btn.dataset.gameId));
+      });
+    }
+
+    renderGoal();
+  }
+
+  function renderSessionsTab(animate = true) {
+    const container = document.getElementById('sessions-list');
+    let filtered = sessions.filter(s => s.stop !== null);
+
+    if (filterDate) {
+      filtered = filtered.filter(s => dateKey(s.start) === filterDate);
+    }
+
+    filtered.sort((a,b) => new Date(b.start) - new Date(a.start));
+
+    if (filtered.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>' +
+        (filterDate ? 'No sessions on this date.' : 'No completed sessions yet.') + '</div>';
+    } else {
+      container.innerHTML = filtered.map((s, i) =>
+        '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
+          '<div class="session-info">' +
+            '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
+            '<div class="session-times">' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
+          '</div>' +
+          '<span class="session-duration">' + fmtDuration(s.durationMs) + '</span>' +
+          '<button class="session-edit" data-id="' + s.id + '" title="Edit session">Edit</button>' +
+          '<button class="session-sync' + (s.synced ? ' on' : '') + '" data-id="' + s.id + '" title="Mark as sync">Sync</button>' +
+          '<button class="session-delete" data-id="' + s.id + '" title="Delete session">' + iconSvg('deleteX') + '</button>' +
+        '</div>'
+      ).join('');
+
+      container.querySelectorAll('.session-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sessions = sessions.filter(s => s.id !== btn.dataset.id);
+          saveSessions(sessions);
+          toast('Session deleted');
+          renderSessionsTab(false);
+        });
+      });
+
+      container.querySelectorAll('.session-sync').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const s = sessions.find(x => x.id === btn.dataset.id);
+          if (!s) return;
+          s.synced = !s.synced;
+          saveSessions(sessions);
+          toast(s.synced ? 'Marked as synced' : 'Unmarked as sync');
+          renderSessionsTab(false);
+        });
+      });
+
+      container.querySelectorAll('.session-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const s = sessions.find(x => x.id === btn.dataset.id);
+          if (s) openEditSessionModal(s);
+        });
+      });
+    }
+
+    // Per-game totals for the filtered range
+    const byGame = {};
+    filtered.forEach(s => {
+      if (!byGame[s.gameName]) byGame[s.gameName] = { ms: 0, count: 0, syncedMs: 0, syncedCount: 0, unsyncedMs: 0, unsyncedCount: 0 };
+      const ms = s.durationMs || 0;
+      byGame[s.gameName].ms += ms;
+      byGame[s.gameName].count++;
+      if (s.synced) {
+        byGame[s.gameName].syncedMs += ms;
+        byGame[s.gameName].syncedCount++;
+      } else {
+        byGame[s.gameName].unsyncedMs += ms;
+        byGame[s.gameName].unsyncedCount++;
+      }
+    });
+
+    const breakdown = document.getElementById('sessions-breakdown');
+    const sorted = Object.entries(byGame).sort((a,b) => b[1].ms - a[1].ms);
+
+    if (sorted.length === 0) {
+      breakdown.innerHTML = '<li class="breakdown-item"><span class="breakdown-game" style="color:var(--text3)">No sessions</span></li>';
+    } else {
+      breakdown.innerHTML = sorted.map(([name, v], i) =>
+        '<li class="breakdown-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
+          '<span>' +
+            '<span class="breakdown-game">' + escHtml(name) + '</span>' +
+            '<div class="breakdown-count">' + v.count + ' session' + (v.count !== 1 ? 's' : '') + '</div>' +
+          '</span>' +
+          '<span class="breakdown-time">' + fmtDuration(v.ms) + '</span>' +
+        '</li>' +
+        '<li class="breakdown-split">' +
+          '<span class="split-line"><span class="split-dot synced"></span><span class="split-label">Synced</span>&nbsp;<span class="split-count">(' + v.syncedCount + ')</span></span>' +
+          '<span class="split-time synced">' + fmtDuration(v.syncedMs) + '</span>' +
+        '</li>' +
+        '<li class="breakdown-split">' +
+          '<span class="split-line"><span class="split-dot nosync"></span><span class="split-label">No sync</span>&nbsp;<span class="split-count">(' + v.unsyncedCount + ')</span></span>' +
+          '<span class="split-time nosync">' + fmtDuration(v.unsyncedMs) + '</span>' +
+        '</li>'
+      ).join('');
+    }
+  }
+
+  function renderStatsTab() {
+    const completed = sessions.filter(s => s.stop !== null);
+
+    // This week = last 7 days
+    const days = [];
+    let weekTotal = 0;
+    for (let i = 6; i >= 0; i--) {
+      const d = addDays(todayStr(), -i);
+      days.push({ date: d, ms: totalMsForDate(d) });
+      weekTotal += days[days.length-1].ms;
+    }
+
+    // Most played (all-time)
+    const byGame = {};
+    completed.forEach(s => {
+      if (!byGame[s.gameName]) byGame[s.gameName] = 0;
+      byGame[s.gameName] += s.durationMs || 0;
+    });
+    const top = Object.entries(byGame).sort((a,b) => b[1] - a[1])[0];
+
+    // Avg session length
+    const totalMs = completed.reduce((sum,s) => sum + (s.durationMs || 0), 0);
+    const avgMs = completed.length ? totalMs / completed.length : 0;
+
+    document.getElementById('stat-week-total').textContent = fmtDuration(weekTotal);
+    document.getElementById('stat-most-played').textContent = top ? top[0] : '-';
+    document.getElementById('stat-avg-session').textContent = fmtDurationShort(avgMs);
+    document.getElementById('stat-session-count').textContent = String(completed.length);
+
+    const max = Math.max.apply(null, days.map(d => d.ms));
+    const chart = document.getElementById('week-chart');
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    chart.innerHTML = days.map((d, i) => {
+      const isTodayBar = i === days.length-1;
+      const pct = max > 0 ? Math.round(d.ms / max * 100) : 0;
+      const barCls = isTodayBar ? 'bar today' : 'bar';
+      return '<div class="bar-col">' +
+        '<span class="bar-value">' + fmtDurationShort(d.ms) + '</span>' +
+        '<div class="bar-track"><div class="' + barCls + '" style="--i:' + (i * 60) + 'ms;height:' + (d.ms > 0 ? Math.max(pct, 3) : 0) + '%"></div></div>' +
+        '<span class="bar-label">' + dayNames[new Date(d.date + 'T00:00:00').getDay()] + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderGamesTab() {
+    const container = document.getElementById('games-list');
+    const active = games.filter(g => !g.archived);
+    const archived = games.filter(g => g.archived);
+
+    if (games.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyGames') + '</span>No games added yet.</div>';
+      return;
+    }
+
+    let html = '';
+
+    if (active.length === 0) {
+      html += '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyActive') + '</span>No active games.<br><span style="font-size:0.75rem;color:var(--text3)">Add a game or restore an archived one below.</span></div>';
+    } else {
+      html += active.map((g, i) => {
+        const count = sessions.filter(s => s.gameId === g.id).length;
+        return '<div class="game-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
+          '<div class="game-item-info">' +
+            '<div class="game-item-name">' + escHtml(g.name) + '</div>' +
+            '<div class="game-item-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</div>' +
+          '</div>' +
+          '<div class="game-item-actions">' +
+            '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
+            '<button class="btn-icon" data-action="rename" data-id="' + g.id + '" title="Rename">' + iconSvg('rename') + '</button>' +
+            '<button class="btn-icon archive" data-action="archive" data-id="' + g.id + '" title="Archive">' + iconSvg('archive') + '</button>' +
+            '<button class="btn-icon danger" data-action="delete" data-id="' + g.id + '" title="Delete">' + iconSvg('delete') + '</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    if (archived.length > 0) {
+      html += '<div class="archive-section-label">Archived</div>';
+      html += archived.map((g, i) => {
+        const count = sessions.filter(s => s.gameId === g.id).length;
+        return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
+          '<div class="game-item-info">' +
+            '<div class="game-item-name">' + escHtml(g.name) + '</div>' +
+            '<div class="game-item-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</div>' +
+          '</div>' +
+          '<div class="game-item-actions">' +
+            '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
+            '<button class="btn-icon restore" data-action="restore" data-id="' + g.id + '" title="Restore">' + iconSvg('restore') + '</button>' +
+            '<button class="btn-icon danger" data-action="delete" data-id="' + g.id + '" title="Delete">' + iconSvg('delete') + '</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    container.innerHTML = html;
+
+    container.querySelectorAll('.btn-icon').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        if (btn.dataset.action === 'view') openDashboard(id);
+        else if (btn.dataset.action === 'rename') openRenameModal(id);
+        else if (btn.dataset.action === 'archive') archiveGame(id);
+        else if (btn.dataset.action === 'restore') restoreGame(id);
+        else openDeleteModal(id);
+      });
+    });
+  }
+
+  function openDashboard(id) {
+    const game = games.find(g => g.id === id);
+    if (!game) return;
+    document.getElementById('dashboard-title').textContent = game.name;
+    renderDashboardBody(game);
+    document.getElementById('dashboard-modal').classList.add('open');
+  }
+
+  function renderDashboardBody(game) {
+    const gs = sessions.filter(s => s.gameId === game.id);
+    const completed = gs.filter(s => s.stop !== null);
+    const body = document.getElementById('dashboard-body');
+    const totalMs = completed.reduce((sum,s) => sum + (s.durationMs || 0), 0);
+    const avgMs = completed.length ? totalMs / completed.length : 0;
+
+    // Best day
+    const byDate = {};
+    completed.forEach(s => {
+      const d = dateKey(s.start);
+      if (!byDate[d]) byDate[d] = 0;
+      byDate[d] += s.durationMs || 0;
+    });
+    const best = Object.entries(byDate).sort((a,b) => b[1] - a[1])[0];
+
+    // Last 6 months
+    const months = [];
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+      months.push({ key: key, name: d.toLocaleString('en-US', { month: 'short' }), ms: 0 });
+    }
+    const monthIdx = {};
+    months.forEach((m, i) => monthIdx[m.key] = i);
+    completed.forEach(s => {
+      const k = monthKey(s.start);
+      if (monthIdx[k] !== undefined) months[monthIdx[k]].ms += s.durationMs || 0;
+    });
+    const maxMonth = Math.max.apply(null, months.map(m => m.ms));
+
+    const recent = completed.slice().sort((a,b) => new Date(b.start) - new Date(a.start)).slice(0, 10);
+
+    let html = '<div class="dash-row"><span class="dash-label">Total playtime</span><span class="dash-value">' + fmtDuration(totalMs) + '</span></div>' +
+      '<div class="dash-row"><span class="dash-label">Sessions</span><span class="dash-value">' + completed.length + '</span></div>' +
+      '<div class="dash-row"><span class="dash-label">Average session</span><span class="dash-value">' + fmtDurationShort(avgMs) + '</span></div>' +
+      '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
+
+    if (completed.length > 0) {
+      html += '<div class="modal-subheader">Last 6 months</div>' +
+        months.map(m =>
+          '<div class="dash-month">' +
+            '<span class="dash-month-name">' + m.name + '</span>' +
+            '<span class="dash-month-track"><span class="dash-month-bar" style="width:' + (maxMonth > 0 ? Math.round(m.ms / maxMonth * 100) : 0) + '%"></span></span>' +
+            '<span class="dash-month-time">' + fmtDurationShort(m.ms) + '</span>' +
+          '</div>'
+        ).join('');
+
+      html += '<div class="modal-subheader">Recent sessions</div><ul class="dash-sessions">' +
+        recent.map(s =>
+          '<li class="dash-session">' +
+            '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + '</span>' +
+            '<span class="dash-session-dur">' + fmtDuration(s.durationMs) + '</span>' +
+          '</li>'
+        ).join('') + '</ul>';
+    } else {
+      html += '<div class="empty-state" style="padding:20px 10px;"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>No sessions recorded for this game yet.</div>';
+    }
+
+    body.innerHTML = html;
+  }
+
+  function escHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Theme-aware inline SVG icon set (stroke=currentColor inherits theme color)
+  const ICONS = {
+    today: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>',
+    sessions: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    stats: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
+    games: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.94 3.56L2 15.56a2.5 2.5 0 0 0 3.32 2.61l1.82-.68a1 1 0 0 1 .82 0l3.13 1.04a2.5 2.5 0 0 0 1.9 0l3.13-1.04a1 1 0 0 1 .82 0l1.82.68A2.5 2.5 0 0 0 22 15.56l-1.06-7A4 4 0 0 0 17.32 5z"/></svg>',
+    settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+    view: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
+    rename: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>',
+    archive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
+    restore: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
+    delete: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
+    deleteX: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    streak: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.6 3.5-1.5 5-3 7-1.8 2.4-2 4.2-2 6a5 5 0 0 0 10 0c0-1.8-.7-3.2-1.5-4.5.5 1 .7 2 .5 3a3 3 0 0 1-3 3c-.6 0-1.2-.3-1.5-.8 1.5.3 3-1 3-3 .1-2.5.1-4.3-.3-5.7C12.8 8.6 12.4 5.5 12 2z"/></svg>',
+    dbx: '<svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><circle cx="12" cy="12" r="5"/></svg>',
+    emptySessions: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+    emptyGames: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.94 3.56L2 15.56a2.5 2.5 0 0 0 3.32 2.61l1.82-.68a1 1 0 0 1 .82 0l3.13 1.04a2.5 2.5 0 0 0 1.9 0l3.13-1.04a1 1 0 0 1 .82 0l1.82.68A2.5 2.5 0 0 0 22 15.56l-1.06-7A4 4 0 0 0 17.32 5z"/></svg>',
+    emptyActive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
+    emptyDashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
+  };
+  function iconSvg(name) {
+    return ICONS[name] || '';
+  }
+
+  // --- Add game ---
+  function addGame(name) {
+    name = name.trim();
+    if (!name) return;
+    if (games.some(g => g.name.toLowerCase() === name.toLowerCase())) {
+      toast('Game already exists');
+      return;
+    }
+    games.push({ id: uid(), name: name, archived: false });
+    saveGames(games);
+    toast('Added: ' + name);
+    render();
+  }
+
+  // Add game on Games tab
+  document.getElementById('add-game-btn').addEventListener('click', () => {
+    const inp = document.getElementById('add-game-input');
+    addGame(inp.value);
+    inp.value = '';
+  });
+
+  document.getElementById('add-game-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const inp = document.getElementById('add-game-input');
+      addGame(inp.value);
+      inp.value = '';
+    }
+  });
+
+  // --- Stop button ---
+  document.getElementById('btn-stop').addEventListener('click', stopSession);
+
+  // --- Filter date ---
+  const filterDateField = createCalField('filter-date', v => {
+    filterDate = v;
+    render();
+  });
+  filterDateField.value = filterDate;
+
+  // --- Rename modal ---
+  function openRenameModal(id) {
+    const game = games.find(g => g.id === id);
+    if (!game) return;
+    pendingRenameGameId = id;
+    document.getElementById('rename-input').value = game.name;
+    document.getElementById('rename-modal').classList.add('open');
+    setTimeout(() => document.getElementById('rename-input').focus(), 50);
+  }
+
+  document.getElementById('rename-cancel').addEventListener('click', () => {
+    document.getElementById('rename-modal').classList.remove('open');
+  });
+
+  document.getElementById('rename-save').addEventListener('click', () => {
+    const name = document.getElementById('rename-input').value.trim();
+    if (!name) return;
+    const game = games.find(g => g.id === pendingRenameGameId);
+    if (game) {
+      game.name = name;
+      saveGames(games);
+      sessions.forEach(s => { if (s.gameId === game.id) s.gameName = name; });
+      saveSessions(sessions);
+      toast('Renamed');
+      render();
+    }
+    document.getElementById('rename-modal').classList.remove('open');
+  });
+
+  document.getElementById('rename-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('rename-save').click();
+  });
+
+  // --- Delete modal ---
+  function openDeleteModal(id) {
+    const game = games.find(g => g.id === id);
+    if (!game) return;
+    pendingDeleteGameId = id;
+    const count = sessions.filter(s => s.gameId === id).length;
+    document.getElementById('delete-msg').textContent = 'Delete "' + game.name + '"?';
+    const warn = document.getElementById('delete-warning');
+    if (count > 0) {
+      warn.style.display = '';
+      warn.textContent = 'This will also remove ' + count + ' session' + (count !== 1 ? 's' : '') + '.';
+    } else {
+      warn.style.display = 'none';
+    }
+    document.getElementById('delete-modal').classList.add('open');
+  }
+
+  document.getElementById('delete-cancel').addEventListener('click', () => {
+    document.getElementById('delete-modal').classList.remove('open');
+  });
+
+  document.getElementById('delete-confirm').addEventListener('click', () => {
+    const id = pendingDeleteGameId;
+    const game = games.find(g => g.id === id);
+    if (game) {
+      if (activeSession && activeSession.gameId === id) {
+        toast('Cannot delete: game has an active session');
+        document.getElementById('delete-modal').classList.remove('open');
+        return;
+      }
+      sessions = sessions.filter(s => s.gameId !== id);
+      saveSessions(sessions);
+      games = games.filter(g => g.id !== id);
+      saveGames(games);
+      toast('Deleted: ' + game.name);
+      render();
+    }
+    document.getElementById('delete-modal').classList.remove('open');
+  });
+
+  // --- Archive / Restore ---
+  function archiveGame(id) {
+    const game = games.find(g => g.id === id);
+    if (!game) return;
+    if (activeSession && activeSession.gameId === id) {
+      toast('Stop the current session first');
+      return;
+    }
+    game.archived = true;
+    saveGames(games);
+    toast('Archived: ' + game.name);
+    render();
+  }
+
+  function restoreGame(id) {
+    const game = games.find(g => g.id === id);
+    if (!game) return;
+    game.archived = false;
+    saveGames(games);
+    toast('Restored: ' + game.name);
+    render();
+  }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+
+  // --- Add session modal ---
+  const CAL_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const calPad = n => String(n).padStart(2, '0');
+  const calFmtDate = d => d.getFullYear() + '-' + calPad(d.getMonth() + 1) + '-' + calPad(d.getDate());
+
+  // Builds a glass-themed calendar date field (caller provides markup with .cal-* parts)
+  function createCalField(id, onChange) {
+    const el = document.getElementById(id);
+    const label = el.querySelector('.cal-label');
+    const titleEl = el.querySelector('.cal-title');
+    const gridEl = el.querySelector('.cal-grid');
+    let _value = '';
+    let viewYear, viewMonth;
+
+    function setLabel() {
+      label.textContent = _value || 'yyyy-mm-dd';
+      label.classList.toggle('placeholder', !_value);
+    }
+    function selectDate(d) {
+      _value = calFmtDate(d);
+      setLabel();
+      renderGrid();
+      el.classList.remove('open');
+      el.querySelector('.cal-trigger').setAttribute('aria-expanded', 'false');
+      if (onChange) onChange(_value);
+    }
+    function renderGrid() {
+      titleEl.textContent = CAL_MONTHS[viewMonth] + ' ' + viewYear;
+      gridEl.innerHTML = '';
+      const startDow = new Date(viewYear, viewMonth, 1).getDay();
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const todayStr = calFmtDate(new Date());
+      for (let i = 0; i < 42; i++) {
+        const cellDate = new Date(viewYear, viewMonth, i - startDow + 1);
+        const cStr = calFmtDate(cellDate);
+        const other = i < startDow || i - startDow + 1 > daysInMonth;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'cal-day' + (other ? ' other' : '') + (cStr === todayStr ? ' today' : '') + (cStr === _value ? ' selected' : '');
+        btn.textContent = cellDate.getDate();
+        btn.addEventListener('click', e => { e.stopPropagation(); selectDate(cellDate); });
+        gridEl.appendChild(btn);
+      }
+    }
+    function resetView() {
+      const d = _value ? new Date(_value + 'T00:00') : new Date();
+      viewYear = d.getFullYear();
+      viewMonth = d.getMonth();
+    }
+    setLabel();
+    el.querySelector('.cal-trigger').addEventListener('click', e => {
+      e.stopPropagation();
+      const opening = !el.classList.contains('open');
+      document.querySelectorAll('.cal-field.open').forEach(o => { if (o !== el) { o.classList.remove('open'); o.querySelector('.cal-trigger').setAttribute('aria-expanded', 'false'); } });
+      if (opening) { resetView(); renderGrid(); }
+      el.classList.toggle('open');
+      el.querySelector('.cal-trigger').setAttribute('aria-expanded', String(opening));
+    });
+    el.querySelectorAll('.cal-nav').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        viewMonth += Number(btn.dataset.dir);
+        if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+        else if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+        renderGrid();
+      });
+    });
+    el.querySelector('[data-action="today"]').addEventListener('click', e => { e.stopPropagation(); selectDate(new Date()); });
+    el.querySelector('[data-action="clear"]').addEventListener('click', e => {
+      e.stopPropagation();
+      _value = '';
+      setLabel();
+      resetView();
+      renderGrid();
+      el.classList.remove('open');
+      el.querySelector('.cal-trigger').setAttribute('aria-expanded', 'false');
+      if (onChange) onChange(_value);
+    });
+    return {
+      get value() { return _value; },
+      set value(v) { _value = v || ''; setLabel(); resetView(); }
+    };
+  }
+
+  // Close any open calendar popover on outside click
+  document.addEventListener('click', e => {
+    document.querySelectorAll('.cal-field.open').forEach(o => {
+      if (!o.contains(e.target)) {
+        o.classList.remove('open');
+        o.querySelector('.cal-trigger').setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
+  // Builds a glass-themed AM/PM time field (mirrors createCalField). Value stored as 24h 'HH:MM'.
+  function createTimeField(id) {
+    const el = document.getElementById(id);
+    const label = el.querySelector('.cal-label');
+    const hhInput = el.querySelector('.time-input:nth-of-type(1)');
+    const mmInput = el.querySelector('.time-input:nth-of-type(2)');
+    const amBtn = el.querySelector('[data-a="am"]');
+    const pmBtn = el.querySelector('[data-a="pm"]');
+    let _value = '';
+
+    function to12(h24, mm) {
+      let h = h24 % 12; if (h === 0) h = 12;
+      return { h: String(h).padStart(2, '0'), mm: String(mm).padStart(2, '0'), a: h24 < 12 ? 'am' : 'pm' };
+    }
+    function setLabel() {
+      label.textContent = _value ? _value.slice(0, 5) : '--:--';
+      label.classList.toggle('placeholder', !_value);
+    }
+    function syncInputs() {
+      if (!_value) {
+        hhInput.value = ''; mmInput.value = '';
+        amBtn.classList.remove('on'); pmBtn.classList.remove('on');
+        amBtn.classList.add('on');
+        return;
+      }
+      const [h24, mm] = _value.split(':').map(Number);
+      const { h, a } = to12(h24, mm);
+      hhInput.value = h; mmInput.value = String(mm).padStart(2, '0');
+      amBtn.classList.toggle('on', a === 'am');
+      pmBtn.classList.toggle('on', a === 'pm');
+    }
+    function sanitize(inp) { inp.value = inp.value.replace(/\D/g, ''); }
+    function commit(open) {
+      const hStr = String(hhInput.value).padStart(2, '0');
+      const mmStr = String(mmInput.value).padStart(2, '0');
+      if (!/^\d{2}$/.test(hStr) || !/^\d{2}$/.test(mmStr)) { if (open) return; _value = ''; setLabel(); return; }
+      const am = amBtn.classList.contains('on');
+      let h = Number(hStr);
+      if (h < 1 || h > 12) { if (open) return; _value = ''; setLabel(); return; }
+      if (h === 12) h = 0;
+      h += am ? 0 : 12;
+      _value = calPad(h) + ':' + mmStr;
+      setLabel();
+      if (open !== true) { syncInputs(); }
+    }
+    function open() {
+      const opening = !el.classList.contains('open');
+      document.querySelectorAll('.cal-field.open').forEach(o => {
+        if (o !== el) { o.classList.remove('open'); o.querySelector('.cal-trigger').setAttribute('aria-expanded', 'false'); }
+      });
+      if (opening) syncInputs();
+      el.classList.toggle('open');
+      el.querySelector('.cal-trigger').setAttribute('aria-expanded', String(opening));
+      if (opening) hhInput.focus();
+    }
+    setLabel();
+    amBtn.classList.add('on');
+    el.querySelector('.cal-trigger').addEventListener('click', e => { e.stopPropagation(); open(); });
+    hhInput.addEventListener('input', () => { sanitize(hhInput); if (hhInput.value.length >= 2) mmInput.focus(); });
+    mmInput.addEventListener('input', () => { sanitize(mmInput); commit(false); });
+    hhInput.addEventListener('blur', e => { if (!el.contains(e.relatedTarget)) commit(false); });
+    mmInput.addEventListener('blur', e => { if (!el.contains(e.relatedTarget)) commit(false); });
+    amBtn.addEventListener('click', e => { e.stopPropagation(); amBtn.classList.add('on'); pmBtn.classList.remove('on'); commit(false); });
+    pmBtn.addEventListener('click', e => { e.stopPropagation(); pmBtn.classList.add('on'); amBtn.classList.remove('on'); commit(false); });
+    el.querySelector('[data-action="now"]').addEventListener('click', e => {
+      e.stopPropagation();
+      const n = new Date();
+      _value = calPad(n.getHours()) + ':' + calPad(n.getMinutes());
+      setLabel(); syncInputs();
+      el.classList.remove('open');
+      el.querySelector('.cal-trigger').setAttribute('aria-expanded', 'false');
+    });
+    el.querySelector('[data-action="clear"]').addEventListener('click', e => {
+      e.stopPropagation();
+      _value = ''; setLabel();
+      amBtn.classList.add('on'); pmBtn.classList.remove('on');
+      el.classList.remove('open');
+      el.querySelector('.cal-trigger').setAttribute('aria-expanded', 'false');
+    });
+    return {
+      get value() { return _value; },
+      set value(v) { _value = v || ''; setLabel(); }
+    };
+  }
+
+  function setCalDateTime(dateField, timeField, iso) {
+    const d = new Date(iso);
+    dateField.value = calFmtDate(d);
+    timeField.value = calPad(d.getHours()) + ':' + calPad(d.getMinutes());
+  }
+  function getCalDateTime(dateField, timeField) {
+    const dateLen = dateField.value.length;
+    const timeVal = timeField.value;
+    if (dateLen === 0 || !timeVal) return '';
+    return dateField.value + 'T' + timeVal;
+  }
+
+  // Calendar date + time fields for session start/end
+  const addSessionStartDate = createCalField('add-session-date');
+  const addSessionEndDate = createCalField('add-session-date-end');
+  const editSessionStartDate = createCalField('edit-session-date');
+  const editSessionEndDate = createCalField('edit-session-date-end');
+  const addSessionStartTime = createTimeField('add-session-time');
+  const addSessionEndTime = createTimeField('add-session-time-end');
+  const editSessionStartTime = createTimeField('edit-session-time');
+  const editSessionEndTime = createTimeField('edit-session-time-end');
+
+  function openAddSessionModal() {
+    const activeGames = games.filter(g => !g.archived);
+    const sel = document.getElementById('add-session-game');
+    sel.innerHTML = activeGames.map(g => '<option value="' + g.id + '">' + escHtml(g.name) + '</option>').join('');
+    if (activeGames.length === 0) {
+      toast('Add a game first');
+      return;
+    }
+    const now = new Date();
+    setCalDateTime(addSessionStartDate, addSessionStartTime, new Date(now.getTime() - 3600000));
+    setCalDateTime(addSessionEndDate, addSessionEndTime, now);
+    document.getElementById('add-session-modal').classList.add('open');
+  }
+
+  document.getElementById('btn-add-session').addEventListener('click', openAddSessionModal);
+
+  document.getElementById('add-session-cancel').addEventListener('click', () => {
+    document.getElementById('add-session-modal').classList.remove('open');
+  });
+
+  document.getElementById('add-session-save').addEventListener('click', () => {
+    const gameId = document.getElementById('add-session-game').value;
+    const startStr = getCalDateTime(addSessionStartDate, addSessionStartTime);
+    const endStr = getCalDateTime(addSessionEndDate, addSessionEndTime);
+    if (!gameId || !startStr || !endStr) { toast('Fill in all fields'); return; }
+    const t1 = new Date(startStr).getTime();
+    const t2 = new Date(endStr).getTime();
+    if (!(t2 > t1)) { toast('End must be after start'); return; }
+    const game = games.find(g => g.id === gameId);
+    if (!game) return;
+    const session = {
+      id: uid(),
+      gameId: game.id,
+      gameName: game.name,
+      start: new Date(t1).toISOString(),
+      stop: new Date(t2).toISOString(),
+      durationMs: t2 - t1,
+      synced: false
+    };
+    sessions.push(session);
+    saveSessions(sessions);
+    toast('Session added');
+    document.getElementById('add-session-modal').classList.remove('open');
+    render();
+  });
+
+  // --- Edit session modal ---
+  function openEditSessionModal(s) {
+    editSessionId = s.id;
+    setCalDateTime(editSessionStartDate, editSessionStartTime, s.start);
+    setCalDateTime(editSessionEndDate, editSessionEndTime, s.stop);
+    document.getElementById('edit-session-modal').classList.add('open');
+  }
+
+  document.getElementById('edit-session-cancel').addEventListener('click', () => {
+    document.getElementById('edit-session-modal').classList.remove('open');
+  });
+
+  document.getElementById('edit-session-save').addEventListener('click', () => {
+    const s = sessions.find(x => x.id === editSessionId);
+    if (!s) { document.getElementById('edit-session-modal').classList.remove('open'); return; }
+    const startStr = getCalDateTime(editSessionStartDate, editSessionStartTime);
+    const endStr = getCalDateTime(editSessionEndDate, editSessionEndTime);
+    if (!startStr || !endStr) { toast('Fill in both times'); return; }
+    const t1 = new Date(startStr).getTime();
+    const t2 = new Date(endStr).getTime();
+    if (!(t2 > t1)) { toast('End must be after start'); return; }
+    s.start = new Date(t1).toISOString();
+    s.stop = new Date(t2).toISOString();
+    s.durationMs = t2 - t1;
+    saveSessions(sessions);
+    toast('Session updated');
+    document.getElementById('edit-session-modal').classList.remove('open');
+    render();
+  });
+
+  // --- Goal modal ---
+  document.getElementById('btn-goal-edit').addEventListener('click', () => {
+    document.getElementById('goal-minutes').value = settings.dailyGoalMinutes || 0;
+    document.getElementById('goal-modal').classList.add('open');
+  });
+
+  document.getElementById('goal-cancel').addEventListener('click', () => {
+    document.getElementById('goal-modal').classList.remove('open');
+  });
+
+  document.getElementById('goal-save').addEventListener('click', () => {
+    const v = Math.max(0, Math.floor(Number(document.getElementById('goal-minutes').value) || 0));
+    settings.dailyGoalMinutes = v;
+    saveSettings(settings);
+    toast(v > 0 ? 'Goal set to ' + v + ' min/day' : 'Goal disabled');
+    document.getElementById('goal-modal').classList.remove('open');
+    render();
+  });
+
+  document.getElementById('goal-minutes').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('goal-save').click();
+  });
+
+  // --- Export / Import ---
+  document.getElementById('btn-export').addEventListener('click', () => {
+    const data = {
+      app: 'PlayDex',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      games: games,
+      sessions: sessions,
+      settings: settings
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'playdex-backup-' + todayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Backup exported');
+  });
+
+  document.getElementById('btn-import').addEventListener('click', () => {
+    document.getElementById('import-file').click();
+  });
+
+  document.getElementById('import-file').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!data || !Array.isArray(data.games) || !Array.isArray(data.sessions)) {
+          toast('Invalid backup file');
+          return;
+        }
+        importData = data;
+        document.getElementById('import-modal').classList.add('open');
+      } catch {
+        toast('Invalid JSON file');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  document.getElementById('import-cancel').addEventListener('click', () => {
+    document.getElementById('import-modal').classList.remove('open');
+    importData = null;
+  });
+
+  document.getElementById('import-confirm').addEventListener('click', () => {
+    if (importData) {
+      games = normalizeGames(importData.games);
+      sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
+      if (importData.settings && typeof importData.settings === 'object') {
+        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system' }, importData.settings);
+      } else {
+        settings = { dailyGoalMinutes: 0, theme: 'system' };
+      }
+      saveGames(games);
+      saveSessions(sessions);
+      saveSettings(settings);
+      activeSession = sessions.find(s => s.stop === null) || null;
+      importData = null;
+      toast('Backup imported');
+      applyTheme();
+      render();
+    }
+    document.getElementById('import-modal').classList.remove('open');
+  });
+
+  // --- Dashboard modal ---
+  document.getElementById('dashboard-close').addEventListener('click', () => {
+    document.getElementById('dashboard-modal').classList.remove('open');
+  });
+
+  // --- Live timer ---
+  function updateTimer() {
+    if (activeSession) {
+      const elapsed = Date.now() - new Date(activeSession.start).getTime();
+      const el = document.getElementById('active-elapsed');
+      el.textContent = fmtDuration(elapsed);
+      const sec = Math.floor(elapsed / 1000);
+      if (sec !== lastElapsedSec) {
+        lastElapsedSec = sec;
+        el.classList.remove('tick');
+        void el.offsetWidth;
+        el.classList.add('tick');
+      }
+    }
+    timerRaf = requestAnimationFrame(updateTimer);
+  }
+
+  timerRaf = requestAnimationFrame(updateTimer);
+
+  // --- Appearance (theme select) ---
+  document.querySelectorAll('.theme-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      settings.theme = btn.dataset.themeOpt;
+      saveSettings(settings);
+      applyTheme();
+    });
+  });
+
+  // --- Dropbox controls ---
+  document.getElementById('dbxConnectBtn').addEventListener('click', dropboxConnect);
+  document.getElementById('dbxUploadBtn').addEventListener('click', () => dropboxUpload(false));
+  document.getElementById('dbxDownloadBtn').addEventListener('click', () => dropboxDownload(false));
+  document.getElementById('dbxDisconnectBtn').addEventListener('click', dropboxDisconnect);
+
+  document.getElementById('dbxAutoUpload').addEventListener('change', e => {
+    dbx.autoUpload = e.target.checked;
+    dbxSave();
+  });
+  document.getElementById('dbxAutoSync').addEventListener('change', e => {
+    dbx.autoSync = e.target.checked;
+    dbxSave();
+  });
+
+  document.getElementById('dbx-confirm-cancel').addEventListener('click', () => {
+    document.getElementById('dbx-confirm-modal').classList.remove('open');
+    dbxPendingDownload = null;
+  });
+  document.getElementById('dbx-confirm-download').addEventListener('click', () => {
+    document.getElementById('dbx-confirm-modal').classList.remove('open');
+    const text = dbxPendingDownload;
+    dbxPendingDownload = null;
+    if (text) {
+      try {
+        dbxApplyBackupText(text);
+        dbxMarkSynced();
+        toast('Synced from Dropbox');
+      } catch (err) { toast('\u26A0 Dropbox file isn\u2019t a PlayDex backup'); }
+    }
+  });
+
+  document.getElementById('dbx-sync-later').addEventListener('click', () => {
+    document.getElementById('dbx-sync-modal').classList.remove('open');
+    if (dbx._remoteAt) { dbx.dismissedRemoteAt = dbx._remoteAt; dbx._remoteAt = 0; dbxSave(); }
+  });
+  document.getElementById('dbx-sync-now').addEventListener('click', async () => {
+    document.getElementById('dbx-sync-modal').classList.remove('open');
+    try { await dropboxDownload(true); } catch {}
+  });
+
+  // --- Initial render ---
+  applyTheme();
+  updateDropboxUI();
+  dropboxHandleRedirect().then(() => {
+    render();
+    dropboxCheckForUpdates();
+  });
+
+  // --- PWA install ---
+  let deferredInstallPrompt = null;
+  function ensureInstallBtn() {
+    if (document.querySelector('.install-btn')) return;
+    const title = document.querySelector('.app-title');
+    if (!title) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'install-btn';
+    btn.textContent = 'Install app';
+    btn.addEventListener('click', async () => {
+      if (!deferredInstallPrompt) return;
+      const res = await deferredInstallPrompt.prompt();
+      deferredInstallPrompt = null;
+      btn.remove();
+    });
+    title.appendChild(btn);
+  }
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    ensureInstallBtn();
+  });
+  window.addEventListener('appinstalled', () => {
+    const btn = document.querySelector('.install-btn');
+    if (btn) btn.remove();
+    deferredInstallPrompt = null;
+  });
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(err => {
+        console.warn('Service worker registration failed:', err);
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>
