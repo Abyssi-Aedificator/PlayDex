@@ -18,12 +18,17 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
+  // Only clean up PlayDex's own caches. Deliberately do NOT touch other caches
+  // or call clients.claim(): this worker is path-scoped to /PlayDex/, and
+  // claiming the whole origin would let it take over sibling apps (e.g. MedsADay)
+  // on the same GitHub Pages origin.
+  const ownPrefix = 'playdex-';
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+        keys.filter(key => key.startsWith(ownPrefix) && key !== CACHE_NAME)
+            .map(key => caches.delete(key))
       ))
-      .then(() => self.clients.claim())
   );
 });
 
