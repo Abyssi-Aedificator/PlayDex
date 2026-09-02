@@ -1,0 +1,36 @@
+PlayDex - Changelog
+====================
+
+v1.0.1 (2026-09-02)
+-------------------
+### PWA / install
+- Added full PWA support: web app manifest (manifest.webmanifest), service worker (sw.js)
+  and installable app icons (icon-192.png, icon-512.png, apple-touch-icon.png).
+- Added manifest link, theme-color, iOS/Android metadata and an "Install app" button
+  in the header (shown when the browser fires beforeinstallprompt).
+- Scoped the PWA identity/id/scope explicitly to /PlayDex/ so it no longer collides
+  with other apps (e.g. MedsADay) installed on the same GitHub Pages origin.
+- Fixed the service worker so it only manages PlayDex's own caches (never deletes
+  other apps' caches) and no longer claims the whole origin with clients.claim().
+- Bumped the service worker cache to playdex-v2 to force the corrected worker to install.
+
+### Time picker
+- Replaced the native time inputs in the Add/Edit Session modals with a themed
+  AM/PM time picker that matches the glass calendar date fields.
+- Fixed native input styling conflicts so the HH/MM boxes render at the correct size.
+- Made the Start and End time triggers wider so the time value is clearly visible.
+
+### List / layout polish
+- Stopped the whole list from re-animating when a session is marked as Synced or Deleted.
+- Removed the "Quick add game" field from the main page.
+
+v1.0.0 (2026-08)
+----------------
+- Initial release.
+- Track game sessions with live elapsed time and start/stop control.
+- Session log with start/end times, durations, and per-session sync toggles.
+- Playtime by game breakdown (synced vs. not-synced).
+- Daily playtime goal with a progress tracker.
+- Game library with add, edit, and archive support.
+- Dropbox sync for backing up and sharing data across devices.
+- Dark and light themes.
