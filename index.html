@@ -2773,7 +2773,7 @@
     });
 
     const breakdown = document.getElementById('sessions-breakdown');
-    const sorted = Object.entries(byGame).sort((a,b) => b[1].ms - a[1].ms);
+    const sorted = Object.entries(byGame).sort((a,b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
 
     if (sorted.length === 0) {
       breakdown.innerHTML = '<li class="breakdown-item"><span class="breakdown-game" style="color:var(--text3)">No sessions</span></li>';
