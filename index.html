@@ -1281,6 +1281,10 @@
     font-weight: 600;
   }
 
+  /* Dense 30-day chart: hide per-bar value text so narrow columns stay clean */
+  #month-chart .bar-value { display: none; }
+  #month-chart .bar-label { font-size: 0.6rem; }
+
   /* Game dashboard modal */
   .dash-row {
     display: flex;
@@ -1594,6 +1598,10 @@
 
   <!-- STATS TAB -->
   <div id="tab-stats" class="tab-panel">
+    <div class="card">
+      <div class="card-header">Last 30 Days</div>
+      <div class="bar-chart" id="month-chart"></div>
+    </div>
     <div class="card">
       <div class="card-header">Last 7 Days</div>
       <div class="stat-grid">
@@ -2763,6 +2771,24 @@
 
   function renderStatsTab() {
     const completed = sessions.filter(s => s.stop !== null);
+
+    // Last 30 days playtime chart
+    const monthDays = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = addDays(todayStr(), -i);
+      monthDays.push({ date: d, ms: totalMsForDate(d) });
+    }
+    const monthMax = Math.max.apply(null, monthDays.map(d => d.ms));
+    const monthChart = document.getElementById('month-chart');
+    if (monthChart) {
+      monthChart.innerHTML = monthDays.map((d) => {
+        const pct = monthMax > 0 ? Math.round(d.ms / monthMax * 100) : 0;
+        return '<div class="bar-col">' +
+          '<div class="bar-track"><div class="bar" style="height:' + (d.ms > 0 ? Math.max(pct, 3) : 0) + '%"></div></div>' +
+          '<span class="bar-label">' + new Date(d.date + 'T00:00:00').getDate() + '</span>' +
+        '</div>';
+      }).join('');
+    }
 
     // This week = last 7 days
     const days = [];
