@@ -11,6 +11,8 @@ Version 1.0.5
   one bar per day for the past month.
 - On wide PC screens the Stats tab is shown as a third column in the combined
   Today page, next to Sessions.
+- Widened the combined desktop page and gave Today and Sessions more room than
+  Stats.
 
 Version 1.0.4
 -------------------
