@@ -1504,8 +1504,8 @@
   /* Desktop wide: add Stats as a third column in the merged Today page */
   @media (min-width: 1100px) {
     .app-content.merged {
-      grid-template-columns: 1.4fr 1.4fr 1fr;
-      max-width: 1600px;
+      grid-template-columns: 1.8fr 1.8fr 1fr;
+      max-width: 1800px;
     }
     .app-content.merged #tab-stats {
       display: block;
@@ -1612,10 +1612,6 @@
   <!-- STATS TAB -->
   <div id="tab-stats" class="tab-panel">
     <div class="card">
-      <div class="card-header">Last 30 Days</div>
-      <div class="bar-chart" id="month-chart"></div>
-    </div>
-    <div class="card">
       <div class="card-header">Last 7 Days</div>
       <div class="stat-grid">
         <div class="stat-box"><div class="stat-value" id="stat-week-total">0:00:00</div><div class="stat-label">This Week</div></div>
@@ -1624,6 +1620,10 @@
         <div class="stat-box"><div class="stat-value" id="stat-session-count">0</div><div class="stat-label">Total Sessions</div></div>
       </div>
       <div class="bar-chart" id="week-chart"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Last 30 Days</div>
+      <div class="bar-chart" id="month-chart"></div>
     </div>
   </div>
 
