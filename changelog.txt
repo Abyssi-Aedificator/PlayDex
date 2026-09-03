@@ -3,8 +3,8 @@ PlayDex - Changelog
 
 Version 1.0.6
 -------------------
-- In the combined desktop page, the Stats column now shrinks to give Today and
-  Sessions more room.
+- In the combined desktop page, the Stats column is narrower so Today and
+  Sessions get more room.
 
 Version 1.0.5
 -------------------
