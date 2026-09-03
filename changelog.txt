@@ -1,6 +1,11 @@
 PlayDex - Changelog
 ====================
 
+Version 1.0.6
+-------------------
+- In the combined desktop page, the Stats column now shrinks to give Today and
+  Sessions more room.
+
 Version 1.0.5
 -------------------
 - The theme colour (accent) is now a device-local preference and is no longer
