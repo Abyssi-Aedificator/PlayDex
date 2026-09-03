@@ -1480,6 +1480,21 @@
     .active-session .elapsed { font-size: 3rem; }
     .bar-chart { gap: 12px; }
     .bar-track { height: 160px; }
+
+    /* Desktop: merge Today + Sessions into a single two-column page */
+    .app-content.merged {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+      max-width: 1000px;
+    }
+    .app-content.merged #tab-today,
+    .app-content.merged #tab-sessions {
+      display: block;
+      margin-bottom: 0;
+    }
+    .tab-bar .tab-btn[data-tab="sessions"] { display: none; }
   }
 
   /* Reduced motion */
@@ -1498,7 +1513,7 @@
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.0.3</span>
+    <span class="version-badge">1.0.4</span>
   </div>
 </header>
 
@@ -2440,6 +2455,7 @@
       currentTab = btn.dataset.tab;
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + currentTab));
+      document.querySelector('.app-content').classList.toggle('merged', currentTab === 'today');
       render();
     });
   });
@@ -3553,6 +3569,7 @@
 
   // --- Initial render ---
   applyTheme();
+  document.querySelector('.app-content').classList.toggle('merged', currentTab === 'today');
   updateDropboxUI();
   dropboxHandleRedirect().then(() => {
     render();
@@ -3595,7 +3612,7 @@
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.0.3';
+    const APP_VERSION = '1.0.4';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

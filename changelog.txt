@@ -1,6 +1,12 @@
 PlayDex - Changelog
 ====================
 
+Version 1.0.4
+-------------------
+- On wider screens, the Today and Sessions tabs are combined into a single
+  page: today's overview sits on the left and the session list on the right,
+  with the separate Sessions tab hidden.
+
 Version 1.0.3
 -------------------
 - Added a themed messagebox that notifies you when a new version of PlayDex is
