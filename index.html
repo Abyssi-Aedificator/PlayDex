@@ -1281,6 +1281,10 @@
     font-weight: 600;
   }
 
+  /* Dense 30-day chart: hide per-bar value text so narrow columns stay clean */
+  #month-chart .bar-value { display: none; }
+  #month-chart .bar-label { font-size: 0.6rem; }
+
   /* Game dashboard modal */
   .dash-row {
     display: flex;
@@ -1497,6 +1501,19 @@
     .tab-bar .tab-btn[data-tab="sessions"] { display: none; }
   }
 
+  /* Desktop wide: add Stats as a third column in the merged Today page */
+  @media (min-width: 1100px) {
+    .app-content.merged {
+      grid-template-columns: 1.8fr 1.8fr 1fr;
+      max-width: 1800px;
+    }
+    .app-content.merged #tab-stats {
+      display: block;
+      margin-bottom: 0;
+    }
+    .tab-bar .tab-btn[data-tab="stats"] { display: none; }
+  }
+
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -1513,7 +1530,7 @@
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.0.4</span>
+    <span class="version-badge">1.0.5</span>
   </div>
 </header>
 
@@ -1603,6 +1620,10 @@
         <div class="stat-box"><div class="stat-value" id="stat-session-count">0</div><div class="stat-label">Total Sessions</div></div>
       </div>
       <div class="bar-chart" id="week-chart"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Last 30 Days</div>
+      <div class="bar-chart" id="month-chart"></div>
     </div>
   </div>
 
@@ -2226,7 +2247,8 @@
   if (!dbx) dbx = { appKey: '', accessToken: '', refreshToken: '', expiresAt: 0, account: '', lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, mock: false };
   const dbxSave = () => { try { localStorage.setItem(DBX_KEY, JSON.stringify(dbx)); } catch {} };
   const dbxRedirectUri = () => location.origin + location.pathname;
-  const dbxSnapshot = () => JSON.stringify({ games, sessions, settings });
+  const syncSettings = () => { const s = Object.assign({}, settings); delete s.accent; return s; };
+  const dbxSnapshot = () => JSON.stringify({ games, sessions, settings: syncSettings() });
   let dbxSyncTimer = null, dbxSkipAutoUpload = false, dbxLastUploadedState = '';
   let dbxSyncOps = 0, dbxPendingDownload = null;
 
@@ -2344,7 +2366,7 @@
   async function dropboxUpload(auto) {
     const ok = await dropboxRefreshIfNeeded();
     if (!ok) { toast('\u26A0 Dropbox session expired \u2014 reconnect'); return; }
-    const payload = { app: 'PlayDex', version: 1, exportedAt: new Date().toISOString(), games, sessions, settings };
+    const payload = { app: 'PlayDex', version: 1, exportedAt: new Date().toISOString(), games, sessions, settings: syncSettings() };
     dbxSyncSpinning(true);
     try {
       const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
@@ -2368,7 +2390,9 @@
     }
     games = normalizeGames(parsed.games);
     sessions = parsed.sessions;
-    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system' }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
+    const localAccent = settings.accent;
+    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
+    settings.accent = localAccent;
     saveGames(games);
     saveSessions(sessions);
     saveSettings(settings);
@@ -2760,6 +2784,24 @@
 
   function renderStatsTab() {
     const completed = sessions.filter(s => s.stop !== null);
+
+    // Last 30 days playtime chart
+    const monthDays = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = addDays(todayStr(), -i);
+      monthDays.push({ date: d, ms: totalMsForDate(d) });
+    }
+    const monthMax = Math.max.apply(null, monthDays.map(d => d.ms));
+    const monthChart = document.getElementById('month-chart');
+    if (monthChart) {
+      monthChart.innerHTML = monthDays.map((d) => {
+        const pct = monthMax > 0 ? Math.round(d.ms / monthMax * 100) : 0;
+        return '<div class="bar-col">' +
+          '<div class="bar-track"><div class="bar" style="height:' + (d.ms > 0 ? Math.max(pct, 3) : 0) + '%"></div></div>' +
+          '<span class="bar-label">' + new Date(d.date + 'T00:00:00').getDate() + '</span>' +
+        '</div>';
+      }).join('');
+    }
 
     // This week = last 7 days
     const days = [];
@@ -3264,7 +3306,7 @@
     amBtn.classList.add('on');
     el.querySelector('.cal-trigger').addEventListener('click', e => { e.stopPropagation(); open(); });
     hhInput.addEventListener('input', () => { sanitize(hhInput); if (hhInput.value.length >= 2) mmInput.focus(); });
-    mmInput.addEventListener('input', () => { sanitize(mmInput); commit(false); });
+    mmInput.addEventListener('input', () => { sanitize(mmInput); });
     hhInput.addEventListener('blur', e => { if (!el.contains(e.relatedTarget)) commit(false); });
     mmInput.addEventListener('blur', e => { if (!el.contains(e.relatedTarget)) commit(false); });
     amBtn.addEventListener('click', e => { e.stopPropagation(); amBtn.classList.add('on'); pmBtn.classList.remove('on'); commit(false); });
@@ -3612,7 +3654,7 @@
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.0.4';
+    const APP_VERSION = '1.0.5';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

@@ -1,6 +1,19 @@
 PlayDex - Changelog
 ====================
 
+Version 1.0.5
+-------------------
+- The theme colour (accent) is now a device-local preference and is no longer
+  synced or overwritten through Dropbox.
+- Fixed editing session times so you can enter minutes (for example :05 or
+  :35) without an extra 0 being appended or the field clearing.
+- Added a "Last 30 Days" playtime graph at the top of the Stats tab, showing
+  one bar per day for the past month.
+- On wide PC screens the Stats tab is shown as a third column in the combined
+  Today page, next to Sessions.
+- Widened the combined desktop page further and gave Today and Sessions more
+  room than Stats.
+
 Version 1.0.4
 -------------------
 - On wider screens, the Today and Sessions tabs are combined into a single
