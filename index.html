@@ -431,6 +431,7 @@
 
   .breakdown-item:first-child { border-top: none; }
   .breakdown-game { color: var(--text); font-weight: 500; }
+  .breakdown-game.has-unsynced { color: var(--red); font-weight: 700; }
   .breakdown-time { color: var(--text2); font-variant-numeric: tabular-nums; }
   .breakdown-count { font-size: 0.7rem; color: var(--text3); }
 
@@ -2801,7 +2802,7 @@
       breakdown.innerHTML = sorted.map(([name, v], i) =>
         '<li class="breakdown-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<span>' +
-            '<span class="breakdown-game">' + escHtml(name) + '</span>' +
+            '<span class="breakdown-game' + (v.unsyncedMs > 0 ? ' has-unsynced' : '') + '">' + escHtml(name) + '</span>' +
             '<div class="breakdown-count">' + v.count + ' session' + (v.count !== 1 ? 's' : '') + '</div>' +
           '</span>' +
           '<span class="breakdown-time">' + fmtDuration(v.ms) + '</span>' +

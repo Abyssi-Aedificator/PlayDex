@@ -12,6 +12,8 @@ Version 1.0.7
 - Starting a game now scrolls you back to the top so the live timer is in view.
 - On a filtered date, each session now shows that game's total playtime for the
   day in pale accent text next to its own duration.
+- Games with unsynced time now show their name in red in the Playtime by Game
+  list.
 
 Version 1.0.6
 -------------------
