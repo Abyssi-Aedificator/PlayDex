@@ -1,6 +1,11 @@
 PlayDex - Changelog
 ====================
 
+Version 1.0.6
+-------------------
+- In the combined desktop page, Today and Sessions are now slightly wider than
+  the Stats column.
+
 Version 1.0.5
 -------------------
 - The theme colour (accent) is now a device-local preference and is no longer
