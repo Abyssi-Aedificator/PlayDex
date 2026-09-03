@@ -9,6 +9,7 @@ Version 1.0.7
 - The Playtime by Game breakdown is now listed alphabetically too.
 - Today's bar in the Last 7 Days chart now uses the same accent colour as the
   other bars.
+- Starting a game now scrolls you back to the top so the live timer is in view.
 
 Version 1.0.6
 -------------------

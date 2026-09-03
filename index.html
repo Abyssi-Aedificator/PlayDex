@@ -2509,6 +2509,7 @@
     saveSessions(sessions);
     toast('Started: ' + game.name);
     render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // --- Stop session ---
