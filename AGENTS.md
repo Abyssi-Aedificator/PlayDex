@@ -33,6 +33,7 @@ Commit/push only when explicitly asked. Follow existing message style (`git log 
 - **Never include version numbers in commit messages.**
 - **Never bump the version unless explicitly asked.**
 - Version bumps are folded into the commit for the release's last actual change — never a standalone "Bump version" commit. The `changelog.txt` version header and the `.version-badge` span ship in that same commit.
+- **Changelog entries describe user-facing changes only.** Never write a standalone version/cache-bump line in a `changelog.txt` bullet (e.g. "Bumped SW_VERSION/cache to playdex-vX"). Version/cache bumps are implicit in the release commit, not listed as a change.
 
 ## Version representation
 

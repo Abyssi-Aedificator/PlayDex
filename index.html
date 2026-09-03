@@ -1064,6 +1064,21 @@
     box-shadow: 0 6px 16px -8px var(--red);
   }
 
+  .btn-primary {
+    background: var(--accent-gradient);
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 8px 20px -10px rgba(139, 92, 246, 0.5);
+  }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary:active { transform: scale(0.96); }
+
   /* Toast */
   .toast {
     position: fixed;
@@ -1367,6 +1382,32 @@
     box-shadow: var(--shadow-soft);
   }
 
+  /* Accent colour picker */
+  .accent-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .accent-swatch {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, border-color 0.2s;
+  }
+  .accent-swatch:hover { transform: scale(1.1); border-color: var(--text2); }
+  .accent-swatch.active {
+    border-color: var(--text);
+    box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow-soft);
+  }
+  .accent-swatch[data-accent=""] {
+    background-image:
+      linear-gradient(135deg, #8b5cf6 50%, #22d3ee 50%);
+  }
+
   /* Dropbox sync */
   .dbx-status-row {
     display: flex;
@@ -1457,7 +1498,7 @@
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.0.2</span>
+    <span class="version-badge">1.0.3</span>
   </div>
 </header>
 
@@ -1570,6 +1611,18 @@
         <button class="theme-opt" data-theme-opt="system">System</button>
         <button class="theme-opt" data-theme-opt="light">Light</button>
         <button class="theme-opt" data-theme-opt="dark">Dark</button>
+      </div>
+      <div class="card-header" id="accent-header" style="margin-top:18px;">Theme Colour</div>
+      <div class="accent-picker" id="accent-picker">
+        <button class="accent-swatch" data-accent="" title="Default" aria-label="Default colour"></button>
+        <button class="accent-swatch" data-accent="cyanblue" style="background:linear-gradient(135deg,#22d3ee,#3b82f6)" title="Cyan to Blue" aria-label="Cyan to Blue"></button>
+        <button class="accent-swatch" data-accent="greenteal" style="background:linear-gradient(135deg,#10b981,#14b8a6)" title="Green to Teal" aria-label="Green to Teal"></button>
+        <button class="accent-swatch" data-accent="rose" style="background:linear-gradient(135deg,#f43f5e,#ec4899)" title="Rose to Pink" aria-label="Rose to Pink"></button>
+        <button class="accent-swatch" data-accent="sunset" style="background:linear-gradient(135deg,#fb923c,#ef4444)" title="Orange to Red" aria-label="Orange to Red"></button>
+        <button class="accent-swatch" data-accent="pinkviolet" style="background:linear-gradient(135deg,#ec4899,#8b5cf6)" title="Pink to Violet" aria-label="Pink to Violet"></button>
+        <button class="accent-swatch" data-accent="ocean" style="background:linear-gradient(135deg,#3b82f6,#6366f1)" title="Blue to Indigo" aria-label="Blue to Indigo"></button>
+        <button class="accent-swatch" data-accent="violet" style="background:linear-gradient(135deg,#8b5cf6,#a855f7)" title="Violet to Purple" aria-label="Violet to Purple"></button>
+        <button class="accent-swatch" data-accent="gold" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)" title="Gold to Amber" aria-label="Gold to Amber"></button>
       </div>
     </div>
     <div class="card">
@@ -1944,6 +1997,18 @@
   </div>
 </div>
 
+<!-- Update available modal -->
+<div class="modal-overlay" id="update-modal">
+  <div class="modal">
+    <h3>New version available</h3>
+    <p class="modal-subheader">A new version of PlayDex is ready to install. Reload to apply the latest changes.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="update-dismiss">Later</button>
+      <button class="btn-primary" id="update-reload">Reload now</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -1977,8 +2042,8 @@
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system' }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null }; }
   }
 
   function saveSettings(settings) {
@@ -2082,12 +2147,54 @@
     return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   }
 
+  // --- Accent colour ---
+  const ACCENT_PRESETS = {
+    cyanblue:    { c1: '#22d3ee', c2: '#3b82f6' },
+    greenteal:   { c1: '#10b981', c2: '#14b8a6' },
+    rose:        { c1: '#f43f5e', c2: '#ec4899' },
+    sunset:      { c1: '#fb923c', c2: '#ef4444' },
+    pinkviolet:  { c1: '#ec4899', c2: '#8b5cf6' },
+    ocean:       { c1: '#3b82f6', c2: '#6366f1' },
+    violet:      { c1: '#8b5cf6', c2: '#a855f7' },
+    gold:        { c1: '#f59e0b', c2: '#fbbf24' }
+  };
+
+  function hexToRgb(hex) {
+    let h = hex.replace('#', '');
+    if (h.length === 3) h = h.split('').map(c => c + c).join('');
+    const n = parseInt(h, 16);
+    if (isNaN(n) || h.length !== 6) return null;
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  }
+
+  function applyAccent(theme) {
+    const root = document.documentElement;
+    const preset = settings.accent && ACCENT_PRESETS[settings.accent];
+    if (preset) {
+      const rgb = hexToRgb(preset.c1);
+      const alpha = theme === 'light' ? 0.1 : 0.14;
+      root.style.setProperty('--accent', preset.c1);
+      root.style.setProperty('--accent-gradient', 'linear-gradient(135deg,' + preset.c1 + ',' + preset.c2 + ')');
+      root.style.setProperty('--accent-violet', preset.c1);
+      root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha + ')');
+    } else {
+      root.style.removeProperty('--accent');
+      root.style.removeProperty('--accent-gradient');
+      root.style.removeProperty('--accent-violet');
+      root.style.removeProperty('--accent-dim');
+    }
+    document.querySelectorAll('.accent-swatch').forEach(c => {
+      c.classList.toggle('active', (c.dataset.accent || null) === (settings.accent || null));
+    });
+  }
+
   function applyTheme() {
     const theme = resolvedTheme();
     document.documentElement.setAttribute('data-theme', theme);
     document.querySelectorAll('.theme-opt').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.themeOpt === settings.theme);
     });
+    applyAccent(theme);
   }
 
   if (window.matchMedia) {
@@ -3394,6 +3501,15 @@
     });
   });
 
+  // --- Appearance (accent colour) ---
+  document.querySelectorAll('.accent-swatch').forEach(swatch => {
+    swatch.addEventListener('click', () => {
+      settings.accent = swatch.dataset.accent || null;
+      saveSettings(settings);
+      applyTheme();
+    });
+  });
+
   // --- Dropbox controls ---
   document.getElementById('dbxConnectBtn').addEventListener('click', dropboxConnect);
   document.getElementById('dbxUploadBtn').addEventListener('click', () => dropboxUpload(false));
@@ -3476,6 +3592,30 @@
       navigator.serviceWorker.register('sw.js').catch(err => {
         console.warn('Service worker registration failed:', err);
       });
+    });
+
+    // --- New version notification ---
+    const APP_VERSION = '1.0.3';
+    const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
+    let wasControlled = !!navigator.serviceWorker.controller;
+    const updateModal = () => document.getElementById('update-modal');
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      // controllerchange fires when a new worker takes over after skipWaiting().
+      // Only notify if an update actually happened (there was a prior controller)
+      // and the user hasn't already dismissed this version.
+      if (wasControlled && !localStorage.getItem(dismissedKey)) {
+        updateModal().classList.add('open');
+      }
+      wasControlled = true;
+    });
+
+    document.getElementById('update-dismiss').addEventListener('click', () => {
+      localStorage.setItem(dismissedKey, '1');
+      updateModal().classList.remove('open');
+    });
+    document.getElementById('update-reload').addEventListener('click', () => {
+      location.reload();
     });
   }
 })();
