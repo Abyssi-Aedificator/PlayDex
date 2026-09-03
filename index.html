@@ -863,6 +863,17 @@
     flex-shrink: 0;
   }
 
+  .session-day-total {
+    color: var(--accent);
+    opacity: 0.6;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 12px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
   .session-delete {
     background: none;
     border: none;
@@ -2711,6 +2722,13 @@
 
     filtered.sort((a,b) => new Date(b.start) - new Date(a.start));
 
+    const dayTotals = {};
+    sessions.forEach(s => {
+      if (s.stop === null) return;
+      const key = s.gameId + '|' + dateKey(s.start);
+      dayTotals[key] = (dayTotals[key] || 0) + (s.durationMs || 0);
+    });
+
     if (filtered.length === 0) {
       container.innerHTML =
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>' +
@@ -2722,6 +2740,7 @@
             '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
             '<div class="session-times">' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
+          (filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : '') +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + '</span>' +
           '<button class="session-edit" data-id="' + s.id + '" title="Edit session">Edit</button>' +
           '<button class="session-sync' + (s.synced ? ' on' : '') + '" data-id="' + s.id + '" title="Mark as sync">Sync</button>' +

@@ -10,6 +10,8 @@ Version 1.0.7
 - Today's bar in the Last 7 Days chart now uses the same accent colour as the
   other bars.
 - Starting a game now scrolls you back to the top so the live timer is in view.
+- On a filtered date, each session now shows that game's total playtime for the
+  day in pale accent text next to its own duration.
 
 Version 1.0.6
 -------------------
