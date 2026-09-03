@@ -431,6 +431,7 @@
 
   .breakdown-item:first-child { border-top: none; }
   .breakdown-game { color: var(--text); font-weight: 500; }
+  .breakdown-game.has-unsynced { color: var(--red); font-weight: 700; }
   .breakdown-time { color: var(--text2); font-variant-numeric: tabular-nums; }
   .breakdown-count { font-size: 0.7rem; color: var(--text3); }
 
@@ -863,6 +864,17 @@
     flex-shrink: 0;
   }
 
+  .session-day-total {
+    color: var(--accent);
+    opacity: 0.6;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 12px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
   .session-delete {
     background: none;
     border: none;
@@ -1268,8 +1280,6 @@
     transition: height 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
   }
 
-  .bar.today { background: linear-gradient(180deg, var(--green), rgba(52, 211, 153, 0.55)); }
-
   .bar-value {
     font-size: 0.65rem;
     color: var(--text2);
@@ -1538,7 +1548,7 @@
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.0.6</span>
+    <span class="version-badge">1.0.7</span>
   </div>
 </header>
 
@@ -2511,6 +2521,7 @@
     saveSessions(sessions);
     toast('Started: ' + game.name);
     render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // --- Stop session ---
@@ -2672,13 +2683,23 @@
       '<li class="breakdown-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms"><span class="breakdown-game">' + escHtml(name) + '</span><span class="breakdown-time">' + fmtDuration(ms) + '</span></li>'
     ).join('');
 
-    // Start game buttons
+    // Start game buttons, most recently used first (never-played games last)
     const container = document.getElementById('start-game-buttons');
     const activeGames = games.filter(g => !g.archived);
+    const lastUsed = new Map();
+    sessions.forEach(s => {
+      const t = new Date(s.start).getTime();
+      if (!lastUsed.has(s.gameId) || t > lastUsed.get(s.gameId)) lastUsed.set(s.gameId, t);
+    });
+    const sortedGames = activeGames.slice().sort((a, b) => {
+      const la = lastUsed.has(a.id) ? lastUsed.get(a.id) : -1;
+      const lb = lastUsed.has(b.id) ? lastUsed.get(b.id) : -1;
+      return lb - la;
+    });
     if (activeGames.length === 0) {
       container.innerHTML = '<div class="no-games-hint">No games yet. Add one below.</div>';
     } else {
-      container.innerHTML = activeGames.map((g, i) =>
+      container.innerHTML = sortedGames.map((g, i) =>
         '<button class="btn btn-start-game fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms" data-game-id="' + g.id + '">' +
         '<span>' + escHtml(g.name) + '</span>' +
         '<span class="play-icon">&#9654;</span>' +
@@ -2702,6 +2723,13 @@
 
     filtered.sort((a,b) => new Date(b.start) - new Date(a.start));
 
+    const dayTotals = {};
+    sessions.forEach(s => {
+      if (s.stop === null) return;
+      const key = s.gameId + '|' + dateKey(s.start);
+      dayTotals[key] = (dayTotals[key] || 0) + (s.durationMs || 0);
+    });
+
     if (filtered.length === 0) {
       container.innerHTML =
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>' +
@@ -2713,6 +2741,7 @@
             '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
             '<div class="session-times">' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
+          (filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : '') +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + '</span>' +
           '<button class="session-edit" data-id="' + s.id + '" title="Edit session">Edit</button>' +
           '<button class="session-sync' + (s.synced ? ' on' : '') + '" data-id="' + s.id + '" title="Mark as sync">Sync</button>' +
@@ -2765,7 +2794,7 @@
     });
 
     const breakdown = document.getElementById('sessions-breakdown');
-    const sorted = Object.entries(byGame).sort((a,b) => b[1].ms - a[1].ms);
+    const sorted = Object.entries(byGame).sort((a,b) => a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }));
 
     if (sorted.length === 0) {
       breakdown.innerHTML = '<li class="breakdown-item"><span class="breakdown-game" style="color:var(--text3)">No sessions</span></li>';
@@ -2773,7 +2802,7 @@
       breakdown.innerHTML = sorted.map(([name, v], i) =>
         '<li class="breakdown-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<span>' +
-            '<span class="breakdown-game">' + escHtml(name) + '</span>' +
+            '<span class="breakdown-game' + (v.unsyncedMs > 0 ? ' has-unsynced' : '') + '">' + escHtml(name) + '</span>' +
             '<div class="breakdown-count">' + v.count + ' session' + (v.count !== 1 ? 's' : '') + '</div>' +
           '</span>' +
           '<span class="breakdown-time">' + fmtDuration(v.ms) + '</span>' +
@@ -2854,8 +2883,9 @@
 
   function renderGamesTab() {
     const container = document.getElementById('games-list');
-    const active = games.filter(g => !g.archived);
-    const archived = games.filter(g => g.archived);
+    const nameSort = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+    const active = games.filter(g => !g.archived).sort(nameSort);
+    const archived = games.filter(g => g.archived).sort(nameSort);
 
     if (games.length === 0) {
       container.innerHTML =
@@ -3662,7 +3692,7 @@
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.0.6';
+    const APP_VERSION = '1.0.7';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

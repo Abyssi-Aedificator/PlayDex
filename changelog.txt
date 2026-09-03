@@ -1,6 +1,20 @@
 PlayDex - Changelog
 ====================
 
+Version 1.0.7
+-------------------
+- The Start a Game list on the Today page now shows your most recently played
+  games first.
+- The Games tab now lists your games alphabetically.
+- The Playtime by Game breakdown is now listed alphabetically too.
+- Today's bar in the Last 7 Days chart now uses the same accent colour as the
+  other bars.
+- Starting a game now scrolls you back to the top so the live timer is in view.
+- On a filtered date, each session now shows that game's total playtime for the
+  day in pale accent text next to its own duration.
+- Games with unsynced time now show their name in red in the Playtime by Game
+  list.
+
 Version 1.0.6
 -------------------
 - In the combined desktop page, Today and Sessions are now slightly wider than
