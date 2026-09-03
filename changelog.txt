@@ -6,6 +6,7 @@ Version 1.0.7
 - The Start a Game list on the Today page now shows your most recently played
   games first.
 - The Games tab now lists your games alphabetically.
+- Today's bar in the Last 7 Days chart now follows your chosen accent colour.
 
 Version 1.0.6
 -------------------
