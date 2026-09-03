@@ -1,13 +1,21 @@
 PlayDex - Changelog
 ====================
 
-v1.0.2 (2026-09-02)
+Version 1.0.3
 -------------------
-- Updated SW_VERSION and bumped the service worker cache to playdex-v3 so the
-  corrected, origin-safe worker (from v1.0.1) is reliably installed and the
-  stale cross-app worker is replaced.
+- Added a themed messagebox that notifies you when a new version of PlayDex is
+  available and ready to install, with a "Reload now" action. The prompt shows
+  once per version (dismissed reminders are remembered).
+- Added a Theme Colour picker in Settings > Appearance so you can change the
+  app's accent colour, with a set of preset swatches. The
+  accent is applied instantly across buttons, tabs, calendar and highlights.
 
-v1.0.1 (2026-09-02)
+Version 1.0.2
+-------------------
+- Fixed the install of the corrected, origin-safe service worker so the stale
+  cross-app worker (from earlier builds) is reliably replaced.
+
+Version 1.0.1
 -------------------
 ### PWA / install
 - Added full PWA support: web app manifest (manifest.webmanifest), service worker (sw.js)
@@ -18,7 +26,7 @@ v1.0.1 (2026-09-02)
   with other apps (e.g. MedsADay) installed on the same GitHub Pages origin.
 - Fixed the service worker so it only manages PlayDex's own caches (never deletes
   other apps' caches) and no longer claims the whole origin with clients.claim().
-- Bumped the service worker cache to playdex-v2 to force the corrected worker to install.
+- Made the corrected, origin-scoped service worker install reliably across existing installs.
 
 ### Time picker
 - Replaced the native time inputs in the Add/Edit Session modals with a themed
@@ -30,7 +38,7 @@ v1.0.1 (2026-09-02)
 - Stopped the whole list from re-animating when a session is marked as Synced or Deleted.
 - Removed the "Quick add game" field from the main page.
 
-v1.0.0 (2026-08)
+Version 1.0.0
 ----------------
 - Initial release.
 - Track game sessions with live elapsed time and start/stop control.
