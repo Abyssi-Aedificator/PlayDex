@@ -4,6 +4,7 @@ PlayDex - Changelog
 Version 1.1.1
 -------------------
 - The live session timer can now be paused and resumed.
+- Completed sessions can be exported to CSV from Settings.
 - The live timer card now shows the session start time and the current time in
   24-hour format beside the running elapsed time.
 

@@ -1862,11 +1862,12 @@
     </div>
     <div class="card">
       <div class="card-header">Backup</div>
-      <p class="modal-subheader" style="margin:0 0 10px;">Export your games and sessions as a JSON file, or restore from a backup.</p>
+      <p class="modal-subheader" style="margin:0 0 10px;">Export your games and sessions as a JSON file or CSV, or restore from a backup.</p>
       <div class="backup-actions">
         <button class="btn btn-start" id="btn-export" style="flex:1;padding:10px 14px;font-size:0.8rem;">Export</button>
         <button class="btn-ghost" id="btn-import" style="flex:1;padding:10px 14px;font-size:0.8rem;">Import</button>
       </div>
+      <button class="btn-ghost" id="btn-export-csv" style="width:100%;margin-top:8px;padding:10px 14px;font-size:0.8rem;">Export Sessions as CSV</button>
       <input type="file" id="import-file" accept=".json,application/json" style="display:none">
       <div class="backup-hint">Data is stored locally in your browser. Export regularly to back it up or move it to another device.</div>
     </div>
@@ -3724,6 +3725,17 @@
   });
 
   // --- Export / Import ---
+  function triggerDownload(filename, blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
   document.getElementById('btn-export').addEventListener('click', () => {
     const data = {
       app: 'PlayDex',
@@ -3733,16 +3745,27 @@
       sessions: sessions,
       settings: settings
     };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'playdex-backup-' + todayStr() + '.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    triggerDownload('playdex-backup-' + todayStr() + '.json', new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
     toast('Backup exported');
+  });
+
+  document.getElementById('btn-export-csv').addEventListener('click', () => {
+    const rows = sessions.filter(s => s.stop !== null).sort((a, b) => new Date(b.start) - new Date(a.start));
+    const esc = v => '"' + String(v).split('"').join('""') + '"';
+    const csv = '\uFEFF' + [
+      ['Date', 'Start', 'End', 'Game', 'Duration', 'Minutes', 'Synced'],
+      ...rows.map(s => [
+        fmtDate(s.start),
+        fmtTime(s.start),
+        s.stop ? fmtTime(s.stop) : '',
+        s.gameName,
+        fmtDuration(s.durationMs),
+        Math.round((s.durationMs || 0) / 60000),
+        s.synced ? 'yes' : 'no'
+      ])
+    ].map(r => r.map(esc).join(',')).join('\r\n');
+    triggerDownload('playdex-sessions-' + todayStr() + '.csv', new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    toast('CSV exported');
   });
 
   document.getElementById('btn-import').addEventListener('click', () => {
