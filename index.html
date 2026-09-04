@@ -393,17 +393,27 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: end;
-    gap: 14px;
+    gap: 22px;
     margin-bottom: 14px;
   }
   .active-session-clock .clock-side {
-    font-size: 1rem;
-    opacity: 0.55;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-bottom: 6px;
     color: var(--accent);
-    padding-bottom: 10px;
   }
-  .active-session-clock #active-start { text-align: right; }
-  .active-session-clock #active-current { text-align: left; }
+  .active-session-clock .clock-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    opacity: 0.5;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .active-session-clock #active-start { font-size: 1rem; opacity: 0.55; }
+  .active-session-clock #active-current { font-size: 1rem; opacity: 0.55; }
+  .active-session-clock .side-start { align-items: flex-end; }
+  .active-session-clock .side-current { align-items: flex-start; }
 
   /* Buttons */
   .btn {
@@ -1670,9 +1680,15 @@
       <div class="live-label"><span class="live-dot"></span> LIVE</div>
       <div class="game-name" id="active-game-name"></div>
       <div class="active-session-clock">
-        <span class="clock-side" id="active-start"></span>
+        <div class="clock-side side-start">
+          <span class="clock-label">Start Time</span>
+          <span id="active-start">--:--</span>
+        </div>
         <span class="elapsed" id="active-elapsed">0:00:00</span>
-        <span class="clock-side" id="active-current"></span>
+        <div class="clock-side side-current">
+          <span class="clock-label">Current Time</span>
+          <span id="active-current">--:--</span>
+        </div>
       </div>
       <button class="btn btn-stop" id="btn-stop">Stop Session</button>
     </div>
