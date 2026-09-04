@@ -2721,6 +2721,7 @@
     activeSession.stop = now.toISOString();
     activeSession.durationMs = nowMs - new Date(activeSession.start).getTime() - totalPausedMs(activeSession, nowMs);
     if (activeSession.pausedAt) {
+      activeSession.pauses = activeSession.pauses || [];
       activeSession.pauses.push({ from: activeSession.pausedAt, to: now.toISOString() });
       activeSession.pausedAt = null;
     }
@@ -2744,6 +2745,7 @@
 
   function togglePause() {
     if (!activeSession) return;
+    activeSession.pauses = activeSession.pauses || [];
     if (activeSession.pausedAt) {
       activeSession.pauses.push({ from: activeSession.pausedAt, to: new Date().toISOString() });
       activeSession.pausedAt = null;
