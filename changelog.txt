@@ -1,6 +1,11 @@
 PlayDex - Changelog
 ====================
 
+Version 1.1.1
+-------------------
+- The live timer card now shows the session start time and the current time in
+  24-hour format beside the running elapsed time.
+
 Version 1.1.0
 -------------------
 - Added full PWA support (manifest, service worker, installable icons) with an
