@@ -435,6 +435,17 @@
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .btn-stop { background: var(--red); color: #fff; box-shadow: 0 6px 16px -8px var(--red); }
+  .active-session-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .btn-pause {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-pause:hover { border-color: var(--accent); color: var(--accent); }
+  .active-session.paused .live-dot { animation: none; opacity: 0.35; }
   .btn-start {
     background: var(--accent-gradient);
     color: #fff;
@@ -1676,7 +1687,7 @@
   <!-- TODAY TAB -->
   <div id="tab-today" class="tab-panel active">
     <div id="active-session-card" class="card active-session" style="display:none">
-      <div class="live-label"><span class="live-dot"></span> LIVE</div>
+      <div class="live-label"><span class="live-dot"></span> <span id="live-text">LIVE</span></div>
       <div class="game-name" id="active-game-name"></div>
       <div class="active-session-clock">
         <div class="clock-side side-start">
@@ -1689,7 +1700,10 @@
           <span id="active-current">--:--</span>
         </div>
       </div>
-      <button class="btn btn-stop" id="btn-stop">Stop Session</button>
+      <div class="active-session-actions">
+        <button class="btn btn-pause" id="btn-pause" style="flex:1">Pause</button>
+        <button class="btn btn-stop" id="btn-stop" style="flex:1">Stop Session</button>
+      </div>
     </div>
 
     <div class="card">
@@ -2686,7 +2700,9 @@
       start: new Date().toISOString(),
       stop: null,
       durationMs: null,
-      synced: false
+      synced: false,
+      pauses: [],
+      pausedAt: null
     };
     sessions.push(session);
     activeSession = session;
@@ -2700,12 +2716,51 @@
   function stopSession() {
     if (!activeSession) return;
     const now = new Date();
+    const nowMs = now.getTime();
     activeSession.stop = now.toISOString();
-    activeSession.durationMs = now.getTime() - new Date(activeSession.start).getTime();
+    activeSession.durationMs = nowMs - new Date(activeSession.start).getTime() - totalPausedMs(activeSession, nowMs);
+    if (activeSession.pausedAt) {
+      activeSession.pauses.push({ from: activeSession.pausedAt, to: now.toISOString() });
+      activeSession.pausedAt = null;
+    }
     saveSessions(sessions);
     activeSession = null;
     toast('Session saved');
     render();
+  }
+
+  // --- Pause helpers ---
+  function totalPausedMs(s, nowMs) {
+    let ms = (s.pauses || []).reduce((a, p) => a + (new Date(p.to) - new Date(p.from)), 0);
+    if (s.pausedAt) ms += nowMs - new Date(s.pausedAt).getTime();
+    return ms;
+  }
+
+  function activeElapsedMs(s, nowMs) {
+    const end = s.pausedAt ? new Date(s.pausedAt).getTime() : nowMs;
+    return end - new Date(s.start).getTime() - totalPausedMs(s, end);
+  }
+
+  function togglePause() {
+    if (!activeSession) return;
+    if (activeSession.pausedAt) {
+      activeSession.pauses.push({ from: activeSession.pausedAt, to: new Date().toISOString() });
+      activeSession.pausedAt = null;
+      toast('Resumed');
+    } else {
+      activeSession.pausedAt = new Date().toISOString();
+      toast('Paused');
+    }
+    saveSessions(sessions);
+    updateLiveCardPauseState();
+  }
+
+  function updateLiveCardPauseState() {
+    const paused = !!activeSession && !!activeSession.pausedAt;
+    const card = document.getElementById('active-session-card');
+    card.classList.toggle('paused', paused);
+    document.getElementById('btn-pause').textContent = paused ? 'Resume' : 'Pause';
+    document.getElementById('live-text').textContent = paused ? 'PAUSED' : 'LIVE';
   }
 
   // --- Render ---
@@ -2813,6 +2868,7 @@
     if (isActive) {
       document.getElementById('active-game-name').textContent = activeSession.gameName;
       document.getElementById('active-start').textContent = fmtTime(activeSession.start);
+      updateLiveCardPauseState();
     }
 
     if (isActive === wasActive || animating) {
@@ -3255,6 +3311,7 @@
 
   // --- Stop button ---
   document.getElementById('btn-stop').addEventListener('click', stopSession);
+  document.getElementById('btn-pause').addEventListener('click', togglePause);
 
   // --- Filter date ---
   const filterDateField = createCalField('filter-date', v => {
@@ -3747,7 +3804,7 @@
   // --- Live timer ---
   function updateTimer() {
     if (activeSession) {
-      const elapsed = Date.now() - new Date(activeSession.start).getTime();
+      const elapsed = activeElapsedMs(activeSession, Date.now());
       const el = document.getElementById('active-elapsed');
       el.textContent = fmtDuration(elapsed);
       const sec = Math.floor(elapsed / 1000);
