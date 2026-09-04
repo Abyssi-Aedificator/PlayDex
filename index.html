@@ -1024,7 +1024,32 @@
   .game-item-count {
     font-size: 0.75rem;
     color: var(--text2);
+  }
+
+  .game-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
     margin-top: 2px;
+    min-width: 0;
+  }
+
+  .game-item-meta:empty { margin-top: 0; }
+
+  .game-item-last {
+    font-size: 0.75rem;
+    color: var(--text3);
+  }
+
+  .game-item-freq {
+    font-size: 0.7rem;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    padding: 1px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
   }
 
   .game-item-actions {
@@ -3122,6 +3147,30 @@
     const active = games.filter(g => !g.archived).sort(nameSort);
     const archived = games.filter(g => g.archived).sort(nameSort);
 
+    const gs = {};
+    sessions.forEach(s => {
+      if (s.stop === null) return;
+      const e = (gs[s.gameId] = gs[s.gameId] || { count: 0, first: Infinity, last: 0 });
+      e.count++;
+      const t = new Date(s.start).getTime();
+      if (t < e.first) e.first = t;
+      if (t > e.last) e.last = t;
+    });
+
+    const gameMeta = (count, e) => {
+      let last = '', perWeek = '';
+      if (e.count > 0) {
+        last = 'Last played ' + fmtDate(new Date(e.last).toISOString());
+        const spanWks = (e.last - e.first) / 604800000;
+        if (spanWks >= 1) perWeek = (e.count / spanWks).toFixed(1) + '/wk';
+      }
+      return '<div class="game-item-meta">' +
+        '<span class="game-item-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</span>' +
+        (last ? '<span class="game-item-last">' + last + '</span>' : '') +
+        (perWeek ? '<span class="game-item-freq">' + perWeek + '</span>' : '') +
+      '</div>';
+    };
+
     if (games.length === 0) {
       container.innerHTML =
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyGames') + '</span>No games added yet.</div>';
@@ -3135,10 +3184,11 @@
     } else {
       html += active.map((g, i) => {
         const count = sessions.filter(s => s.gameId === g.id).length;
+        const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info">' +
             '<div class="game-item-name">' + escHtml(g.name) + '</div>' +
-            '<div class="game-item-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</div>' +
+            gameMeta(count, e) +
           '</div>' +
           '<div class="game-item-actions">' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
@@ -3154,10 +3204,11 @@
       html += '<div class="archive-section-label">Archived</div>';
       html += archived.map((g, i) => {
         const count = sessions.filter(s => s.gameId === g.id).length;
+        const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info">' +
             '<div class="game-item-name">' + escHtml(g.name) + '</div>' +
-            '<div class="game-item-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</div>' +
+            gameMeta(count, e) +
           '</div>' +
           '<div class="game-item-actions">' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +

@@ -7,6 +7,8 @@ Version 1.1.1
 - Completed sessions can be exported to CSV from Settings.
 - The live timer card now shows the session start time and the current time in
   24-hour format beside the running elapsed time.
+- The Games list now shows when each game was last played and how often you play
+  it.
 
 Version 1.1.0
 -------------------
