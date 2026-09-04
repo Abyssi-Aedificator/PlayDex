@@ -37,10 +37,28 @@ Commit/push only when explicitly asked. Follow existing message style (`git log 
 
 ## Version representation
 
-- There is **no `APP_VERSION` constant** in `index.html`.
+- `APP_VERSION` constant in `index.html` (~line 3695), used by the new-version prompt.
 - Displayed version: the `.version-badge` span in `index.html` (~line 1460).
 - Service worker version: `SW_VERSION` constant in `sw.js` (~line 2) — also used in the `playdex-vX` cache name.
-- Keep the badge and `SW_VERSION`/cache name in sync whenever version changes.
+- Keep the badge, `APP_VERSION`, and `SW_VERSION`/cache name in sync whenever version changes.
+
+## Version consolidation
+
+- Consolidation is a routine the user triggers explicitly, phrased like
+  "consolidate version from X to Y" (e.g. 1.0.1 to 1.0.8).
+- The user supplies BOTH the start/end range AND the target consolidated
+  version (e.g. 1.1.0) AND the new cache name (e.g. `playdex-vX`). Follow
+  those exactly; never derive or invent them.
+- Collapse every changelog entry whose version falls within and includes the
+  start/end range into ONE new block at the top under the consolidated version,
+  combining their user-facing bullets. Dedupe near-duplicates; keep entries
+  user-facing; preserve ~oldest-to-newest feature order.
+- Versions below the start of the range remain as their own entries, unchanged.
+- Update ALL version markers to the consolidated version and new cache name:
+  `.version-badge`, `APP_VERSION`, `SW_VERSION`, and `CACHE_NAME`.
+- This is a version/cache operation only — no feature behavior changes.
+- No standalone "bumped cache/version to playdex-vX" bullet; changelog entries
+  stay user-facing only.
 
 ## Workflow
 

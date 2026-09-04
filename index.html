@@ -153,6 +153,41 @@
     transform: translateY(1px);
   }
 
+  .sync-btn {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    position: relative;
+  }
+  .sync-btn:hover { background: var(--surface3); color: var(--accent); }
+  .sync-ico { transform-origin: 50% 50%; }
+  .sync-btn.syncing .sync-ico { animation: dbxPrefSpin 0.9s linear infinite; }
+  .sync-btn.dirty::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim), 0 0 10px var(--accent);
+    animation: dirtyPulse 2.2s ease-in-out infinite;
+  }
+  @keyframes dirtyPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } }
+  @keyframes dbxPrefSpin { to { transform: rotate(360deg); } }
+
   .app-content {
     flex: 1;
     overflow-y: auto;
@@ -1116,6 +1151,63 @@
 
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* Pending-sync banner */
+  .dbx-banner {
+    position: fixed;
+    bottom: 128px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 400;
+    box-shadow: var(--shadow);
+  }
+  .dbx-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .dbx-banner-dot {
+    flex-shrink: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim), 0 0 10px var(--accent);
+    animation: dirtyPulse 2.2s ease-in-out infinite;
+  }
+  .banner-action {
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .dbx-banner-x {
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 1rem;
+    line-height: 1;
+    padding: 2px 6px;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  .dbx-banner-x:hover { color: var(--text); background: var(--surface3); }
+
   /* Session edit button */
   .session-edit {
     background: none;
@@ -1548,8 +1640,12 @@
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.0.7</span>
+    <span class="version-badge">1.1.0</span>
   </div>
+  <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
+    <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
+    <span>Sync</span>
+  </button>
 </header>
 
 <div class="app-content">
@@ -1703,6 +1799,10 @@
           <label class="dbx-toggle">
             <input type="checkbox" id="dbxAutoSync">
             <span class="dbx-toggle-label">Auto-sync newer backups when the app opens</span>
+          </label>
+          <label class="dbx-toggle">
+            <input type="checkbox" id="dbxHideBanner">
+            <span class="dbx-toggle-label">Hide the sync reminder banner</span>
           </label>
         </div>
         <div class="dbx-actions">
@@ -2063,6 +2163,13 @@
   </div>
 </div>
 
+<div class="dbx-banner" id="dbx-banner" role="status">
+  <span class="dbx-banner-dot"></span>
+  <span>Unsaved backup &mdash; sync now to keep it safe</span>
+  <button type="button" class="banner-action" id="dbx-banner-sync">Sync now</button>
+  <button type="button" class="dbx-banner-x" id="dbx-banner-close" aria-label="Dismiss">&times;</button>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -2102,6 +2209,7 @@
 
   function saveSettings(settings) {
     localStorage.setItem(KEYS.settings, JSON.stringify(settings));
+    scheduleAutoUpload();
   }
 
   function uid() {
@@ -2262,18 +2370,32 @@
   const DBX_PATH = '/playdex-backup.json';
   let dbx;
   try { dbx = JSON.parse(localStorage.getItem(DBX_KEY) || 'null'); } catch {}
-  if (!dbx) dbx = { appKey: '', accessToken: '', refreshToken: '', expiresAt: 0, account: '', lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, mock: false };
+  if (!dbx) dbx = { appKey: '', accessToken: '', refreshToken: '', expiresAt: 0, account: '', lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, hideSyncBanner: false, mock: false };
   const dbxSave = () => { try { localStorage.setItem(DBX_KEY, JSON.stringify(dbx)); } catch {} };
   const dbxRedirectUri = () => location.origin + location.pathname;
   const syncSettings = () => { const s = Object.assign({}, settings); delete s.accent; return s; };
   const dbxSnapshot = () => JSON.stringify({ games, sessions, settings: syncSettings() });
   let dbxSyncTimer = null, dbxSkipAutoUpload = false, dbxLastUploadedState = '';
+  let dbxDirty = false, dbxBannerDismissed = false;
   let dbxSyncOps = 0, dbxPendingDownload = null;
+
+  const isDbxDirty = () => !!dbx.accessToken && dbxDirty;
+
+  function dbxRefreshIndicators() {
+    const btn = document.getElementById('sync-btn');
+    const conn = !!dbx.accessToken;
+    if (btn) btn.style.display = conn ? '' : 'none';
+    if (btn) btn.classList.toggle('dirty', isDbxDirty());
+    const banner = document.getElementById('dbx-banner');
+    if (!banner) return;
+    banner.classList.toggle('show', isDbxDirty() && !dbxBannerDismissed && !dbx.hideSyncBanner);
+    if (!isDbxDirty() && dbxBannerDismissed) dbxBannerDismissed = false;
+  }
 
   function dbxSyncSpinning(on) {
     dbxSyncOps += on ? 1 : -1;
     const syncing = dbxSyncOps > 0;
-    document.querySelectorAll('#dbxUploadBtn, #dbxDownloadBtn').forEach(b => b.classList.toggle('syncing', syncing));
+    document.querySelectorAll('#dbxUploadBtn, #dbxDownloadBtn, #sync-btn').forEach(b => b.classList.toggle('syncing', syncing));
   }
 
   function b64url(buf) {
@@ -2296,9 +2418,12 @@
       document.getElementById('dbxLastSync').textContent = dbx.lastSync ? 'Last synced ' + dbx.lastSync : 'Never synced';
       document.getElementById('dbxAutoUpload').checked = !!dbx.autoUpload;
       document.getElementById('dbxAutoSync').checked = !!dbx.autoSync;
+      const hideEl = document.getElementById('dbxHideBanner');
+      if (hideEl) hideEl.checked = !!dbx.hideSyncBanner;
       const status = document.getElementById('dbxStatus');
       status.innerHTML = iconSvg('dbx') + ' Connected';
     }
+    dbxRefreshIndicators();
   }
 
   async function dropboxConnect() {
@@ -2308,7 +2433,7 @@
       dbx = {
         appKey: key, accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token',
         expiresAt: Date.now() + 365 * 24 * 60 * 60 * 1000, account: 'demo@example.com',
-        lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, mock: true
+        lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, hideSyncBanner: false, mock: true
       };
       dbxSave(); updateDropboxUI();
       toast('Mock Dropbox connected \u2014 demo mode only');
@@ -2377,8 +2502,11 @@
     dbx.lastSync = new Date().toLocaleString();
     dbx.lastSyncAt = Date.now();
     dbx.dismissedRemoteAt = 0;
+    dbxDirty = false;
+    dbxBannerDismissed = false;
     dbxSave();
     updateDropboxUI();
+    dbxRefreshIndicators();
   }
 
   async function dropboxUpload(auto) {
@@ -2419,6 +2547,9 @@
     render();
     dbxSkipAutoUpload = true;
     try { dbxLastUploadedState = dbxSnapshot(); } finally { dbxSkipAutoUpload = false; }
+    dbxDirty = false;
+    dbxBannerDismissed = false;
+    dbxRefreshIndicators();
   }
 
   async function dropboxDownload(skipConfirm) {
@@ -2479,14 +2610,20 @@
     dbx.appKey = dbx.appKey || '';
     dbx.accessToken = ''; dbx.refreshToken = ''; dbx.expiresAt = 0; dbx.account = '';
     dbx.lastSync = ''; dbx.lastSyncAt = 0; dbx.dismissedRemoteAt = 0; dbx.autoSync = false; dbx.autoUpload = false;
+    dbx.hideSyncBanner = false;
+    dbxDirty = false;
+    dbxBannerDismissed = false;
     dbxSave();
     updateDropboxUI();
     toast('Dropbox disconnected');
   }
 
   function scheduleAutoUpload() {
-    if (!dbx.accessToken || !dbx.autoUpload) return;
+    if (!dbx.accessToken) return;
     if (dbxSkipAutoUpload) return;
+    dbxDirty = true;
+    dbxRefreshIndicators();
+    if (!dbx.autoUpload) return;
     clearTimeout(dbxSyncTimer);
     dbxSyncTimer = setTimeout(() => dropboxUpload(true), 10000);
   }
@@ -3620,6 +3757,26 @@
     dbx.autoSync = e.target.checked;
     dbxSave();
   });
+  document.getElementById('dbxHideBanner').addEventListener('change', e => {
+    dbx.hideSyncBanner = e.target.checked;
+    dbxSave();
+    dbxRefreshIndicators();
+  });
+
+  document.getElementById('sync-btn').addEventListener('click', () => {
+    if (!dbx.accessToken) return;
+    clearTimeout(dbxSyncTimer);
+    dropboxUpload(false);
+  });
+  document.getElementById('dbx-banner-sync').addEventListener('click', () => {
+    if (!dbx.accessToken) return;
+    clearTimeout(dbxSyncTimer);
+    dropboxUpload(false);
+  });
+  document.getElementById('dbx-banner-close').addEventListener('click', () => {
+    dbxBannerDismissed = true;
+    dbxRefreshIndicators();
+  });
 
   document.getElementById('dbx-confirm-cancel').addEventListener('click', () => {
     document.getElementById('dbx-confirm-modal').classList.remove('open');
@@ -3692,7 +3849,7 @@
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.0.7';
+    const APP_VERSION = '1.1.0';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

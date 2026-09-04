@@ -1,80 +1,43 @@
 PlayDex - Changelog
 ====================
 
-Version 1.0.7
+Version 1.1.0
 -------------------
-- The Start a Game list on the Today page now shows your most recently played
-  games first.
-- The Games tab now lists your games alphabetically.
-- The Playtime by Game breakdown is now listed alphabetically too.
-- Today's bar in the Last 7 Days chart now uses the same accent colour as the
+- Added full PWA support (manifest, service worker, installable icons) with an
+  Install app button, and scoped the app so it no longer collides with other
+  apps on the same GitHub Pages origin.
+- Fixed the service worker so it only manages PlayDex's own caches and reliably
+  installs the corrected, origin-safe worker across existing installs.
+- Replaced the native time inputs in the Add/Edit Session modals with a themed
+  AM/PM time picker and fixed the HH/MM field sizing.
+- Stopped the whole session list from re-animating when you mark a session
+  Synced or Deleted, and removed the "Quick add game" field.
+- Added a themed messagebox that notifies you when a new version of PlayDex is
+  available and ready to install, with a "Reload now" action that shows once
+  per version.
+- Added a Theme Colour picker in Settings so you can change the app's accent
+  colour, applied instantly across buttons, tabs, calendar and highlights.
+- On wider screens, the Today and Sessions tabs are combined into a single
+  page: today's overview on the left and the session list on the right, with
+  the separate Sessions tab hidden.
+- Added a "Last 30 Days" playtime graph to the Stats tab and, on wide PC
+  screens, showed Stats as a third column in the combined Today page.
+- Kept the theme colour (accent) device-local so it is no longer synced or
+  overwritten through Dropbox.
+- Widened the combined desktop page and gave Today and Sessions slightly more
+  room than Stats.
+- Listed the Games tab and the Playtime by Game breakdown alphabetically, and
+  sorted the Start a Game list on the Today page by most recently played.
+- Today's bar in the Last 7 Days chart now matches the accent colour of the
   other bars.
 - Starting a game now scrolls you back to the top so the live timer is in view.
-- On a filtered date, each session now shows that game's total playtime for the
-  day in pale accent text next to its own duration.
+- On a filtered date, each session shows that game's total playtime for the day
+  in pale accent text next to its own duration.
 - Games with unsynced time now show their name in red in the Playtime by Game
   list.
-
-Version 1.0.6
--------------------
-- In the combined desktop page, Today and Sessions are now slightly wider than
-  the Stats column.
-
-Version 1.0.5
--------------------
-- The theme colour (accent) is now a device-local preference and is no longer
-  synced or overwritten through Dropbox.
-- Fixed editing session times so you can enter minutes (for example :05 or
-  :35) without an extra 0 being appended or the field clearing.
-- Added a "Last 30 Days" playtime graph at the top of the Stats tab, showing
-  one bar per day for the past month.
-- On wide PC screens the Stats tab is shown as a third column in the combined
-  Today page, next to Sessions.
-- Widened the combined desktop page further and gave Today and Sessions more
-  room than Stats.
-
-Version 1.0.4
--------------------
-- On wider screens, the Today and Sessions tabs are combined into a single
-  page: today's overview sits on the left and the session list on the right,
-  with the separate Sessions tab hidden.
-
-Version 1.0.3
--------------------
-- Added a themed messagebox that notifies you when a new version of PlayDex is
-  available and ready to install, with a "Reload now" action. The prompt shows
-  once per version (dismissed reminders are remembered).
-- Added a Theme Colour picker in Settings > Appearance so you can change the
-  app's accent colour, with a set of preset swatches. The
-  accent is applied instantly across buttons, tabs, calendar and highlights.
-
-Version 1.0.2
--------------------
-- Fixed the install of the corrected, origin-safe service worker so the stale
-  cross-app worker (from earlier builds) is reliably replaced.
-
-Version 1.0.1
--------------------
-### PWA / install
-- Added full PWA support: web app manifest (manifest.webmanifest), service worker (sw.js)
-  and installable app icons (icon-192.png, icon-512.png, apple-touch-icon.png).
-- Added manifest link, theme-color, iOS/Android metadata and an "Install app" button
-  in the header (shown when the browser fires beforeinstallprompt).
-- Scoped the PWA identity/id/scope explicitly to /PlayDex/ so it no longer collides
-  with other apps (e.g. MedsADay) installed on the same GitHub Pages origin.
-- Fixed the service worker so it only manages PlayDex's own caches (never deletes
-  other apps' caches) and no longer claims the whole origin with clients.claim().
-- Made the corrected, origin-scoped service worker install reliably across existing installs.
-
-### Time picker
-- Replaced the native time inputs in the Add/Edit Session modals with a themed
-  AM/PM time picker that matches the glass calendar date fields.
-- Fixed native input styling conflicts so the HH/MM boxes render at the correct size.
-- Made the Start and End time triggers wider so the time value is clearly visible.
-
-### List / layout polish
-- Stopped the whole list from re-animating when a session is marked as Synced or Deleted.
-- Removed the "Quick add game" field from the main page.
+- Added a sync button in the header with a warning dot, and a reminder banner
+  with a Sync now shortcut, a dismiss button, and an option to hide it, shown
+  when changes haven't been backed up to Dropbox yet.
 
 Version 1.0.0
 ----------------
