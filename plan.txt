@@ -58,10 +58,6 @@ Sessions CSV export ARE implemented - left out.
     "e.g. S = start/stop, G = Games tab, / = focus search; guard inputs."
     - Scope: small-medium. Risk: low.
 
-12. Last-played / frequency badge (Games list)
-    "Last-played date and sessions-per-week without opening the dashboard."
-    - Scope: small-medium. Risk: low.
-
 --- Implementation reference notes ---
 - Version markers to keep in sync on any release: .version-badge,
   APP_VERSION (~line 3915), SW_VERSION + CACHE_NAME in sw.js.
