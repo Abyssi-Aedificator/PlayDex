@@ -445,7 +445,6 @@
     box-shadow: 0 8px 20px -10px rgba(139, 92, 246, 0.5);
   }
   .btn-pause:hover { filter: brightness(1.08); }
-  .active-session.paused .btn-pause { opacity: 0.85; }
   .active-session.paused .live-dot { animation: none; opacity: 0.35; }
   .btn-start {
     background: var(--accent-gradient);
@@ -2763,7 +2762,7 @@
     const paused = !!activeSession && !!activeSession.pausedAt;
     const card = document.getElementById('active-session-card');
     card.classList.toggle('paused', paused);
-    document.getElementById('btn-pause').textContent = paused ? 'Resume' : 'Pause';
+    document.getElementById('btn-pause').innerHTML = iconSvg(paused ? 'play' : 'pause') + (paused ? ' Resume' : ' Pause');
     document.getElementById('live-text').textContent = paused ? 'PAUSED' : 'LIVE';
   }
 
@@ -3278,7 +3277,9 @@
     emptySessions: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
     emptyGames: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.94 3.56L2 15.56a2.5 2.5 0 0 0 3.32 2.61l1.82-.68a1 1 0 0 1 .82 0l3.13 1.04a2.5 2.5 0 0 0 1.9 0l3.13-1.04a1 1 0 0 1 .82 0l1.82.68A2.5 2.5 0 0 0 22 15.56l-1.06-7A4 4 0 0 0 17.32 5z"/></svg>',
     emptyActive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
-    emptyDashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
+    emptyDashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>',
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
   };
   function iconSvg(name) {
     return ICONS[name] || '';
