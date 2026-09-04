@@ -1,6 +1,13 @@
 PlayDex - Changelog
 ====================
 
+Version 1.0.8
+-------------------
+- Added a sync button in the header that shows a warning dot when you have
+  changes that haven't been backed up to Dropbox yet.
+- Added a reminder banner when a backup is pending, with a Sync now shortcut,
+  a dismiss button, and an option to hide it.
+
 Version 1.0.7
 -------------------
 - The Start a Game list on the Today page now shows your most recently played
