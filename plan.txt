@@ -1,0 +1,74 @@
+PlayDex - Future Feature Ideas
+==============================
+
+Features proposed but not yet implemented. Combine two proposal rounds
+(the earlier 10-idea list and the 5-idea list). Pause/Resume and the
+Sessions CSV export ARE implemented - left out.
+
+1. Notes on sessions
+   "Optional memo per session (why you stopped, what happened). Add a note
+   field to the Add/Edit Session modals, show it in session rows in
+   renderSessionsTab, surface the latest note on the per-game dashboard
+   (renderDashboardBody)."
+   - Data: optional `note` string on sessions[], old data unaffected.
+   - Scope: small-medium. Risk: low. High archival value.
+
+2. Weekly review card (Stats)
+   "This week recap: total time, sessions, top game, best day, streak,
+   delta vs last week. Fits in the Stats column beside the 7/30-day charts."
+   - Scope: small. Risk: low.
+
+3. Session timeline (history view)
+   "Day-grouped chronological timeline of all sessions; click a day to jump
+   to that filtered view. Reuse the session-row markup + a toggle."
+   - Scope: medium. Risk: low-medium.
+
+4. Search / filter games & sessions
+   "Global search box filtering both lists by text (header or top bar)."
+   - Scope: small. Risk: low.
+
+5. Yearly / all-time totals in Stats
+   "Year-to-date + all-time playtime beside 'This Week' in the stat grid."
+   - Scope: tiny. Risk: low.
+
+6. Bulk session management
+   "Multi-select checkboxes in the session log + delete selected."
+   - Scope: medium. Risk: low-medium.
+
+7. Session merge by time range
+   "Combine a contiguous same-game range of sessions into one
+   (confirm modal + duration validation)."
+   - Scope: medium. Risk: medium.
+
+8. Per-game goals
+   "Optional playtime goal per game with progress on its dashboard."
+   - Data: schema addition to games[] + backup payload.
+   - Scope: medium. Risk: medium.
+
+9. Idle auto-pause reminder
+   "If a running session is idle / backgrounded long enough, remind to
+   stop or pause (complements the manual Pause)."
+   - Scope: small-medium. Risk: low-medium (pick threshold carefully).
+
+10. Time-of-day heatmap (Stats)
+    "7x24 density grid of when sessions usually start."
+    - Scope: medium. Risk: low.
+
+11. Keyboard shortcuts / command palette
+    "e.g. S = start/stop, G = Games tab, / = focus search; guard inputs."
+    - Scope: small-medium. Risk: low.
+
+12. Last-played / frequency badge (Games list)
+    "Last-played date and sessions-per-week without opening the dashboard."
+    - Scope: small-medium. Risk: low.
+
+--- Implementation reference notes ---
+- Version markers to keep in sync on any release: .version-badge,
+  APP_VERSION (~line 3915), SW_VERSION + CACHE_NAME in sw.js.
+- Today/streak/stats read stored durationMs only; live-timer math uses the
+  pause helpers (totalPausedMs / activeElapsedMs). New session fields are
+  additive and ride through JSON backup/import and Dropbox untouched.
+- CSV export already exists (Settings > Backup); reuse triggerDownload().
+- Commit policy: one feature per commit, no version numbers in messages,
+  no version bump unless asked; changelog bullets go under the current
+  Version header.
