@@ -9,6 +9,7 @@ Version 1.1.1
   24-hour format beside the running elapsed time.
 - The Games list now shows when each game was last played and how often you play
   it.
+- Deleted sessions can be undone from the confirmation toast.
 
 Version 1.1.0
 -------------------

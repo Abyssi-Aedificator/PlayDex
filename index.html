@@ -1212,6 +1212,23 @@
 
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  .toast .toast-action {
+    margin-left: 8px;
+    padding: 4px 10px;
+    border: 1px solid var(--accent);
+    border-radius: 7px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: filter 0.15s;
+  }
+
+  .toast .toast-action:hover { filter: brightness(1.1); }
+
   /* Pending-sync banner */
   .dbx-banner {
     position: fixed;
@@ -2371,12 +2388,28 @@
     return Math.round(ms / 1000) + 's';
   }
 
-  function toast(msg) {
+  function toast(msg, actionLabel, onAction, timeoutMs) {
     const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
     clearTimeout(el._t);
-    el._t = setTimeout(() => el.classList.remove('show'), 2000);
+    if (actionLabel && typeof onAction === 'function') {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'toast-action';
+      btn.textContent = actionLabel;
+      btn.addEventListener('click', () => {
+        clearTimeout(el._t);
+        el.classList.remove('show');
+        onAction();
+      });
+      el.textContent = '';
+      el.appendChild(document.createTextNode(msg + ' '));
+      el.appendChild(btn);
+      el._t = setTimeout(() => el.classList.remove('show'), timeoutMs || 2000);
+    } else {
+      el.textContent = msg;
+      el._t = setTimeout(() => el.classList.remove('show'), timeoutMs || 2000);
+    }
+    el.classList.add('show');
   }
 
   // --- Theme ---
@@ -3011,10 +3044,18 @@
 
       container.querySelectorAll('.session-delete').forEach(btn => {
         btn.addEventListener('click', () => {
-          sessions = sessions.filter(s => s.id !== btn.dataset.id);
+          const s = sessions.find(x => x.id === btn.dataset.id);
+          if (!s) return;
+          const idx = sessions.indexOf(s);
+          sessions = sessions.filter(x => x.id !== s.id);
           saveSessions(sessions);
-          toast('Session deleted');
           renderSessionsTab(false);
+          toast('Session deleted', 'Undo', () => {
+            sessions.splice(Math.min(idx, sessions.length), 0, s);
+            saveSessions(sessions);
+            renderSessionsTab(false);
+            if (isToday(s.start)) renderTodayTab();
+          }, 6000);
         });
       });
 
