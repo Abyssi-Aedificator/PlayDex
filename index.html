@@ -1601,6 +1601,37 @@
     margin-top: 7px;
   }
 
+  .quest-card.done { border-color: var(--accent); }
+
+  .quest-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+  }
+
+  .quest-title { flex: 1; }
+
+  .quest-bounty {
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .quest-track { margin-top: 10px; }
+
+  .quest-overview {
+    font-size: 0.75rem;
+    color: var(--text3);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .quest-bool { margin-top: 8px; font-size: 0.8rem; }
+
   .btn-goal-edit {
     background: none;
     border: 1px solid var(--border);
@@ -2105,6 +2136,9 @@
       </div>
       <div class="progress-track profile-track"><div class="progress-fill" id="ach-level-fill"></div></div>
       <div class="profile-next-hint" id="ach-next-hint"></div>
+    </div>
+    <div class="card quest-card" id="quest-card">
+      <div class="card-header">Today&rsquo;s Quest</div>
     </div>
     <div id="ach-groups"></div>
   </div>
@@ -3658,7 +3692,62 @@
     });
     const unlocked = stats.filter(s => s.unlocked);
     const badgeXp = unlocked.reduce((sum, s) => sum + s.def.xp, 0);
-    return { M: M, stats: stats, unlocked: unlocked, badgeXp: badgeXp, playXp: M.playXp, totalXp: badgeXp + M.playXp };
+    const quest = todayQuest();
+    const qp = questProgress(quest, M);
+    const questXp = qp.done ? QUEST_XP : 0;
+    return { M: M, stats: stats, unlocked: unlocked, badgeXp: badgeXp, playXp: M.playXp, quest: quest, qp: qp, questXp: questXp, totalXp: badgeXp + M.playXp + questXp };
+  }
+
+  const QUEST_XP = 50;
+  const QUESTS = [
+    { id: 'play30', title: 'Play for 30 minutes today', unit: 'ms', tgt: 30 * 60000 },
+    { id: 'sess3', title: 'Log 3 sessions today', unit: 'num', tgt: 3 },
+    { id: 'games2', title: 'Play 2 different games today', unit: 'games', tgt: 2 },
+    { id: 'play1', title: 'Play any game today', unit: 'bool', tgt: 1 },
+    { id: 'ses20', title: 'Log a single 20-minute session today', unit: 'ms-session', tgt: 20 * 60000 }
+  ];
+  let questDoneNotified = '';
+
+  function todayQuest() {
+    const now = new Date();
+    const doy = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+    return QUESTS[doy % QUESTS.length];
+  }
+
+  function questProgress(q, M) {
+    const live = activeSession && !activeSession.pausedAt ? activeElapsedMs(activeSession, Date.now()) : 0;
+    let cur = 0;
+    if (q.unit === 'ms') cur = (M.todayMs || 0) + live;
+    else if (q.unit === 'num') cur = M.todayCount || 0;
+    else if (q.unit === 'games') cur = M.todayGames || 0;
+    else if (q.unit === 'bool') cur = ((M.todayCount || 0) > 0 || activeSession) ? 1 : 0;
+    else cur = Math.max(M.todayLongestMs || 0, live);
+    return { cur: cur, done: cur >= q.tgt };
+  }
+
+  function questProgressText(q, qp) {
+    if (q.unit === 'ms' || q.unit === 'ms-session') return fmtDurationShort(qp.cur) + ' / ' + fmtDurationShort(q.tgt);
+    if (q.unit === 'games') return fmtNum(qp.cur) + ' / ' + fmtNum(q.tgt) + ' games';
+    return fmtNum(qp.cur) + ' / ' + fmtNum(q.tgt) + ' sessions';
+  }
+
+  function questCardHtml(q, qp) {
+    let body;
+    if (q.unit === 'bool') {
+      body = '<div class="quest-bool">' + (qp.done
+        ? '<span class="ach-check">' + iconSvg('check') + 'Complete</span>'
+        : '<span style="color:var(--text3);font-size:0.75rem">Play once before midnight</span>') + '</div>';
+    } else {
+      const pct = Math.max(0, Math.min(100, Math.round(qp.cur / q.tgt * 100)));
+      body = '<div class="progress-track quest-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+        '<div class="quest-overview">' + questProgressText(q, qp) +
+        (qp.done ? ' <span class="ach-check">' + iconSvg('check') + 'Complete</span>' : '') +
+        '</div>';
+    }
+    return '<div class="quest-head">' +
+      '<span class="quest-title">' + q.title + '</span>' +
+      '<span class="quest-bounty">+' + QUEST_XP + ' XP</span>' +
+      '</div>' + body;
   }
 
   function renderAchievementsTab() {
@@ -3667,6 +3756,12 @@
     const stats = B.stats;
     const unlocked = B.unlocked;
     const totalXp = B.totalXp;
+
+    const qc = document.getElementById('quest-card');
+    if (qc) {
+      qc.classList.toggle('done', B.qp.done);
+      qc.innerHTML = '<div class="card-header">Today&rsquo;s Quest</div>' + questCardHtml(B.quest, B.qp);
+    }
 
     const groupsEl = document.getElementById('ach-groups');
     let html = '';
@@ -3714,6 +3809,11 @@
       } else {
         toast(newly.length + ' new badges unlocked! +' + fmtNum(newly.reduce((a, s) => a + s.def.xp, 0)) + ' XP', 'View', () => goTab('badges'), 6000);
       }
+    }
+
+    if (B.qp.done && questDoneNotified !== todayStr()) {
+      questDoneNotified = todayStr();
+      toast('Daily quest complete: ' + B.quest.title + ' (+' + QUEST_XP + ' XP)', 'View', () => goTab('badges'), 6000);
     }
 
     const lv = levelInfo(B.totalXp);
