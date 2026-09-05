@@ -10,6 +10,8 @@ Version 1.1.1
 - The Games list now shows when each game was last played and how often you play
   it.
 - Deleted sessions can be undone from the confirmation toast.
+- You can set an optional time target when starting a session and watch
+  progress toward it on the timer card.
 
 Version 1.1.0
 -------------------
