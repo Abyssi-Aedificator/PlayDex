@@ -3566,7 +3566,10 @@
     const totalMs = completed.reduce((a, s) => a + (s.durationMs || 0), 0);
     const gameIds = new Set(completed.map(s => s.gameId));
     const days = new Set(completed.map(s => dateKey(s.start)));
+    const t = todayStr();
+    const todayGameIds = new Set();
     let longestMs = 0;
+    let todayLongestMs = 0;
     let earlyBird = 0, nightOwl = 0;
     const byDay = {};
     const sessionsByDay = {};
@@ -3576,6 +3579,10 @@
       const d = dateKey(s.start);
       byDay[d] = (byDay[d] || 0) + ms;
       sessionsByDay[d] = (sessionsByDay[d] || 0) + 1;
+      if (d === t) {
+        todayGameIds.add(s.gameId);
+        if (ms > todayLongestMs) todayLongestMs = ms;
+      }
       const h = new Date(s.start).getHours();
       if (h >= 5 && h < 8) earlyBird++;
       if (h < 5) nightOwl++;
@@ -3592,6 +3599,11 @@
     const dayVals = Object.values(byDay);
     const sessDayVals = Object.values(sessionsByDay);
 
+    let playXp = 0;
+    dayVals.forEach(ms => {
+      playXp += Math.min(50, Math.floor(ms / 600000) * 2);
+    });
+
     return {
       totalMs: totalMs,
       count: completed.length,
@@ -3602,7 +3614,12 @@
       maxMsDay: dayVals.length ? Math.max.apply(null, dayVals) : 0,
       earlyBird: earlyBird,
       nightOwl: nightOwl,
-      distinctDays: days.size
+      distinctDays: days.size,
+      playXp: playXp,
+      todayMs: byDay[t] || 0,
+      todayCount: sessionsByDay[t] || 0,
+      todayGames: todayGameIds.size,
+      todayLongestMs: todayLongestMs
     };
   }
 
@@ -3638,7 +3655,7 @@
       return { def: a, cur: cur, unlocked: unlocked, pct: pct };
     });
     const unlocked = stats.filter(s => s.unlocked);
-    const totalXp = unlocked.reduce((sum, s) => sum + s.def.xp, 0);
+    const totalXp = unlocked.reduce((sum, s) => sum + s.def.xp, 0) + M.playXp;
 
     const groupsEl = document.getElementById('ach-groups');
     let html = '';
