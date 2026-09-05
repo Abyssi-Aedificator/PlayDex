@@ -1611,7 +1611,22 @@
 
   .quest-head-row { display: flex; align-items: center; gap: 10px; }
 
-  .quest-done-count { margin-left: auto; font-size: 0.72rem; color: var(--text3); font-weight: 600; }
+  .quest-head-row .quest-count-pill:first-child { margin-left: auto; }
+
+  .quest-count-pill {
+    font-size: 0.72rem;
+    color: var(--text3);
+    font-weight: 600;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px 10px;
+    white-space: nowrap;
+  }
+
+  .quest-count-pill b { color: var(--text1); font-weight: 600; }
+
+  .quest-count-pill b.has-done { color: var(--accent); }
 
   .quest-select {
     background: var(--surface2);
@@ -2193,7 +2208,8 @@
     <div class="card quest-card" id="quest-card">
       <div class="card-header quest-head-row">
         <span>Quests</span>
-        <span class="quest-done-count" id="quest-done-count"></span>
+        <span class="quest-count-pill">Daily <b id="quest-daily-count">0/0</b></span>
+        <span class="quest-count-pill">Weekly <b id="quest-weekly-count">0/0</b></span>
         <select id="quest-board-select" class="quest-select" aria-label="Quest board">
           <option value="daily">Daily board</option>
           <option value="weekly">Weekly board</option>
@@ -3894,7 +3910,15 @@
       qc.classList.toggle('done', doneCount === board.length);
       const sel = document.getElementById('quest-board-select');
       if (sel && sel.value !== view) sel.value = view;
-      document.getElementById('quest-done-count').textContent = doneCount + '/' + board.length + ' done';
+      const fillPill = (elId, boardArr) => {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        const doneN = boardArr.filter(r => r.done).length;
+        el.textContent = doneN + '/' + boardArr.length;
+        el.classList.toggle('has-done', doneN > 0);
+      };
+      fillPill('quest-daily-count', B.daily);
+      fillPill('quest-weekly-count', B.weekly);
       document.getElementById('quest-board').innerHTML = questBoardHtml(board, xp);
     }
 
