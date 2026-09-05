@@ -2686,8 +2686,8 @@
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null }; }
   }
 
   function saveSettings(settings) {
@@ -3836,8 +3836,8 @@
     });
     const unlocked = stats.filter(s => s.unlocked);
     const badgeXp = unlocked.reduce((sum, s) => sum + s.def.xp, 0);
-    const daily = DAILY_QUESTS.map(q => { const p = questProgress(q, M); return { q: q, cur: p.cur, done: p.done }; });
-    const weekly = WEEKLY_QUESTS.map(q => { const p = questProgress(q, M); return { q: q, cur: p.cur, done: p.done }; });
+    const daily = dailyPicks().map(q => { const p = questProgress(q, M); return { q: q, cur: p.cur, done: p.done }; });
+    const weekly = weeklyPicks().map(q => { const p = questProgress(q, M); return { q: q, cur: p.cur, done: p.done }; });
     const questXp = daily.reduce((a, r) => a + (r.done ? QUEST_XP_DAILY : 0), 0) +
                     weekly.reduce((a, r) => a + (r.done ? QUEST_XP_WEEKLY : 0), 0);
     return { M: M, stats: stats, unlocked: unlocked, badgeXp: badgeXp, playXp: M.playXp, daily: daily, weekly: weekly, questXp: questXp, totalXp: badgeXp + M.playXp + questXp };
@@ -3845,20 +3845,107 @@
 
   const QUEST_XP_DAILY = 50;
   const QUEST_XP_WEEKLY = 100;
-  const DAILY_QUESTS = [
+  const QUEST_COUNT = 5;
+  const DAILY_POOL = [
+    { id: 'play10', title: 'Play for 10 minutes today', unit: 'ms', tgt: 10 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play15', title: 'Play for 15 minutes today', unit: 'ms', tgt: 15 * 60000, cur: M => M.todayMs || 0 },
     { id: 'play30', title: 'Play for 30 minutes today', unit: 'ms', tgt: 30 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play45', title: 'Play for 45 minutes today', unit: 'ms', tgt: 45 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play60', title: 'Play for an hour today', unit: 'ms', tgt: 60 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play90', title: 'Play for 90 minutes today', unit: 'ms', tgt: 90 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play120', title: 'Play for 2 hours today', unit: 'ms', tgt: 120 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'sess1', title: 'Log a session today', unit: 'num', tgt: 1, cur: M => M.todayCount || 0 },
+    { id: 'sess2', title: 'Log 2 sessions today', unit: 'num', tgt: 2, cur: M => M.todayCount || 0 },
     { id: 'sess3', title: 'Log 3 sessions today', unit: 'num', tgt: 3, cur: M => M.todayCount || 0 },
+    { id: 'sess4', title: 'Log 4 sessions today', unit: 'num', tgt: 4, cur: M => M.todayCount || 0 },
+    { id: 'sess5', title: 'Log 5 sessions today', unit: 'num', tgt: 5, cur: M => M.todayCount || 0 },
+    { id: 'sess6', title: 'Log 6 sessions today', unit: 'num', tgt: 6, cur: M => M.todayCount || 0 },
     { id: 'games2', title: 'Play 2 different games today', unit: 'games', tgt: 2, cur: M => M.todayGames || 0 },
-    { id: 'play1', title: 'Play any game today', unit: 'bool', tgt: 1, cur: M => (M.todayCount || 0) > 0 ? 1 : 0 },
-    { id: 'ses20', title: 'Log a single 20-minute session today', unit: 'long', tgt: 20 * 60000, cur: M => M.todayLongestMs || 0 }
+    { id: 'games3', title: 'Play 3 different games today', unit: 'games', tgt: 3, cur: M => M.todayGames || 0 },
+    { id: 'games4', title: 'Play 4 different games today', unit: 'games', tgt: 4, cur: M => M.todayGames || 0 },
+    { id: 'games5', title: 'Play 5 different games today', unit: 'games', tgt: 5, cur: M => M.todayGames || 0 },
+    { id: 'ses20', title: 'Log a single 20-minute session today', unit: 'long', tgt: 20 * 60000, cur: M => M.todayLongestMs || 0 },
+    { id: 'ses30', title: 'Log a single 30-minute session today', unit: 'long', tgt: 30 * 60000, cur: M => M.todayLongestMs || 0 },
+    { id: 'ses45', title: 'Log a single 45-minute session today', unit: 'long', tgt: 45 * 60000, cur: M => M.todayLongestMs || 0 },
+    { id: 'ses60', title: 'Log a single 1-hour session today', unit: 'long', tgt: 60 * 60000, cur: M => M.todayLongestMs || 0 },
+    { id: 'ses90', title: 'Log a single 90-minute session today', unit: 'long', tgt: 90 * 60000, cur: M => M.todayLongestMs || 0 }
   ];
-  const WEEKLY_QUESTS = [
-    { id: 'w5h', title: 'Play 7 hours this week', unit: 'ms', tgt: 7 * 3600000, cur: M => M.weekMs || 0 },
-    { id: 'w10s', title: 'Log 12 sessions this week', unit: 'num', tgt: 12, cur: M => M.weekCount || 0 },
-    { id: 'w5g', title: 'Play 6 different games this week', unit: 'games', tgt: 6, cur: M => M.weekGames || 0 },
-    { id: 'w4d', title: 'Play on 5 different days this week', unit: 'num', tgt: 5, cur: M => M.weekDays || 0 },
-    { id: 'w2h', title: 'Log a single 3-hour session this week', unit: 'long', tgt: 3 * 3600000, cur: M => M.weekLongestMs || 0 }
+  const WEEKLY_POOL = [
+    { id: 'w2t', title: 'Play 2 hours this week', unit: 'ms', tgt: 2 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w3t', title: 'Play 3 hours this week', unit: 'ms', tgt: 3 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w4t', title: 'Play 4 hours this week', unit: 'ms', tgt: 4 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w5t', title: 'Play 5 hours this week', unit: 'ms', tgt: 5 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w7t', title: 'Play 7 hours this week', unit: 'ms', tgt: 7 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w10t', title: 'Play 10 hours this week', unit: 'ms', tgt: 10 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w12t', title: 'Play 12 hours this week', unit: 'ms', tgt: 12 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w8s', title: 'Log 8 sessions this week', unit: 'num', tgt: 8, cur: M => M.weekCount || 0 },
+    { id: 'w10s', title: 'Log 10 sessions this week', unit: 'num', tgt: 10, cur: M => M.weekCount || 0 },
+    { id: 'w12s', title: 'Log 12 sessions this week', unit: 'num', tgt: 12, cur: M => M.weekCount || 0 },
+    { id: 'w15s', title: 'Log 15 sessions this week', unit: 'num', tgt: 15, cur: M => M.weekCount || 0 },
+    { id: 'w20s', title: 'Log 20 sessions this week', unit: 'num', tgt: 20, cur: M => M.weekCount || 0 },
+    { id: 'w3g', title: 'Play 3 different games this week', unit: 'games', tgt: 3, cur: M => M.weekGames || 0 },
+    { id: 'w4g', title: 'Play 4 different games this week', unit: 'games', tgt: 4, cur: M => M.weekGames || 0 },
+    { id: 'w5g', title: 'Play 5 different games this week', unit: 'games', tgt: 5, cur: M => M.weekGames || 0 },
+    { id: 'w6g', title: 'Play 6 different games this week', unit: 'games', tgt: 6, cur: M => M.weekGames || 0 },
+    { id: 'w8g', title: 'Play 8 different games this week', unit: 'games', tgt: 8, cur: M => M.weekGames || 0 },
+    { id: 'w10g', title: 'Play 10 different games this week', unit: 'games', tgt: 10, cur: M => M.weekGames || 0 },
+    { id: 'w3d', title: 'Play on 3 different days this week', unit: 'num', tgt: 3, cur: M => M.weekDays || 0 },
+    { id: 'w4d', title: 'Play on 4 different days this week', unit: 'num', tgt: 4, cur: M => M.weekDays || 0 },
+    { id: 'w5d', title: 'Play on 5 different days this week', unit: 'num', tgt: 5, cur: M => M.weekDays || 0 },
+    { id: 'w6d', title: 'Play on 6 different days this week', unit: 'num', tgt: 6, cur: M => M.weekDays || 0 },
+    { id: 'w7d', title: 'Play on every day this week', unit: 'num', tgt: 7, cur: M => M.weekDays || 0 },
+    { id: 'w90m', title: 'Log a single 90-minute session this week', unit: 'long', tgt: 90 * 60000, cur: M => M.weekLongestMs || 0 },
+    { id: 'w2hs', title: 'Log a single 2-hour session this week', unit: 'long', tgt: 2 * 3600000, cur: M => M.weekLongestMs || 0 },
+    { id: 'w3hs', title: 'Log a single 3-hour session this week', unit: 'long', tgt: 3 * 3600000, cur: M => M.weekLongestMs || 0 },
+    { id: 'w4hs', title: 'Log a single 4-hour session this week', unit: 'long', tgt: 4 * 3600000, cur: M => M.weekLongestMs || 0 }
   ];
+
+  function hashStr(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  function mulberry32(seed) {
+    let a = seed;
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function drawN(pool, n, seed) {
+    const arr = pool.slice();
+    const rnd = mulberry32(seed);
+    for (let i = 0; i < n && i < arr.length; i++) {
+      const j = i + Math.floor(rnd() * (arr.length - i));
+      const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr.slice(0, n);
+  }
+
+  function refreshPicks(type) {
+    const isDaily = type === 'daily';
+    const key = isDaily ? todayStr() : weekStartStr();
+    const store = settings[isDaily ? 'dailyQuestPicks' : 'weeklyQuestPicks'];
+    const pool = isDaily ? DAILY_POOL : WEEKLY_POOL;
+    if (store && store.key === key && Array.isArray(store.ids) && store.ids.length === QUEST_COUNT) {
+      return pool.filter(q => store.ids.indexOf(q.id) !== -1);
+    }
+    const pick = drawN(pool, QUEST_COUNT, hashStr(key));
+    settings[isDaily ? 'dailyQuestPicks' : 'weeklyQuestPicks'] = { key: key, ids: pick.map(q => q.id) };
+    saveSettings(settings);
+    return pick;
+  }
+
+  function dailyPicks() { return refreshPicks('daily'); }
+
+  function weeklyPicks() { return refreshPicks('weekly'); }
 
   function questProgress(q, M) {
     const live = activeSession && !activeSession.pausedAt ? activeElapsedMs(activeSession, Date.now()) : 0;
