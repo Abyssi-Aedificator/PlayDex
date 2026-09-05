@@ -2311,6 +2311,11 @@
       <input type="file" id="import-file" accept=".json,application/json" style="display:none">
       <div class="backup-hint">Data is stored locally in your browser. Export regularly to back it up or move it to another device.</div>
     </div>
+    <div class="card">
+      <div class="card-header">Achievements</div>
+      <button class="btn-ghost" id="btn-recalc-unlock-dates" style="width:100%;padding:10px 14px;font-size:0.8rem;">Recalculate unlock dates from history</button>
+      <div class="backup-hint" style="margin-top:8px;">Recomputes the earned date of every unlocked badge from your session history, replacing dates that were stamped when the Badges tab first arrived.</div>
+    </div>
   </div>
 </div>
 
@@ -3073,6 +3078,7 @@
     saveGames(games);
     saveSessions(sessions);
     saveSettings(settings);
+    backfillUnlockDates('gentle');
     activeSession = sessions.find(s => s.stop === null) || null;
     applyTheme();
     render();
@@ -3823,6 +3829,99 @@
       weekDays: weekDays.size,
       weekLongestMs: weekLongestMs
     };
+  }
+
+  function achStatFor(a) {
+    if (a.cat === 'playtime') return 'totalMs';
+    if (a.cat === 'sessions') return 'count';
+    if (a.cat === 'streaks') return 'streak';
+    if (a.cat === 'variety') return 'games';
+    if (a.cat === 'epic') return 'longest';
+    if (a.cat === 'dedication') {
+      if (a.id === 'd3h' || a.id === 'dday1' || a.id === 'dday6') return 'maxMsDay';
+      if (a.id === 'dbusy' || a.id === 'ds5' || a.id === 'ds20') return 'maxSessionsDay';
+      if (a.id === 'dearly' || a.id === 'eb20') return 'early';
+      if (a.id === 'dnight' || a.id === 'no20') return 'night';
+      if (a.id === 'dd30' || a.id === 'dd60' || a.id === 'd100' || a.id === 'dd200' || a.id === 'd365') return 'days';
+    }
+    return '';
+  }
+
+  function computeEarnedDates() {
+    const dayMs = {}, dayCnt = {}, dayLongest = {}, dayEarly = {}, dayNight = {}, dayGameSets = {};
+    sessions.forEach(s => {
+      if (s.stop === null) return;
+      const ms = s.durationMs || 0;
+      const d = dateKey(s.start);
+      const h = new Date(s.start).getHours();
+      dayMs[d] = (dayMs[d] || 0) + ms;
+      dayCnt[d] = (dayCnt[d] || 0) + 1;
+      if (!dayGameSets[d]) dayGameSets[d] = new Set();
+      dayGameSets[d].add(s.gameId);
+      if (ms > (dayLongest[d] || 0)) dayLongest[d] = ms;
+      if (h >= 5 && h < 8) dayEarly[d] = (dayEarly[d] || 0) + 1;
+      else if (h < 5) dayNight[d] = (dayNight[d] || 0) + 1;
+    });
+    const dayList = Object.keys(dayMs).sort();
+    const byStat = {};
+    ACHIEVEMENTS.forEach(a => {
+      const st = achStatFor(a);
+      if (!st) return;
+      (byStat[st] = byStat[st] || []).push(a);
+    });
+    const earned = {};
+    let totalMs = 0, count = 0, games = 0, early = 0, night = 0, distinctDays = 0;
+    let run = 0, longestStreak = 0, prevDay = null;
+    const seenGames = new Set();
+    const noteCrossings = (st, val, d) => {
+      const list = byStat[st];
+      if (!list) return;
+      list.forEach(a => { if (earned[a.id] === undefined && val >= a.tgt) earned[a.id] = d; });
+    };
+    dayList.forEach(d => {
+      dayGameSets[d].forEach(g => seenGames.add(g));
+      totalMs += dayMs[d];
+      count += dayCnt[d];
+      games = seenGames.size;
+      early += dayEarly[d] || 0;
+      night += dayNight[d] || 0;
+      distinctDays++;
+      run = (prevDay && addDays(prevDay, 1) === d) ? run + 1 : 1;
+      prevDay = d;
+      if (run > longestStreak) longestStreak = run;
+      noteCrossings('totalMs', totalMs, d);
+      noteCrossings('count', count, d);
+      noteCrossings('games', games, d);
+      noteCrossings('early', early, d);
+      noteCrossings('night', night, d);
+      noteCrossings('streak', longestStreak, d);
+      noteCrossings('days', distinctDays, d);
+      noteCrossings('longest', dayLongest[d], d);
+      noteCrossings('maxMsDay', dayMs[d], d);
+      noteCrossings('maxSessionsDay', dayCnt[d], d);
+    });
+    return earned;
+  }
+
+  function backfillUnlockDates(mode) {
+    const M = computeAchStats();
+    const earned = computeEarnedDates();
+    const unlocks = settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object' ? settings.achievementUnlocks : {};
+    let changed = false;
+    ACHIEVEMENTS.forEach(a => {
+      if (a.cur(M) < a.tgt || !earned[a.id]) return;
+      const instant = new Date(earned[a.id] + 'T12:00:00');
+      const prev = unlocks[a.id];
+      const prevTime = prev ? new Date(prev).getTime() : NaN;
+      if (mode === 'force' || !prev || isNaN(prevTime) || instant.getTime() < prevTime) {
+        unlocks[a.id] = instant.toISOString();
+        changed = true;
+      }
+    });
+    if (changed) {
+      settings.achievementUnlocks = unlocks;
+      saveSettings(settings);
+    }
   }
 
   function achProgressText(s) {
@@ -4857,7 +4956,7 @@
     importData = null;
   });
 
-  document.getElementById('import-confirm').addEventListener('click', () => {
+document.getElementById('import-confirm').addEventListener('click', () => {
     if (importData) {
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
@@ -4869,6 +4968,7 @@
       saveGames(games);
       saveSessions(sessions);
       saveSettings(settings);
+      backfillUnlockDates('gentle');
       activeSession = sessions.find(s => s.stop === null) || null;
       importData = null;
       toast('Backup imported');
@@ -4876,6 +4976,27 @@
       render();
     }
     document.getElementById('import-modal').classList.remove('open');
+  });
+
+  let recalcConfirmTimer = null;
+  const recalcBtn = document.getElementById('btn-recalc-unlock-dates');
+  recalcBtn.addEventListener('click', () => {
+    if (recalcBtn.dataset.armed === '1') {
+      backfillUnlockDates('force');
+      toast('Achievement unlock dates recalculated from your play history');
+      render();
+      recalcBtn.dataset.armed = '';
+      recalcBtn.textContent = 'Recalculate unlock dates from history';
+      if (recalcConfirmTimer) { clearTimeout(recalcConfirmTimer); recalcConfirmTimer = null; }
+      return;
+    }
+    recalcBtn.dataset.armed = '1';
+    recalcBtn.textContent = 'Click again to confirm \u2014 replaces stored dates';
+    if (recalcConfirmTimer) clearTimeout(recalcConfirmTimer);
+    recalcConfirmTimer = setTimeout(() => {
+      recalcBtn.dataset.armed = '';
+      recalcBtn.textContent = 'Recalculate unlock dates from history';
+    }, 4000);
   });
 
   // --- Dashboard modal ---
@@ -5002,6 +5123,7 @@
   });
 
   // --- Initial render ---
+  backfillUnlockDates('gentle');
   applyTheme();
   document.querySelector('.app-content').classList.toggle('merged', currentTab === 'today');
   updateDropboxUI();
