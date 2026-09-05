@@ -58,6 +58,27 @@ Sessions CSV export ARE implemented - left out.
     "e.g. S = start/stop, G = Games tab, / = focus search; guard inputs."
     - Scope: small-medium. Risk: low.
 
+12. Quick-start a game from the Games list
+    "Inline Start button on each game row that begins the live session for that
+    game and switches to the Today tab (respects the one-active-session guard)."
+    - Scope: small. Risk: low.
+
+13. Personal records card (Stats)
+    "Longest single session, busiest day, most sessions in a day, longest
+    streak — computed from sessions[], no schema change."
+    - Scope: small. Risk: low.
+
+14. Milestone achievements (Stats)
+    "Badge wall: first session, 1h/10h/100h total playtime, 7/14/30/60/90-day
+    streaks, 10/100/500/1000 sessions, variety (5+ games). Derived at render
+    time from sessions[]."
+    - Scope: small-medium. Risk: low.
+
+15. Target-duration live sessions
+    "Optional target (e.g. 30 min) when starting a session; progress bar on the
+    live card using the pause-aware activeElapsedMs helper; toast when reached."
+    - Scope: medium. Risk: low-medium.
+
 --- Implementation reference notes ---
 - Version markers to keep in sync on any release: .version-badge,
   APP_VERSION (~line 3915), SW_VERSION + CACHE_NAME in sw.js.
