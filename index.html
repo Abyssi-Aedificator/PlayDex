@@ -3853,11 +3853,11 @@
     { id: 'ses20', title: 'Log a single 20-minute session today', unit: 'long', tgt: 20 * 60000, cur: M => M.todayLongestMs || 0 }
   ];
   const WEEKLY_QUESTS = [
-    { id: 'w5h', title: 'Play 5 hours this week', unit: 'ms', tgt: 5 * 3600000, cur: M => M.weekMs || 0 },
-    { id: 'w10s', title: 'Log 10 sessions this week', unit: 'num', tgt: 10, cur: M => M.weekCount || 0 },
-    { id: 'w5g', title: 'Play 5 different games this week', unit: 'games', tgt: 5, cur: M => M.weekGames || 0 },
-    { id: 'w4d', title: 'Play on 4 different days this week', unit: 'num', tgt: 4, cur: M => M.weekDays || 0 },
-    { id: 'w2h', title: 'Log a single 2-hour session this week', unit: 'long', tgt: 2 * 3600000, cur: M => M.weekLongestMs || 0 }
+    { id: 'w5h', title: 'Play 7 hours this week', unit: 'ms', tgt: 7 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w10s', title: 'Log 12 sessions this week', unit: 'num', tgt: 12, cur: M => M.weekCount || 0 },
+    { id: 'w5g', title: 'Play 6 different games this week', unit: 'games', tgt: 6, cur: M => M.weekGames || 0 },
+    { id: 'w4d', title: 'Play on 5 different days this week', unit: 'num', tgt: 5, cur: M => M.weekDays || 0 },
+    { id: 'w2h', title: 'Log a single 3-hour session this week', unit: 'long', tgt: 3 * 3600000, cur: M => M.weekLongestMs || 0 }
   ];
 
   function questProgress(q, M) {
