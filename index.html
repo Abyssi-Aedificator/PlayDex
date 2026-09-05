@@ -4215,6 +4215,10 @@
       }
     }
 
+    if (newly.length && typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(newly.length === 1 ? 80 : 120);
+    }
+
     const qt = settings.questNotified;
     [['daily', QUEST_XP_DAILY, todayStr()], ['weekly', QUEST_XP_WEEKLY, weekStartStr()]].forEach(pair => {
       const bd = pair[0], xp = pair[1], key = pair[2];
@@ -4243,6 +4247,9 @@
         lvTile.classList.remove('tick');
         void lvTile.offsetWidth;
         lvTile.classList.add('tick');
+      }
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([80, 60, 80]);
       }
     }
   }
