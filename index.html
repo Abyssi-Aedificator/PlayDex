@@ -3715,6 +3715,21 @@
         toast(newly.length + ' new badges unlocked! +' + fmtNum(newly.reduce((a, s) => a + s.def.xp, 0)) + ' XP', 'View', () => goTab('badges'), 6000);
       }
     }
+
+    const lv = levelInfo(B.totalXp);
+    const prevLevel = settings.achievementLevel || 0;
+    if (lv.level > prevLevel) {
+      settings.achievementLevel = lv.level;
+      saveSettings(settings);
+      const extra = newly.length ? ' \u2014 ' + newly.length + ' new badge' + (newly.length > 1 ? 's' : '') + ' included' : '';
+      toast('Level up! LV ' + lv.level + ' \u2014 ' + lv.title + extra, 'View', () => goTab('badges'), 7000);
+      const lvTile = document.getElementById('ach-level');
+      if (lvTile) {
+        lvTile.classList.remove('tick');
+        void lvTile.offsetWidth;
+        lvTile.classList.add('tick');
+      }
+    }
   }
 
   function renderGamesTab() {
