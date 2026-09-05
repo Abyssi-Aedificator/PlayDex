@@ -1584,19 +1584,23 @@
     box-shadow: 0 8px 20px -14px var(--accent-violet);
   }
 
-  .ach-card.ach-uncommon.unlocked {
-    border-color: var(--accent);
+.ach-card.ach-tier-rare {
+    box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.4);
   }
 
-  .ach-card.ach-rare.unlocked {
+  .ach-card.ach-tier-rare.unlocked {
     border-color: var(--accent);
-    box-shadow: 0 0 0 1px var(--accent), 0 10px 26px -16px var(--accent);
+    box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.5), 0 8px 20px -14px var(--accent-violet);
   }
 
-  .ach-card.ach-legend.unlocked {
+  .ach-card.ach-tier-legend {
+    box-shadow: inset 0 0 0 1px rgba(245, 197, 24, 0.45), 0 0 20px -8px #f5c518;
+  }
+
+  .ach-card.ach-tier-legend.unlocked {
     border-color: #f5c518;
     background: var(--accent-dim);
-    box-shadow: 0 0 0 1px rgba(245, 197, 24, 0.45), 0 0 24px -6px #f5c518;
+    box-shadow: inset 0 0 0 1px rgba(245, 197, 24, 0.55), 0 0 24px -6px #f5c518;
   }
 
   @keyframes ach-glow {
@@ -1621,10 +1625,37 @@
     color: var(--text3);
   }
 
+  .ach-tier-uncommon .ach-medal {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .ach-tier-rare .ach-medal {
+    color: #8b5cf6;
+    border-color: rgba(139, 92, 246, 0.55);
+    background: rgba(139, 92, 246, 0.08);
+  }
+
+  .ach-tier-legend .ach-medal {
+    color: #f5c518;
+    border-color: rgba(245, 197, 24, 0.55);
+    background: rgba(245, 197, 24, 0.08);
+  }
+
   .ach-card.unlocked .ach-medal {
     color: #fff;
     background: var(--accent-gradient);
     border-color: transparent;
+  }
+
+  .ach-card.ach-tier-rare.unlocked .ach-medal {
+    outline: 2px solid rgba(139, 92, 246, 0.55);
+    outline-offset: -2px;
+  }
+
+  .ach-card.ach-tier-legend.unlocked .ach-medal {
+    outline: 2px solid rgba(245, 197, 24, 0.65);
+    outline-offset: -2px;
   }
 
   .ach-medal svg { width: 22px; height: 22px; }
@@ -1662,6 +1693,33 @@
   }
 
   .ach-check svg { width: 12px; height: 12px; }
+
+  .ach-tier-tag {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 1px 7px;
+    white-space: nowrap;
+  }
+
+  .ach-tier-tag.ach-tier-uncommon {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .ach-tier-tag.ach-tier-rare {
+    color: #8b5cf6;
+    border-color: rgba(139, 92, 246, 0.55);
+  }
+
+  .ach-tier-tag.ach-tier-legend {
+    color: #f5c518;
+    border-color: rgba(245, 197, 24, 0.55);
+  }
 
   .ach-unlocked-date {
     font-size: 0.7rem;
@@ -4111,6 +4169,13 @@
     return fmt(s.cur) + ' / ' + fmt(a.tgt);
   }
 
+  function achTierFor(xp) {
+    if (xp >= 1000) return { id: 'legend', name: 'Legendary' };
+    if (xp >= 500) return { id: 'rare', name: 'Rare' };
+    if (xp >= 200) return { id: 'uncommon', name: 'Uncommon' };
+    return { id: 'common', name: 'Common' };
+  }
+
   function achCardHtml(s) {
     const a = s.def;
     const status = s.unlocked
@@ -4120,17 +4185,15 @@
     const eta = !s.unlocked && s.etaWeeks != null ? '<div class="ach-eta">' + fmtEta(s.etaWeeks) + '</div>' : '';
     const unstamp = s.unlocked && settings.achievementUnlocks ? settings.achievementUnlocks[a.id] : null;
     const fresh = s.unlocked && unstamp && (Date.now() - new Date(unstamp).getTime()) < 86400000;
-    let cls = 'ach-card' + (s.unlocked ? ' unlocked' : '');
+    const tier = achTierFor(a.xp);
+    let cls = 'ach-card ach-tier-' + tier.id + (s.unlocked ? ' unlocked' : '');
     if (fresh) cls += ' ach-fresh';
-    if (a.xp >= 1000) cls += ' ach-legend';
-    else if (a.xp >= 500) cls += ' ach-rare';
-    else if (a.xp >= 200) cls += ' ach-uncommon';
     return '<div class="' + cls + '">' +
       '<span class="ach-medal">' + iconSvg(a.icon) + '</span>' +
       '<div class="ach-body">' +
         '<div class="ach-title">' + a.title + '</div>' +
         '<div class="ach-desc">' + a.desc + '</div>' +
-        '<div class="ach-status-row">' + status + '<span class="ach-xp">+' + fmtNum(a.xp) + ' XP</span></div>' +
+        '<div class="ach-status-row">' + status + '<span class="ach-tier-tag ach-tier-' + tier.id + '">' + tier.name + '</span><span class="ach-xp">+' + fmtNum(a.xp) + ' XP</span></div>' +
         (unstamp ? '<div class="ach-unlocked-date">Unlocked ' + fmtDateShort(unstamp) + '</div>' : '') +
         track +
         eta +
@@ -4397,7 +4460,7 @@
     document.getElementById('ach-total-xp').textContent = fmtNum(totalXp) + ' XP';
     const maxBadgeXp = ACHIEVEMENTS.reduce((sum, x) => sum + x.xp, 0);
     document.getElementById('ach-badge-xp').textContent = maxBadgeXp > 0
-      ? '\u00b7 ' + fmtNum(B.badgeXp) + ' / ' + fmtNum(maxBadgeXp) + ' XP (' + Math.round(B.badgeXp / maxBadgeXp * 100) + '%)'
+      ? '\u00b7 ' + fmtNum(B.badgeXp) + ' / ' + fmtNum(maxBadgeXp) + ' XP'
       : '';
 
     if (ACHIEVEMENTS.length && document.getElementById('ach-ring-fill')) {
