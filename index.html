@@ -2665,8 +2665,8 @@
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null }; }
   }
 
   function saveSettings(settings) {
@@ -3026,8 +3026,14 @@
     games = normalizeGames(parsed.games);
     sessions = parsed.sessions;
     const localAccent = settings.accent;
+    const prevUnlocks = settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object' ? settings.achievementUnlocks : {};
+    const prevLevel = settings.achievementLevel || 0;
+    const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
     settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
     settings.accent = localAccent;
+    settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
+    settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
+    settings.questNotified = Object.assign({}, (settings.questNotified && typeof settings.questNotified === 'object') ? settings.questNotified : {}, prevQuestNotified);
     saveGames(games);
     saveSessions(sessions);
     saveSettings(settings);
@@ -3825,7 +3831,6 @@
     { id: 'w4d', title: 'Play on 4 different days this week', unit: 'num', tgt: 4, cur: M => M.weekDays || 0 },
     { id: 'w2h', title: 'Log a single 2-hour session this week', unit: 'long', tgt: 2 * 3600000, cur: M => M.weekLongestMs || 0 }
   ];
-  const questToastTrack = { daily: { key: '', ids: {} }, weekly: { key: '', ids: {} } };
 
   function questProgress(q, M) {
     const live = activeSession && !activeSession.pausedAt ? activeElapsedMs(activeSession, Date.now()) : 0;
@@ -3912,7 +3917,9 @@
 
   function celebrate() {
     const B = buildBadgeStats();
-    settings.achievementUnlocks = settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object' ? settings.achievementUnlocks : {};
+    const fresh = loadSettings();
+    settings.achievementUnlocks = fresh.achievementUnlocks && typeof fresh.achievementUnlocks === 'object' ? fresh.achievementUnlocks : {};
+    settings.questNotified = fresh.questNotified && typeof fresh.questNotified === 'object' ? fresh.questNotified : {};
     const prev = settings.achievementUnlocks;
     const newly = B.unlocked.filter(s => !prev[s.def.id]);
     if (newly.length) {
@@ -3928,22 +3935,24 @@
       }
     }
 
+    const qt = settings.questNotified;
     [['daily', QUEST_XP_DAILY, todayStr()], ['weekly', QUEST_XP_WEEKLY, weekStartStr()]].forEach(pair => {
       const bd = pair[0], xp = pair[1], key = pair[2];
-      const track = questToastTrack[bd];
+      const track = (qt[bd] = qt[bd] && typeof qt[bd] === 'object' ? qt[bd] : { key: '', ids: {} });
       if (track.key !== key) { track.key = key; track.ids = {}; }
-      const fresh = B[bd].filter(r => r.done && !track.ids[r.q.id]);
-      if (fresh.length) {
-        fresh.forEach(r => { track.ids[r.q.id] = true; });
-        toast(fresh.length === 1
-          ? fresh[0].q.title + ' complete! (+' + xp + ' XP)'
-          : fresh.length + ' quests complete: ' + fresh.map(r => r.q.title).join(', ') + ' (+' + fmtNum(fresh.length * xp) + ' XP)',
+      const freshQ = B[bd].filter(r => r.done && !track.ids[r.q.id]);
+      if (freshQ.length) {
+        freshQ.forEach(r => { track.ids[r.q.id] = true; });
+        saveSettings(settings);
+        toast(freshQ.length === 1
+          ? freshQ[0].q.title + ' complete! (+' + xp + ' XP)'
+          : freshQ.length + ' quests complete: ' + freshQ.map(r => r.q.title).join(', ') + ' (+' + fmtNum(freshQ.length * xp) + ' XP)',
           'View', () => goTab('badges'), 6000);
       }
     });
 
     const lv = levelInfo(B.totalXp);
-    const prevLevel = settings.achievementLevel || 0;
+    const prevLevel = fresh.achievementLevel || 0;
     if (lv.level > prevLevel) {
       settings.achievementLevel = lv.level;
       saveSettings(settings);
