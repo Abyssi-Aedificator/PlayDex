@@ -1,12 +1,28 @@
 PlayDex - Changelog
 ====================
 
+Version 1.1.2
+-------------------
+- Badge cards now flow into multiple columns on wide screens, and the player
+  profile stretches to match the achievement sections.
+- Badge unlocks now trigger celebrations on the spot, you earn XP for time
+  played, and daily and weekly quest boards with an XP reward keep the level
+  meter moving between milestones.
+- The live timer shows how long until your next achievable playtime badge.
+
 Version 1.1.1
 -------------------
 - The live session timer can now be paused and resumed.
 - Completed sessions can be exported to CSV from Settings.
 - The live timer card now shows the session start time and the current time in
   24-hour format beside the running elapsed time.
+- The Games list now shows when each game was last played and how often you play
+  it.
+- Deleted sessions can be undone from the confirmation toast.
+- You can set an optional time target when starting a session and watch
+  progress toward it on the timer card.
+- A new Badges tab tracks milestone achievements, play streaks, and a player
+  level earned from your play history.
 
 Version 1.1.0
 -------------------

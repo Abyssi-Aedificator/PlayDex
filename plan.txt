@@ -58,9 +58,25 @@ Sessions CSV export ARE implemented - left out.
     "e.g. S = start/stop, G = Games tab, / = focus search; guard inputs."
     - Scope: small-medium. Risk: low.
 
-12. Last-played / frequency badge (Games list)
-    "Last-played date and sessions-per-week without opening the dashboard."
-    - Scope: small-medium. Risk: low.
+12. Quick-start a game from the Games list
+    "Inline Start button on each game row that begins the live session for that
+    game and switches to the Today tab (respects the one-active-session guard)."
+    - Scope: small. Risk: low.
+
+13. Personal records card (Stats)
+    "Longest single session, busiest day, most sessions in a day, longest
+    streak — computed from sessions[], no schema change."
+    - Scope: small. Risk: low.
+
+14. Haptics on badge unlock
+    "navigator.vibrate(80) when a badge unlocks or on level-up, plus an
+    optional in-app toggle (Settings) defaulting off on desktop."
+    - Scope: tiny. Risk: low (guard navigator.vibrate existence).
+
+15. Recently unlocked strip in the Player Profile
+    "Show the last few badge icons with relative unlock time (e.g. '2h ago'),
+    sourced from the persisted settings.achievementUnlocks timestamps."
+    - Scope: small. Risk: low.
 
 --- Implementation reference notes ---
 - Version markers to keep in sync on any release: .version-badge,

@@ -472,6 +472,51 @@
     color: var(--accent);
   }
 
+  .target-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .target-label {
+    font-size: 0.75rem;
+    color: var(--text2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .target-opt {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+
+  .target-opt:hover { border-color: var(--accent); color: var(--accent); }
+  .target-opt.on { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .target-custom {
+    width: 110px;
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  .target-progress { margin: 12px 0 2px; }
+
+  .target-text {
+    font-size: 0.75rem;
+    color: var(--text2);
+    text-align: center;
+    margin-top: 6px;
+  }
+
   /* Today summary */
   .big-time {
     font-size: 2.8rem;
@@ -1024,7 +1069,32 @@
   .game-item-count {
     font-size: 0.75rem;
     color: var(--text2);
+  }
+
+  .game-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
     margin-top: 2px;
+    min-width: 0;
+  }
+
+  .game-item-meta:empty { margin-top: 0; }
+
+  .game-item-last {
+    font-size: 0.75rem;
+    color: var(--text3);
+  }
+
+  .game-item-freq {
+    font-size: 0.7rem;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    padding: 1px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
   }
 
   .game-item-actions {
@@ -1187,6 +1257,23 @@
 
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  .toast .toast-action {
+    margin-left: 8px;
+    padding: 4px 10px;
+    border: 1px solid var(--accent);
+    border-radius: 7px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: filter 0.15s;
+  }
+
+  .toast .toast-action:hover { filter: brightness(1.1); }
+
   /* Pending-sync banner */
   .dbx-banner {
     position: fixed;
@@ -1325,6 +1412,301 @@
   .streak-pill.off { color: var(--text3); background: var(--surface2); border-color: var(--border); }
   .streak-pill svg { width: 14px; height: 14px; flex-shrink: 0; }
   .streak-pill.tick { animation: tick 0.35s ease; }
+
+  /* Badges tab — player profile */
+  .profile-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .profile-level {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 74px;
+    height: 74px;
+    border-radius: 18px;
+    background: var(--accent-gradient);
+    color: #fff;
+    font-size: 1.9rem;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 10px 24px -12px var(--accent-violet);
+    flex-shrink: 0;
+  }
+
+  .profile-lv {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+    opacity: 0.85;
+  }
+
+  .profile-info { flex: 1; min-width: 120px; }
+
+  .profile-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  .profile-xp {
+    font-size: 0.8rem;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .profile-right {
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--text2);
+    margin-left: auto;
+  }
+
+  .profile-next {
+    text-align: right;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 10px 0 -2px;
+  }
+
+  .profile-unlocked { font-weight: 700; color: var(--text); }
+
+  .profile-badge-xp { font-weight: 600; color: var(--text2); }
+
+  .profile-track { margin: 16px 0 8px; }
+
+  .profile-next-hint {
+    font-size: 0.78rem;
+    color: var(--text2);
+  }
+
+  /* Badges tab — category sections */
+  .ach-section {
+    margin-top: 20px;
+  }
+
+  .ach-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 10px;
+  }
+
+  .ach-section-header svg { width: 16px; height: 16px; color: var(--accent); }
+
+  .ach-section-count {
+    margin-left: auto;
+    color: var(--text3);
+    font-weight: 600;
+  }
+
+  .ach-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+  }
+
+  .ach-card {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    opacity: 0.85;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .ach-card.unlocked {
+    border-color: var(--accent);
+    opacity: 1;
+    background: var(--accent-dim);
+    box-shadow: 0 8px 20px -14px var(--accent-violet);
+  }
+
+  .ach-medal {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text3);
+  }
+
+  .ach-card.unlocked .ach-medal {
+    color: #fff;
+    background: var(--accent-gradient);
+    border-color: transparent;
+  }
+
+  .ach-medal svg { width: 22px; height: 22px; }
+
+  .ach-body { flex: 1; min-width: 0; }
+
+  .ach-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ach-desc {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .ach-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 0.72rem;
+  }
+
+  .ach-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  .ach-check svg { width: 12px; height: 12px; }
+
+  .ach-unlocked-date {
+    font-size: 0.7rem;
+    color: var(--text3);
+    margin-top: 6px;
+  }
+
+  .ach-xp {
+    margin-left: auto;
+    color: var(--text3);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .ach-card.unlocked .ach-xp { color: var(--accent); }
+
+  .ach-progress-text {
+    color: var(--text3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ach-track {
+    height: 6px;
+    margin-top: 7px;
+  }
+
+  .quest-card.done { border-color: var(--accent); }
+
+  .quest-head-row { display: flex; align-items: center; gap: 10px; }
+
+  .quest-count-pill {
+    font-size: 0.72rem;
+    color: var(--text3);
+    font-weight: 600;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px 10px;
+    white-space: nowrap;
+  }
+
+  .quest-count-pill b { color: var(--text1); font-weight: 600; }
+
+  .quest-count-pill b.has-done { color: var(--accent); }
+
+  .quest-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text1);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 6px 10px;
+    max-width: 150px;
+    margin-left: auto;
+  }
+
+  .quest-bounty { color: var(--accent); font-weight: 800; font-size: 0.78rem; white-space: nowrap; }
+
+  .quest-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .quest-row:first-child { border-top: none; padding-top: 2px; }
+
+  .quest-row-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text3);
+  }
+
+  .quest-row.done .quest-row-icon {
+    color: #fff;
+    background: var(--accent-gradient);
+    border-color: transparent;
+  }
+
+  .quest-row-icon svg { width: 16px; height: 16px; }
+
+  .quest-row-body { flex: 1; min-width: 0; }
+
+  .quest-row-title { font-size: 0.85rem; font-weight: 700; }
+
+  .quest-row-track { height: 5px; margin-top: 6px; }
+
+  .quest-row-meta { font-size: 0.72rem; color: var(--text3); margin-top: 4px; }
+
+  .quest-row-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .live-chase {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--text3);
+  }
+
+  .live-chase b { color: var(--text1); }
 
   .btn-goal-edit {
     background: none;
@@ -1642,6 +2024,15 @@
       margin-bottom: 0;
     }
     .tab-bar .tab-btn[data-tab="sessions"] { display: none; }
+
+    /* Badges tab widens for multi-column card grids on desktop */
+    .app-content:has(#tab-badges.active) {
+      max-width: 1400px;
+    }
+    #tab-badges .ach-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+    }
   }
 
   /* Desktop wide: add Stats as a third column in the merged Today page */
@@ -1676,7 +2067,7 @@
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.1.1</span>
+    <span class="version-badge">1.1.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -1705,6 +2096,11 @@
         <button class="btn btn-pause" id="btn-pause" style="flex:1">Pause</button>
         <button class="btn btn-stop" id="btn-stop" style="flex:1">Stop Session</button>
       </div>
+      <div class="target-progress" id="target-progress" style="display:none">
+        <div class="progress-track"><div class="progress-fill" id="target-fill"></div></div>
+        <div class="target-text" id="target-text"></div>
+      </div>
+      <div class="live-chase" id="live-chase" style="display:none"></div>
     </div>
 
     <div class="card">
@@ -1731,6 +2127,16 @@
 
     <div class="card" id="start-game-card">
       <div class="card-header">Start a Game</div>
+      <div class="target-row">
+        <span class="target-label">Target:</span>
+        <div class="target-presets" id="target-presets">
+          <button class="target-opt on" type="button" data-target="0">Off</button>
+          <button class="target-opt" type="button" data-target="30">30m</button>
+          <button class="target-opt" type="button" data-target="60">1h</button>
+          <button class="target-opt" type="button" data-target="120">2h</button>
+        </div>
+        <input class="target-custom" id="target-custom" type="number" min="1" max="1440" inputmode="numeric" placeholder="Custom min">
+      </div>
       <div class="game-buttons" id="start-game-buttons">
         <div class="no-games-hint">No games yet. Add one in the Games tab.</div>
       </div>
@@ -1788,6 +2194,39 @@
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
     </div>
+  </div>
+
+  <!-- BADGES TAB -->
+  <div id="tab-badges" class="tab-panel">
+    <div class="card">
+      <div class="card-header">Player Profile</div>
+      <div class="profile-row">
+        <div class="profile-level"><span class="profile-lv">LV</span><span id="ach-level">1</span></div>
+        <div class="profile-info">
+          <div class="profile-title" id="ach-level-title">Novice</div>
+          <div class="profile-xp" id="ach-total-xp">0 XP</div>
+        </div>
+        <div class="profile-right">
+          <div class="profile-unlocked"><span id="ach-unlocked">0</span> / <span id="ach-total">0</span> badges <span class="profile-badge-xp" id="ach-badge-xp"></span></div>
+        </div>
+      </div>
+      <div class="profile-next" id="ach-next-xp"></div>
+      <div class="progress-track profile-track"><div class="progress-fill" id="ach-level-fill"></div></div>
+      <div class="profile-next-hint" id="ach-next-hint"></div>
+    </div>
+    <div class="card quest-card" id="quest-card">
+      <div class="card-header quest-head-row">
+        <span>Quests</span>
+        <span class="quest-count-pill">Daily <b id="quest-daily-count">0/0</b></span>
+        <span class="quest-count-pill">Weekly <b id="quest-weekly-count">0/0</b></span>
+        <select id="quest-board-select" class="quest-select" aria-label="Quest board">
+          <option value="daily">Daily board</option>
+          <option value="weekly">Weekly board</option>
+        </select>
+      </div>
+      <div id="quest-board"></div>
+    </div>
+    <div id="ach-groups"></div>
   </div>
 
   <!-- GAMES TAB -->
@@ -1888,6 +2327,10 @@
   <button class="tab-btn" data-tab="stats">
     <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></span>
     Stats
+  </button>
+  <button class="tab-btn" data-tab="badges">
+    <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 5M17 5h3a3 3 0 0 1-3 5"/></svg></span>
+    Badges
   </button>
   <button class="tab-btn" data-tab="games">
     <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.94 3.56L2 15.56a2.5 2.5 0 0 0 3.32 2.61l1.82-.68a1 1 0 0 1 .82 0l3.13 1.04a2.5 2.5 0 0 0 1.9 0l3.13-1.04a1 1 0 0 1 .82 0l1.82.68A2.5 2.5 0 0 0 22 15.56l-1.06-7A4 4 0 0 0 17.32 5z"/></svg></span>
@@ -2253,8 +2696,8 @@
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null }; }
   }
 
   function saveSettings(settings) {
@@ -2279,6 +2722,8 @@
   let lastStreak = null;
   let currentTab = 'today';
   let filterDate = todayStr();
+  let pendingTargetMin = 0;
+  let targetToastShown = false;
   let pendingDeleteGameId = null;
   let pendingRenameGameId = null;
   let editSessionId = null;
@@ -2288,6 +2733,14 @@
   function todayStr() {
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function weekStartStr() {
+    const d = new Date();
+    const dow = d.getDay();
+    const diff = dow === 0 ? -6 : 1 - dow;
+    const mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+    return mon.getFullYear() + '-' + String(mon.getMonth()+1).padStart(2,'0') + '-' + String(mon.getDate()).padStart(2,'0');
   }
 
   function fmtDuration(ms) {
@@ -2310,6 +2763,11 @@
     if (!iso) return '';
     const d = new Date(iso);
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function fmtDateShort(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   function dateKey(iso) {
@@ -2346,12 +2804,28 @@
     return Math.round(ms / 1000) + 's';
   }
 
-  function toast(msg) {
+  function toast(msg, actionLabel, onAction, timeoutMs) {
     const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
     clearTimeout(el._t);
-    el._t = setTimeout(() => el.classList.remove('show'), 2000);
+    if (actionLabel && typeof onAction === 'function') {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'toast-action';
+      btn.textContent = actionLabel;
+      btn.addEventListener('click', () => {
+        clearTimeout(el._t);
+        el.classList.remove('show');
+        onAction();
+      });
+      el.textContent = '';
+      el.appendChild(document.createTextNode(msg + ' '));
+      el.appendChild(btn);
+      el._t = setTimeout(() => el.classList.remove('show'), timeoutMs || 2000);
+    } else {
+      el.textContent = msg;
+      el._t = setTimeout(() => el.classList.remove('show'), timeoutMs || 2000);
+    }
+    el.classList.add('show');
   }
 
   // --- Theme ---
@@ -2588,8 +3062,14 @@
     games = normalizeGames(parsed.games);
     sessions = parsed.sessions;
     const localAccent = settings.accent;
+    const prevUnlocks = settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object' ? settings.achievementUnlocks : {};
+    const prevLevel = settings.achievementLevel || 0;
+    const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
     settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
     settings.accent = localAccent;
+    settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
+    settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
+    settings.questNotified = Object.assign({}, (settings.questNotified && typeof settings.questNotified === 'object') ? settings.questNotified : {}, prevQuestNotified);
     saveGames(games);
     saveSessions(sessions);
     saveSettings(settings);
@@ -2680,14 +3160,21 @@
   }
 
   // --- Tab switching ---
+  function goTab(name) {
+    currentTab = name;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+    document.querySelector('.app-content').classList.toggle('merged', name === 'today');
+    render();
+  }
   document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentTab = btn.dataset.tab;
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + currentTab));
-      document.querySelector('.app-content').classList.toggle('merged', currentTab === 'today');
-      render();
-    });
+    btn.addEventListener('click', () => goTab(btn.dataset.tab));
+  });
+
+  document.getElementById('quest-board-select').addEventListener('change', e => {
+    settings.questView = e.target.value;
+    saveSettings(settings);
+    renderAchievementsTab();
   });
 
   // --- Start game ---
@@ -2704,8 +3191,11 @@
       durationMs: null,
       synced: false,
       pauses: [],
-      pausedAt: null
+      pausedAt: null,
+      targetMs: pendingTargetMin * 60000 || 0
     };
+    pendingTargetMin = 0;
+    targetToastShown = false;
     sessions.push(session);
     activeSession = session;
     saveSessions(sessions);
@@ -2730,6 +3220,7 @@
     activeSession = null;
     toast('Session saved');
     render();
+    celebrate();
   }
 
   // --- Pause helpers ---
@@ -2767,11 +3258,37 @@
     document.getElementById('live-text').textContent = paused ? 'PAUSED' : 'LIVE';
   }
 
+  function updateLiveChase(elapsed) {
+    const el = document.getElementById('live-chase');
+    if (!el) return;
+    const Mx = computeAchStats();
+    const projected = {
+      totalMs: Mx.totalMs + elapsed,
+      longestMs: Math.max(Mx.longestMs, elapsed),
+      maxMsDay: Math.max(Mx.maxMsDay, (Mx.todayMs || 0) + elapsed)
+    };
+    let best = null;
+    ACHIEVEMENTS.forEach(a => {
+      if (a.unit !== 'ms') return;
+      const proj = a.cur(projected);
+      if (proj >= a.tgt) return;
+      const remaining = a.tgt - proj;
+      if (best === null || remaining < best.remaining) best = { title: a.title, remaining: remaining };
+    });
+    if (best) {
+      el.style.display = '';
+      el.innerHTML = 'Next badge: <b>' + best.title + '</b> \u2014 ' + fmtDurationShort(best.remaining) + ' to go';
+    } else {
+      el.style.display = 'none';
+    }
+  }
+
   // --- Render ---
   function render() {
     renderTodayTab();
     renderSessionsTab();
     renderStatsTab();
+    renderAchievementsTab();
     renderGamesTab();
   }
 
@@ -2872,6 +3389,7 @@
     if (isActive) {
       document.getElementById('active-game-name').textContent = activeSession.gameName;
       document.getElementById('active-start').textContent = fmtTime(activeSession.start);
+      document.getElementById('target-progress').style.display = activeSession.targetMs ? '' : 'none';
       updateLiveCardPauseState();
     }
 
@@ -2986,10 +3504,18 @@
 
       container.querySelectorAll('.session-delete').forEach(btn => {
         btn.addEventListener('click', () => {
-          sessions = sessions.filter(s => s.id !== btn.dataset.id);
+          const s = sessions.find(x => x.id === btn.dataset.id);
+          if (!s) return;
+          const idx = sessions.indexOf(s);
+          sessions = sessions.filter(x => x.id !== s.id);
           saveSessions(sessions);
-          toast('Session deleted');
           renderSessionsTab(false);
+          toast('Session deleted', 'Undo', () => {
+            sessions.splice(Math.min(idx, sessions.length), 0, s);
+            saveSessions(sessions);
+            renderSessionsTab(false);
+            if (isToday(s.start)) renderTodayTab();
+          }, 6000);
         });
       });
 
@@ -3116,11 +3642,497 @@
     }).join('');
   }
 
+  // --- Badges: catalog, helpers, and level ---
+  const ACH_CATS = [
+    { id: 'playtime', name: 'Playtime', icon: 'trophy' },
+    { id: 'sessions', name: 'Sessions', icon: 'clock' },
+    { id: 'streaks', name: 'Streaks', icon: 'streak' },
+    { id: 'variety', name: 'Game Variety', icon: 'star' },
+    { id: 'epic', name: 'Epic Sessions', icon: 'zap' },
+    { id: 'dedication', name: 'Dedication', icon: 'sunrise' }
+  ];
+
+  function achDef(id, cat, title, desc, icon, xp, unit, cur, tgt) {
+    return { id: id, cat: cat, title: title, desc: desc, icon: icon, xp: xp, unit: unit, cur: cur, tgt: tgt };
+  }
+
+  const ACHIEVEMENTS = [
+    achDef('p15', 'playtime', 'Warm-Up', 'Play 15 minutes in total', 'trophy', 50, 'ms', M => M.totalMs, 15 * 60000),
+    achDef('p1h', 'playtime', 'Hour One', 'Play 1 hour in total', 'trophy', 100, 'ms', M => M.totalMs, 3600000),
+    achDef('p5h', 'playtime', 'Session Stacker', 'Play 5 hours in total', 'trophy', 150, 'ms', M => M.totalMs, 5 * 3600000),
+    achDef('p10h', 'playtime', 'Double Digits', 'Play 10 hours in total', 'trophy', 200, 'ms', M => M.totalMs, 10 * 3600000),
+    achDef('p25h', 'playtime', 'Quarter Century', 'Play 25 hours in total', 'trophy', 300, 'ms', M => M.totalMs, 25 * 3600000),
+    achDef('p50h', 'playtime', 'Halfway There', 'Play 50 hours in total', 'trophy', 400, 'ms', M => M.totalMs, 50 * 3600000),
+    achDef('p100h', 'playtime', 'Centurion', 'Play 100 hours in total', 'trophy', 600, 'ms', M => M.totalMs, 100 * 3600000),
+    achDef('p250h', 'playtime', 'Heavyweight', 'Play 250 hours in total', 'trophy', 800, 'ms', M => M.totalMs, 250 * 3600000),
+    achDef('p500h', 'playtime', 'Iron Player', 'Play 500 hours in total', 'trophy', 1000, 'ms', M => M.totalMs, 500 * 3600000),
+    achDef('p1000h', 'playtime', 'PlayDex Legend', 'Play 1,000 hours in total', 'trophy', 1500, 'ms', M => M.totalMs, 1000 * 3600000),
+    achDef('s1', 'sessions', 'First Steps', 'Log your first session', 'clock', 50, 'num', M => M.count, 1),
+    achDef('s10', 'sessions', 'Getting Started', 'Log 10 sessions', 'clock', 75, 'num', M => M.count, 10),
+    achDef('s25', 'sessions', 'Dedicated', 'Log 25 sessions', 'clock', 100, 'num', M => M.count, 25),
+    achDef('s50', 'sessions', 'Regular', 'Log 50 sessions', 'clock', 150, 'num', M => M.count, 50),
+    achDef('s100', 'sessions', 'Sprint Century', 'Log 100 sessions', 'clock', 200, 'num', M => M.count, 100),
+    achDef('s250', 'sessions', 'Marathoner', 'Log 250 sessions', 'clock', 300, 'num', M => M.count, 250),
+    achDef('s500', 'sessions', 'Veteran', 'Log 500 sessions', 'clock', 400, 'num', M => M.count, 500),
+    achDef('s1000', 'sessions', 'Grand Duke', 'Log 1,000 sessions', 'clock', 600, 'num', M => M.count, 1000),
+    achDef('s2000', 'sessions', 'Untouchable', 'Log 2,000 sessions', 'clock', 800, 'num', M => M.count, 2000),
+    achDef('s5000', 'sessions', 'Hall of Fame', 'Log 5,000 sessions', 'clock', 1000, 'num', M => M.count, 5000),
+    achDef('k3', 'streaks', 'On a Roll', 'Play 3 days in a row', 'streak', 75, 'num', M => M.longestStreak, 3),
+    achDef('k7', 'streaks', 'Week Warrior', 'Play 7 days in a row', 'streak', 150, 'num', M => M.longestStreak, 7),
+    achDef('k14', 'streaks', 'Fortnight', 'Play 14 days in a row', 'streak', 250, 'num', M => M.longestStreak, 14),
+    achDef('k30', 'streaks', 'Monthly Grind', 'Play 30 days in a row', 'streak', 400, 'num', M => M.longestStreak, 30),
+    achDef('k60', 'streaks', 'Unstoppable', 'Play 60 days in a row', 'streak', 600, 'num', M => M.longestStreak, 60),
+    achDef('k90', 'streaks', 'Seasons', 'Play 90 days in a row', 'streak', 800, 'num', M => M.longestStreak, 90),
+    achDef('k180', 'streaks', 'Half a Year', 'Play 180 days in a row', 'streak', 1200, 'num', M => M.longestStreak, 180),
+    achDef('k365', 'streaks', 'Whole Year', 'Play 365 days in a row', 'streak', 2000, 'num', M => M.longestStreak, 365),
+    achDef('v3', 'variety', 'Explorer I', 'Play 3 different games', 'star', 75, 'num', M => M.distinctGames, 3),
+    achDef('v5', 'variety', 'Explorer II', 'Play 5 different games', 'star', 125, 'num', M => M.distinctGames, 5),
+    achDef('v10', 'variety', 'Explorer III', 'Play 10 different games', 'star', 200, 'num', M => M.distinctGames, 10),
+    achDef('v15', 'variety', 'Globetrotter', 'Play 15 different games', 'star', 300, 'num', M => M.distinctGames, 15),
+    achDef('v25', 'variety', 'Cartographer', 'Play 25 different games', 'star', 500, 'num', M => M.distinctGames, 25),
+    achDef('e1h', 'epic', 'Sitting Duck', 'Play a single session of 1 hour', 'zap', 100, 'ms', M => M.longestMs, 3600000),
+    achDef('e2h', 'epic', 'Marathon One', 'Play a single session of 2 hours', 'zap', 150, 'ms', M => M.longestMs, 2 * 3600000),
+    achDef('e4h', 'epic', 'Iron Stomach', 'Play a single session of 4 hours', 'zap', 250, 'ms', M => M.longestMs, 4 * 3600000),
+    achDef('e6h', 'epic', 'Daylight Stealer', 'Play a single session of 6 hours', 'zap', 400, 'ms', M => M.longestMs, 6 * 3600000),
+    achDef('e10h', 'epic', 'Endurance Myth', 'Play a single session of 10 hours', 'zap', 600, 'ms', M => M.longestMs, 10 * 3600000),
+    achDef('d3h', 'dedication', 'Marathon Day', 'Play 3 hours in a single day', 'clock', 150, 'ms', M => M.maxMsDay, 3 * 3600000),
+    achDef('dbusy', 'dedication', 'Busy Day', 'Log 10 sessions in a single day', 'clock', 200, 'num', M => M.maxSessionsDay, 10),
+    achDef('dearly', 'dedication', 'Early Bird', 'Start 5 sessions before 8 AM', 'sunrise', 150, 'num', M => M.earlyBird, 5),
+    achDef('dnight', 'dedication', 'Night Owl', 'Start 5 sessions after midnight', 'moon', 150, 'num', M => M.nightOwl, 5),
+    achDef('d100', 'dedication', 'Regular Guest', 'Play on 100 distinct days', 'medal', 300, 'num', M => M.distinctDays, 100),
+    achDef('d365', 'dedication', 'Home Turf', 'Play on 365 distinct days', 'medal', 600, 'num', M => M.distinctDays, 365)
+  ];
+
+  function fmtNum(n) {
+    return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function levelTitle(level) {
+    if (level >= 40) return 'Mythic';
+    if (level >= 35) return 'Legend';
+    if (level >= 30) return 'Grandmaster';
+    if (level >= 25) return 'Master';
+    if (level >= 20) return 'Elite';
+    if (level >= 16) return 'Virtuoso';
+    if (level >= 12) return 'Dedicated';
+    if (level >= 8) return 'Gamer';
+    if (level >= 5) return 'Player';
+    if (level >= 3) return 'Apprentice';
+    return 'Novice';
+  }
+
+  function levelInfo(totalXp) {
+    let level = 1, spent = 0;
+    for (;;) {
+      const need = 120 + 18 * (level - 1);
+      if (spent + need > totalXp) break;
+      spent += need;
+      level++;
+    }
+    const need = 120 + 18 * (level - 1);
+    return { level: level, cur: totalXp - spent, need: need, title: levelTitle(level) };
+  }
+
+  function computeAchStats() {
+    const completed = sessions.filter(s => s.stop !== null);
+    const totalMs = completed.reduce((a, s) => a + (s.durationMs || 0), 0);
+    const gameIds = new Set(completed.map(s => s.gameId));
+    const days = new Set(completed.map(s => dateKey(s.start)));
+    const t = todayStr();
+    const w = weekStartStr();
+    const todayGameIds = new Set();
+    const weekGameIds = new Set();
+    const weekDays = new Set();
+    let longestMs = 0;
+    let todayLongestMs = 0;
+    let weekMs = 0, weekCount = 0, weekLongestMs = 0;
+    let earlyBird = 0, nightOwl = 0;
+    const byDay = {};
+    const sessionsByDay = {};
+    completed.forEach(s => {
+      const ms = s.durationMs || 0;
+      if (ms > longestMs) longestMs = ms;
+      const d = dateKey(s.start);
+      byDay[d] = (byDay[d] || 0) + ms;
+      sessionsByDay[d] = (sessionsByDay[d] || 0) + 1;
+      if (d === t) {
+        todayGameIds.add(s.gameId);
+        if (ms > todayLongestMs) todayLongestMs = ms;
+      }
+      if (d >= w) {
+        weekMs += ms;
+        weekCount++;
+        weekGameIds.add(s.gameId);
+        weekDays.add(d);
+        if (ms > weekLongestMs) weekLongestMs = ms;
+      }
+      const h = new Date(s.start).getHours();
+      if (h >= 5 && h < 8) earlyBird++;
+      if (h < 5) nightOwl++;
+    });
+
+    const playDayList = Array.from(days).sort();
+    let longestStreak = 0, run = 0, prev = null;
+    playDayList.forEach(d => {
+      run = (prev && addDays(prev, 1) === d) ? run + 1 : 1;
+      prev = d;
+      if (run > longestStreak) longestStreak = run;
+    });
+
+    const dayVals = Object.values(byDay);
+    const sessDayVals = Object.values(sessionsByDay);
+
+    let playXp = 0;
+    dayVals.forEach(ms => {
+      playXp += Math.min(50, Math.floor(ms / 600000) * 2);
+    });
+
+    return {
+      totalMs: totalMs,
+      count: completed.length,
+      distinctGames: gameIds.size,
+      longestMs: longestMs,
+      longestStreak: longestStreak,
+      maxSessionsDay: sessDayVals.length ? Math.max.apply(null, sessDayVals) : 0,
+      maxMsDay: dayVals.length ? Math.max.apply(null, dayVals) : 0,
+      earlyBird: earlyBird,
+      nightOwl: nightOwl,
+      distinctDays: days.size,
+      playXp: playXp,
+      todayMs: byDay[t] || 0,
+      todayCount: sessionsByDay[t] || 0,
+      todayGames: todayGameIds.size,
+      todayLongestMs: todayLongestMs,
+      weekMs: weekMs,
+      weekCount: weekCount,
+      weekGames: weekGameIds.size,
+      weekDays: weekDays.size,
+      weekLongestMs: weekLongestMs
+    };
+  }
+
+  function achProgressText(s) {
+    const a = s.def;
+    const fmt = a.unit === 'ms' ? fmtDurationShort : fmtNum;
+    return fmt(s.cur) + ' / ' + fmt(a.tgt);
+  }
+
+  function achCardHtml(s) {
+    const a = s.def;
+    const status = s.unlocked
+      ? '<span class="ach-check">' + iconSvg('check') + 'Unlocked</span>'
+      : '<span class="ach-progress-text">' + achProgressText(s) + '</span>';
+    const track = !s.unlocked ? '<div class="progress-track ach-track"><div class="progress-fill" style="width:' + s.pct + '%"></div></div>' : '';
+    const unstamp = s.unlocked && settings.achievementUnlocks ? settings.achievementUnlocks[a.id] : null;
+    return '<div class="ach-card' + (s.unlocked ? ' unlocked' : '') + '">' +
+      '<span class="ach-medal">' + iconSvg(a.icon) + '</span>' +
+      '<div class="ach-body">' +
+        '<div class="ach-title">' + a.title + '</div>' +
+        '<div class="ach-desc">' + a.desc + '</div>' +
+        '<div class="ach-status-row">' + status + '<span class="ach-xp">+' + fmtNum(a.xp) + ' XP</span></div>' +
+        (unstamp ? '<div class="ach-unlocked-date">Unlocked ' + fmtDateShort(unstamp) + '</div>' : '') +
+        track +
+      '</div>' +
+    '</div>';
+  }
+
+  function buildBadgeStats() {
+    const M = computeAchStats();
+    const stats = ACHIEVEMENTS.map(a => {
+      const cur = a.cur(M);
+      const unlocked = cur >= a.tgt;
+      const pct = a.tgt > 0 ? Math.max(0, Math.min(100, Math.round(cur / a.tgt * 100))) : 0;
+      return { def: a, cur: cur, unlocked: unlocked, pct: pct };
+    });
+    const unlocked = stats.filter(s => s.unlocked);
+    const badgeXp = unlocked.reduce((sum, s) => sum + s.def.xp, 0);
+    const daily = dailyPicks().map(q => { const p = questProgress(q, M); return { q: q, cur: p.cur, done: p.done }; });
+    const weekly = weeklyPicks().map(q => { const p = questProgress(q, M); return { q: q, cur: p.cur, done: p.done }; });
+    const questXp = daily.reduce((a, r) => a + (r.done ? QUEST_XP_DAILY : 0), 0) +
+                    weekly.reduce((a, r) => a + (r.done ? QUEST_XP_WEEKLY : 0), 0);
+    return { M: M, stats: stats, unlocked: unlocked, badgeXp: badgeXp, playXp: M.playXp, daily: daily, weekly: weekly, questXp: questXp, totalXp: badgeXp + M.playXp + questXp };
+  }
+
+  const QUEST_XP_DAILY = 50;
+  const QUEST_XP_WEEKLY = 100;
+  const QUEST_COUNT = 5;
+  const DAILY_POOL = [
+    { id: 'play10', title: 'Play for 10 minutes today', unit: 'ms', tgt: 10 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play15', title: 'Play for 15 minutes today', unit: 'ms', tgt: 15 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play30', title: 'Play for 30 minutes today', unit: 'ms', tgt: 30 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play45', title: 'Play for 45 minutes today', unit: 'ms', tgt: 45 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play60', title: 'Play for an hour today', unit: 'ms', tgt: 60 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play90', title: 'Play for 90 minutes today', unit: 'ms', tgt: 90 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'play120', title: 'Play for 2 hours today', unit: 'ms', tgt: 120 * 60000, cur: M => M.todayMs || 0 },
+    { id: 'sess1', title: 'Log a session today', unit: 'num', tgt: 1, cur: M => M.todayCount || 0 },
+    { id: 'sess2', title: 'Log 2 sessions today', unit: 'num', tgt: 2, cur: M => M.todayCount || 0 },
+    { id: 'sess3', title: 'Log 3 sessions today', unit: 'num', tgt: 3, cur: M => M.todayCount || 0 },
+    { id: 'sess4', title: 'Log 4 sessions today', unit: 'num', tgt: 4, cur: M => M.todayCount || 0 },
+    { id: 'sess5', title: 'Log 5 sessions today', unit: 'num', tgt: 5, cur: M => M.todayCount || 0 },
+    { id: 'sess6', title: 'Log 6 sessions today', unit: 'num', tgt: 6, cur: M => M.todayCount || 0 },
+    { id: 'games2', title: 'Play 2 different games today', unit: 'games', tgt: 2, cur: M => M.todayGames || 0 },
+    { id: 'games3', title: 'Play 3 different games today', unit: 'games', tgt: 3, cur: M => M.todayGames || 0 },
+    { id: 'games4', title: 'Play 4 different games today', unit: 'games', tgt: 4, cur: M => M.todayGames || 0 },
+    { id: 'games5', title: 'Play 5 different games today', unit: 'games', tgt: 5, cur: M => M.todayGames || 0 },
+    { id: 'ses20', title: 'Log a single 20-minute session today', unit: 'long', tgt: 20 * 60000, cur: M => M.todayLongestMs || 0 },
+    { id: 'ses30', title: 'Log a single 30-minute session today', unit: 'long', tgt: 30 * 60000, cur: M => M.todayLongestMs || 0 },
+    { id: 'ses45', title: 'Log a single 45-minute session today', unit: 'long', tgt: 45 * 60000, cur: M => M.todayLongestMs || 0 },
+    { id: 'ses60', title: 'Log a single 1-hour session today', unit: 'long', tgt: 60 * 60000, cur: M => M.todayLongestMs || 0 },
+    { id: 'ses90', title: 'Log a single 90-minute session today', unit: 'long', tgt: 90 * 60000, cur: M => M.todayLongestMs || 0 }
+  ];
+  const WEEKLY_POOL = [
+    { id: 'w2t', title: 'Play 2 hours this week', unit: 'ms', tgt: 2 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w3t', title: 'Play 3 hours this week', unit: 'ms', tgt: 3 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w4t', title: 'Play 4 hours this week', unit: 'ms', tgt: 4 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w5t', title: 'Play 5 hours this week', unit: 'ms', tgt: 5 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w7t', title: 'Play 7 hours this week', unit: 'ms', tgt: 7 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w10t', title: 'Play 10 hours this week', unit: 'ms', tgt: 10 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w12t', title: 'Play 12 hours this week', unit: 'ms', tgt: 12 * 3600000, cur: M => M.weekMs || 0 },
+    { id: 'w8s', title: 'Log 8 sessions this week', unit: 'num', tgt: 8, cur: M => M.weekCount || 0 },
+    { id: 'w10s', title: 'Log 10 sessions this week', unit: 'num', tgt: 10, cur: M => M.weekCount || 0 },
+    { id: 'w12s', title: 'Log 12 sessions this week', unit: 'num', tgt: 12, cur: M => M.weekCount || 0 },
+    { id: 'w15s', title: 'Log 15 sessions this week', unit: 'num', tgt: 15, cur: M => M.weekCount || 0 },
+    { id: 'w20s', title: 'Log 20 sessions this week', unit: 'num', tgt: 20, cur: M => M.weekCount || 0 },
+    { id: 'w3g', title: 'Play 3 different games this week', unit: 'games', tgt: 3, cur: M => M.weekGames || 0 },
+    { id: 'w4g', title: 'Play 4 different games this week', unit: 'games', tgt: 4, cur: M => M.weekGames || 0 },
+    { id: 'w5g', title: 'Play 5 different games this week', unit: 'games', tgt: 5, cur: M => M.weekGames || 0 },
+    { id: 'w6g', title: 'Play 6 different games this week', unit: 'games', tgt: 6, cur: M => M.weekGames || 0 },
+    { id: 'w8g', title: 'Play 8 different games this week', unit: 'games', tgt: 8, cur: M => M.weekGames || 0 },
+    { id: 'w10g', title: 'Play 10 different games this week', unit: 'games', tgt: 10, cur: M => M.weekGames || 0 },
+    { id: 'w3d', title: 'Play on 3 different days this week', unit: 'num', tgt: 3, cur: M => M.weekDays || 0 },
+    { id: 'w4d', title: 'Play on 4 different days this week', unit: 'num', tgt: 4, cur: M => M.weekDays || 0 },
+    { id: 'w5d', title: 'Play on 5 different days this week', unit: 'num', tgt: 5, cur: M => M.weekDays || 0 },
+    { id: 'w6d', title: 'Play on 6 different days this week', unit: 'num', tgt: 6, cur: M => M.weekDays || 0 },
+    { id: 'w7d', title: 'Play on every day this week', unit: 'num', tgt: 7, cur: M => M.weekDays || 0 },
+    { id: 'w90m', title: 'Log a single 90-minute session this week', unit: 'long', tgt: 90 * 60000, cur: M => M.weekLongestMs || 0 },
+    { id: 'w2hs', title: 'Log a single 2-hour session this week', unit: 'long', tgt: 2 * 3600000, cur: M => M.weekLongestMs || 0 },
+    { id: 'w3hs', title: 'Log a single 3-hour session this week', unit: 'long', tgt: 3 * 3600000, cur: M => M.weekLongestMs || 0 },
+    { id: 'w4hs', title: 'Log a single 4-hour session this week', unit: 'long', tgt: 4 * 3600000, cur: M => M.weekLongestMs || 0 }
+  ];
+
+  function hashStr(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  function mulberry32(seed) {
+    let a = seed;
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function drawN(pool, n, seed) {
+    const arr = pool.slice();
+    const rnd = mulberry32(seed);
+    for (let i = 0; i < n && i < arr.length; i++) {
+      const j = i + Math.floor(rnd() * (arr.length - i));
+      const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr.slice(0, n);
+  }
+
+  function refreshPicks(type) {
+    const isDaily = type === 'daily';
+    const key = isDaily ? todayStr() : weekStartStr();
+    const store = settings[isDaily ? 'dailyQuestPicks' : 'weeklyQuestPicks'];
+    const pool = isDaily ? DAILY_POOL : WEEKLY_POOL;
+    if (store && store.key === key && Array.isArray(store.ids) && store.ids.length === QUEST_COUNT) {
+      return pool.filter(q => store.ids.indexOf(q.id) !== -1);
+    }
+    const pick = drawN(pool, QUEST_COUNT, hashStr(key));
+    settings[isDaily ? 'dailyQuestPicks' : 'weeklyQuestPicks'] = { key: key, ids: pick.map(q => q.id) };
+    saveSettings(settings);
+    return pick;
+  }
+
+  function dailyPicks() { return refreshPicks('daily'); }
+
+  function weeklyPicks() { return refreshPicks('weekly'); }
+
+  function questProgress(q, M) {
+    const live = activeSession && !activeSession.pausedAt ? activeElapsedMs(activeSession, Date.now()) : 0;
+    let cur = q.cur(M);
+    if (q.unit === 'ms') cur += live;
+    else if (q.unit === 'long') cur = Math.max(cur, live);
+    else if (q.unit === 'bool' && activeSession) cur = 1;
+    return { cur: cur, done: cur >= q.tgt };
+  }
+
+  function questRowHtml(r, xp) {
+    const pct = Math.max(0, Math.min(100, Math.round(r.cur / r.q.tgt * 100)));
+    const text = r.q.unit === 'games' ? fmtNum(r.cur) + ' / ' + fmtNum(r.q.tgt) + ' games'
+      : r.q.unit === 'bool' ? (r.done ? 'Done' : 'Not yet')
+      : (r.q.unit === 'ms' || r.q.unit === 'long') ? fmtDurationShort(r.cur) + ' / ' + fmtDurationShort(r.q.tgt)
+      : fmtNum(r.cur) + ' / ' + fmtNum(r.q.tgt);
+    return '<div class="quest-row' + (r.done ? ' done' : '') + '">' +
+      '<div class="quest-row-icon">' + iconSvg(r.done ? 'check' : 'zap') + '</div>' +
+      '<div class="quest-row-body">' +
+        '<div class="quest-row-title">' + r.q.title + '</div>' +
+        '<div class="progress-track quest-row-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+        '<div class="quest-row-meta">' + text + '</div>' +
+      '</div>' +
+      '<div class="quest-row-right">' +
+        (r.done ? '<span class="ach-check">' + iconSvg('check') + 'Done</span>' : '') +
+        '<span class="quest-bounty">+' + xp + ' XP</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function questBoardHtml(rows, xp) {
+    return rows.map(r => questRowHtml(r, xp)).join('');
+  }
+
+  function renderAchievementsTab() {
+    const B = buildBadgeStats();
+    const M = B.M;
+    const stats = B.stats;
+    const unlocked = B.unlocked;
+    const totalXp = B.totalXp;
+
+    const qc = document.getElementById('quest-card');
+    if (qc) {
+      const view = settings.questView === 'weekly' ? 'weekly' : 'daily';
+      const board = B[view];
+      const xp = view === 'daily' ? QUEST_XP_DAILY : QUEST_XP_WEEKLY;
+      const doneCount = board.filter(r => r.done).length;
+      qc.classList.toggle('done', doneCount === board.length);
+      const sel = document.getElementById('quest-board-select');
+      if (sel && sel.value !== view) sel.value = view;
+      const fillPill = (elId, boardArr) => {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        const doneN = boardArr.filter(r => r.done).length;
+        el.textContent = doneN + '/' + boardArr.length;
+        el.classList.toggle('has-done', doneN > 0);
+      };
+      fillPill('quest-daily-count', B.daily);
+      fillPill('quest-weekly-count', B.weekly);
+      document.getElementById('quest-board').innerHTML = questBoardHtml(board, xp);
+    }
+
+    const groupsEl = document.getElementById('ach-groups');
+    let html = '';
+    ACH_CATS.forEach(cat => {
+      const items = stats.filter(s => s.def.cat === cat.id).sort((x, y) => (y.unlocked - x.unlocked) || (y.pct - x.pct));
+      html += '<div class="ach-section fade-in" style="--i:0ms">' +
+        '<div class="ach-section-header">' + iconSvg(cat.icon) + '<span>' + cat.name + '</span>' +
+        '<span class="ach-section-count">' + items.filter(s => s.unlocked).length + '/' + items.length + '</span></div>' +
+        '<div class="ach-grid">' + items.map(achCardHtml).join('') + '</div>' +
+      '</div>';
+    });
+    groupsEl.innerHTML = html;
+
+    document.getElementById('ach-unlocked').textContent = unlocked.length;
+    document.getElementById('ach-total').textContent = ACHIEVEMENTS.length;
+    document.getElementById('ach-total-xp').textContent = fmtNum(totalXp) + ' XP';
+    const maxBadgeXp = ACHIEVEMENTS.reduce((sum, x) => sum + x.xp, 0);
+    document.getElementById('ach-badge-xp').textContent = maxBadgeXp > 0
+      ? '\u00b7 ' + fmtNum(B.badgeXp) + ' / ' + fmtNum(maxBadgeXp) + ' XP (' + Math.round(B.badgeXp / maxBadgeXp * 100) + '%)'
+      : '';
+
+    const lv = levelInfo(totalXp);
+    document.getElementById('ach-level').textContent = lv.level;
+    document.getElementById('ach-level-title').textContent = lv.title;
+    document.getElementById('ach-level-fill').style.width = Math.max(0, Math.min(100, Math.round(lv.cur / lv.need * 100))) + '%';
+    document.getElementById('ach-next-xp').textContent = fmtNum(lv.cur) + ' / ' + fmtNum(lv.need) + ' XP to Level ' + (lv.level + 1);
+
+    const nextBadge = stats.filter(s => !s.unlocked).sort((a, b) => b.pct - a.pct)[0];
+    document.getElementById('ach-next-hint').textContent = nextBadge
+      ? 'Next badge: ' + nextBadge.def.title + ' \u2014 ' + achProgressText(nextBadge)
+      : 'All ' + ACHIEVEMENTS.length + ' badges unlocked \u2014 you are a legend!';
+
+    celebrate();
+  }
+
+  function celebrate() {
+    const B = buildBadgeStats();
+    const fresh = loadSettings();
+    settings.achievementUnlocks = fresh.achievementUnlocks && typeof fresh.achievementUnlocks === 'object' ? fresh.achievementUnlocks : {};
+    settings.questNotified = fresh.questNotified && typeof fresh.questNotified === 'object' ? fresh.questNotified : {};
+    const prev = settings.achievementUnlocks;
+    const newly = B.unlocked.filter(s => !prev[s.def.id]);
+    if (newly.length) {
+      newly.forEach(s => { prev[s.def.id] = new Date().toISOString(); });
+      saveSettings(settings);
+      if (newly.length === 1) {
+        const s = newly[0];
+        toast('Badge unlocked: ' + s.def.title + ' (+' + fmtNum(s.def.xp) + ' XP)', 'View', () => goTab('badges'), 6000);
+      } else if (newly.length <= 3) {
+        toast(newly.length + ' badges earned: ' + newly.map(s => s.def.title).join(', ') + ' (+' + fmtNum(newly.reduce((a, s) => a + s.def.xp, 0)) + ' XP)', 'View', () => goTab('badges'), 6000);
+      } else {
+        toast(newly.length + ' new badges unlocked! +' + fmtNum(newly.reduce((a, s) => a + s.def.xp, 0)) + ' XP', 'View', () => goTab('badges'), 6000);
+      }
+    }
+
+    const qt = settings.questNotified;
+    [['daily', QUEST_XP_DAILY, todayStr()], ['weekly', QUEST_XP_WEEKLY, weekStartStr()]].forEach(pair => {
+      const bd = pair[0], xp = pair[1], key = pair[2];
+      const track = (qt[bd] = qt[bd] && typeof qt[bd] === 'object' ? qt[bd] : { key: '', ids: {} });
+      if (track.key !== key) { track.key = key; track.ids = {}; }
+      const freshQ = B[bd].filter(r => r.done && !track.ids[r.q.id]);
+      if (freshQ.length) {
+        freshQ.forEach(r => { track.ids[r.q.id] = true; });
+        saveSettings(settings);
+        toast(freshQ.length === 1
+          ? freshQ[0].q.title + ' complete! (+' + xp + ' XP)'
+          : freshQ.length + ' quests complete: ' + freshQ.map(r => r.q.title).join(', ') + ' (+' + fmtNum(freshQ.length * xp) + ' XP)',
+          'View', () => goTab('badges'), 6000);
+      }
+    });
+
+    const lv = levelInfo(B.totalXp);
+    const prevLevel = fresh.achievementLevel || 0;
+    if (lv.level > prevLevel) {
+      settings.achievementLevel = lv.level;
+      saveSettings(settings);
+      const extra = newly.length ? ' \u2014 ' + newly.length + ' new badge' + (newly.length > 1 ? 's' : '') + ' included' : '';
+      toast('Level up! LV ' + lv.level + ' \u2014 ' + lv.title + extra, 'View', () => goTab('badges'), 7000);
+      const lvTile = document.getElementById('ach-level');
+      if (lvTile) {
+        lvTile.classList.remove('tick');
+        void lvTile.offsetWidth;
+        lvTile.classList.add('tick');
+      }
+    }
+  }
+
   function renderGamesTab() {
     const container = document.getElementById('games-list');
     const nameSort = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
     const active = games.filter(g => !g.archived).sort(nameSort);
     const archived = games.filter(g => g.archived).sort(nameSort);
+
+    const gs = {};
+    sessions.forEach(s => {
+      if (s.stop === null) return;
+      const e = (gs[s.gameId] = gs[s.gameId] || { count: 0, first: Infinity, last: 0 });
+      e.count++;
+      const t = new Date(s.start).getTime();
+      if (t < e.first) e.first = t;
+      if (t > e.last) e.last = t;
+    });
+
+    const gameMeta = (count, e) => {
+      let last = '', perWeek = '';
+      if (e.count > 0) {
+        last = 'Last played ' + fmtDate(new Date(e.last).toISOString());
+        const spanWks = (e.last - e.first) / 604800000;
+        if (spanWks >= 1) perWeek = (e.count / spanWks).toFixed(1) + '/wk';
+      }
+      return '<div class="game-item-meta">' +
+        '<span class="game-item-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</span>' +
+        (last ? '<span class="game-item-last">' + last + '</span>' : '') +
+        (perWeek ? '<span class="game-item-freq">' + perWeek + '</span>' : '') +
+      '</div>';
+    };
 
     if (games.length === 0) {
       container.innerHTML =
@@ -3135,10 +4147,11 @@
     } else {
       html += active.map((g, i) => {
         const count = sessions.filter(s => s.gameId === g.id).length;
+        const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info">' +
             '<div class="game-item-name">' + escHtml(g.name) + '</div>' +
-            '<div class="game-item-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</div>' +
+            gameMeta(count, e) +
           '</div>' +
           '<div class="game-item-actions">' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
@@ -3154,10 +4167,11 @@
       html += '<div class="archive-section-label">Archived</div>';
       html += archived.map((g, i) => {
         const count = sessions.filter(s => s.gameId === g.id).length;
+        const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info">' +
             '<div class="game-item-name">' + escHtml(g.name) + '</div>' +
-            '<div class="game-item-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</div>' +
+            gameMeta(count, e) +
           '</div>' +
           '<div class="game-item-actions">' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
@@ -3280,7 +4294,14 @@
     emptyActive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
     emptyDashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
     pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>',
-    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+    trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 5M17 5h3a3 3 0 0 1-3 5"/></svg>',
+    medal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M8.5 13.5L7 22l5-3 5 3-1.5-8.5"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.26L21.5 9.2l-4.8 4.4 1.2 6.42L12 16.9 6.1 20.02l1.2-6.42L2.5 9.2l6.6-.94L12 2z"/></svg>',
+    zap: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>',
+    sunrise: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a5 5 0 0 0-10 0M12 2v7M4.2 9.2l1.4 1.4M19.8 9.2l-1.4 1.4M2 18h20M4 22h16"/></svg>',
+    moon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>'
   };
   function iconSvg(name) {
     return ICONS[name] || '';
@@ -3318,6 +4339,25 @@
   // --- Stop button ---
   document.getElementById('btn-stop').addEventListener('click', stopSession);
   document.getElementById('btn-pause').addEventListener('click', togglePause);
+
+  // --- Session target picker ---
+  document.querySelectorAll('.target-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.target-opt').forEach(b => b.classList.toggle('on', b === btn));
+      pendingTargetMin = Number(btn.dataset.target) || 0;
+      document.getElementById('target-custom').value = '';
+    });
+  });
+
+  document.getElementById('target-custom').addEventListener('input', e => {
+    const v = Math.min(1440, Math.max(0, Math.floor(Number(e.target.value) || 0)));
+    pendingTargetMin = v;
+    document.querySelectorAll('.target-opt').forEach(b => b.classList.remove('on'));
+    if (v > 0) {
+      const preset = document.querySelector('.target-opt[data-target="' + v + '"]');
+      if (preset) preset.classList.add('on');
+    }
+  });
 
   // --- Filter date ---
   const filterDateField = createCalField('filter-date', v => {
@@ -3838,6 +4878,7 @@
       const sec = Math.floor(elapsed / 1000);
       if (sec !== lastElapsedSec) {
         lastElapsedSec = sec;
+        updateLiveChase(elapsed);
         el.classList.remove('tick');
         void el.offsetWidth;
         el.classList.add('tick');
@@ -3846,6 +4887,20 @@
       if (nowStr !== lastClockStr) {
         lastClockStr = nowStr;
         document.getElementById('active-current').textContent = nowStr;
+      }
+      const tgt = activeSession.targetMs;
+      const tp = document.getElementById('target-progress');
+      if (tgt > 0) {
+        tp.style.display = '';
+        const pct = Math.min(100, Math.round(elapsed / tgt * 100));
+        document.getElementById('target-fill').style.width = pct + '%';
+        document.getElementById('target-text').textContent = fmtDurationShort(elapsed) + ' of ' + fmtDurationShort(tgt) + ' (' + pct + '%)';
+        if (elapsed >= tgt && !targetToastShown) {
+          targetToastShown = true;
+          toast('Target reached!');
+        }
+      } else {
+        tp.style.display = 'none';
       }
     }
     timerRaf = requestAnimationFrame(updateTimer);
@@ -3977,7 +5032,7 @@
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.1.1';
+    const APP_VERSION = '1.1.2';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
