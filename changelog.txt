@@ -12,6 +12,8 @@ Version 1.1.1
 - Deleted sessions can be undone from the confirmation toast.
 - You can set an optional time target when starting a session and watch
   progress toward it on the timer card.
+- A new Badges tab tracks milestone achievements, play streaks, and a player
+  level earned from your play history.
 
 Version 1.1.0
 -------------------
