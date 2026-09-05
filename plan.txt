@@ -68,11 +68,6 @@ Sessions CSV export ARE implemented - left out.
     streak — computed from sessions[], no schema change."
     - Scope: small. Risk: low.
 
-14. Haptics on badge unlock
-    "navigator.vibrate(80) when a badge unlocks or on level-up, plus an
-    optional in-app toggle (Settings) defaulting off on desktop."
-    - Scope: tiny. Risk: low (guard navigator.vibrate existence).
-
 15. Recently unlocked strip in the Player Profile
     "Show the last few badge icons with relative unlock time (e.g. '2h ago'),
     sourced from the persisted settings.achievementUnlocks timestamps."

@@ -1,6 +1,20 @@
 PlayDex - Changelog
 ====================
 
+Version 1.1.3
+-------------------
+- Achievement celebrations never repeat: a notification you have already seen
+  does not come back again.
+- Earned badge cards now show the date they were unlocked.
+- Daily and weekly quests are now drawn at random — a fresh set of five each day
+  from 22 daily goals and each Monday from 27 weekly goals — and the Quests
+  header shows how many daily and weekly goals you have completed.
+- The player profile shows how much achievement XP you have earned (with a share
+  of the maximum) and how much XP remains to the next level beside the level bar.
+- 14 new badges extend Game Variety, Epic Sessions, and Dedication with
+  game-count ladders, 3- and 8-hour sessions, single-day play and session
+  records, day-count milestones, and early-bird and night-owl chains.
+
 Version 1.1.2
 -------------------
 - Badge cards now flow into multiple columns on wide screens, and the player
