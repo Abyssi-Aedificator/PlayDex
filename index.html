@@ -1535,6 +1535,30 @@
     box-shadow: 0 8px 20px -14px var(--accent-violet);
   }
 
+  .ach-card.ach-uncommon.unlocked {
+    border-color: var(--accent);
+  }
+
+  .ach-card.ach-rare.unlocked {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), 0 10px 26px -16px var(--accent);
+  }
+
+  .ach-card.ach-legend.unlocked {
+    border-color: #f5c518;
+    background: var(--accent-dim);
+    box-shadow: 0 0 0 1px rgba(245, 197, 24, 0.45), 0 0 24px -6px #f5c518;
+  }
+
+  @keyframes ach-glow {
+    0%, 100% { box-shadow: 0 0 0 0 var(--accent); }
+    50% { box-shadow: 0 0 0 5px transparent; }
+  }
+
+  .ach-card.ach-fresh {
+    animation: ach-glow 2s cubic-bezier(0.4, 0, 0.2, 1) 3;
+  }
+
   .ach-medal {
     flex-shrink: 0;
     display: flex;
@@ -3937,7 +3961,13 @@
       : '<span class="ach-progress-text">' + achProgressText(s) + '</span>';
     const track = !s.unlocked ? '<div class="progress-track ach-track"><div class="progress-fill" style="width:' + s.pct + '%"></div></div>' : '';
     const unstamp = s.unlocked && settings.achievementUnlocks ? settings.achievementUnlocks[a.id] : null;
-    return '<div class="ach-card' + (s.unlocked ? ' unlocked' : '') + '">' +
+    const fresh = s.unlocked && unstamp && (Date.now() - new Date(unstamp).getTime()) < 86400000;
+    let cls = 'ach-card' + (s.unlocked ? ' unlocked' : '');
+    if (fresh) cls += ' ach-fresh';
+    if (a.xp >= 1000) cls += ' ach-legend';
+    else if (a.xp >= 500) cls += ' ach-rare';
+    else if (a.xp >= 200) cls += ' ach-uncommon';
+    return '<div class="' + cls + '">' +
       '<span class="ach-medal">' + iconSvg(a.icon) + '</span>' +
       '<div class="ach-body">' +
         '<div class="ach-title">' + a.title + '</div>' +
