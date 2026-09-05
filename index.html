@@ -1632,6 +1632,17 @@
 
   .quest-bool { margin-top: 8px; font-size: 0.8rem; }
 
+  .live-chase {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--text3);
+  }
+
+  .live-chase b { color: var(--text1); }
+
   .btn-goal-edit {
     background: none;
     border: 1px solid var(--border);
@@ -2024,6 +2035,7 @@
         <div class="progress-track"><div class="progress-fill" id="target-fill"></div></div>
         <div class="target-text" id="target-text"></div>
       </div>
+      <div class="live-chase" id="live-chase" style="display:none"></div>
     </div>
 
     <div class="card">
@@ -3145,6 +3157,31 @@
     card.classList.toggle('paused', paused);
     document.getElementById('btn-pause').innerHTML = iconSvg(paused ? 'play' : 'pause') + (paused ? ' Resume' : ' Pause');
     document.getElementById('live-text').textContent = paused ? 'PAUSED' : 'LIVE';
+  }
+
+  function updateLiveChase(elapsed) {
+    const el = document.getElementById('live-chase');
+    if (!el) return;
+    const Mx = computeAchStats();
+    const projected = {
+      totalMs: Mx.totalMs + elapsed,
+      longestMs: Math.max(Mx.longestMs, elapsed),
+      maxMsDay: Math.max(Mx.maxMsDay, (Mx.todayMs || 0) + elapsed)
+    };
+    let best = null;
+    ACHIEVEMENTS.forEach(a => {
+      if (a.unit !== 'ms') return;
+      const proj = a.cur(projected);
+      if (proj >= a.tgt) return;
+      const remaining = a.tgt - proj;
+      if (best === null || remaining < best.remaining) best = { title: a.title, remaining: remaining };
+    });
+    if (best) {
+      el.style.display = '';
+      el.innerHTML = 'Next badge: <b>' + best.title + '</b> \u2014 ' + fmtDurationShort(best.remaining) + ' to go';
+    } else {
+      el.style.display = 'none';
+    }
   }
 
   // --- Render ---
@@ -4606,6 +4643,7 @@
       const sec = Math.floor(elapsed / 1000);
       if (sec !== lastElapsedSec) {
         lastElapsedSec = sec;
+        updateLiveChase(elapsed);
         el.classList.remove('tick');
         void el.offsetWidth;
         el.classList.add('tick');
