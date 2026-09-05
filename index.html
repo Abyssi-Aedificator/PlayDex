@@ -1468,6 +1468,8 @@
 
   .profile-unlocked { font-weight: 700; color: var(--text); }
 
+  .profile-badge-xp { font-weight: 600; color: var(--text2); }
+
   .profile-track { margin: 16px 0 8px; }
 
   .profile-next-hint {
@@ -2197,7 +2199,7 @@
           <div class="profile-xp" id="ach-total-xp">0 XP</div>
         </div>
         <div class="profile-right">
-          <div class="profile-unlocked"><span id="ach-unlocked">0</span> / <span id="ach-total">0</span> badges</div>
+          <div class="profile-unlocked"><span id="ach-unlocked">0</span> / <span id="ach-total">0</span> badges <span class="profile-badge-xp" id="ach-badge-xp"></span></div>
           <div class="profile-next" id="ach-next-xp"></div>
         </div>
       </div>
@@ -4023,6 +4025,10 @@
     document.getElementById('ach-unlocked').textContent = unlocked.length;
     document.getElementById('ach-total').textContent = ACHIEVEMENTS.length;
     document.getElementById('ach-total-xp').textContent = fmtNum(totalXp) + ' XP';
+    const maxBadgeXp = ACHIEVEMENTS.reduce((sum, x) => sum + x.xp, 0);
+    document.getElementById('ach-badge-xp').textContent = maxBadgeXp > 0
+      ? '\u00b7 ' + fmtNum(B.badgeXp) + ' / ' + fmtNum(maxBadgeXp) + ' XP (' + Math.round(B.badgeXp / maxBadgeXp * 100) + '%)'
+      : '';
 
     const lv = levelInfo(totalXp);
     document.getElementById('ach-level').textContent = lv.level;
