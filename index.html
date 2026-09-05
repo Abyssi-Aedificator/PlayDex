@@ -2576,8 +2576,8 @@
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0 }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0 }; }
   }
 
   function saveSettings(settings) {
@@ -3021,14 +3021,15 @@
   }
 
   // --- Tab switching ---
+  function goTab(name) {
+    currentTab = name;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+    document.querySelector('.app-content').classList.toggle('merged', name === 'today');
+    render();
+  }
   document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentTab = btn.dataset.tab;
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + currentTab));
-      document.querySelector('.app-content').classList.toggle('merged', currentTab === 'today');
-      render();
-    });
+    btn.addEventListener('click', () => goTab(btn.dataset.tab));
   });
 
   // --- Start game ---
@@ -3074,6 +3075,7 @@
     activeSession = null;
     toast('Session saved');
     render();
+    celebrate();
   }
 
   // --- Pause helpers ---
@@ -3646,7 +3648,7 @@
     '</div>';
   }
 
-  function renderAchievementsTab() {
+  function buildBadgeStats() {
     const M = computeAchStats();
     const stats = ACHIEVEMENTS.map(a => {
       const cur = a.cur(M);
@@ -3655,7 +3657,16 @@
       return { def: a, cur: cur, unlocked: unlocked, pct: pct };
     });
     const unlocked = stats.filter(s => s.unlocked);
-    const totalXp = unlocked.reduce((sum, s) => sum + s.def.xp, 0) + M.playXp;
+    const badgeXp = unlocked.reduce((sum, s) => sum + s.def.xp, 0);
+    return { M: M, stats: stats, unlocked: unlocked, badgeXp: badgeXp, playXp: M.playXp, totalXp: badgeXp + M.playXp };
+  }
+
+  function renderAchievementsTab() {
+    const B = buildBadgeStats();
+    const M = B.M;
+    const stats = B.stats;
+    const unlocked = B.unlocked;
+    const totalXp = B.totalXp;
 
     const groupsEl = document.getElementById('ach-groups');
     let html = '';
@@ -3683,6 +3694,27 @@
     document.getElementById('ach-next-hint').textContent = nextBadge
       ? 'Next badge: ' + nextBadge.def.title + ' \u2014 ' + achProgressText(nextBadge)
       : 'All ' + ACHIEVEMENTS.length + ' badges unlocked \u2014 you are a legend!';
+
+    celebrate();
+  }
+
+  function celebrate() {
+    const B = buildBadgeStats();
+    settings.achievementUnlocks = settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object' ? settings.achievementUnlocks : {};
+    const prev = settings.achievementUnlocks;
+    const newly = B.unlocked.filter(s => !prev[s.def.id]);
+    if (newly.length) {
+      newly.forEach(s => { prev[s.def.id] = new Date().toISOString(); });
+      saveSettings(settings);
+      if (newly.length === 1) {
+        const s = newly[0];
+        toast('Badge unlocked: ' + s.def.title + ' (+' + fmtNum(s.def.xp) + ' XP)', 'View', () => goTab('badges'), 6000);
+      } else if (newly.length <= 3) {
+        toast(newly.length + ' badges earned: ' + newly.map(s => s.def.title).join(', ') + ' (+' + fmtNum(newly.reduce((a, s) => a + s.def.xp, 0)) + ' XP)', 'View', () => goTab('badges'), 6000);
+      } else {
+        toast(newly.length + ' new badges unlocked! +' + fmtNum(newly.reduce((a, s) => a + s.def.xp, 0)) + ' XP', 'View', () => goTab('badges'), 6000);
+      }
+    }
   }
 
   function renderGamesTab() {
