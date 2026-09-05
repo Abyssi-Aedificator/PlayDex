@@ -1525,8 +1525,6 @@
     box-shadow: 0 8px 20px -14px var(--accent-violet);
   }
 
-  .ach-card.hidden-badge { opacity: 0.65; }
-
   .ach-medal {
     flex-shrink: 0;
     display: flex;
@@ -3470,12 +3468,11 @@
     { id: 'streaks', name: 'Streaks', icon: 'streak' },
     { id: 'variety', name: 'Game Variety', icon: 'star' },
     { id: 'epic', name: 'Epic Sessions', icon: 'zap' },
-    { id: 'dedication', name: 'Dedication', icon: 'sunrise' },
-    { id: 'hidden', name: 'Secret', icon: 'medal' }
+    { id: 'dedication', name: 'Dedication', icon: 'sunrise' }
   ];
 
-  function achDef(id, cat, title, desc, icon, xp, unit, cur, tgt, hidden) {
-    return { id: id, cat: cat, title: title, desc: desc, icon: icon, xp: xp, unit: unit, cur: cur, tgt: tgt, hidden: !!hidden };
+  function achDef(id, cat, title, desc, icon, xp, unit, cur, tgt) {
+    return { id: id, cat: cat, title: title, desc: desc, icon: icon, xp: xp, unit: unit, cur: cur, tgt: tgt };
   }
 
   const ACHIEVEMENTS = [
@@ -3522,9 +3519,7 @@
     achDef('dearly', 'dedication', 'Early Bird', 'Start 5 sessions before 8 AM', 'sunrise', 150, 'num', M => M.earlyBird, 5),
     achDef('dnight', 'dedication', 'Night Owl', 'Start 5 sessions after midnight', 'moon', 150, 'num', M => M.nightOwl, 5),
     achDef('d100', 'dedication', 'Regular Guest', 'Play on 100 distinct days', 'medal', 300, 'num', M => M.distinctDays, 100),
-    achDef('d365', 'dedication', 'Home Turf', 'Play on 365 distinct days', 'medal', 600, 'num', M => M.distinctDays, 365),
-    achDef('xgrand', 'hidden', 'Grand Tour', 'Play 3 different games in a single day', 'star', 150, 'num', M => M.maxGamesInDay, 3, true),
-    achDef('xone', 'hidden', 'One True Path', 'Play the same game 3 days in a row', 'zap', 200, 'num', M => M.maxSameGameStreak, 3, true)
+    achDef('d365', 'dedication', 'Home Turf', 'Play on 365 distinct days', 'medal', 600, 'num', M => M.distinctDays, 365)
   ];
 
   function fmtNum(n) {
@@ -3565,7 +3560,6 @@
     let longestMs = 0;
     let earlyBird = 0, nightOwl = 0;
     const byDay = {};
-    const byDayGames = {};
     const sessionsByDay = {};
     completed.forEach(s => {
       const ms = s.durationMs || 0;
@@ -3573,8 +3567,6 @@
       const d = dateKey(s.start);
       byDay[d] = (byDay[d] || 0) + ms;
       sessionsByDay[d] = (sessionsByDay[d] || 0) + 1;
-      if (!byDayGames[d]) byDayGames[d] = new Set();
-      byDayGames[d].add(s.gameId);
       const h = new Date(s.start).getHours();
       if (h >= 5 && h < 8) earlyBird++;
       if (h < 5) nightOwl++;
@@ -3588,22 +3580,8 @@
       if (run > longestStreak) longestStreak = run;
     });
 
-    let maxSameGameStreak = 0;
-    gameIds.forEach(gid => {
-      const gDays = Array.from(new Set(completed.filter(s => s.gameId === gid).map(s => dateKey(s.start)))).sort();
-      let r = 0, p = null, best = 0;
-      gDays.forEach(d => {
-        r = (p && addDays(p, 1) === d) ? r + 1 : 1;
-        p = d;
-        if (r > best) best = r;
-      });
-      if (best > maxSameGameStreak) maxSameGameStreak = best;
-    });
-
     const dayVals = Object.values(byDay);
     const sessDayVals = Object.values(sessionsByDay);
-    let maxGamesInDay = 0;
-    Object.values(byDayGames).forEach(set => { if (set.size > maxGamesInDay) maxGamesInDay = set.size; });
 
     return {
       totalMs: totalMs,
@@ -3615,9 +3593,7 @@
       maxMsDay: dayVals.length ? Math.max.apply(null, dayVals) : 0,
       earlyBird: earlyBird,
       nightOwl: nightOwl,
-      distinctDays: days.size,
-      maxGamesInDay: maxGamesInDay,
-      maxSameGameStreak: maxSameGameStreak
+      distinctDays: days.size
     };
   }
 
@@ -3629,20 +3605,15 @@
 
   function achCardHtml(s) {
     const a = s.def;
-    const hidden = a.hidden && !s.unlocked;
-    const title = hidden ? 'Secret Badge' : a.title;
-    const desc = hidden ? 'Hidden until unlocked' : a.desc;
-    const status = hidden
-      ? '<span class="ach-progress-text">Mystery</span>'
-      : s.unlocked
-        ? '<span class="ach-check">' + iconSvg('check') + 'Unlocked</span>'
-        : '<span class="ach-progress-text">' + achProgressText(s) + '</span>';
-    const track = (!s.unlocked && !hidden) ? '<div class="progress-track ach-track"><div class="progress-fill" style="width:' + s.pct + '%"></div></div>' : '';
-    return '<div class="ach-card' + (s.unlocked ? ' unlocked' : '') + (hidden ? ' hidden-badge' : '') + '">' +
+    const status = s.unlocked
+      ? '<span class="ach-check">' + iconSvg('check') + 'Unlocked</span>'
+      : '<span class="ach-progress-text">' + achProgressText(s) + '</span>';
+    const track = !s.unlocked ? '<div class="progress-track ach-track"><div class="progress-fill" style="width:' + s.pct + '%"></div></div>' : '';
+    return '<div class="ach-card' + (s.unlocked ? ' unlocked' : '') + '">' +
       '<span class="ach-medal">' + iconSvg(a.icon) + '</span>' +
       '<div class="ach-body">' +
-        '<div class="ach-title">' + title + '</div>' +
-        '<div class="ach-desc">' + desc + '</div>' +
+        '<div class="ach-title">' + a.title + '</div>' +
+        '<div class="ach-desc">' + a.desc + '</div>' +
         '<div class="ach-status-row">' + status + '<span class="ach-xp">+' + fmtNum(a.xp) + ' XP</span></div>' +
         track +
       '</div>' +
