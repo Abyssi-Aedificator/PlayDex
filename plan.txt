@@ -74,11 +74,6 @@ Sessions CSV export ARE implemented - left out.
     time from sessions[]."
     - Scope: small-medium. Risk: low.
 
-15. Target-duration live sessions
-    "Optional target (e.g. 30 min) when starting a session; progress bar on the
-    live card using the pause-aware activeElapsedMs helper; toast when reached."
-    - Scope: medium. Risk: low-medium.
-
 --- Implementation reference notes ---
 - Version markers to keep in sync on any release: .version-badge,
   APP_VERSION (~line 3915), SW_VERSION + CACHE_NAME in sw.js.
