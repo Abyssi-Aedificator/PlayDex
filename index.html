@@ -1641,6 +1641,12 @@
     margin-top: 7px;
   }
 
+  .ach-eta {
+    font-size: 0.68rem;
+    color: var(--text3);
+    margin-top: 5px;
+  }
+
   .quest-card.done { border-color: var(--accent); }
 
   .quest-head-row { display: flex; align-items: center; gap: 10px; }
@@ -2772,6 +2778,14 @@
     return mon.getFullYear() + '-' + String(mon.getMonth()+1).padStart(2,'0') + '-' + String(mon.getDate()).padStart(2,'0');
   }
 
+  function weekKeyFor(dateStr) {
+    const d = new Date(dateStr.slice(0, 10) + 'T00:00:00');
+    const dow = d.getDay();
+    const diff = dow === 0 ? -6 : 1 - dow;
+    const mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+    return mon.getFullYear() + '-' + String(mon.getMonth()+1).padStart(2,'0') + '-' + String(mon.getDate()).padStart(2,'0');
+  }
+
   function fmtDuration(ms) {
     if (ms == null || ms < 0) ms = 0;
     const totalSec = Math.floor(ms / 1000);
@@ -3815,6 +3829,30 @@
       if (h < 5) nightOwl++;
     });
 
+    const weekMsBy = {};
+    const weekCountBy = {};
+    const weekGamesBy = {};
+    const weekDaysBy = {};
+    const weekEarlyBy = {};
+    const weekNightBy = {};
+    const wk = weekKeyFor;
+    completed.forEach(s => {
+      const k = wk(s.start);
+      weekMsBy[k] = (weekMsBy[k] || 0) + (s.durationMs || 0);
+      weekCountBy[k] = (weekCountBy[k] || 0) + 1;
+      weekGamesBy[k] = weekGamesBy[k] || new Set();
+      weekGamesBy[k].add(s.gameId);
+      weekDaysBy[k] = weekDaysBy[k] || new Set();
+      weekDaysBy[k].add(dateKey(s.start));
+      const hh = new Date(s.start).getHours();
+      if (hh >= 5 && hh < 8) weekEarlyBy[k] = (weekEarlyBy[k] || 0) + 1;
+      if (hh < 5) weekNightBy[k] = (weekNightBy[k] || 0) + 1;
+    });
+    const activeWeeks = Object.keys(weekMsBy).length;
+    const avgOf = rev => { const v = Object.values(rev); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0; };
+    const avgGames = wgs => { const v = Object.values(wgs).map(s => s.size); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0; };
+    const avgDays = wds => { const v = Object.values(wds).map(s => s.size); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0; };
+
     const playDayList = Array.from(days).sort();
     let longestStreak = 0, run = 0, prev = null;
     playDayList.forEach(d => {
@@ -3851,7 +3889,14 @@
       weekCount: weekCount,
       weekGames: weekGameIds.size,
       weekDays: weekDays.size,
-      weekLongestMs: weekLongestMs
+      weekLongestMs: weekLongestMs,
+      activeWeeks: activeWeeks,
+      avgWkMs: avgOf(weekMsBy),
+      avgWkCount: avgOf(weekCountBy),
+      avgWkGames: avgGames(weekGamesBy),
+      avgWkDays: avgDays(weekDaysBy),
+      avgWkEarly: avgOf(weekEarlyBy),
+      avgWkNight: avgOf(weekNightBy)
     };
   }
 
@@ -3869,6 +3914,30 @@
       if (a.id === 'dd30' || a.id === 'dd60' || a.id === 'd100' || a.id === 'dd200' || a.id === 'd365') return 'days';
     }
     return '';
+  }
+
+  function etaWeeksFor(a, M) {
+    if (M.activeWeeks < 1) return null;
+    const st = achStatFor(a);
+    const target = a.tgt;
+    let cur = 0, pace = 0;
+    if (st === 'totalMs') { cur = M.totalMs; pace = M.avgWkMs; }
+    else if (st === 'count') { cur = M.count; pace = M.avgWkCount; }
+    else if (st === 'games') { cur = M.distinctGames; pace = M.avgWkGames; }
+    else if (st === 'days') { cur = M.distinctDays; pace = M.avgWkDays; }
+    else if (st === 'early') { cur = M.earlyBird; pace = M.avgWkEarly; }
+    else if (st === 'night') { cur = M.nightOwl; pace = M.avgWkNight; }
+    else return null;
+    if (pace <= 0 || cur >= target) return null;
+    return (target - cur) / pace;
+  }
+
+  function fmtEta(w) {
+    if (w == null || !isFinite(w) || w < 0.02) return '';
+    if (w < 1) return '\u2248 ' + Math.max(1, Math.ceil(w * 7)) + 'd';
+    if (w < 5) return '\u2248 ' + Math.round(w) + 'w';
+    if (w < 52) return '\u2248 ' + Math.round(w / 4.35) + 'mo';
+    return '\u2248 ' + Math.round(w / 52) + 'y';
   }
 
   function computeEarnedDates() {
@@ -3960,6 +4029,7 @@
       ? '<span class="ach-check">' + iconSvg('check') + 'Unlocked</span>'
       : '<span class="ach-progress-text">' + achProgressText(s) + '</span>';
     const track = !s.unlocked ? '<div class="progress-track ach-track"><div class="progress-fill" style="width:' + s.pct + '%"></div></div>' : '';
+    const eta = !s.unlocked && s.etaWeeks != null ? '<div class="ach-eta">' + fmtEta(s.etaWeeks) + '</div>' : '';
     const unstamp = s.unlocked && settings.achievementUnlocks ? settings.achievementUnlocks[a.id] : null;
     const fresh = s.unlocked && unstamp && (Date.now() - new Date(unstamp).getTime()) < 86400000;
     let cls = 'ach-card' + (s.unlocked ? ' unlocked' : '');
@@ -3975,6 +4045,7 @@
         '<div class="ach-status-row">' + status + '<span class="ach-xp">+' + fmtNum(a.xp) + ' XP</span></div>' +
         (unstamp ? '<div class="ach-unlocked-date">Unlocked ' + fmtDateShort(unstamp) + '</div>' : '') +
         track +
+        eta +
       '</div>' +
     '</div>';
   }
@@ -3985,7 +4056,7 @@
       const cur = a.cur(M);
       const unlocked = cur >= a.tgt;
       const pct = a.tgt > 0 ? Math.max(0, Math.min(100, Math.round(cur / a.tgt * 100))) : 0;
-      return { def: a, cur: cur, unlocked: unlocked, pct: pct };
+      return { def: a, cur: cur, unlocked: unlocked, pct: pct, etaWeeks: unlocked ? null : etaWeeksFor(a, M) };
     });
     const unlocked = stats.filter(s => s.unlocked);
     const badgeXp = unlocked.reduce((sum, s) => sum + s.def.xp, 0);
