@@ -1478,6 +1478,55 @@
 
   .profile-badge-xp { font-weight: 600; color: var(--text2); }
 
+  .profile-ring-wrap {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    margin: 8px 0 0 auto;
+  }
+
+  .profile-ring { transform: rotate(-90deg); }
+
+  .ring-track, .ring-fill {
+    fill: none;
+    stroke-width: 4;
+  }
+
+  .ring-track { stroke: var(--border); }
+
+  .ring-fill {
+    stroke: var(--accent);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ring-pct {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--text2);
+  }
+
+  .weekly-champion {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--accent-gradient);
+    border-radius: 999px;
+    padding: 5px 12px;
+    animation: fade-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  .weekly-champion svg { width: 14px; height: 14px; }
+
   .profile-track { margin: 16px 0 8px; }
 
   .profile-next-hint {
@@ -1676,6 +1725,26 @@
     padding: 6px 10px;
     max-width: 150px;
     margin-left: auto;
+  }
+
+  .quest-streak svg {
+    width: 12px;
+    height: 12px;
+    vertical-align: -2px;
+    margin-right: 3px;
+  }
+
+  .quest-streak.has-streak {
+    border-color: var(--accent);
+  }
+
+  .quest-streak.has-streak b { color: var(--accent); }
+
+  .quest-reset {
+    font-size: 0.68rem;
+    color: var(--text3);
+    text-align: right;
+    margin: 2px 2px 8px;
   }
 
   .quest-bounty { color: var(--accent); font-weight: 800; font-size: 0.78rem; white-space: nowrap; }
@@ -2238,10 +2307,18 @@
         </div>
         <div class="profile-right">
           <div class="profile-unlocked"><span id="ach-unlocked">0</span> / <span id="ach-total">0</span> badges <span class="profile-badge-xp" id="ach-badge-xp"></span></div>
+          <div class="profile-ring-wrap" title="Badges completed">
+            <svg class="profile-ring" viewBox="0 0 48 48" aria-hidden="true">
+              <circle class="ring-track" cx="24" cy="24" r="20"></circle>
+              <circle class="ring-fill" id="ach-ring-fill" cx="24" cy="24" r="20"></circle>
+            </svg>
+            <span class="ring-pct" id="ach-ring-pct">0%</span>
+          </div>
         </div>
       </div>
       <div class="profile-next" id="ach-next-xp"></div>
       <div class="progress-track profile-track"><div class="progress-fill" id="ach-level-fill"></div></div>
+      <div class="weekly-champion" id="weekly-champion" style="display:none"></div>
       <div class="profile-next-hint" id="ach-next-hint"></div>
     </div>
     <div class="card quest-card" id="quest-card">
@@ -2249,11 +2326,13 @@
         <span>Quests</span>
         <span class="quest-count-pill">Daily <b id="quest-daily-count">0/0</b></span>
         <span class="quest-count-pill">Weekly <b id="quest-weekly-count">0/0</b></span>
+        <span class="quest-count-pill quest-streak" id="quest-streak" style="display:none"></span>
         <select id="quest-board-select" class="quest-select" aria-label="Quest board">
           <option value="daily">Daily board</option>
           <option value="weekly">Weekly board</option>
         </select>
       </div>
+      <div class="quest-reset" id="quest-reset"></div>
       <div id="quest-board"></div>
     </div>
     <div id="ach-groups"></div>
@@ -2731,8 +2810,14 @@
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null }; }
+  }
+
+  function mergeFullClear(a, b) {
+    if (!a || typeof a !== 'object' || !a.clear) return b;
+    if (!b || typeof b !== 'object' || !b.clear) return a;
+    return a.clear >= b.clear ? a : b;
   }
 
   function saveSettings(settings) {
@@ -2754,6 +2839,7 @@
   let timerRaf = null;
   let lastElapsedSec = -1;
   let lastClockStr = '';
+  let lastCountdownUpdate = 0;
   let lastStreak = null;
   let currentTab = 'today';
   let filterDate = todayStr();
@@ -3108,11 +3194,13 @@
     const prevUnlocks = settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object' ? settings.achievementUnlocks : {};
     const prevLevel = settings.achievementLevel || 0;
     const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
+    const prevFullClear = settings.dailyFullClear && typeof settings.dailyFullClear === 'object' ? settings.dailyFullClear : null;
     settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
     settings.accent = localAccent;
     settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
     settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
     settings.questNotified = Object.assign({}, (settings.questNotified && typeof settings.questNotified === 'object') ? settings.questNotified : {}, prevQuestNotified);
+    settings.dailyFullClear = mergeFullClear(settings.dailyFullClear, prevFullClear);
     saveGames(games);
     saveSessions(sessions);
     saveSettings(settings);
@@ -4180,6 +4268,38 @@
     return { cur: cur, done: cur >= q.tgt };
   }
 
+  function nextMidnightMs() {
+    const d = new Date();
+    d.setHours(24, 0, 0, 0);
+    return d.getTime();
+  }
+
+  function nextMondayMs() {
+    const d = new Date();
+    const dow = d.getDay();
+    const diff = dow === 0 ? 1 : 8 - dow;
+    d.setDate(d.getDate() + diff);
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+
+  function fmtCountdown(ms) {
+    const dayMs = 86400000, hrMs = 3600000, minMs = 60000;
+    const days = Math.floor(ms / dayMs);
+    const hrs = Math.floor((ms % dayMs) / hrMs);
+    const mins = Math.floor((ms % hrMs) / minMs);
+    if (days > 0) return days + 'd ' + hrs + 'h';
+    if (hrs > 0) return hrs + 'h ' + mins + 'm';
+    return mins + 'm';
+  }
+
+  function refreshQuestCountdown() {
+    const el = document.getElementById('quest-reset');
+    if (!el) return;
+    el.textContent = 'Daily resets in ' + fmtCountdown(nextMidnightMs() - Date.now()) +
+      ' \u00b7 Weekly in ' + fmtCountdown(nextMondayMs() - Date.now());
+  }
+
   function questRowHtml(r, xp) {
     const pct = Math.max(0, Math.min(100, Math.round(r.cur / r.q.tgt * 100)));
     const text = r.q.unit === 'games' ? fmtNum(r.cur) + ' / ' + fmtNum(r.q.tgt) + ' games'
@@ -4232,6 +4352,34 @@
       document.getElementById('quest-board').innerHTML = questBoardHtml(board, xp);
     }
 
+    refreshQuestCountdown();
+
+    const fc = settings.dailyFullClear && typeof settings.dailyFullClear === 'object' ? settings.dailyFullClear : { clear: '', streak: 0 };
+    if (!fc.clear) fc.clear = '';
+    if (typeof fc.streak !== 'number' || fc.streak < 0) fc.streak = 0;
+    const dailyDone = B.daily.length > 0 && B.daily.every(r => r.done);
+    if (dailyDone && fc.clear !== todayStr()) {
+      fc.streak = fc.clear === addDays(todayStr(), -1) ? fc.streak + 1 : 1;
+      fc.clear = todayStr();
+      settings.dailyFullClear = fc;
+      saveSettings(settings);
+    }
+    const streakEl = document.getElementById('quest-streak');
+    if (streakEl) {
+      streakEl.style.display = fc.streak > 0 ? '' : 'none';
+      if (fc.streak > 0) {
+        streakEl.innerHTML = iconSvg('streak') + '<b>' + fc.streak + '</b>';
+        streakEl.classList.toggle('has-streak', fc.streak >= 2);
+      }
+    }
+
+    const wcEl = document.getElementById('weekly-champion');
+    if (wcEl) {
+      const weeklyDone = B.weekly.length > 0 && B.weekly.every(r => r.done);
+      wcEl.style.display = weeklyDone ? '' : 'none';
+      if (weeklyDone) wcEl.innerHTML = iconSvg('trophy') + 'Weekly Champion \u2014 all quests done';
+    }
+
     const groupsEl = document.getElementById('ach-groups');
     let html = '';
     ACH_CATS.forEach(cat => {
@@ -4251,6 +4399,14 @@
     document.getElementById('ach-badge-xp').textContent = maxBadgeXp > 0
       ? '\u00b7 ' + fmtNum(B.badgeXp) + ' / ' + fmtNum(maxBadgeXp) + ' XP (' + Math.round(B.badgeXp / maxBadgeXp * 100) + '%)'
       : '';
+
+    if (ACHIEVEMENTS.length && document.getElementById('ach-ring-fill')) {
+      const C = 2 * Math.PI * 20;
+      const fill = document.getElementById('ach-ring-fill');
+      fill.style.strokeDasharray = C;
+      fill.style.strokeDashoffset = C * (1 - unlocked.length / ACHIEVEMENTS.length);
+      document.getElementById('ach-ring-pct').textContent = Math.round(unlocked.length / ACHIEVEMENTS.length * 100) + '%';
+    }
 
     const lv = levelInfo(totalXp);
     document.getElementById('ach-level').textContent = lv.level;
@@ -5114,6 +5270,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
 
   // --- Live timer ---
   function updateTimer() {
+    const countdownNow = Date.now();
+    if (countdownNow - lastCountdownUpdate >= 15000) {
+      lastCountdownUpdate = countdownNow;
+      refreshQuestCountdown();
+    }
     if (activeSession) {
       const elapsed = activeElapsedMs(activeSession, Date.now());
       const el = document.getElementById('active-elapsed');
