@@ -14,6 +14,10 @@ Version 1.1.1
   progress toward it on the timer card.
 - A new Badges tab tracks milestone achievements, play streaks, and a player
   level earned from your play history.
+- Badge unlocks now trigger celebrations on the spot, you earn XP for time
+  played, and a rotating daily quest with an XP reward keeps the level meter
+  moving between milestones.
+- The live timer shows how long until your next achievable playtime badge.
 
 Version 1.1.0
 -------------------
