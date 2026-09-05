@@ -2067,7 +2067,7 @@
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.1.2</span>
+    <span class="version-badge">1.1.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3690,16 +3690,30 @@
     achDef('v10', 'variety', 'Explorer III', 'Play 10 different games', 'star', 200, 'num', M => M.distinctGames, 10),
     achDef('v15', 'variety', 'Globetrotter', 'Play 15 different games', 'star', 300, 'num', M => M.distinctGames, 15),
     achDef('v25', 'variety', 'Cartographer', 'Play 25 different games', 'star', 500, 'num', M => M.distinctGames, 25),
+    achDef('v40', 'variety', 'Explorer IV', 'Play 40 different games', 'star', 700, 'num', M => M.distinctGames, 40),
+    achDef('v50', 'variety', 'Completionist', 'Play 50 different games', 'star', 1000, 'num', M => M.distinctGames, 50),
+    achDef('v100', 'variety', 'Gamekeeper', 'Play 100 different games', 'star', 1500, 'num', M => M.distinctGames, 100),
     achDef('e1h', 'epic', 'Sitting Duck', 'Play a single session of 1 hour', 'zap', 100, 'ms', M => M.longestMs, 3600000),
     achDef('e2h', 'epic', 'Marathon One', 'Play a single session of 2 hours', 'zap', 150, 'ms', M => M.longestMs, 2 * 3600000),
+    achDef('e3h', 'epic', 'Sit-Through', 'Play a single session of 3 hours', 'zap', 200, 'ms', M => M.longestMs, 3 * 3600000),
     achDef('e4h', 'epic', 'Iron Stomach', 'Play a single session of 4 hours', 'zap', 250, 'ms', M => M.longestMs, 4 * 3600000),
     achDef('e6h', 'epic', 'Daylight Stealer', 'Play a single session of 6 hours', 'zap', 400, 'ms', M => M.longestMs, 6 * 3600000),
+    achDef('e8h', 'epic', 'Beyond Daylight', 'Play a single session of 8 hours', 'zap', 500, 'ms', M => M.longestMs, 8 * 3600000),
     achDef('e10h', 'epic', 'Endurance Myth', 'Play a single session of 10 hours', 'zap', 600, 'ms', M => M.longestMs, 10 * 3600000),
     achDef('d3h', 'dedication', 'Marathon Day', 'Play 3 hours in a single day', 'clock', 150, 'ms', M => M.maxMsDay, 3 * 3600000),
+    achDef('dday1', 'dedication', 'Hourly Habit', 'Play 1 hour in a single day', 'clock', 100, 'ms', M => M.maxMsDay, 3600000),
+    achDef('dday6', 'dedication', 'Day Tripper', 'Play 6 hours in a single day', 'clock', 250, 'ms', M => M.maxMsDay, 6 * 3600000),
     achDef('dbusy', 'dedication', 'Busy Day', 'Log 10 sessions in a single day', 'clock', 200, 'num', M => M.maxSessionsDay, 10),
+    achDef('ds5', 'dedication', 'Steady Stream', 'Log 5 sessions in a single day', 'clock', 100, 'num', M => M.maxSessionsDay, 5),
+    achDef('ds20', 'dedication', 'Overachiever', 'Log 20 sessions in a single day', 'clock', 300, 'num', M => M.maxSessionsDay, 20),
     achDef('dearly', 'dedication', 'Early Bird', 'Start 5 sessions before 8 AM', 'sunrise', 150, 'num', M => M.earlyBird, 5),
+    achDef('eb20', 'dedication', 'Dawn Patrol', 'Start 20 sessions before 8 AM', 'sunrise', 300, 'num', M => M.earlyBird, 20),
     achDef('dnight', 'dedication', 'Night Owl', 'Start 5 sessions after midnight', 'moon', 150, 'num', M => M.nightOwl, 5),
+    achDef('no20', 'dedication', 'Nightshift', 'Start 20 sessions after midnight', 'moon', 300, 'num', M => M.nightOwl, 20),
+    achDef('dd30', 'dedication', 'Monthly Visitor', 'Play on 30 distinct days', 'medal', 150, 'num', M => M.distinctDays, 30),
+    achDef('dd60', 'dedication', 'Steadfast', 'Play on 60 distinct days', 'medal', 250, 'num', M => M.distinctDays, 60),
     achDef('d100', 'dedication', 'Regular Guest', 'Play on 100 distinct days', 'medal', 300, 'num', M => M.distinctDays, 100),
+    achDef('dd200', 'dedication', 'Milestone', 'Play on 200 distinct days', 'medal', 450, 'num', M => M.distinctDays, 200),
     achDef('d365', 'dedication', 'Home Turf', 'Play on 365 distinct days', 'medal', 600, 'num', M => M.distinctDays, 365)
   ];
 
@@ -5032,7 +5046,7 @@
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.1.2';
+    const APP_VERSION = '1.1.3';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
