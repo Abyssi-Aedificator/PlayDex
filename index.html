@@ -1461,11 +1461,28 @@
   }
 
   .progress-fill {
+    position: relative;
     height: 100%;
     width: 0%;
     border-radius: 999px;
     background: var(--accent-gradient);
+    overflow: hidden;
     transition: width 0.5s ease;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.28) 50%, transparent 60%);
+    background-size: 220% 100%;
+    animation: progress-sheen 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    pointer-events: none;
+  }
+
+  @keyframes progress-sheen {
+    from { background-position: 130% 0; }
+    to { background-position: -120% 0; }
   }
 
   .goal-footer {
