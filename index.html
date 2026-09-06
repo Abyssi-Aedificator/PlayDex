@@ -89,6 +89,54 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
+  .ambient-orbs {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ambient-orbs .orb {
+    position: absolute;
+    border-radius: 50%;
+    will-change: transform;
+  }
+
+  .ambient-orbs .orb-violet {
+    width: 62vmax;
+    height: 62vmax;
+    left: -22vmax;
+    top: -20vmax;
+    opacity: 0.16;
+    background: radial-gradient(circle at center, #8b5cf6, transparent 62%);
+    animation: orb-drift-1 46s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  }
+
+  .ambient-orbs .orb-cyan {
+    width: 56vmax;
+    height: 56vmax;
+    right: -24vmax;
+    top: 6vmax;
+    opacity: 0.14;
+    background: radial-gradient(circle at center, #22d3ee, transparent 62%);
+    animation: orb-drift-2 54s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  }
+
+  .ambient-orbs .orb-green {
+    width: 50vmax;
+    height: 50vmax;
+    left: 4vmax;
+    bottom: -28vmax;
+    opacity: 0.11;
+    background: radial-gradient(circle at center, #34d399, transparent 62%);
+    animation: orb-drift-3 60s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  }
+
+  @keyframes orb-drift-1 { to { transform: translate(9vmax, 7vmax) scale(1.09); } }
+  @keyframes orb-drift-2 { to { transform: translate(-8vmax, 6vmax) scale(0.95); } }
+  @keyframes orb-drift-3 { to { transform: translate(-6vmax, -7vmax) scale(1.12); } }
+
   button { font-family: inherit; }
 
   button:focus-visible,
@@ -2228,6 +2276,12 @@
 </style>
 </head>
 <body>
+
+<div class="ambient-orbs" aria-hidden="true">
+  <span class="orb orb-violet"></span>
+  <span class="orb orb-cyan"></span>
+  <span class="orb orb-green"></span>
+</div>
 
 <header>
   <div class="app-title">
