@@ -2998,6 +2998,7 @@
   let lastElapsedSec = -1;
   let lastClockStr = '';
   let lastCountdownUpdate = 0;
+  let lastQuestDay = todayStr();
   let lastStreak = null;
   let currentTab = 'today';
   let filterDate = todayStr();
@@ -5436,6 +5437,10 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if (countdownNow - lastCountdownUpdate >= 15000) {
       lastCountdownUpdate = countdownNow;
       refreshQuestCountdown();
+      if (todayStr() !== lastQuestDay) {
+        lastQuestDay = todayStr();
+        renderAchievementsTab();
+      }
     }
     if (activeSession) {
       const elapsed = activeElapsedMs(activeSession, Date.now());
