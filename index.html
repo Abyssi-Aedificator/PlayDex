@@ -89,6 +89,54 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
+  .ambient-orbs {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ambient-orbs .orb {
+    position: absolute;
+    border-radius: 50%;
+    will-change: transform;
+  }
+
+  .ambient-orbs .orb-violet {
+    width: 62vmax;
+    height: 62vmax;
+    left: -22vmax;
+    top: -20vmax;
+    opacity: 0.16;
+    background: radial-gradient(circle at center, #8b5cf6, transparent 62%);
+    animation: orb-drift-1 46s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  }
+
+  .ambient-orbs .orb-cyan {
+    width: 56vmax;
+    height: 56vmax;
+    right: -24vmax;
+    top: 6vmax;
+    opacity: 0.14;
+    background: radial-gradient(circle at center, #22d3ee, transparent 62%);
+    animation: orb-drift-2 54s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  }
+
+  .ambient-orbs .orb-green {
+    width: 50vmax;
+    height: 50vmax;
+    left: 4vmax;
+    bottom: -28vmax;
+    opacity: 0.11;
+    background: radial-gradient(circle at center, #34d399, transparent 62%);
+    animation: orb-drift-3 60s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  }
+
+  @keyframes orb-drift-1 { to { transform: translate(9vmax, 7vmax) scale(1.09); } }
+  @keyframes orb-drift-2 { to { transform: translate(-8vmax, 6vmax) scale(0.95); } }
+  @keyframes orb-drift-3 { to { transform: translate(-6vmax, -7vmax) scale(1.12); } }
+
   button { font-family: inherit; }
 
   button:focus-visible,
@@ -191,6 +239,7 @@
   .app-content {
     flex: 1;
     overflow-y: auto;
+    scrollbar-gutter: stable;
     padding: 20px 16px;
     padding-bottom: 96px;
     max-width: 620px;
@@ -1381,11 +1430,28 @@
   }
 
   .progress-fill {
+    position: relative;
     height: 100%;
     width: 0%;
     border-radius: 999px;
     background: var(--accent-gradient);
+    overflow: hidden;
     transition: width 0.5s ease;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.28) 50%, transparent 60%);
+    background-size: 220% 100%;
+    animation: progress-sheen 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    pointer-events: none;
+  }
+
+  @keyframes progress-sheen {
+    from { background-position: 130% 0; }
+    to { background-position: -120% 0; }
   }
 
   .goal-footer {
@@ -1962,6 +2028,11 @@
     white-space: nowrap;
   }
 
+  .bar.today {
+    background: var(--accent-gradient);
+    box-shadow: 0 0 14px -3px var(--accent);
+  }
+
   .bar-label {
     font-size: 0.7rem;
     color: var(--text3);
@@ -2229,10 +2300,16 @@
 </head>
 <body>
 
+<div class="ambient-orbs" aria-hidden="true">
+  <span class="orb orb-violet"></span>
+  <span class="orb orb-cyan"></span>
+  <span class="orb orb-green"></span>
+</div>
+
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.1.3</span>
+    <span class="version-badge">1.1.4</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -2906,6 +2983,7 @@
   let lastElapsedSec = -1;
   let lastClockStr = '';
   let lastCountdownUpdate = 0;
+  let lastQuestDay = todayStr();
   let lastStreak = null;
   let currentTab = 'today';
   let filterDate = todayStr();
@@ -3793,7 +3871,7 @@
       monthChart.innerHTML = monthDays.map((d) => {
         const pct = monthMax > 0 ? Math.round(d.ms / monthMax * 100) : 0;
         return '<div class="bar-col">' +
-          '<div class="bar-track"><div class="bar" style="height:' + (d.ms > 0 ? Math.max(pct, 3) : 0) + '%"></div></div>' +
+          '<div class="bar-track"><div class="bar" title="' + new Date(d.date + 'T00:00:00').toLocaleDateString() + ' \u00b7 ' + fmtDuration(d.ms) + '" style="height:' + (d.ms > 0 ? Math.max(pct, 3) : 0) + '%"></div></div>' +
           '<span class="bar-label">' + new Date(d.date + 'T00:00:00').getDate() + '</span>' +
         '</div>';
       }).join('');
@@ -3989,9 +4067,8 @@
     const weekDaysBy = {};
     const weekEarlyBy = {};
     const weekNightBy = {};
-    const wk = weekKeyFor;
     completed.forEach(s => {
-      const k = wk(s.start);
+      const k = weekKeyFor(dateKey(s.start));
       weekMsBy[k] = (weekMsBy[k] || 0) + (s.durationMs || 0);
       weekCountBy[k] = (weekCountBy[k] || 0) + 1;
       weekGamesBy[k] = weekGamesBy[k] || new Set();
@@ -5345,6 +5422,10 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if (countdownNow - lastCountdownUpdate >= 15000) {
       lastCountdownUpdate = countdownNow;
       refreshQuestCountdown();
+      if (todayStr() !== lastQuestDay) {
+        lastQuestDay = todayStr();
+        renderAchievementsTab();
+      }
     }
     if (activeSession) {
       const elapsed = activeElapsedMs(activeSession, Date.now());
@@ -5508,7 +5589,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.1.3';
+    const APP_VERSION = '1.1.4';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

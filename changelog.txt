@@ -1,6 +1,15 @@
 PlayDex - Changelog
 ====================
 
+Version 1.1.4
+-------------------
+- Badge cards show their rarity tier (Common, Uncommon, Rare, Legendary), and a freshly unlocked badge glows for 24 hours.
+- Locked badges estimate how long until you can earn them, based on your average weekly play.
+- Your phone buzzes when you unlock a badge or level up.
+- The Quests card shows how long until daily and weekly quests reset, completing every daily quest in a day builds a streak, and finishing all of a week's quests raises a Weekly Champion banner.
+- The profile shows your overall badge completion as a progress ring.
+- Badge status stays on one line even on narrow cards, and time-to-badge estimates are now accurate in any timezone.
+
 Version 1.1.3
 -------------------
 - Achievement celebrations never repeat: a notification you have already seen
