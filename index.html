@@ -507,6 +507,7 @@
     padding: 12px 16px;
     width: 100%;
     justify-content: space-between;
+    gap: 10px;
     margin-bottom: 8px;
     border-radius: 12px;
     transition: border-color 0.2s, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
@@ -598,6 +599,28 @@
   .breakdown-game.has-unsynced { color: var(--red); font-weight: 700; }
   .breakdown-time { color: var(--text2); font-variant-numeric: tabular-nums; }
   .breakdown-count { font-size: 0.7rem; color: var(--text3); }
+
+  .game-chip {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 800;
+    vertical-align: middle;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  }
+
+  .breakdown-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
 
   .breakdown-split {
     display: flex;
@@ -1005,12 +1028,20 @@
   .session-info { flex: 1; min-width: 0; }
 
   .session-game {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-weight: 600;
     font-size: 0.9rem;
     margin-bottom: 2px;
+    min-width: 0;
+  }
+
+  .session-title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
   }
 
   .session-times {
@@ -1098,6 +1129,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     padding: 12px 0;
     border-bottom: 1px solid var(--border);
   }
@@ -2949,6 +2981,28 @@
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
 
+  const GAME_PALETTES = [
+    ['#8b5cf6', '#22d3ee'],
+    ['#f43f5e', '#ec4899'],
+    ['#10b981', '#14b8a6'],
+    ['#f59e0b', '#fbbf24'],
+    ['#3b82f6', '#6366f1'],
+    ['#fb923c', '#ef4444'],
+    ['#06b6d4', '#3b82f6'],
+    ['#a855f7', '#ec4899']
+  ];
+
+  function gamePalette(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+    return GAME_PALETTES[h % GAME_PALETTES.length];
+  }
+
+  function gameChip(name) {
+    const p = gamePalette(name);
+    return '<span class="game-chip" style="background:linear-gradient(135deg,' + p[0] + ',' + p[1] + ')">' + escHtml(String(name).charAt(0).toUpperCase()) + '</span>';
+  }
+
   // --- State ---
   let games = loadGames();
   let sessions = loadSessions();
@@ -3685,7 +3739,7 @@
     const bl = document.getElementById('today-breakdown');
     const sorted = Object.entries(byGame).sort((a,b) => b[1] - a[1]);
     bl.innerHTML = sorted.map(([name, ms], i) =>
-      '<li class="breakdown-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms"><span class="breakdown-game">' + escHtml(name) + '</span><span class="breakdown-time">' + fmtDuration(ms) + '</span></li>'
+      '<li class="breakdown-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms"><span class="breakdown-name">' + gameChip(name) + '<span class="breakdown-game">' + escHtml(name) + '</span></span><span class="breakdown-time">' + fmtDuration(ms) + '</span></li>'
     ).join('');
 
     // Start game buttons, most recently used first (never-played games last)
@@ -3706,6 +3760,7 @@
     } else {
       container.innerHTML = sortedGames.map((g, i) =>
         '<button class="btn btn-start-game fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms" data-game-id="' + g.id + '">' +
+        gameChip(g.name) +
         '<span>' + escHtml(g.name) + '</span>' +
         '<span class="play-icon">&#9654;</span>' +
         '</button>'
@@ -3743,7 +3798,7 @@
       container.innerHTML = filtered.map((s, i) =>
         '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
-            '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
+            '<div class="session-game">' + gameChip(s.gameName) + '<span class="session-title">' + escHtml(s.gameName) + '</span>' + (s.synced ? '<span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
             '<div class="session-times">' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
           (filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : '') +
@@ -3815,6 +3870,7 @@
       breakdown.innerHTML = sorted.map(([name, v], i) =>
         '<li class="breakdown-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<span>' +
+            gameChip(name) +
             '<span class="breakdown-game' + (v.unsyncedMs > 0 ? ' has-unsynced' : '') + '">' + escHtml(name) + '</span>' +
             '<div class="breakdown-count">' + v.count + ' session' + (v.count !== 1 ? 's' : '') + '</div>' +
           '</span>' +
@@ -4650,6 +4706,7 @@
         const count = sessions.filter(s => s.gameId === g.id).length;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
+          gameChip(g.name) +
           '<div class="game-item-info">' +
             '<div class="game-item-name">' + escHtml(g.name) + '</div>' +
             gameMeta(count, e) +
@@ -4670,6 +4727,7 @@
         const count = sessions.filter(s => s.gameId === g.id).length;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
+          gameChip(g.name) +
           '<div class="game-item-info">' +
             '<div class="game-item-name">' + escHtml(g.name) + '</div>' +
             gameMeta(count, e) +
