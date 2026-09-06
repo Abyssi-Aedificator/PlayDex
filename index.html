@@ -2232,7 +2232,7 @@
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.1.3</span>
+    <span class="version-badge">1.1.4</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3989,9 +3989,8 @@
     const weekDaysBy = {};
     const weekEarlyBy = {};
     const weekNightBy = {};
-    const wk = weekKeyFor;
     completed.forEach(s => {
-      const k = wk(s.start);
+      const k = weekKeyFor(dateKey(s.start));
       weekMsBy[k] = (weekMsBy[k] || 0) + (s.durationMs || 0);
       weekCountBy[k] = (weekCountBy[k] || 0) + 1;
       weekGamesBy[k] = weekGamesBy[k] || new Set();
@@ -5508,7 +5507,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.1.3';
+    const APP_VERSION = '1.1.4';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
