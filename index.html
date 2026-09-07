@@ -1850,6 +1850,60 @@
     padding: 8px 2px;
   }
 
+  .weekday-chart {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    height: 128px;
+    padding-top: 6px;
+  }
+
+  .weekday-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    cursor: default;
+  }
+
+  .weekday-bar-wrap {
+    width: 100%;
+    max-width: 40px;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 10px;
+  }
+
+  .weekday-bar {
+    width: 100%;
+    max-width: 34px;
+    min-height: 3px;
+    border-radius: 6px 6px 3px 3px;
+    background: var(--accent-gradient);
+    box-shadow: 0 6px 14px -8px var(--accent-violet);
+    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .weekday-bar.zero { opacity: 0.22; }
+
+  .weekday-label {
+    font-size: 0.62rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .weekday-habits-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
   /* Badges tab — category sections */
   .ach-section {
     margin-top: 20px;
@@ -2798,6 +2852,10 @@
     <div class="card playstyle-card">
       <div class="card-header">Playstyle</div>
       <div class="playstyle" id="playstyle-box"></div>
+    </div>
+    <div class="card weekday-habits-card">
+      <div class="card-header">Weekday Habits</div>
+      <div class="weekday-habits" id="weekday-habits-box"></div>
     </div>
     </div>
   </div>
@@ -5058,6 +5116,38 @@
       } else {
         PBOX.className = 'playstyle-empty';
         PBOX.textContent = 'No sessions yet \u2014 your session-length mix will show up here.';
+      }
+    }
+
+    const WBOX = document.getElementById('weekday-habits-box');
+    if (WBOX) {
+      const daw = [0, 0, 0, 0, 0, 0, 0];
+      let anyTime = 0;
+      sessions.forEach(s => {
+        if (s.stop === null || !s.durationMs) return;
+        const dow = new Date(s.start).getDay();
+        daw[dow] += s.durationMs;
+        anyTime += s.durationMs;
+      });
+      if (anyTime) {
+        const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const order = [1, 2, 3, 4, 5, 6, 0];
+        const max = Math.max.apply(null, daw);
+        WBOX.className = 'weekday-habits';
+        WBOX.innerHTML =
+          '<div class="weekday-chart">' +
+          order.map(d => {
+            const ms = daw[d];
+            const h = Math.round(ms / max * 100);
+            return '<div class="weekday-col" title="' + names[d] + ': ' + fmtDurationShort(ms) + '">' +
+              '<div class="weekday-bar-wrap"><div class="weekday-bar' + (h ? '' : ' zero') + '" style="height:' + h + '%"></div></div>' +
+              '<span class="weekday-label">' + names[d] + '</span>' +
+            '</div>';
+          }).join('') +
+          '</div>';
+      } else {
+        WBOX.className = 'weekday-habits-empty';
+        WBOX.textContent = 'No playtime logged yet \u2014 your weekday rhythm will appear here.';
       }
     }
 
