@@ -278,6 +278,12 @@
     gap: 4px;
     position: relative;
     transition: color 0.2s;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 420px) {
+    .tab-btn { font-size: 0.62rem; padding: 10px 2px 9px; }
+    .tab-btn .tab-icon svg { width: 20px; height: 20px; }
   }
 
   .tab-btn .tab-icon { font-size: 1.3rem; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -1479,12 +1485,13 @@
   .streak-pill svg { width: 14px; height: 14px; flex-shrink: 0; }
   .streak-pill.tick { animation: tick 0.35s ease; }
 
-  /* Badges tab — player profile */
-  .profile-row {
+  /* Profile tab — player profile */
+  .profile-hero {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
+    gap: 2px;
+    padding: 4px 0 6px;
   }
 
   .profile-level {
@@ -1492,16 +1499,17 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 74px;
-    height: 74px;
-    border-radius: 18px;
+    width: 88px;
+    height: 88px;
+    border-radius: 24px;
     background: var(--accent-gradient);
     color: #fff;
-    font-size: 1.9rem;
+    font-size: 2.3rem;
     font-weight: 800;
     line-height: 1;
-    box-shadow: 0 10px 24px -12px var(--accent-violet);
+    box-shadow: 0 14px 30px -14px var(--accent-violet);
     flex-shrink: 0;
+    margin-bottom: 8px;
   }
 
   .profile-lv {
@@ -1512,12 +1520,50 @@
     opacity: 0.85;
   }
 
-  .profile-info { flex: 1; min-width: 120px; }
-
   .profile-title {
-    font-size: 1.15rem;
+    font-size: 0.82rem;
     font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-top: 3px;
   }
+
+  .profile-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+    min-height: 30px;
+  }
+
+  .profile-name {
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1.15;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .name-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .name-edit-btn:hover { color: var(--accent); background: var(--surface2); }
+
+  .name-edit-btn svg { width: 15px; height: 15px; }
 
   .profile-xp {
     font-size: 0.8rem;
@@ -1525,30 +1571,47 @@
     margin-top: 2px;
   }
 
-  .profile-right {
-    text-align: right;
-    font-size: 0.8rem;
-    color: var(--text2);
-    margin-left: auto;
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 14px 0 4px;
+  }
+
+  .profile-slash {
+    color: var(--text3);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .profile-stats .stat-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 3px;
+  }
+
+  .profile-stats .stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .profile-next {
-    text-align: right;
+    text-align: center;
     font-size: 0.78rem;
     font-weight: 600;
     color: var(--accent);
     margin: 10px 0 -2px;
   }
 
-  .profile-unlocked { font-weight: 700; color: var(--text); }
-
-  .profile-badge-xp { font-weight: 600; color: var(--text2); }
-
   .profile-ring-wrap {
     position: relative;
     width: 46px;
     height: 46px;
-    margin: 8px 0 0 auto;
+    margin: 4px auto 0;
   }
 
   .profile-ring { transform: rotate(-90deg); }
@@ -1577,11 +1640,16 @@
     color: var(--text2);
   }
 
+  .weekly-champion-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+  }
+
   .weekly-champion {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin-top: 10px;
     font-size: 0.72rem;
     font-weight: 700;
     color: #fff;
@@ -1596,8 +1664,436 @@
   .profile-track { margin: 16px 0 8px; }
 
   .profile-next-hint {
+    text-align: center;
     font-size: 0.78rem;
     color: var(--text2);
+  }
+
+  /* Profile tab — personal records */
+  .records-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 10px 0 16px;
+  }
+
+  .records-grid { margin-top: 12px; }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .profile-grid > .card {
+    margin-bottom: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .profile-grid > .card .card-header { flex-shrink: 0; }
+
+  .profile-grid > .card > .next-badge-body,
+  .profile-grid > .card > .favorite-game,
+  .profile-grid > .card > .playstyle,
+  .profile-grid > .card > .streak-calendar,
+  .profile-grid > .card > .milestones {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .profile-grid > .card > .records-empty,
+  .profile-grid > .card > .favorite-game-empty,
+  .profile-grid > .card > .playstyle-empty,
+  .profile-grid > .card > .weekday-habits-empty,
+  .profile-grid > .card > .streak-empty,
+  .profile-grid > .card > .milestones-empty,
+  .profile-grid > .card > .next-badge-done {
+    display: flex;
+    align-items: center;
+  }
+
+  .stat-grid .stat-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .record-date {
+    font-size: 0.68rem;
+    color: var(--text3);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.4px;
+  }
+
+  .next-badge-body {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    background: var(--surface2);
+    transition: border-color 0.2s;
+  }
+
+  .next-badge-body:hover { border-color: var(--accent); }
+
+  .next-badge-medal {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-gradient);
+    color: #fff;
+    box-shadow: 0 8px 18px -12px var(--accent-violet);
+  }
+
+  .next-badge-medal svg { width: 22px; height: 22px; }
+
+  .next-badge-info { flex: 1; min-width: 0; }
+
+  .next-badge-title { font-size: 0.9rem; font-weight: 700; }
+
+  .next-badge-desc {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .next-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .next-badge-progress {
+    font-size: 0.7rem;
+    color: var(--text3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .next-badge-xp { font-size: 0.68rem; font-weight: 700; color: var(--accent); }
+
+  .next-badge-track { height: 7px; }
+
+  .next-badge-arrow { color: var(--text3); flex-shrink: 0; }
+
+  .next-badge-done { font-size: 0.85rem; color: var(--text2); padding: 6px 0 2px; }
+
+  .favorite-game {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    background: var(--surface2);
+    transition: border-color 0.2s;
+  }
+
+  .favorite-game:hover { border-color: var(--accent); }
+
+  .favorite-game-medal {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-gradient);
+    color: #fff;
+    box-shadow: 0 8px 18px -12px var(--accent-violet);
+  }
+
+  .favorite-game-medal svg { width: 20px; height: 20px; }
+
+  .favorite-game-info { flex: 1; min-width: 0; }
+
+  .favorite-game-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .favorite-game-meta {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .favorite-game-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
+  .playstyle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .playstyle-bar {
+    display: flex;
+    height: 14px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    gap: 2px;
+  }
+
+  .ps-seg { height: 100%; }
+  .ps-quick { background: var(--accent-violet); }
+  .ps-standard { background: var(--green); }
+  .ps-marathon { background: var(--yellow); }
+
+  .playstyle-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--text2);
+  }
+
+  .ps-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  .ps-dot { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+  .ps-dot-quick { background: var(--accent-violet); }
+  .ps-dot-standard { background: var(--green); }
+  .ps-dot-marathon { background: var(--yellow); }
+
+  .ps-chip b { color: var(--text); }
+
+  .playstyle-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
+  .weekday-chart {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    height: 128px;
+    padding-top: 6px;
+  }
+
+  .weekday-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    cursor: default;
+  }
+
+  .weekday-bar-wrap {
+    width: 100%;
+    max-width: 40px;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 10px;
+  }
+
+  .weekday-bar {
+    width: 100%;
+    max-width: 34px;
+    min-height: 3px;
+    border-radius: 6px 6px 3px 3px;
+    background: var(--accent-gradient);
+    box-shadow: 0 6px 14px -8px var(--accent-violet);
+    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .weekday-bar.zero { opacity: 0.22; }
+
+  .weekday-label {
+    font-size: 0.62rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .weekday-habits-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
+  .streak-scroll {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .streak-calendar {
+    container-type: inline-size;
+  }
+
+  @container (max-width: 672px) {
+    .streak-months { display: none; }
+  }
+
+  .streak-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
+    gap: 3px;
+  }
+
+  .streak-cell {
+    aspect-ratio: 1 / 1;
+    border-radius: 2.5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-color: var(--border-strong);
+  }
+
+  .streak-cell.s0 { background: rgba(148, 163, 184, 0.08); }
+  .streak-cell.s1 { background: rgba(139, 92, 246, 0.3); border-color: transparent; }
+  .streak-cell.s2 { background: rgba(139, 92, 246, 0.55); border-color: transparent; }
+  .streak-cell.s3 { background: rgba(139, 92, 246, 0.8); border-color: transparent; }
+  .streak-cell.s4 { background: var(--accent-violet); border-color: var(--accent-violet); }
+
+  .streak-cell.placeholder { opacity: 0.45; }
+
+  .streak-months {
+    display: flex;
+    gap: 3px;
+    height: 14px;
+    margin-bottom: 4px;
+  }
+
+  .streak-months-cell {
+    flex: 1 1 0;
+    min-width: 10px;
+    max-width: 24px;
+    position: relative;
+  }
+
+  .streak-months-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .streak-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    font-size: 0.66rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .streak-legend .streak-cell { width: 10px; height: 10px; flex: 0 0 auto; max-width: none; }
+  .streak-legend span { margin: 0 3px; }
+
+  .streak-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
+  .milestones-list {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .milestones-list::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 16px;
+    bottom: 16px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .milestone {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 0 7px 4px;
+    position: relative;
+  }
+
+  .milestone-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .milestone.reached .milestone-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--surface2), 0 0 10px -2px var(--accent-violet);
+  }
+
+  .milestone.next .milestone-dot {
+    background: var(--yellow);
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 3px var(--surface2);
+  }
+
+  .milestone-label { font-size: 0.85rem; }
+  .milestone.reached .milestone-label { color: var(--text); }
+  .milestone.next .milestone-label { color: var(--yellow); font-weight: 700; }
+
+  .milestone-date {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: var(--text2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .milestones-foot {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text2);
+  }
+
+  .milestones-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
   }
 
   /* Badges tab — category sections */
@@ -2269,6 +2765,22 @@
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 12px;
     }
+
+    /* Profile tab: two-column card grid on desktop */
+    .app-content:has(#tab-profile.active) {
+      max-width: 1400px;
+    }
+    .profile-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .profile-card,
+    .weekday-habits-card,
+    .streak-calendar-card,
+    .milestones-card {
+      grid-column: 1 / -1;
+    }
+    .streak-cell { border-radius: 3px; }
   }
 
   /* Desktop wide: add Stats as a third column in the merged Today page */
@@ -2309,7 +2821,7 @@
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.1.4</span>
+    <span class="version-badge">1.1.5</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -2440,30 +2952,6 @@
 
   <!-- BADGES TAB -->
   <div id="tab-badges" class="tab-panel">
-    <div class="card">
-      <div class="card-header">Player Profile</div>
-      <div class="profile-row">
-        <div class="profile-level"><span class="profile-lv">LV</span><span id="ach-level">1</span></div>
-        <div class="profile-info">
-          <div class="profile-title" id="ach-level-title">Novice</div>
-          <div class="profile-xp" id="ach-total-xp">0 XP</div>
-        </div>
-        <div class="profile-right">
-          <div class="profile-unlocked"><span id="ach-unlocked">0</span> / <span id="ach-total">0</span> badges <span class="profile-badge-xp" id="ach-badge-xp"></span></div>
-          <div class="profile-ring-wrap" title="Badges completed">
-            <svg class="profile-ring" viewBox="0 0 48 48" aria-hidden="true">
-              <circle class="ring-track" cx="24" cy="24" r="20"></circle>
-              <circle class="ring-fill" id="ach-ring-fill" cx="24" cy="24" r="20"></circle>
-            </svg>
-            <span class="ring-pct" id="ach-ring-pct">0%</span>
-          </div>
-        </div>
-      </div>
-      <div class="profile-next" id="ach-next-xp"></div>
-      <div class="progress-track profile-track"><div class="progress-fill" id="ach-level-fill"></div></div>
-      <div class="weekly-champion" id="weekly-champion" style="display:none"></div>
-      <div class="profile-next-hint" id="ach-next-hint"></div>
-    </div>
     <div class="card quest-card" id="quest-card">
       <div class="card-header quest-head-row">
         <span>Quests</span>
@@ -2479,6 +2967,97 @@
       <div id="quest-board"></div>
     </div>
     <div id="ach-groups"></div>
+  </div>
+
+  <!-- PROFILE TAB -->
+  <div id="tab-profile" class="tab-panel">
+    <div class="profile-grid">
+    <div class="card profile-card">
+      <div class="card-header">Player Profile</div>
+      <div class="profile-hero">
+        <div class="profile-level"><span class="profile-lv">LV</span><span id="ach-level">1</span></div>
+        <div class="profile-name-row">
+          <span class="profile-name" id="profile-name"></span>
+          <button type="button" class="name-edit-btn" id="profile-name-edit" title="Edit name" aria-label="Edit name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
+        </div>
+        <div class="profile-title" id="ach-level-title">Novice</div>
+        <div class="profile-xp" id="ach-total-xp">0 XP</div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat-box">
+          <div class="stat-value"><span id="ach-unlocked">0</span><span class="profile-slash"> / <span id="ach-total">0</span></span></div>
+          <div class="stat-label">Badges</div>
+        </div>
+        <div class="stat-box">
+          <div class="profile-ring-wrap" title="Badges completed">
+            <svg class="profile-ring" viewBox="0 0 48 48" aria-hidden="true">
+              <circle class="ring-track" cx="24" cy="24" r="20"></circle>
+              <circle class="ring-fill" id="ach-ring-fill" cx="24" cy="24" r="20"></circle>
+            </svg>
+            <span class="ring-pct" id="ach-ring-pct">0%</span>
+          </div>
+          <div class="stat-label">Complete</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value"><span id="ach-badge-xp"></span><span class="profile-slash"> / <span id="ach-badge-xp-total"></span></span></div>
+          <div class="stat-label">XP</div>
+        </div>
+      </div>
+      <div class="profile-next" id="ach-next-xp"></div>
+      <div class="progress-track profile-track"><div class="progress-fill" id="ach-level-fill"></div></div>
+      <div class="weekly-champion-wrap"><div class="weekly-champion" id="weekly-champion" style="display:none"></div></div>
+      <div class="profile-next-hint" id="ach-next-hint"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Personal Records</div>
+      <div class="records-empty" id="records-empty">No records yet — log some sessions and they’ll show up here.</div>
+      <div class="stat-grid records-grid" id="records-grid">
+        <div class="stat-box">
+          <div class="stat-value" id="record-longest">0m</div>
+          <div class="stat-label">Longest session</div>
+          <div class="record-date" id="record-longest-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-busiest">0m</div>
+          <div class="stat-label">Busiest day</div>
+          <div class="record-date" id="record-busiest-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-most-sessions">0</div>
+          <div class="stat-label">Sessions in a day</div>
+          <div class="record-date" id="record-most-sessions-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-streak">0 weeks</div>
+          <div class="stat-label">Longest streak</div>
+        </div>
+      </div>
+    </div>
+    <div class="card next-badge-card">
+      <div class="card-header">Next Badge to Unlock</div>
+      <div class="next-badge-body" id="next-badge-body"></div>
+    </div>
+    <div class="card favorite-card">
+      <div class="card-header">Favorite Game</div>
+      <div class="favorite-game" id="favorite-game-box"></div>
+    </div>
+    <div class="card playstyle-card">
+      <div class="card-header">Playstyle</div>
+      <div class="playstyle" id="playstyle-box"></div>
+    </div>
+    <div class="card weekday-habits-card">
+      <div class="card-header">Weekday Habits</div>
+      <div class="weekday-habits" id="weekday-habits-box"></div>
+    </div>
+    <div class="card streak-calendar-card">
+      <div class="card-header">Streak Calendar</div>
+      <div class="streak-calendar" id="streak-calendar-box"></div>
+    </div>
+    <div class="card milestones-card">
+      <div class="card-header">Milestones</div>
+      <div class="milestones" id="milestones-box"></div>
+    </div>
+    </div>
   </div>
 
   <!-- GAMES TAB -->
@@ -2588,6 +3167,10 @@
   <button class="tab-btn" data-tab="badges">
     <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 5M17 5h3a3 3 0 0 1-3 5"/></svg></span>
     Badges
+  </button>
+  <button class="tab-btn" data-tab="profile">
+    <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+    Profile
   </button>
   <button class="tab-btn" data-tab="games">
     <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.94 3.56L2 15.56a2.5 2.5 0 0 0 3.32 2.61l1.82-.68a1 1 0 0 1 .82 0l3.13 1.04a2.5 2.5 0 0 0 1.9 0l3.13-1.04a1 1 0 0 1 .82 0l1.82.68A2.5 2.5 0 0 0 22 15.56l-1.06-7A4 4 0 0 0 17.32 5z"/></svg></span>
@@ -2901,6 +3484,18 @@
   </div>
 </div>
 
+<!-- Edit name modal -->
+<div class="modal-overlay" id="name-modal">
+  <div class="modal">
+    <h3>Edit name</h3>
+    <input type="text" id="name-input" maxlength="24" placeholder="Your name" autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn-ghost" id="name-cancel">Cancel</button>
+      <button class="btn-primary" id="name-save">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- Update available modal -->
 <div class="modal-overlay" id="update-modal">
   <div class="modal">
@@ -2953,8 +3548,8 @@
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '' }; }
   }
 
   function mergeFullClear(a, b) {
@@ -3339,7 +3934,7 @@
     const prevLevel = settings.achievementLevel || 0;
     const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
     const prevFullClear = settings.dailyFullClear && typeof settings.dailyFullClear === 'object' ? settings.dailyFullClear : null;
-    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
+    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '' }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
     settings.accent = localAccent;
     settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
     settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
@@ -3565,6 +4160,7 @@
     renderSessionsTab();
     renderStatsTab();
     renderAchievementsTab();
+    renderProfileTab();
     renderGamesTab();
   }
 
@@ -4034,17 +4630,22 @@
     const weekGameIds = new Set();
     const weekDays = new Set();
     let longestMs = 0;
+    let longestMsDate = null;
     let todayLongestMs = 0;
     let weekMs = 0, weekCount = 0, weekLongestMs = 0;
     let earlyBird = 0, nightOwl = 0;
+    let maxMsDay = 0, maxMsDayDate = null;
+    let maxSessionsDay = 0, maxSessionsDayDate = null;
     const byDay = {};
     const sessionsByDay = {};
     completed.forEach(s => {
       const ms = s.durationMs || 0;
-      if (ms > longestMs) longestMs = ms;
+      if (ms > longestMs) { longestMs = ms; longestMsDate = dateKey(s.start); }
       const d = dateKey(s.start);
       byDay[d] = (byDay[d] || 0) + ms;
       sessionsByDay[d] = (sessionsByDay[d] || 0) + 1;
+      if (byDay[d] > maxMsDay) { maxMsDay = byDay[d]; maxMsDayDate = d; }
+      if (sessionsByDay[d] > maxSessionsDay) { maxSessionsDay = sessionsByDay[d]; maxSessionsDayDate = d; }
       if (d === t) {
         todayGameIds.add(s.gameId);
         if (ms > todayLongestMs) todayLongestMs = ms;
@@ -4092,6 +4693,14 @@
       if (run > longestStreak) longestStreak = run;
     });
 
+    const weekList = Object.keys(weekMsBy).sort();
+    let longestWeekStreak = 0, weekRun = 0, prevWeek = null;
+    weekList.forEach(w => {
+      weekRun = (prevWeek && addDays(prevWeek, 7) === w) ? weekRun + 1 : 1;
+      prevWeek = w;
+      if (weekRun > longestWeekStreak) longestWeekStreak = weekRun;
+    });
+
     const dayVals = Object.values(byDay);
     const sessDayVals = Object.values(sessionsByDay);
 
@@ -4105,9 +4714,13 @@
       count: completed.length,
       distinctGames: gameIds.size,
       longestMs: longestMs,
+      longestMsDate: longestMsDate,
       longestStreak: longestStreak,
+      longestWeekStreak: longestWeekStreak,
       maxSessionsDay: sessDayVals.length ? Math.max.apply(null, sessDayVals) : 0,
+      maxSessionsDayDate: maxSessionsDayDate,
       maxMsDay: dayVals.length ? Math.max.apply(null, dayVals) : 0,
+      maxMsDayDate: maxMsDayDate,
       earlyBird: earlyBird,
       nightOwl: nightOwl,
       distinctDays: days.size,
@@ -4544,9 +5157,9 @@
     document.getElementById('ach-total').textContent = ACHIEVEMENTS.length;
     document.getElementById('ach-total-xp').textContent = fmtNum(totalXp) + ' XP';
     const maxBadgeXp = ACHIEVEMENTS.reduce((sum, x) => sum + x.xp, 0);
-    document.getElementById('ach-badge-xp').textContent = maxBadgeXp > 0
-      ? '\u00b7 ' + fmtNum(B.badgeXp) + ' / ' + fmtNum(maxBadgeXp) + ' XP'
-      : '';
+    const hasBadgeXp = maxBadgeXp > 0;
+    document.getElementById('ach-badge-xp').textContent = hasBadgeXp ? fmtNum(B.badgeXp) : '';
+    document.getElementById('ach-badge-xp-total').textContent = hasBadgeXp ? fmtNum(maxBadgeXp) : '';
 
     if (ACHIEVEMENTS.length && document.getElementById('ach-ring-fill')) {
       const C = 2 * Math.PI * 20;
@@ -4625,6 +5238,267 @@
       }
       if (typeof navigator !== 'undefined' && navigator.vibrate) {
         navigator.vibrate([80, 60, 80]);
+      }
+    }
+  }
+
+  function renderProfileTab() {
+    const nameEl = document.getElementById('profile-name');
+    if (nameEl) nameEl.textContent = (settings.name || '').trim() || 'Player';
+    const M = computeAchStats();
+    const gridEl = document.getElementById('records-grid');
+    const emptyEl = document.getElementById('records-empty');
+    if (!M.count) {
+      gridEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+      const msg = 'No sessions yet \u2014 this preview appears as you play.';
+      const pf = (id, cls) => {
+        const el = document.getElementById(id);
+        if (el) { el.className = cls; el.dataset.gameId = ''; el.textContent = msg; }
+      };
+      pf('favorite-game-box', 'favorite-game-empty');
+      pf('playstyle-box', 'playstyle-empty');
+      pf('weekday-habits-box', 'weekday-habits-empty');
+      pf('streak-calendar-box', 'streak-empty');
+      pf('milestones-box', 'milestones-empty');
+      const nb = document.getElementById('next-badge-body');
+      if (nb) { nb.className = 'next-badge-done'; nb.textContent = 'No sessions yet \u2014 your next badge will appear here once you start playing.'; }
+      return;
+    }
+    gridEl.style.display = '';
+    emptyEl.style.display = 'none';
+    const fmtDay = str => {
+      const p = str.split('-').map(Number);
+      return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+    document.getElementById('record-longest').textContent = fmtDurationShort(M.longestMs);
+    document.getElementById('record-longest-date').textContent = M.longestMsDate ? fmtDay(M.longestMsDate) : '';
+    document.getElementById('record-busiest').textContent = fmtDurationShort(M.maxMsDay);
+    document.getElementById('record-busiest-date').textContent = M.maxMsDayDate ? fmtDay(M.maxMsDayDate) : '';
+    document.getElementById('record-most-sessions').textContent = String(M.maxSessionsDay);
+    document.getElementById('record-most-sessions-date').textContent = M.maxSessionsDayDate ? fmtDay(M.maxSessionsDayDate) : '';
+    document.getElementById('record-streak').textContent = M.longestWeekStreak + (M.longestWeekStreak === 1 ? ' week' : ' weeks');
+
+    const favBox = document.getElementById('favorite-game-box');
+    if (favBox) {
+      const byGame = {};
+      sessions.forEach(s => {
+        if (s.stop === null) return;
+        byGame[s.gameId] = (byGame[s.gameId] || 0) + (s.durationMs || 0);
+      });
+      let favId = null, favMs = 0;
+      Object.keys(byGame).forEach(id => {
+        if (byGame[id] > favMs) { favMs = byGame[id]; favId = id; }
+      });
+      const favGame = favId && games.find(g => g.id === favId);
+      if (favGame) {
+        const favCount = sessions.filter(s => s.gameId === favId).length;
+        favBox.className = 'favorite-game';
+        favBox.dataset.gameId = favId;
+        favBox.innerHTML =
+          '<div class="favorite-game-medal">' + iconSvg('medal') + '</div>' +
+          '<div class="favorite-game-info">' +
+            '<div class="favorite-game-name">' + escHtml(favGame.name) + '</div>' +
+            '<div class="favorite-game-meta">' + fmtDurationShort(favMs) + ' played \u00b7 ' + favCount + ' session' + (favCount !== 1 ? 's' : '') + '</div>' +
+          '</div>' +
+          '<span class="next-badge-arrow">' + iconSvg('view') + '</span>';
+      } else {
+        favBox.className = 'favorite-game-empty';
+        favBox.dataset.gameId = '';
+        favBox.textContent = 'No sessions yet \u2014 log some playtime and your top game will appear here.';
+      }
+    }
+
+    const nbBody = document.getElementById('next-badge-body');
+    const PBOX = document.getElementById('playstyle-box');
+    const completedAll = sessions.filter(s => s.stop !== null);
+    if (PBOX) {
+      if (completedAll.length) {
+        let quick = 0, standard = 0, marathon = 0;
+        completedAll.forEach(s => {
+          const ms = s.durationMs || 0;
+          if (ms < 30 * 60000) quick++;
+          else if (ms < 120 * 60000) standard++;
+          else marathon++;
+        });
+        const pctOf = n => Math.round(n / completedAll.length * 100);
+        PBOX.className = 'playstyle';
+        PBOX.innerHTML =
+          '<div class="playstyle-bar">' +
+            '<span class="ps-seg ps-quick" style="flex:' + quick + '"></span>' +
+            '<span class="ps-seg ps-standard" style="flex:' + standard + '"></span>' +
+            '<span class="ps-seg ps-marathon" style="flex:' + marathon + '"></span>' +
+          '</div>' +
+          '<div class="playstyle-legend">' +
+            '<span class="ps-chip"><span class="ps-dot ps-dot-quick"></span>Quick &lt;30m \u00b7 <b>' + quick + '</b> (' + pctOf(quick) + '%)</span>' +
+            '<span class="ps-chip"><span class="ps-dot ps-dot-standard"></span>Standard \u00b7 <b>' + standard + '</b> (' + pctOf(standard) + '%)</span>' +
+            '<span class="ps-chip"><span class="ps-dot ps-dot-marathon"></span>Marathon 2h+ \u00b7 <b>' + marathon + '</b> (' + pctOf(marathon) + '%)</span>' +
+          '</div>';
+      } else {
+        PBOX.className = 'playstyle-empty';
+        PBOX.textContent = 'No sessions yet \u2014 your session-length mix will show up here.';
+      }
+    }
+
+    const WBOX = document.getElementById('weekday-habits-box');
+    if (WBOX) {
+      const daw = [0, 0, 0, 0, 0, 0, 0];
+      let anyTime = 0;
+      sessions.forEach(s => {
+        if (s.stop === null || !s.durationMs) return;
+        const dow = new Date(s.start).getDay();
+        daw[dow] += s.durationMs;
+        anyTime += s.durationMs;
+      });
+      if (anyTime) {
+        const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const order = [1, 2, 3, 4, 5, 6, 0];
+        const max = Math.max.apply(null, daw);
+        WBOX.className = 'weekday-habits';
+        WBOX.innerHTML =
+          '<div class="weekday-chart">' +
+          order.map(d => {
+            const ms = daw[d];
+            const h = Math.round(ms / max * 100);
+            return '<div class="weekday-col" title="' + names[d] + ': ' + fmtDurationShort(ms) + '">' +
+              '<div class="weekday-bar-wrap"><div class="weekday-bar' + (h ? '' : ' zero') + '" style="height:' + h + '%"></div></div>' +
+              '<span class="weekday-label">' + names[d] + '</span>' +
+            '</div>';
+          }).join('') +
+          '</div>';
+      } else {
+        WBOX.className = 'weekday-habits-empty';
+        WBOX.textContent = 'No playtime logged yet \u2014 your weekday rhythm will appear here.';
+      }
+    }
+
+    const SBOX = document.getElementById('streak-calendar-box');
+    if (SBOX) {
+      const wkMs = {};
+      let weekHas = false;
+      sessions.forEach(s => {
+        if (s.stop === null || !s.durationMs) return;
+        const k = weekKeyFor(dateKey(s.start));
+        wkMs[k] = (wkMs[k] || 0) + s.durationMs;
+        weekHas = true;
+      });
+      if (weekHas) {
+        let maxWeek = 0;
+        Object.keys(wkMs).forEach(k => { if (wkMs[k] > maxWeek) maxWeek = wkMs[k]; });
+        const today = todayStr();
+        const thisWeek = weekStartStr();
+        const start = addDays(thisWeek, -357);
+        const mShort = m => {
+          const p = m.split('-').map(Number);
+          return new Date(p[0], p[1] - 1, 1).toLocaleDateString(undefined, { month: 'short' });
+        };
+        let monthsHtml = '<div class="streak-months">';
+        let prevM = null;
+        for (let i = 0; i < 52; i++) {
+          const wkStart = addDays(start, i * 7);
+          const m = wkStart.slice(0, 7);
+          monthsHtml += '<div class="streak-months-cell">' + (m !== prevM ? '<span class="streak-months-label">' + mShort(m) + '</span>' : '') + '</div>';
+          prevM = m;
+        }
+        monthsHtml += '</div>';
+        let html = '<div class="streak-scroll">' + monthsHtml + '<div class="streak-grid">';
+        for (let i = 0; i < 52; i++) {
+          const wkStart = addDays(start, i * 7);
+          if (wkStart > today) {
+            html += '<div class="streak-cell placeholder"></div>';
+          } else {
+            const ms = wkMs[wkStart] || 0;
+            const lvl = ms === 0 ? 0 : ms >= maxWeek * 0.75 ? 4 : ms >= maxWeek * 0.5 ? 3 : ms >= maxWeek * 0.25 ? 2 : 1;
+            const t = fmtDateShort(wkStart) + ' \u2013 ' + fmtDateShort(addDays(wkStart, 6)) + (ms ? ' \u2014 ' + fmtDurationShort(ms) : '');
+            html += '<div class="streak-cell s' + lvl + '" title="' + t + '"></div>';
+          }
+        }
+        html += '</div></div>';
+        html += '<div class="streak-legend"><span>Less</span><div class="streak-cell s0"></div><div class="streak-cell s1"></div><div class="streak-cell s2"></div><div class="streak-cell s3"></div><div class="streak-cell s4"></div><span>More</span></div>';
+        SBOX.className = 'streak-calendar';
+        SBOX.innerHTML = html;
+        const monthsRow = SBOX.querySelector('.streak-months');
+        const updateMonths = () => {
+          monthsRow.style.display = SBOX.clientWidth >= 673 ? '' : 'none';
+        };
+        updateMonths();
+        if (typeof ResizeObserver !== 'undefined' && SBOX.__monthsTo && !SBOX.__monthsTo._obs) {
+          SBOX.__monthsTo._obs = new ResizeObserver(updateMonths);
+          SBOX.__monthsTo._obs.observe(SBOX);
+        }
+      } else {
+        SBOX.className = 'streak-empty';
+        SBOX.textContent = 'No playtime logged yet \u2014 your weekly streak calendar fills in as you play.';
+      }
+    }
+
+    const MBOX = document.getElementById('milestones-box');
+    if (MBOX) {
+      const completed = sessions.filter(s => s.stop !== null);
+      if (completed.length) {
+        const sortedAll = completed.slice().sort((a, b) => new Date(a.start) - new Date(b.start));
+        const firstDate = dateKey(sortedAll[0].start);
+        const unlocks = settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object' ? settings.achievementUnlocks : {};
+        let firstBadge = null;
+        Object.keys(unlocks).forEach(id => {
+          if (!firstBadge || unlocks[id] < firstBadge) firstBadge = unlocks[id];
+        });
+        firstBadge = firstBadge ? dateKey(firstBadge) : null;
+        let tot = 0;
+        let first10 = null, first50 = null, first100 = null, hundredth = null;
+        sortedAll.forEach(s => {
+          tot += s.durationMs || 0;
+          if (!first10 && tot >= 10 * 3600000) first10 = dateKey(s.start);
+          if (!first50 && tot >= 50 * 3600000) first50 = dateKey(s.start);
+          if (!first100 && tot >= 100 * 3600000) first100 = dateKey(s.start);
+        });
+        if (sortedAll.length >= 100) hundredth = dateKey(sortedAll[99].start);
+        const milestones = [
+          { label: 'First session', date: firstDate },
+          { label: 'First badge', date: firstBadge },
+          { label: '10h total playtime', date: first10 },
+          { label: '100 completed sessions', date: hundredth },
+          { label: '50h total playtime', date: first50 },
+          { label: '100h total playtime', date: first100 }
+        ];
+        const nextIx = milestones.findIndex(x => !x.date);
+        const rows = milestones.map((m, i) => {
+          const reached = !!m.date;
+          return '<div class="milestone' + (reached ? ' reached' : i === nextIx ? ' next' : '') + '">' +
+            '<div class="milestone-dot"></div>' +
+            '<div class="milestone-label">' + m.label + '</div>' +
+            '<div class="milestone-date">' + (reached ? fmtDay(m.date) : i === nextIx ? 'Next up' : '') + '</div>' +
+          '</div>';
+        });
+        MBOX.className = 'milestones';
+        MBOX.innerHTML = '<div class="milestones-list">' + rows.join('') + '</div>' +
+          '<div class="milestones-foot">' + fmtDurationShort(tot) + ' total \u00b7 ' + completed.length + ' completed session' + (completed.length !== 1 ? 's' : '') + '</div>';
+      } else {
+        MBOX.className = 'milestones-empty';
+        MBOX.textContent = 'No sessions yet \u2014 your achievement timeline will appear here.';
+      }
+    }
+
+    const B = buildBadgeStats();
+    const nextBadge = B.stats.filter(s => !s.unlocked).sort((a, b) => b.pct - a.pct)[0];
+    if (nbBody) {
+      if (nextBadge) {
+        nbBody.className = 'next-badge-body';
+        nbBody.innerHTML =
+          '<div class="next-badge-medal">' + iconSvg(nextBadge.def.icon) + '</div>' +
+          '<div class="next-badge-info">' +
+            '<div class="next-badge-title">' + nextBadge.def.title + '</div>' +
+            '<div class="next-badge-desc">' + nextBadge.def.desc + '</div>' +
+            '<div class="next-badge-row">' +
+              '<span class="next-badge-progress">' + achProgressText(nextBadge) + ' \u00b7 ' + nextBadge.pct + '%</span>' +
+              '<span class="next-badge-xp">+' + fmtNum(nextBadge.def.xp) + ' XP</span>' +
+            '</div>' +
+            '<div class="progress-track next-badge-track"><div class="progress-fill" style="width:' + nextBadge.pct + '%"></div></div>' +
+          '</div>' +
+          '<span class="next-badge-arrow">' + iconSvg('view') + '</span>';
+      } else {
+        nbBody.className = 'next-badge-done';
+        nbBody.textContent = 'All ' + ACHIEVEMENTS.length + ' badges unlocked \u2014 you are a legend!';
       }
     }
   }
@@ -5373,9 +6247,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
       if (importData.settings && typeof importData.settings === 'object') {
-        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system' }, importData.settings);
+        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', name: '' }, importData.settings);
       } else {
-        settings = { dailyGoalMinutes: 0, theme: 'system' };
+        settings = { dailyGoalMinutes: 0, theme: 'system', name: '' };
       }
       saveGames(games);
       saveSessions(sessions);
@@ -5414,6 +6288,39 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   // --- Dashboard modal ---
   document.getElementById('dashboard-close').addEventListener('click', () => {
     document.getElementById('dashboard-modal').classList.remove('open');
+  });
+
+  // --- Edit player name ---
+  const nameModal = document.getElementById('name-modal');
+  const nameInput = document.getElementById('name-input');
+  document.getElementById('profile-name-edit').addEventListener('click', () => {
+    nameInput.value = (settings.name || '').trim() || '';
+    nameModal.classList.add('open');
+    nameInput.focus();
+    nameInput.select();
+  });
+  document.getElementById('name-cancel').addEventListener('click', () => {
+    nameModal.classList.remove('open');
+  });
+  document.getElementById('name-save').addEventListener('click', () => {
+    settings.name = nameInput.value.trim().slice(0, 24);
+    saveSettings(settings);
+    nameModal.classList.remove('open');
+    render();
+  });
+  nameInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('name-save').click();
+    if (e.key === 'Escape') nameModal.classList.remove('open');
+  });
+  nameModal.addEventListener('click', e => {
+    if (e.target === nameModal) nameModal.classList.remove('open');
+  });
+
+  document.getElementById('next-badge-body').addEventListener('click', () => goTab('badges'));
+
+  document.getElementById('favorite-game-box').addEventListener('click', () => {
+    const id = document.getElementById('favorite-game-box').dataset.gameId;
+    if (id) openDashboard(id);
   });
 
   // --- Live timer ---
@@ -5589,7 +6496,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.1.4';
+    const APP_VERSION = '1.1.5';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

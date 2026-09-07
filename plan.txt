@@ -63,11 +63,6 @@ Sessions CSV export ARE implemented - left out.
     game and switches to the Today tab (respects the one-active-session guard)."
     - Scope: small. Risk: low.
 
-13. Personal records card (Stats)
-    "Longest single session, busiest day, most sessions in a day, longest
-    streak — computed from sessions[], no schema change."
-    - Scope: small. Risk: low.
-
 15. Recently unlocked strip in the Player Profile
     "Show the last few badge icons with relative unlock time (e.g. '2h ago'),
     sourced from the persisted settings.achievementUnlocks timestamps."
