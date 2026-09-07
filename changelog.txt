@@ -1,6 +1,21 @@
 PlayDex - Changelog
 ====================
 
+Version 1.1.5
+-------------------
+- A new Profile tab introduces your player record: a custom name, your badge
+  count and XP, playtime and streak totals, and a progress ring of overall
+  badge completion.
+- Set your own player name, see which badge to unlock next (tap it to open the
+  Badges tab), and jump to your favorite game (your most-played, tap it to open
+  its dashboard).
+- The profile splits your sessions into a playstyle bar (Quick, Standard,
+  Marathon) and charts your playtimes by weekday.
+- A weekly streak calendar shows the past 52 weeks, with a milestone timeline
+  for firsts and totals; your longest streak counts the weeks you played, and
+  month labels swap in or out automatically so the grid always stays uniform
+  and uncluttered on any screen.
+
 Version 1.1.4
 -------------------
 - Badge cards show their rarity tier (Common, Uncommon, Rare, Legendary), and a freshly unlocked badge glows for 24 hours.
