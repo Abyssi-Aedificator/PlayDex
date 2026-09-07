@@ -1755,6 +1755,57 @@
 
   .next-badge-done { font-size: 0.85rem; color: var(--text2); padding: 6px 0 2px; }
 
+  .favorite-game {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    background: var(--surface2);
+    transition: border-color 0.2s;
+  }
+
+  .favorite-game:hover { border-color: var(--accent); }
+
+  .favorite-game-medal {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-gradient);
+    color: #fff;
+    box-shadow: 0 8px 18px -12px var(--accent-violet);
+  }
+
+  .favorite-game-medal svg { width: 20px; height: 20px; }
+
+  .favorite-game-info { flex: 1; min-width: 0; }
+
+  .favorite-game-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .favorite-game-meta {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .favorite-game-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
   /* Badges tab — category sections */
   .ach-section {
     margin-top: 20px;
@@ -2695,6 +2746,10 @@
     <div class="card next-badge-card">
       <div class="card-header">Next Badge to Unlock</div>
       <div class="next-badge-body" id="next-badge-body"></div>
+    </div>
+    <div class="card favorite-card">
+      <div class="card-header">Favorite Game</div>
+      <div class="favorite-game" id="favorite-game-box"></div>
     </div>
     </div>
   </div>
@@ -4897,6 +4952,36 @@
     document.getElementById('record-most-sessions-date').textContent = M.maxSessionsDayDate ? fmtDay(M.maxSessionsDayDate) : '';
     document.getElementById('record-streak').textContent = M.longestStreak + (M.longestStreak === 1 ? ' day' : ' days');
 
+    const favBox = document.getElementById('favorite-game-box');
+    if (favBox) {
+      const byGame = {};
+      sessions.forEach(s => {
+        if (s.stop === null) return;
+        byGame[s.gameId] = (byGame[s.gameId] || 0) + (s.durationMs || 0);
+      });
+      let favId = null, favMs = 0;
+      Object.keys(byGame).forEach(id => {
+        if (byGame[id] > favMs) { favMs = byGame[id]; favId = id; }
+      });
+      const favGame = favId && games.find(g => g.id === favId);
+      if (favGame) {
+        const favCount = sessions.filter(s => s.gameId === favId).length;
+        favBox.className = 'favorite-game';
+        favBox.dataset.gameId = favId;
+        favBox.innerHTML =
+          '<div class="favorite-game-medal">' + iconSvg('medal') + '</div>' +
+          '<div class="favorite-game-info">' +
+            '<div class="favorite-game-name">' + escHtml(favGame.name) + '</div>' +
+            '<div class="favorite-game-meta">' + fmtDurationShort(favMs) + ' played \u00b7 ' + favCount + ' session' + (favCount !== 1 ? 's' : '') + '</div>' +
+          '</div>' +
+          '<span class="next-badge-arrow">' + iconSvg('view') + '</span>';
+      } else {
+        favBox.className = 'favorite-game-empty';
+        favBox.dataset.gameId = '';
+        favBox.textContent = 'No sessions yet \u2014 log some playtime and your top game will appear here.';
+      }
+    }
+
     const nbBody = document.getElementById('next-badge-body');
     const B = buildBadgeStats();
     const nextBadge = B.stats.filter(s => !s.unlocked).sort((a, b) => b.pct - a.pct)[0];
@@ -5736,6 +5821,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   });
 
   document.getElementById('next-badge-body').addEventListener('click', () => goTab('badges'));
+
+  document.getElementById('favorite-game-box').addEventListener('click', () => {
+    const id = document.getElementById('favorite-game-box').dataset.gameId;
+    if (id) openDashboard(id);
+  });
 
   // --- Live timer ---
   function updateTimer() {
