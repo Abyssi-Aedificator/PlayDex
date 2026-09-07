@@ -1979,6 +1979,8 @@
 
   .streak-cell.today { outline: 1.5px solid var(--yellow); }
 
+  .streak-cell.placeholder { opacity: 0.25; }
+
   .streak-legend {
     display: flex;
     align-items: center;
@@ -5354,18 +5356,20 @@
         let maxDay = 0;
         Object.keys(dayMs).forEach(k => { if (dayMs[k] > maxDay) maxDay = dayMs[k]; });
         const today = todayStr();
-        const start = addDays(weekStartStr(), -364);
+        const start = addDays(weekStartStr(), -357);
         let html = '<div class="streak-scroll"><div class="streak-grid">';
-        let cur = start, i = 0;
-        while (cur <= today) {
+        for (let i = 0; i < 364; i++) {
           if (i % 7 === 0) html += '<div class="streak-week">';
-          const ms = dayMs[cur] || 0;
-          const lvl = ms === 0 ? 0 : ms >= maxDay * 0.75 ? 4 : ms >= maxDay * 0.5 ? 3 : ms >= maxDay * 0.25 ? 2 : 1;
-          const t = fmtDateShort(cur) + (ms ? ' \u2014 ' + fmtDurationShort(ms) : '');
-          html += '<div class="streak-cell s' + lvl + (cur === today ? ' today' : '') + '" title="' + t + '"></div>';
+          const cur = addDays(start, i);
+          if (cur > today) {
+            html += '<div class="streak-cell placeholder"></div>';
+          } else {
+            const ms = dayMs[cur] || 0;
+            const lvl = ms === 0 ? 0 : ms >= maxDay * 0.75 ? 4 : ms >= maxDay * 0.5 ? 3 : ms >= maxDay * 0.25 ? 2 : 1;
+            const t = fmtDateShort(cur) + (ms ? ' \u2014 ' + fmtDurationShort(ms) : '');
+            html += '<div class="streak-cell s' + lvl + (cur === today ? ' today' : '') + '" title="' + t + '"></div>';
+          }
           if (i % 7 === 6) html += '</div>';
-          cur = addDays(cur, 1);
-          i++;
         }
         html += '</div></div>';
         html += '<div class="streak-legend"><span>Less</span><div class="streak-cell s0"></div><div class="streak-cell s1"></div><div class="streak-cell s2"></div><div class="streak-cell s3"></div><div class="streak-cell s4"></div><span>More</span></div>';
