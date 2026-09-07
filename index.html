@@ -1806,6 +1806,50 @@
     padding: 8px 2px;
   }
 
+  .playstyle-bar {
+    display: flex;
+    height: 14px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    gap: 2px;
+  }
+
+  .ps-seg { height: 100%; }
+  .ps-quick { background: var(--accent-violet); }
+  .ps-standard { background: var(--green); }
+  .ps-marathon { background: var(--yellow); }
+
+  .playstyle-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: var(--text2);
+  }
+
+  .ps-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  .ps-dot { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+  .ps-dot-quick { background: var(--accent-violet); }
+  .ps-dot-standard { background: var(--green); }
+  .ps-dot-marathon { background: var(--yellow); }
+
+  .ps-chip b { color: var(--text); }
+
+  .playstyle-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
   /* Badges tab — category sections */
   .ach-section {
     margin-top: 20px;
@@ -2750,6 +2794,10 @@
     <div class="card favorite-card">
       <div class="card-header">Favorite Game</div>
       <div class="favorite-game" id="favorite-game-box"></div>
+    </div>
+    <div class="card playstyle-card">
+      <div class="card-header">Playstyle</div>
+      <div class="playstyle" id="playstyle-box"></div>
     </div>
     </div>
   </div>
@@ -4983,6 +5031,36 @@
     }
 
     const nbBody = document.getElementById('next-badge-body');
+    const PBOX = document.getElementById('playstyle-box');
+    const completedAll = sessions.filter(s => s.stop !== null);
+    if (PBOX) {
+      if (completedAll.length) {
+        let quick = 0, standard = 0, marathon = 0;
+        completedAll.forEach(s => {
+          const ms = s.durationMs || 0;
+          if (ms < 30 * 60000) quick++;
+          else if (ms < 120 * 60000) standard++;
+          else marathon++;
+        });
+        const pctOf = n => Math.round(n / completedAll.length * 100);
+        PBOX.className = 'playstyle';
+        PBOX.innerHTML =
+          '<div class="playstyle-bar">' +
+            '<span class="ps-seg ps-quick" style="flex:' + quick + '"></span>' +
+            '<span class="ps-seg ps-standard" style="flex:' + standard + '"></span>' +
+            '<span class="ps-seg ps-marathon" style="flex:' + marathon + '"></span>' +
+          '</div>' +
+          '<div class="playstyle-legend">' +
+            '<span class="ps-chip"><span class="ps-dot ps-dot-quick"></span>Quick &lt;30m \u00b7 <b>' + quick + '</b> (' + pctOf(quick) + '%)</span>' +
+            '<span class="ps-chip"><span class="ps-dot ps-dot-standard"></span>Standard \u00b7 <b>' + standard + '</b> (' + pctOf(standard) + '%)</span>' +
+            '<span class="ps-chip"><span class="ps-dot ps-dot-marathon"></span>Marathon 2h+ \u00b7 <b>' + marathon + '</b> (' + pctOf(marathon) + '%)</span>' +
+          '</div>';
+      } else {
+        PBOX.className = 'playstyle-empty';
+        PBOX.textContent = 'No sessions yet \u2014 your session-length mix will show up here.';
+      }
+    }
+
     const B = buildBadgeStats();
     const nextBadge = B.stats.filter(s => !s.unlocked).sort((a, b) => b.pct - a.pct)[0];
     if (nbBody) {
