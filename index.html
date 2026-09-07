@@ -5392,19 +5392,15 @@
           const p = m.split('-').map(Number);
           return new Date(p[0], p[1] - 1, 1).toLocaleDateString(undefined, { month: 'short' });
         };
-        const oneLine = SBOX.clientWidth >= 673;
-        let monthsHtml = '';
-        if (oneLine) {
-          monthsHtml = '<div class="streak-months">';
-          let prevM = null;
-          for (let i = 0; i < 52; i++) {
-            const wkStart = addDays(start, i * 7);
-            const m = wkStart.slice(0, 7);
-            monthsHtml += '<div class="streak-months-cell">' + (m !== prevM ? '<span class="streak-months-label">' + mShort(m) + '</span>' : '') + '</div>';
-            prevM = m;
-          }
-          monthsHtml += '</div>';
+        let monthsHtml = '<div class="streak-months">';
+        let prevM = null;
+        for (let i = 0; i < 52; i++) {
+          const wkStart = addDays(start, i * 7);
+          const m = wkStart.slice(0, 7);
+          monthsHtml += '<div class="streak-months-cell">' + (m !== prevM ? '<span class="streak-months-label">' + mShort(m) + '</span>' : '') + '</div>';
+          prevM = m;
         }
+        monthsHtml += '</div>';
         let html = '<div class="streak-scroll">' + monthsHtml + '<div class="streak-grid">';
         for (let i = 0; i < 52; i++) {
           const wkStart = addDays(start, i * 7);
@@ -5421,6 +5417,15 @@
         html += '<div class="streak-legend"><span>Less</span><div class="streak-cell s0"></div><div class="streak-cell s1"></div><div class="streak-cell s2"></div><div class="streak-cell s3"></div><div class="streak-cell s4"></div><span>More</span></div>';
         SBOX.className = 'streak-calendar';
         SBOX.innerHTML = html;
+        const monthsRow = SBOX.querySelector('.streak-months');
+        const updateMonths = () => {
+          monthsRow.style.display = SBOX.clientWidth >= 673 ? '' : 'none';
+        };
+        updateMonths();
+        if (typeof ResizeObserver !== 'undefined' && SBOX.__monthsTo && !SBOX.__monthsTo._obs) {
+          SBOX.__monthsTo._obs = new ResizeObserver(updateMonths);
+          SBOX.__monthsTo._obs.observe(SBOX);
+        }
       } else {
         SBOX.className = 'streak-empty';
         SBOX.textContent = 'No playtime logged yet \u2014 your weekly streak calendar fills in as you play.';
