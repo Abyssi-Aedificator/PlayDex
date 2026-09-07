@@ -1954,19 +1954,11 @@
     gap: 3px;
   }
 
-  .streak-week {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+  .streak-cell {
     flex: 1 1 0;
     min-width: 10px;
-    max-width: 30px;
-  }
-
-  .streak-cell {
-    width: 100%;
+    max-width: 24px;
     aspect-ratio: 1 / 1;
-    min-width: 8px;
     border-radius: 2.5px;
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -1992,7 +1984,7 @@
     letter-spacing: 0.5px;
   }
 
-  .streak-legend .streak-cell { width: 10px; height: 10px; }
+  .streak-legend .streak-cell { width: 10px; height: 10px; flex: 0 0 auto; max-width: none; }
   .streak-legend span { margin: 0 3px; }
 
   .streak-empty {
@@ -2758,7 +2750,6 @@
       grid-column: 1 / -1;
     }
     .streak-grid { gap: 4px; }
-    .streak-week { gap: 4px; max-width: 30px; }
     .streak-cell { border-radius: 3px; }
   }
 
@@ -3007,7 +2998,7 @@
           <div class="record-date" id="record-most-sessions-date"></div>
         </div>
         <div class="stat-box">
-          <div class="stat-value" id="record-streak">0 days</div>
+          <div class="stat-value" id="record-streak">0 weeks</div>
           <div class="stat-label">Longest streak</div>
         </div>
       </div>
@@ -4672,6 +4663,14 @@
       if (run > longestStreak) longestStreak = run;
     });
 
+    const weekList = Object.keys(weekMsBy).sort();
+    let longestWeekStreak = 0, weekRun = 0, prevWeek = null;
+    weekList.forEach(w => {
+      weekRun = (prevWeek && addDays(prevWeek, 7) === w) ? weekRun + 1 : 1;
+      prevWeek = w;
+      if (weekRun > longestWeekStreak) longestWeekStreak = weekRun;
+    });
+
     const dayVals = Object.values(byDay);
     const sessDayVals = Object.values(sessionsByDay);
 
@@ -4687,6 +4686,7 @@
       longestMs: longestMs,
       longestMsDate: longestMsDate,
       longestStreak: longestStreak,
+      longestWeekStreak: longestWeekStreak,
       maxSessionsDay: sessDayVals.length ? Math.max.apply(null, sessDayVals) : 0,
       maxSessionsDayDate: maxSessionsDayDate,
       maxMsDay: dayVals.length ? Math.max.apply(null, dayVals) : 0,
@@ -5247,7 +5247,7 @@
     document.getElementById('record-busiest-date').textContent = M.maxMsDayDate ? fmtDay(M.maxMsDayDate) : '';
     document.getElementById('record-most-sessions').textContent = String(M.maxSessionsDay);
     document.getElementById('record-most-sessions-date').textContent = M.maxSessionsDayDate ? fmtDay(M.maxSessionsDayDate) : '';
-    document.getElementById('record-streak').textContent = M.longestStreak + (M.longestStreak === 1 ? ' day' : ' days');
+    document.getElementById('record-streak').textContent = M.longestWeekStreak + (M.longestWeekStreak === 1 ? ' week' : ' weeks');
 
     const favBox = document.getElementById('favorite-game-box');
     if (favBox) {
@@ -5344,32 +5344,31 @@
 
     const SBOX = document.getElementById('streak-calendar-box');
     if (SBOX) {
-      const dayMs = {};
-      let dayHas = false;
+      const wkMs = {};
+      let weekHas = false;
       sessions.forEach(s => {
         if (s.stop === null || !s.durationMs) return;
-        const k = dateKey(s.start);
-        dayMs[k] = (dayMs[k] || 0) + s.durationMs;
-        dayHas = true;
+        const k = weekKeyFor(dateKey(s.start));
+        wkMs[k] = (wkMs[k] || 0) + s.durationMs;
+        weekHas = true;
       });
-      if (dayHas) {
-        let maxDay = 0;
-        Object.keys(dayMs).forEach(k => { if (dayMs[k] > maxDay) maxDay = dayMs[k]; });
+      if (weekHas) {
+        let maxWeek = 0;
+        Object.keys(wkMs).forEach(k => { if (wkMs[k] > maxWeek) maxWeek = wkMs[k]; });
         const today = todayStr();
-        const start = addDays(weekStartStr(), -357);
+        const thisWeek = weekStartStr();
+        const start = addDays(thisWeek, -357);
         let html = '<div class="streak-scroll"><div class="streak-grid">';
-        for (let i = 0; i < 364; i++) {
-          if (i % 7 === 0) html += '<div class="streak-week">';
-          const cur = addDays(start, i);
-          if (cur > today) {
+        for (let i = 0; i < 52; i++) {
+          const wkStart = addDays(start, i * 7);
+          if (wkStart > today) {
             html += '<div class="streak-cell placeholder"></div>';
           } else {
-            const ms = dayMs[cur] || 0;
-            const lvl = ms === 0 ? 0 : ms >= maxDay * 0.75 ? 4 : ms >= maxDay * 0.5 ? 3 : ms >= maxDay * 0.25 ? 2 : 1;
-            const t = fmtDateShort(cur) + (ms ? ' \u2014 ' + fmtDurationShort(ms) : '');
-            html += '<div class="streak-cell s' + lvl + (cur === today ? ' today' : '') + '" title="' + t + '"></div>';
+            const ms = wkMs[wkStart] || 0;
+            const lvl = ms === 0 ? 0 : ms >= maxWeek * 0.75 ? 4 : ms >= maxWeek * 0.5 ? 3 : ms >= maxWeek * 0.25 ? 2 : 1;
+            const t = fmtDateShort(wkStart) + ' \u2013 ' + fmtDateShort(addDays(wkStart, 6)) + (ms ? ' \u2014 ' + fmtDurationShort(ms) : '');
+            html += '<div class="streak-cell s' + lvl + (wkStart === thisWeek ? ' today' : '') + '" title="' + t + '"></div>';
           }
-          if (i % 7 === 6) html += '</div>';
         }
         html += '</div></div>';
         html += '<div class="streak-legend"><span>Less</span><div class="streak-cell s0"></div><div class="streak-cell s1"></div><div class="streak-cell s2"></div><div class="streak-cell s3"></div><div class="streak-cell s4"></div><span>More</span></div>';
@@ -5377,7 +5376,7 @@
         SBOX.innerHTML = html;
       } else {
         SBOX.className = 'streak-empty';
-        SBOX.textContent = 'No playtime logged yet \u2014 your streak calendar fills in as you play.';
+        SBOX.textContent = 'No playtime logged yet \u2014 your weekly streak calendar fills in as you play.';
       }
     }
 
