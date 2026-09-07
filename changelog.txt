@@ -4,6 +4,9 @@ PlayDex - Changelog
 Version 1.1.6
 -------------------
 - Review sessions you haven't marked as synced: filter the session list by sync status, see every unsynced entry across all dates with a running total of remaining time, and mark them all synced in one tap (with undo).
+- Your profile's longest session record now also names the game it was played on.
+- A game's session history shows the last 5 sessions instead of 10.
+- Your phone buzzes and a toast pops when you reach your session's time target.
 
 Version 1.1.5
 -------------------
