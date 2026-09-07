@@ -1952,18 +1952,21 @@
   .streak-grid {
     display: flex;
     gap: 3px;
-    min-width: max-content;
   }
 
   .streak-week {
     display: flex;
     flex-direction: column;
     gap: 3px;
+    flex: 1 1 0;
+    min-width: 10px;
+    max-width: 30px;
   }
 
   .streak-cell {
-    width: 8px;
-    height: 8px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    min-width: 8px;
     border-radius: 2.5px;
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -2753,8 +2756,8 @@
       grid-column: 1 / -1;
     }
     .streak-grid { gap: 4px; }
-    .streak-week { gap: 4px; }
-    .streak-cell { width: 11px; height: 11px; border-radius: 3px; }
+    .streak-week { gap: 4px; max-width: 30px; }
+    .streak-cell { border-radius: 3px; }
   }
 
   /* Desktop wide: add Stats as a third column in the merged Today page */
@@ -5351,7 +5354,7 @@
         let maxDay = 0;
         Object.keys(dayMs).forEach(k => { if (dayMs[k] > maxDay) maxDay = dayMs[k]; });
         const today = todayStr();
-        const start = addDays(weekStartStr(), -84);
+        const start = addDays(weekStartStr(), -364);
         let html = '<div class="streak-scroll"><div class="streak-grid">';
         let cur = start, i = 0;
         while (cur <= today) {
