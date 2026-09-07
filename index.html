@@ -1684,7 +1684,40 @@
     gap: 16px;
   }
 
-  .profile-grid > .card { margin-bottom: 0; min-width: 0; }
+  .profile-grid > .card {
+    margin-bottom: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .profile-grid > .card .card-header { flex-shrink: 0; }
+
+  .profile-grid > .card > .next-badge-body,
+  .profile-grid > .card > .favorite-game,
+  .profile-grid > .card > .playstyle,
+  .profile-grid > .card > .streak-calendar,
+  .profile-grid > .card > .milestones {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .profile-grid > .card > .records-empty,
+  .profile-grid > .card > .favorite-game-empty,
+  .profile-grid > .card > .playstyle-empty,
+  .profile-grid > .card > .weekday-habits-empty,
+  .profile-grid > .card > .streak-empty,
+  .profile-grid > .card > .milestones-empty,
+  .profile-grid > .card > .next-badge-done {
+    display: flex;
+    align-items: center;
+  }
+
+  .stat-grid .stat-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 
   .record-date {
     font-size: 0.68rem;
@@ -1804,6 +1837,12 @@
     font-size: 0.82rem;
     color: var(--text2);
     padding: 8px 2px;
+  }
+
+  .playstyle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .playstyle-bar {
@@ -2706,7 +2745,6 @@
     .profile-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
-      align-items: start;
     }
     .profile-card,
     .weekday-habits-card,
