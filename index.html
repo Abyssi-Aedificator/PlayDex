@@ -4466,7 +4466,7 @@
         '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
-            '<div class="session-times">' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
+            '<div class="session-times">' + (showDate ? '' : fmtDateShort(s.start) + ' \u00b7 ') + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
           (showDate && filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : '') +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + '</span>' +
