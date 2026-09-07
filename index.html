@@ -4722,6 +4722,7 @@
     const weekDays = new Set();
     let longestMs = 0;
     let longestMsDate = null;
+    let longestMsGame = null;
     let todayLongestMs = 0;
     let weekMs = 0, weekCount = 0, weekLongestMs = 0;
     let earlyBird = 0, nightOwl = 0;
@@ -4731,7 +4732,7 @@
     const sessionsByDay = {};
     completed.forEach(s => {
       const ms = s.durationMs || 0;
-      if (ms > longestMs) { longestMs = ms; longestMsDate = dateKey(s.start); }
+      if (ms > longestMs) { longestMs = ms; longestMsDate = dateKey(s.start); longestMsGame = s.gameName || null; }
       const d = dateKey(s.start);
       byDay[d] = (byDay[d] || 0) + ms;
       sessionsByDay[d] = (sessionsByDay[d] || 0) + 1;
@@ -4806,6 +4807,7 @@
       distinctGames: gameIds.size,
       longestMs: longestMs,
       longestMsDate: longestMsDate,
+      longestMsGame: longestMsGame,
       longestStreak: longestStreak,
       longestWeekStreak: longestWeekStreak,
       maxSessionsDay: sessDayVals.length ? Math.max.apply(null, sessDayVals) : 0,
@@ -5363,7 +5365,7 @@
       return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
     };
     document.getElementById('record-longest').textContent = fmtDurationShort(M.longestMs);
-    document.getElementById('record-longest-date').textContent = M.longestMsDate ? fmtDay(M.longestMsDate) : '';
+    document.getElementById('record-longest-date').textContent = M.longestMsDate ? fmtDay(M.longestMsDate) + (M.longestMsGame ? ' \u00b7 ' + escHtml(M.longestMsGame) : '') : '';
     document.getElementById('record-busiest').textContent = fmtDurationShort(M.maxMsDay);
     document.getElementById('record-busiest-date').textContent = M.maxMsDayDate ? fmtDay(M.maxMsDayDate) : '';
     document.getElementById('record-most-sessions').textContent = String(M.maxSessionsDay);
@@ -5726,7 +5728,7 @@
     });
     const maxMonth = Math.max.apply(null, months.map(m => m.ms));
 
-    const recent = completed.slice().sort((a,b) => new Date(b.start) - new Date(a.start)).slice(0, 10);
+    const recent = completed.slice().sort((a,b) => new Date(b.start) - new Date(a.start)).slice(0, 5);
 
     let html = '<div class="dash-row"><span class="dash-label">Total playtime</span><span class="dash-value">' + fmtDuration(totalMs) + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Sessions</span><span class="dash-value">' + completed.length + '</span></div>' +
@@ -5743,7 +5745,7 @@
           '</div>'
         ).join('');
 
-      html += '<div class="modal-subheader">Recent sessions</div><ul class="dash-sessions">' +
+      html += '<div class="modal-subheader">Last 5 sessions</div><ul class="dash-sessions">' +
         recent.map(s =>
           '<li class="dash-session">' +
             '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + '</span>' +
@@ -6461,6 +6463,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         document.getElementById('target-text').textContent = fmtDurationShort(elapsed) + ' of ' + fmtDurationShort(tgt) + ' (' + pct + '%)';
         if (elapsed >= tgt && !targetToastShown) {
           targetToastShown = true;
+          if (typeof navigator !== 'undefined' && navigator.vibrate) { navigator.vibrate(80); }
           toast('Target reached!');
         }
       } else {
