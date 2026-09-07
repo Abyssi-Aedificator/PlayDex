@@ -1962,8 +1962,10 @@
     border-radius: 2.5px;
     background: var(--surface2);
     border: 1px solid var(--border);
+    border-color: var(--border-strong);
   }
 
+  .streak-cell.s0 { background: rgba(148, 163, 184, 0.08); }
   .streak-cell.s1 { background: rgba(139, 92, 246, 0.3); border-color: transparent; }
   .streak-cell.s2 { background: rgba(139, 92, 246, 0.55); border-color: transparent; }
   .streak-cell.s3 { background: rgba(139, 92, 246, 0.8); border-color: transparent; }
@@ -1971,7 +1973,33 @@
 
   .streak-cell.today { outline: 1.5px solid var(--yellow); }
 
-  .streak-cell.placeholder { opacity: 0.25; }
+  .streak-cell.placeholder { opacity: 0.45; }
+
+  .streak-months {
+    display: flex;
+    gap: 3px;
+    height: 14px;
+    margin-bottom: 4px;
+  }
+
+  .streak-months-cell {
+    flex: 1 1 0;
+    min-width: 10px;
+    max-width: 24px;
+    position: relative;
+  }
+
+  .streak-months-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text3);
+    white-space: nowrap;
+  }
 
   .streak-legend {
     display: flex;
@@ -2750,6 +2778,7 @@
       grid-column: 1 / -1;
     }
     .streak-grid { gap: 4px; }
+    .streak-months { gap: 4px; }
     .streak-cell { border-radius: 3px; }
   }
 
@@ -5358,7 +5387,20 @@
         const today = todayStr();
         const thisWeek = weekStartStr();
         const start = addDays(thisWeek, -357);
-        let html = '<div class="streak-scroll"><div class="streak-grid">';
+        const mShort = m => {
+          const p = m.split('-').map(Number);
+          return new Date(p[0], p[1] - 1, 1).toLocaleDateString(undefined, { month: 'short' });
+        };
+        let monthsHtml = '<div class="streak-months">';
+        let prevM = null;
+        for (let i = 0; i < 52; i++) {
+          const wkStart = addDays(start, i * 7);
+          const m = wkStart.slice(0, 7);
+          monthsHtml += '<div class="streak-months-cell">' + (m !== prevM ? '<span class="streak-months-label">' + mShort(m) + '</span>' : '') + '</div>';
+          prevM = m;
+        }
+        monthsHtml += '</div>';
+        let html = '<div class="streak-scroll">' + monthsHtml + '<div class="streak-grid">';
         for (let i = 0; i < 52; i++) {
           const wkStart = addDays(start, i * 7);
           if (wkStart > today) {
