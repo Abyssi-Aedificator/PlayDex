@@ -1552,8 +1552,6 @@
     margin: 10px 0 -2px;
   }
 
-  .stat-box .profile-badge-xp { font-size: 0.95rem; font-weight: 700; color: var(--text2); white-space: nowrap; }
-
   .profile-ring-wrap {
     position: relative;
     width: 46px;
@@ -2515,7 +2513,7 @@
           <div class="stat-label">Complete</div>
         </div>
         <div class="stat-box">
-          <div class="stat-value profile-badge-xp" id="ach-badge-xp"></div>
+          <div class="stat-value"><span id="ach-badge-xp"></span><span class="profile-slash"> / <span id="ach-badge-xp-total"></span></span></div>
           <div class="stat-label">XP</div>
         </div>
       </div>
@@ -4627,9 +4625,9 @@
     document.getElementById('ach-total').textContent = ACHIEVEMENTS.length;
     document.getElementById('ach-total-xp').textContent = fmtNum(totalXp) + ' XP';
     const maxBadgeXp = ACHIEVEMENTS.reduce((sum, x) => sum + x.xp, 0);
-    document.getElementById('ach-badge-xp').textContent = maxBadgeXp > 0
-      ? fmtNum(B.badgeXp) + ' / ' + fmtNum(maxBadgeXp) + ' XP'
-      : '';
+    const hasBadgeXp = maxBadgeXp > 0;
+    document.getElementById('ach-badge-xp').textContent = hasBadgeXp ? fmtNum(B.badgeXp) : '';
+    document.getElementById('ach-badge-xp-total').textContent = hasBadgeXp ? fmtNum(maxBadgeXp) + ' XP' : '';
 
     if (ACHIEVEMENTS.length && document.getElementById('ach-ring-fill')) {
       const C = 2 * Math.PI * 20;
