@@ -1904,6 +1904,131 @@
     padding: 8px 2px;
   }
 
+  .streak-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .streak-grid {
+    display: flex;
+    gap: 3px;
+    min-width: max-content;
+  }
+
+  .streak-week {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .streak-cell {
+    width: 8px;
+    height: 8px;
+    border-radius: 2.5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .streak-cell.s1 { background: rgba(139, 92, 246, 0.3); border-color: transparent; }
+  .streak-cell.s2 { background: rgba(139, 92, 246, 0.55); border-color: transparent; }
+  .streak-cell.s3 { background: rgba(139, 92, 246, 0.8); border-color: transparent; }
+  .streak-cell.s4 { background: var(--accent-violet); border-color: var(--accent-violet); }
+
+  .streak-cell.today { outline: 1.5px solid var(--yellow); }
+
+  .streak-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    font-size: 0.66rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .streak-legend .streak-cell { width: 10px; height: 10px; }
+  .streak-legend span { margin: 0 3px; }
+
+  .streak-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
+  .milestones-list {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .milestones-list::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 16px;
+    bottom: 16px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .milestone {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 0 7px 4px;
+    position: relative;
+  }
+
+  .milestone-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .milestone.reached .milestone-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--surface2), 0 0 10px -2px var(--accent-violet);
+  }
+
+  .milestone.next .milestone-dot {
+    background: var(--yellow);
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 3px var(--surface2);
+  }
+
+  .milestone-label { font-size: 0.85rem; }
+  .milestone.reached .milestone-label { color: var(--text); }
+  .milestone.next .milestone-label { color: var(--yellow); font-weight: 700; }
+
+  .milestone-date {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: var(--text2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .milestones-foot {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text2);
+  }
+
+  .milestones-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
   /* Badges tab — category sections */
   .ach-section {
     margin-top: 20px;
@@ -2589,6 +2714,9 @@
     .milestones-card {
       grid-column: 1 / -1;
     }
+    .streak-grid { gap: 4px; }
+    .streak-week { gap: 4px; }
+    .streak-cell { width: 11px; height: 11px; border-radius: 3px; }
   }
 
   /* Desktop wide: add Stats as a third column in the merged Today page */
@@ -2856,6 +2984,14 @@
     <div class="card weekday-habits-card">
       <div class="card-header">Weekday Habits</div>
       <div class="weekday-habits" id="weekday-habits-box"></div>
+    </div>
+    <div class="card streak-calendar-card">
+      <div class="card-header">Streak Calendar</div>
+      <div class="streak-calendar" id="streak-calendar-box"></div>
+    </div>
+    <div class="card milestones-card">
+      <div class="card-header">Milestones</div>
+      <div class="milestones" id="milestones-box"></div>
     </div>
     </div>
   </div>
@@ -5042,6 +5178,18 @@
     if (!M.count) {
       gridEl.style.display = 'none';
       emptyEl.style.display = 'block';
+      const msg = 'No sessions yet \u2014 this preview appears as you play.';
+      const pf = (id, cls) => {
+        const el = document.getElementById(id);
+        if (el) { el.className = cls; el.dataset.gameId = ''; el.textContent = msg; }
+      };
+      pf('favorite-game-box', 'favorite-game-empty');
+      pf('playstyle-box', 'playstyle-empty');
+      pf('weekday-habits-box', 'weekday-habits-empty');
+      pf('streak-calendar-box', 'streak-empty');
+      pf('milestones-box', 'milestones-empty');
+      const nb = document.getElementById('next-badge-body');
+      if (nb) { nb.className = 'next-badge-done'; nb.textContent = 'No sessions yet \u2014 your next badge will appear here once you start playing.'; }
       return;
     }
     gridEl.style.display = '';
@@ -5148,6 +5296,90 @@
       } else {
         WBOX.className = 'weekday-habits-empty';
         WBOX.textContent = 'No playtime logged yet \u2014 your weekday rhythm will appear here.';
+      }
+    }
+
+    const SBOX = document.getElementById('streak-calendar-box');
+    if (SBOX) {
+      const dayMs = {};
+      let dayHas = false;
+      sessions.forEach(s => {
+        if (s.stop === null || !s.durationMs) return;
+        const k = dateKey(s.start);
+        dayMs[k] = (dayMs[k] || 0) + s.durationMs;
+        dayHas = true;
+      });
+      if (dayHas) {
+        let maxDay = 0;
+        Object.keys(dayMs).forEach(k => { if (dayMs[k] > maxDay) maxDay = dayMs[k]; });
+        const today = todayStr();
+        const start = addDays(weekStartStr(), -84);
+        let html = '<div class="streak-scroll"><div class="streak-grid">';
+        let cur = start, i = 0;
+        while (cur <= today) {
+          if (i % 7 === 0) html += '<div class="streak-week">';
+          const ms = dayMs[cur] || 0;
+          const lvl = ms === 0 ? 0 : ms >= maxDay * 0.75 ? 4 : ms >= maxDay * 0.5 ? 3 : ms >= maxDay * 0.25 ? 2 : 1;
+          const t = fmtDateShort(cur) + (ms ? ' \u2014 ' + fmtDurationShort(ms) : '');
+          html += '<div class="streak-cell s' + lvl + (cur === today ? ' today' : '') + '" title="' + t + '"></div>';
+          if (i % 7 === 6) html += '</div>';
+          cur = addDays(cur, 1);
+          i++;
+        }
+        html += '</div></div>';
+        html += '<div class="streak-legend"><span>Less</span><div class="streak-cell s0"></div><div class="streak-cell s1"></div><div class="streak-cell s2"></div><div class="streak-cell s3"></div><div class="streak-cell s4"></div><span>More</span></div>';
+        SBOX.className = 'streak-calendar';
+        SBOX.innerHTML = html;
+      } else {
+        SBOX.className = 'streak-empty';
+        SBOX.textContent = 'No playtime logged yet \u2014 your streak calendar fills in as you play.';
+      }
+    }
+
+    const MBOX = document.getElementById('milestones-box');
+    if (MBOX) {
+      const completed = sessions.filter(s => s.stop !== null);
+      if (completed.length) {
+        const sortedAll = completed.slice().sort((a, b) => new Date(a.start) - new Date(b.start));
+        const firstDate = dateKey(sortedAll[0].start);
+        const unlocks = settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object' ? settings.achievementUnlocks : {};
+        let firstBadge = null;
+        Object.keys(unlocks).forEach(id => {
+          if (!firstBadge || unlocks[id] < firstBadge) firstBadge = unlocks[id];
+        });
+        firstBadge = firstBadge ? dateKey(firstBadge) : null;
+        let tot = 0;
+        let first10 = null, first50 = null, first100 = null, hundredth = null;
+        sortedAll.forEach(s => {
+          tot += s.durationMs || 0;
+          if (!first10 && tot >= 10 * 3600000) first10 = dateKey(s.start);
+          if (!first50 && tot >= 50 * 3600000) first50 = dateKey(s.start);
+          if (!first100 && tot >= 100 * 3600000) first100 = dateKey(s.start);
+        });
+        if (sortedAll.length >= 100) hundredth = dateKey(sortedAll[99].start);
+        const milestones = [
+          { label: 'First session', date: firstDate },
+          { label: 'First badge', date: firstBadge },
+          { label: '10h total playtime', date: first10 },
+          { label: '100 completed sessions', date: hundredth },
+          { label: '50h total playtime', date: first50 },
+          { label: '100h total playtime', date: first100 }
+        ];
+        const nextIx = milestones.findIndex(x => !x.date);
+        const rows = milestones.map((m, i) => {
+          const reached = !!m.date;
+          return '<div class="milestone' + (reached ? ' reached' : i === nextIx ? ' next' : '') + '">' +
+            '<div class="milestone-dot"></div>' +
+            '<div class="milestone-label">' + m.label + '</div>' +
+            '<div class="milestone-date">' + (reached ? fmtDay(m.date) : i === nextIx ? 'Next up' : '') + '</div>' +
+          '</div>';
+        });
+        MBOX.className = 'milestones';
+        MBOX.innerHTML = '<div class="milestones-list">' + rows.join('') + '</div>' +
+          '<div class="milestones-foot">' + fmtDurationShort(tot) + ' total \u00b7 ' + completed.length + ' completed session' + (completed.length !== 1 ? 's' : '') + '</div>';
+      } else {
+        MBOX.className = 'milestones-empty';
+        MBOX.textContent = 'No sessions yet \u2014 your achievement timeline will appear here.';
       }
     }
 
