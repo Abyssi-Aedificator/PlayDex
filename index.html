@@ -3554,6 +3554,17 @@
   </div>
 </div>
 
+<!-- Target reached modal -->
+<div class="modal-overlay" id="target-reached-modal">
+  <div class="modal">
+    <h3>Target reached!</h3>
+    <p class="modal-subheader">Your session has hit its time target. Keep going or wrap up whenever you're ready.</p>
+    <div class="modal-actions">
+      <button class="btn-primary" id="target-reached-ok">Got it</button>
+    </div>
+  </div>
+</div>
+
 <div class="dbx-banner" id="dbx-banner" role="status">
   <span class="dbx-banner-dot"></span>
   <span>Unsaved backup &mdash; sync now to keep it safe</span>
@@ -5964,8 +5975,9 @@
     render();
   }
 
-  // Close modals on overlay click
+  // Close modals on overlay click (except the target-reached alert, which needs explicit confirmation)
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    if (overlay.id === 'target-reached-modal') return;
     overlay.addEventListener('click', e => {
       if (e.target === overlay) overlay.classList.remove('open');
     });
@@ -6463,8 +6475,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         document.getElementById('target-text').textContent = fmtDurationShort(elapsed) + ' of ' + fmtDurationShort(tgt) + ' (' + pct + '%)';
         if (elapsed >= tgt && !targetToastShown) {
           targetToastShown = true;
-          if (typeof navigator !== 'undefined' && navigator.vibrate) { navigator.vibrate(80); }
-          toast('Target reached!');
+          if (typeof navigator !== 'undefined' && navigator.vibrate) { navigator.vibrate([80, 60, 80]); }
+          document.getElementById('target-reached-modal').classList.add('open');
         }
       } else {
         tp.style.display = 'none';
@@ -6621,6 +6633,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
     document.getElementById('update-reload').addEventListener('click', () => {
       location.reload();
+    });
+    document.getElementById('target-reached-ok').addEventListener('click', () => {
+      document.getElementById('target-reached-modal').classList.remove('open');
     });
   }
 })();
