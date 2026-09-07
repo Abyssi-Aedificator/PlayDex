@@ -1521,9 +1521,49 @@
   }
 
   .profile-title {
-    font-size: 1.4rem;
-    font-weight: 800;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-top: 3px;
   }
+
+  .profile-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+    min-height: 30px;
+  }
+
+  .profile-name {
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1.15;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .name-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .name-edit-btn:hover { color: var(--accent); background: var(--surface2); }
+
+  .name-edit-btn svg { width: 15px; height: 15px; }
 
   .profile-xp {
     font-size: 0.8rem;
@@ -1637,6 +1677,14 @@
   }
 
   .records-grid { margin-top: 12px; }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .profile-grid > .card { margin-bottom: 0; min-width: 0; }
 
   .record-date {
     font-size: 0.68rem;
@@ -2315,6 +2363,22 @@
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 12px;
     }
+
+    /* Profile tab: two-column card grid on desktop */
+    .app-content:has(#tab-profile.active) {
+      max-width: 1400px;
+    }
+    .profile-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+    .profile-card,
+    .weekday-habits-card,
+    .streak-calendar-card,
+    .milestones-card {
+      grid-column: 1 / -1;
+    }
   }
 
   /* Desktop wide: add Stats as a third column in the merged Today page */
@@ -2505,10 +2569,15 @@
 
   <!-- PROFILE TAB -->
   <div id="tab-profile" class="tab-panel">
-    <div class="card">
+    <div class="profile-grid">
+    <div class="card profile-card">
       <div class="card-header">Player Profile</div>
       <div class="profile-hero">
         <div class="profile-level"><span class="profile-lv">LV</span><span id="ach-level">1</span></div>
+        <div class="profile-name-row">
+          <span class="profile-name" id="profile-name"></span>
+          <button type="button" class="name-edit-btn" id="profile-name-edit" title="Edit name" aria-label="Edit name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
+        </div>
         <div class="profile-title" id="ach-level-title">Novice</div>
         <div class="profile-xp" id="ach-total-xp">0 XP</div>
       </div>
@@ -2561,6 +2630,7 @@
           <div class="stat-label">Longest streak</div>
         </div>
       </div>
+    </div>
     </div>
   </div>
 
@@ -2988,6 +3058,18 @@
   </div>
 </div>
 
+<!-- Edit name modal -->
+<div class="modal-overlay" id="name-modal">
+  <div class="modal">
+    <h3>Edit name</h3>
+    <input type="text" id="name-input" maxlength="24" placeholder="Your name" autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn-ghost" id="name-cancel">Cancel</button>
+      <button class="btn-primary" id="name-save">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- Update available modal -->
 <div class="modal-overlay" id="update-modal">
   <div class="modal">
@@ -3040,8 +3122,8 @@
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '' }; }
   }
 
   function mergeFullClear(a, b) {
@@ -3426,7 +3508,7 @@
     const prevLevel = settings.achievementLevel || 0;
     const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
     const prevFullClear = settings.dailyFullClear && typeof settings.dailyFullClear === 'object' ? settings.dailyFullClear : null;
-    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
+    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '' }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
     settings.accent = localAccent;
     settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
     settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
@@ -4726,6 +4808,8 @@
   }
 
   function renderProfileTab() {
+    const nameEl = document.getElementById('profile-name');
+    if (nameEl) nameEl.textContent = (settings.name || '').trim() || 'Player';
     const M = computeAchStats();
     const gridEl = document.getElementById('records-grid');
     const emptyEl = document.getElementById('records-empty');
@@ -5493,9 +5577,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
       if (importData.settings && typeof importData.settings === 'object') {
-        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system' }, importData.settings);
+        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', name: '' }, importData.settings);
       } else {
-        settings = { dailyGoalMinutes: 0, theme: 'system' };
+        settings = { dailyGoalMinutes: 0, theme: 'system', name: '' };
       }
       saveGames(games);
       saveSessions(sessions);
@@ -5534,6 +5618,32 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   // --- Dashboard modal ---
   document.getElementById('dashboard-close').addEventListener('click', () => {
     document.getElementById('dashboard-modal').classList.remove('open');
+  });
+
+  // --- Edit player name ---
+  const nameModal = document.getElementById('name-modal');
+  const nameInput = document.getElementById('name-input');
+  document.getElementById('profile-name-edit').addEventListener('click', () => {
+    nameInput.value = (settings.name || '').trim() || '';
+    nameModal.classList.add('open');
+    nameInput.focus();
+    nameInput.select();
+  });
+  document.getElementById('name-cancel').addEventListener('click', () => {
+    nameModal.classList.remove('open');
+  });
+  document.getElementById('name-save').addEventListener('click', () => {
+    settings.name = nameInput.value.trim().slice(0, 24);
+    saveSettings(settings);
+    nameModal.classList.remove('open');
+    render();
+  });
+  nameInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('name-save').click();
+    if (e.key === 'Escape') nameModal.classList.remove('open');
+  });
+  nameModal.addEventListener('click', e => {
+    if (e.target === nameModal) nameModal.classList.remove('open');
   });
 
   // --- Live timer ---
