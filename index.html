@@ -999,6 +999,46 @@
 
   .filter-bar .btn-clear-date:hover { border-color: var(--accent); color: var(--accent); }
 
+  .sync-seg { display: flex; gap: 4px; }
+  .sync-seg button {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .sync-seg button:hover { border-color: var(--accent-dim); color: var(--text); }
+  .sync-seg button.active {
+    background-image: var(--accent-gradient);
+    color: #fff;
+    border-color: transparent;
+  }
+  .list-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 0 8px;
+    font-size: 0.8rem;
+    color: var(--text2);
+  }
+  .list-summary button {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+  }
+  .list-summary button:hover { border-color: var(--accent); color: var(--accent); }
+
   .session-item {
     display: flex;
     justify-content: space-between;
@@ -2821,7 +2861,7 @@
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.1.5</span>
+    <span class="version-badge">1.1.6</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -2922,8 +2962,14 @@
             </div>
           </div>
         </div>
+        <div class="sync-seg" id="sync-filter">
+          <button type="button" data-sync="all" class="active">All</button>
+          <button type="button" data-sync="synced">Synced</button>
+          <button type="button" data-sync="unsynced">Unsynced</button>
+        </div>
         <button class="btn-clear-date" id="btn-add-session" style="margin-left:auto;">&#43; Add</button>
       </div>
+      <div class="list-summary" id="sessions-summary" style="display:none;"></div>
       <div id="sessions-list"></div>
     </div>
     <div class="card">
@@ -3582,6 +3628,7 @@
   let lastStreak = null;
   let currentTab = 'today';
   let filterDate = todayStr();
+  let syncFilter = 'all';
   let pendingTargetMin = 0;
   let targetToastShown = false;
   let pendingDeleteGameId = null;
@@ -4342,11 +4389,50 @@
     const container = document.getElementById('sessions-list');
     let filtered = sessions.filter(s => s.stop !== null);
 
-    if (filterDate) {
+    if (syncFilter === 'unsynced') {
+      filtered = filtered.filter(s => !s.synced);
+    } else if (syncFilter === 'synced') {
+      filtered = filtered.filter(s => s.synced);
+    }
+
+    const showDate = syncFilter === 'all';
+    if (showDate && filterDate) {
       filtered = filtered.filter(s => dateKey(s.start) === filterDate);
     }
 
     filtered.sort((a,b) => new Date(b.start) - new Date(a.start));
+
+    const summaryEl = document.getElementById('sessions-summary');
+    if (syncFilter !== 'all') {
+      const totalMs = filtered.reduce((acc, s) => acc + (s.durationMs || 0), 0);
+      const plural = filtered.length !== 1 ? 's' : '';
+      const label = syncFilter === 'unsynced' ? 'unsynced' : 'synced';
+      summaryEl.innerHTML =
+        '<span>' + filtered.length + ' ' + label + ' session' + plural + ' &middot; ' + fmtDuration(totalMs) + '</span>' +
+        (syncFilter === 'unsynced' && filtered.length ? '<button id="mark-all-synced">Mark all synced</button>' : '');
+      const markBtn = document.getElementById('mark-all-synced');
+      if (markBtn) {
+        markBtn.addEventListener('click', () => {
+          const prev = filtered.map(s => ({ s, synced: s.synced }));
+          const n = filtered.length;
+          filtered.forEach(s => s.synced = true);
+          saveSessions(sessions);
+          renderSessionsTab(false);
+          toast(n + ' session' + (n !== 1 ? 's' : '') + ' marked as synced', 'Undo', () => {
+            prev.forEach(p => p.s.synced = p.synced);
+            saveSessions(sessions);
+            renderSessionsTab(false);
+          }, 6000);
+        });
+      }
+      summaryEl.style.display = '';
+    } else {
+      summaryEl.innerHTML = '';
+      summaryEl.style.display = 'none';
+    }
+    document.getElementById('filter-date').style.display = showDate ? '' : 'none';
+    const dateLabel = document.querySelector('label[for="filter-date"]');
+    if (dateLabel) dateLabel.style.display = showDate ? '' : 'none';
 
     const dayTotals = {};
     sessions.forEach(s => {
@@ -4356,9 +4442,14 @@
     });
 
     if (filtered.length === 0) {
+      let msg;
+      if (syncFilter === 'unsynced') msg = 'No unsynced sessions &mdash; everything is synced.';
+      else if (syncFilter === 'synced') msg = 'No synced sessions yet.';
+      else if (showDate && filterDate) msg = 'No sessions on this date.';
+      else msg = 'No completed sessions yet.';
       container.innerHTML =
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>' +
-        (filterDate ? 'No sessions on this date.' : 'No completed sessions yet.') + '</div>';
+        msg + '</div>';
     } else {
       container.innerHTML = filtered.map((s, i) =>
         '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
@@ -4366,7 +4457,7 @@
             '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
             '<div class="session-times">' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
-          (filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : '') +
+          (showDate && filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : '') +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + '</span>' +
           '<button class="session-edit" data-id="' + s.id + '" title="Edit session">Edit</button>' +
           '<button class="session-sync' + (s.synced ? ' on' : '') + '" data-id="' + s.id + '" title="Mark as sync">Sync</button>' +
@@ -5765,6 +5856,16 @@
   });
   filterDateField.value = filterDate;
 
+  // --- Session sync filter ---
+  document.querySelectorAll('#sync-filter button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#sync-filter button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      syncFilter = btn.dataset.sync;
+      renderSessionsTab(false);
+    });
+  });
+
   // --- Rename modal ---
   function openRenameModal(id) {
     const game = games.find(g => g.id === id);
@@ -6496,7 +6597,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.1.5';
+    const APP_VERSION = '1.1.6';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
