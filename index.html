@@ -4627,7 +4627,7 @@
     const maxBadgeXp = ACHIEVEMENTS.reduce((sum, x) => sum + x.xp, 0);
     const hasBadgeXp = maxBadgeXp > 0;
     document.getElementById('ach-badge-xp').textContent = hasBadgeXp ? fmtNum(B.badgeXp) : '';
-    document.getElementById('ach-badge-xp-total').textContent = hasBadgeXp ? fmtNum(maxBadgeXp) + ' XP' : '';
+    document.getElementById('ach-badge-xp-total').textContent = hasBadgeXp ? fmtNum(maxBadgeXp) : '';
 
     if (ACHIEVEMENTS.length && document.getElementById('ach-ring-fill')) {
       const C = 2 * Math.PI * 20;
