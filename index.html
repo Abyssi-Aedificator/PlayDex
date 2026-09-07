@@ -1694,6 +1694,67 @@
     letter-spacing: 0.4px;
   }
 
+  .next-badge-body {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    background: var(--surface2);
+    transition: border-color 0.2s;
+  }
+
+  .next-badge-body:hover { border-color: var(--accent); }
+
+  .next-badge-medal {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-gradient);
+    color: #fff;
+    box-shadow: 0 8px 18px -12px var(--accent-violet);
+  }
+
+  .next-badge-medal svg { width: 22px; height: 22px; }
+
+  .next-badge-info { flex: 1; min-width: 0; }
+
+  .next-badge-title { font-size: 0.9rem; font-weight: 700; }
+
+  .next-badge-desc {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .next-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .next-badge-progress {
+    font-size: 0.7rem;
+    color: var(--text3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .next-badge-xp { font-size: 0.68rem; font-weight: 700; color: var(--accent); }
+
+  .next-badge-track { height: 7px; }
+
+  .next-badge-arrow { color: var(--text3); flex-shrink: 0; }
+
+  .next-badge-done { font-size: 0.85rem; color: var(--text2); padding: 6px 0 2px; }
+
   /* Badges tab — category sections */
   .ach-section {
     margin-top: 20px;
@@ -2630,6 +2691,10 @@
           <div class="stat-label">Longest streak</div>
         </div>
       </div>
+    </div>
+    <div class="card next-badge-card">
+      <div class="card-header">Next Badge to Unlock</div>
+      <div class="next-badge-body" id="next-badge-body"></div>
     </div>
     </div>
   </div>
@@ -4831,6 +4896,30 @@
     document.getElementById('record-most-sessions').textContent = String(M.maxSessionsDay);
     document.getElementById('record-most-sessions-date').textContent = M.maxSessionsDayDate ? fmtDay(M.maxSessionsDayDate) : '';
     document.getElementById('record-streak').textContent = M.longestStreak + (M.longestStreak === 1 ? ' day' : ' days');
+
+    const nbBody = document.getElementById('next-badge-body');
+    const B = buildBadgeStats();
+    const nextBadge = B.stats.filter(s => !s.unlocked).sort((a, b) => b.pct - a.pct)[0];
+    if (nbBody) {
+      if (nextBadge) {
+        nbBody.className = 'next-badge-body';
+        nbBody.innerHTML =
+          '<div class="next-badge-medal">' + iconSvg(nextBadge.def.icon) + '</div>' +
+          '<div class="next-badge-info">' +
+            '<div class="next-badge-title">' + nextBadge.def.title + '</div>' +
+            '<div class="next-badge-desc">' + nextBadge.def.desc + '</div>' +
+            '<div class="next-badge-row">' +
+              '<span class="next-badge-progress">' + achProgressText(nextBadge) + ' \u00b7 ' + nextBadge.pct + '%</span>' +
+              '<span class="next-badge-xp">+' + fmtNum(nextBadge.def.xp) + ' XP</span>' +
+            '</div>' +
+            '<div class="progress-track next-badge-track"><div class="progress-fill" style="width:' + nextBadge.pct + '%"></div></div>' +
+          '</div>' +
+          '<span class="next-badge-arrow">' + iconSvg('view') + '</span>';
+      } else {
+        nbBody.className = 'next-badge-done';
+        nbBody.textContent = 'All ' + ACHIEVEMENTS.length + ' badges unlocked \u2014 you are a legend!';
+      }
+    }
   }
 
   function renderGamesTab() {
@@ -5645,6 +5734,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   nameModal.addEventListener('click', e => {
     if (e.target === nameModal) nameModal.classList.remove('open');
   });
+
+  document.getElementById('next-badge-body').addEventListener('click', () => goTab('badges'));
 
   // --- Live timer ---
   function updateTimer() {
