@@ -2583,6 +2583,56 @@
   #month-chart .bar-track { max-width: 28px; }
 
   /* Game dashboard modal */
+  .dash-cover {
+    position: relative;
+    height: 150px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 14px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dash-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: linear-gradient(to bottom, transparent 55%, rgba(0, 0, 0, 0.25) 100%);
+    pointer-events: none;
+  }
+  .dash-cover.empty {
+    border-style: dashed;
+    background: var(--surface2);
+  }
+  .dash-cover.empty::after { display: none; }
+  .dash-cover-empty {
+    font-size: 0.8rem;
+    color: var(--text3);
+    font-weight: 600;
+  }
+  .dash-cover-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: -6px 0 12px;
+  }
+  .dash-cover-actions .cover-url {
+    flex: 1;
+    min-width: 130px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 0.75rem;
+    font-family: inherit;
+  }
+
   .dash-row {
     display: flex;
     justify-content: space-between;
@@ -3522,7 +3572,15 @@
 <!-- Game dashboard modal -->
 <div class="modal-overlay" id="dashboard-modal">
   <div class="modal" style="max-width:420px;">
+    <div class="dash-cover" id="dashboard-cover"></div>
     <h3 id="dashboard-title"></h3>
+    <div class="dash-cover-actions" id="dashboard-cover-actions">
+      <button class="btn-ghost" id="cover-upload-btn" style="padding:6px 10px;font-size:0.75rem;">Upload</button>
+      <input type="file" id="cover-file" accept="image/*" style="display:none">
+      <input type="text" id="cover-url" class="cover-url" placeholder="https://image url" autocomplete="off" maxlength="500">
+      <button class="btn-ghost" id="cover-url-btn" style="padding:6px 10px;font-size:0.75rem;">Set URL</button>
+      <button class="btn-ghost btn-danger" id="cover-remove-btn" style="padding:6px 10px;font-size:0.75rem;">Remove</button>
+    </div>
     <div id="dashboard-body"></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="dashboard-close">Close</button>
@@ -3581,7 +3639,13 @@
   const KEYS = { games: 'playdex_games', sessions: 'playdex_sessions', settings: 'playdex_settings' };
 
   function normalizeGames(arr) {
-    return (Array.isArray(arr) ? arr : []).map(g => ({ id: g.id, name: g.name, archived: !!g.archived }));
+    return (Array.isArray(arr) ? arr : []).map(g => {
+      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null };
+      if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
+        o.image = g.image;
+      }
+      return o;
+    });
   }
 
   function loadGames() {
@@ -3640,6 +3704,7 @@
   let currentTab = 'today';
   let filterDate = todayStr();
   let syncFilter = 'all';
+  let dashGameId = null;
   let pendingTargetMin = 0;
   let targetToastShown = false;
   let pendingDeleteGameId = null;
@@ -5702,9 +5767,46 @@
   function openDashboard(id) {
     const game = games.find(g => g.id === id);
     if (!game) return;
+    dashGameId = game.id;
     document.getElementById('dashboard-title').textContent = game.name;
+    renderDashboardCover(game);
+    document.getElementById('dashboard-cover-url').value = '';
     renderDashboardBody(game);
     document.getElementById('dashboard-modal').classList.add('open');
+  }
+
+  function renderDashboardCover(game) {
+    const cover = document.getElementById('dashboard-cover');
+    const img = game && game.image;
+    if (img) {
+      cover.className = 'dash-cover';
+      cover.style.backgroundImage = 'url("' + img + '")';
+      cover.innerHTML = '';
+    } else {
+      cover.className = 'dash-cover empty';
+      cover.style.backgroundImage = '';
+      cover.innerHTML = '<span class="dash-cover-empty">Add a cover</span>';
+    }
+  }
+
+  function fileToThumb(file, cb) {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const max = 400;
+      let w = img.width, h = img.height;
+      const scale = Math.min(1, max / Math.max(w, h));
+      w = Math.max(1, Math.round(w * scale));
+      h = Math.max(1, Math.round(h * scale));
+      const cv = document.createElement('canvas');
+      cv.width = w;
+      cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      cb(cv.toDataURL('image/jpeg', 0.72));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); toast('Could not read that image'); };
+    img.src = url;
   }
 
   function renderDashboardBody(game) {
@@ -5818,7 +5920,7 @@
       toast('Game already exists');
       return;
     }
-    games.push({ id: uid(), name: name, archived: false });
+    games.push({ id: uid(), name: name, archived: false, image: null });
     saveGames(games);
     toast('Added: ' + name);
     render();
@@ -6403,6 +6505,40 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   // --- Dashboard modal ---
   document.getElementById('dashboard-close').addEventListener('click', () => {
     document.getElementById('dashboard-modal').classList.remove('open');
+  });
+
+  const setGameCover = img => {
+    const game = games.find(g => g.id === dashGameId);
+    if (!game) return;
+    game.image = img;
+    saveGames(games);
+    renderDashboardCover(game);
+    render();
+    toast(img ? 'Cover saved' : 'Cover removed');
+  };
+
+  document.getElementById('cover-upload-btn').addEventListener('click', () => {
+    document.getElementById('cover-file').click();
+  });
+  document.getElementById('cover-file').addEventListener('change', e => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!/^image\//.test(file.type)) { toast('Please pick an image file'); return; }
+    fileToThumb(file, dataUrl => setGameCover(dataUrl));
+  });
+  document.getElementById('cover-url-btn').addEventListener('click', () => {
+    const v = document.getElementById('cover-url').value.trim().replace(/[\x22\x27]/g, '');
+    if (!v) return;
+    if (!/^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(v)) { toast('Enter a valid image URL'); return; }
+    document.getElementById('cover-url').value = '';
+    setGameCover(v);
+  });
+  document.getElementById('cover-url').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('cover-url-btn').click();
+  });
+  document.getElementById('cover-remove-btn').addEventListener('click', () => {
+    setGameCover(null);
   });
 
   // --- Edit player name ---
