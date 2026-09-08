@@ -4,6 +4,12 @@ PlayDex - Changelog
 Version 1.1.7
 -------------------
 - Status-filtered session lists (Synced / Unsynced) now show each session's date and that day's total playtime next to its time and duration.
+- Game stats from the Games tab (the game dashboard) open reliably again.
+- Give a game a cover image — upload a picture or paste an image URL, manage it from the game's Edit screen, and see it on the game's stats page.
+- While a session is running, the live timer fades its game's cover behind a subtle backdrop, with the next-badge hint in dimmed white.
+- Long stats dialogs scroll, so their Close button is always visible.
+- The pending-sync banner no longer grabs taps while it's hidden.
+- When a cover was set from a URL, the Edit screen shows it so you can reuse or swap it easily.
 
 Version 1.1.6
 -------------------

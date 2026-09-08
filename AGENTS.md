@@ -62,7 +62,8 @@ Commit/push only when explicitly asked. Follow existing message style (`git log 
 
 ## Workflow
 
-- After finishing each feature: update `changelog.txt` (new entry at the top), commit, then update AGENTS.md if needed.
+- **Always update the changelog when you make something.** Every user-facing feature or bugfix commit ships its `changelog.txt` bullet in the same commit (under the current pending-release version block), unless the user explicitly defers logging to a release/changelog pass. Never a standalone "no-op" commit when user-facing work is involved.
+- After finishing each feature: update `changelog.txt` (new bullet), commit, then update AGENTS.md if needed.
 
 ## Architecture
 
