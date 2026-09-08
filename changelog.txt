@@ -1,73 +1,60 @@
 PlayDex - Changelog
 ====================
 
-Version 1.1.6
+Version 1.2.0
 -------------------
-- Review sessions you haven't marked as synced: filter the session list by sync status, see every unsynced entry across all dates with a running total of remaining time, and mark them all synced in one tap (with undo).
-- Your profile's longest session record now also names the game it was played on.
-- A game's session history shows the last 5 sessions instead of 10.
-- Your phone buzzes and a confirmation message pops up when you reach your session's time target.
-
-Version 1.1.5
--------------------
-- A new Profile tab introduces your player record: a custom name, your badge
+- The live session timer can be paused and resumed, shows the session start
+  time and the current time in 24-hour format beside the running elapsed
+  time, and tells you how long until your next playtime badge.
+- Set an optional time target when starting a session, watch progress toward
+  it on the timer card, and your phone buzzes with a confirmation message
+  when your session reaches it.
+- Deleted sessions can be undone from the confirmation toast, and completed
+  sessions can be exported to CSV from Settings.
+- The Games list shows when each game was last played and how often.
+- A new Badges tab tracks milestone achievements, play streaks, and a player
+  level earned from your play history; badge cards show their rarity tier, a
+  freshly unlocked badge glows for 24 hours, earned badges show their unlock
+  date, and they flow into multiple columns on wide screens.
+- Badge unlocks trigger celebrations on the spot — and never repeat one you
+  have already seen — while your phone buzzes when you unlock a badge or
+  level up, and you earn XP for time played.
+- Locked badges estimate how long until you can earn them from your average
+  weekly play, stay on one line even on narrow cards, and their estimates
+  hold up in any timezone.
+- Daily and weekly quest boards with XP rewards keep the level meter moving,
+  quests are drawn at random (five new each day and each Monday), the Quests
+  card counts what you have completed and when it resets, daily streaks and
+  a Weekly Champion banner reward full completions — and the profile shows
+  your achievement XP (with a share of the maximum) and XP remaining to the
+  next level.
+- 14 new badges extend Game Variety, Epic Sessions, and Dedication with
+  game-count ladders, 3- and 8-hour sessions, single-day play and session
+  records, day-count milestones, and early-bird and night-owl chains.
+- A new Profile tab introduces your player record: a custom name, badge
   count and XP, playtime and streak totals, and a progress ring of overall
-  badge completion.
-- Set your own player name, see which badge to unlock next (tap it to open the
-  Badges tab), and jump to your favorite game (your most-played, tap it to open
-  its dashboard).
+  badge completion; set your name, see which badge unlocks next, and jump to
+  your favorite game.
 - The profile splits your sessions into a playstyle bar (Quick, Standard,
   Marathon) and charts your playtimes by weekday.
 - A weekly streak calendar shows the past 52 weeks, with a milestone timeline
   for firsts and totals; your longest streak counts the weeks you played, and
-  month labels swap in or out automatically so the grid always stays uniform
-  and uncluttered on any screen.
-
-Version 1.1.4
--------------------
-- Badge cards show their rarity tier (Common, Uncommon, Rare, Legendary), and a freshly unlocked badge glows for 24 hours.
-- Locked badges estimate how long until you can earn them, based on your average weekly play.
-- Your phone buzzes when you unlock a badge or level up.
-- The Quests card shows how long until daily and weekly quests reset, completing every daily quest in a day builds a streak, and finishing all of a week's quests raises a Weekly Champion banner.
-- The profile shows your overall badge completion as a progress ring.
-- Badge status stays on one line even on narrow cards, and time-to-badge estimates are now accurate in any timezone.
-
-Version 1.1.3
--------------------
-- Achievement celebrations never repeat: a notification you have already seen
-  does not come back again.
-- Earned badge cards now show the date they were unlocked.
-- Daily and weekly quests are now drawn at random — a fresh set of five each day
-  from 22 daily goals and each Monday from 27 weekly goals — and the Quests
-  header shows how many daily and weekly goals you have completed.
-- The player profile shows how much achievement XP you have earned (with a share
-  of the maximum) and how much XP remains to the next level beside the level bar.
-- 14 new badges extend Game Variety, Epic Sessions, and Dedication with
-  game-count ladders, 3- and 8-hour sessions, single-day play and session
-  records, day-count milestones, and early-bird and night-owl chains.
-
-Version 1.1.2
--------------------
-- Badge cards now flow into multiple columns on wide screens, and the player
-  profile stretches to match the achievement sections.
-- Badge unlocks now trigger celebrations on the spot, you earn XP for time
-  played, and daily and weekly quest boards with an XP reward keep the level
-  meter moving between milestones.
-- The live timer shows how long until your next achievable playtime badge.
-
-Version 1.1.1
--------------------
-- The live session timer can now be paused and resumed.
-- Completed sessions can be exported to CSV from Settings.
-- The live timer card now shows the session start time and the current time in
-  24-hour format beside the running elapsed time.
-- The Games list now shows when each game was last played and how often you play
-  it.
-- Deleted sessions can be undone from the confirmation toast.
-- You can set an optional time target when starting a session and watch
-  progress toward it on the timer card.
-- A new Badges tab tracks milestone achievements, play streaks, and a player
-  level earned from your play history.
+  month labels swap in or out automatically so the grid stays uniform on any
+  screen.
+- Review sessions you haven't marked as synced: filter the list by sync
+  status, see every unsynced entry across all dates with a running total of
+  remaining time, and mark them all synced in one tap (with undo); filtered
+  rows also show each session's date and that day's total.
+- Your profile's longest session record names the game it was played on, and
+  a game's session history shows the last 5 sessions instead of 10.
+- Give a game a cover image — upload a picture or paste an image URL, manage
+  it from the game's Edit screen, and see it on the game's stats page; while
+  a session runs, the live timer fades its game's cover behind a subtle
+  backdrop with the next-badge hint in dimmed white.
+- Game stats (the game dashboard) open reliably again, long stats dialogs
+  scroll so their Close button is always reachable, URL covers stay editable
+  in the Edit screen, and the pending-sync banner no longer grabs taps while
+  hidden.
 
 Version 1.1.0
 -------------------
