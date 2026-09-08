@@ -3295,10 +3295,18 @@ opacity: 0.18;
   </button>
 </div>
 
-<!-- Rename modal -->
+<!-- Edit game modal -->
 <div class="modal-overlay" id="rename-modal">
   <div class="modal">
-    <h3>Rename Game</h3>
+    <h3>Edit Game</h3>
+    <div class="dash-cover" id="rename-cover"></div>
+    <div class="dash-cover-actions">
+      <button class="btn-ghost" id="cover-upload-btn" style="padding:6px 10px;font-size:0.75rem;">Upload</button>
+      <input type="file" id="cover-file" accept="image/*" style="display:none">
+      <input type="text" id="cover-url" class="cover-url" placeholder="https://image url" autocomplete="off" maxlength="500">
+      <button class="btn-ghost" id="cover-url-btn" style="padding:6px 10px;font-size:0.75rem;">Set URL</button>
+      <button class="btn-ghost btn-danger" id="cover-remove-btn" style="padding:6px 10px;font-size:0.75rem;">Remove</button>
+    </div>
     <input type="text" id="rename-input" maxlength="50">
     <div class="modal-actions">
       <button class="btn-ghost" id="rename-cancel">Cancel</button>
@@ -3591,13 +3599,6 @@ opacity: 0.18;
   <div class="modal" style="max-width:420px;">
     <div class="dash-cover" id="dashboard-cover"></div>
     <h3 id="dashboard-title"></h3>
-    <div class="dash-cover-actions" id="dashboard-cover-actions">
-      <button class="btn-ghost" id="cover-upload-btn" style="padding:6px 10px;font-size:0.75rem;">Upload</button>
-      <input type="file" id="cover-file" accept="image/*" style="display:none">
-      <input type="text" id="cover-url" class="cover-url" placeholder="https://image url" autocomplete="off" maxlength="500">
-      <button class="btn-ghost" id="cover-url-btn" style="padding:6px 10px;font-size:0.75rem;">Set URL</button>
-      <button class="btn-ghost btn-danger" id="cover-remove-btn" style="padding:6px 10px;font-size:0.75rem;">Remove</button>
-    </div>
     <div id="dashboard-body"></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="dashboard-close">Close</button>
@@ -3721,7 +3722,6 @@ opacity: 0.18;
   let currentTab = 'today';
   let filterDate = todayStr();
   let syncFilter = 'all';
-  let dashGameId = null;
   let pendingTargetMin = 0;
   let targetToastShown = false;
   let pendingDeleteGameId = null;
@@ -5757,7 +5757,7 @@ opacity: 0.18;
           '</div>' +
           '<div class="game-item-actions">' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
-            '<button class="btn-icon" data-action="rename" data-id="' + g.id + '" title="Rename">' + iconSvg('rename') + '</button>' +
+            '<button class="btn-icon" data-action="rename" data-id="' + g.id + '" title="Edit">' + iconSvg('rename') + '</button>' +
             '<button class="btn-icon archive" data-action="archive" data-id="' + g.id + '" title="Archive">' + iconSvg('archive') + '</button>' +
             '<button class="btn-icon danger" data-action="delete" data-id="' + g.id + '" title="Delete">' + iconSvg('delete') + '</button>' +
           '</div>' +
@@ -5801,25 +5801,22 @@ opacity: 0.18;
   function openDashboard(id) {
     const game = games.find(g => g.id === id);
     if (!game) return;
-    dashGameId = game.id;
     document.getElementById('dashboard-title').textContent = game.name;
-    renderDashboardCover(game);
-    document.getElementById('cover-url').value = '';
+    paintCover(document.getElementById('dashboard-cover'), game, 'No cover');
     renderDashboardBody(game);
     document.getElementById('dashboard-modal').classList.add('open');
   }
 
-  function renderDashboardCover(game) {
-    const cover = document.getElementById('dashboard-cover');
+  function paintCover(coverEl, game, emptyText) {
     const img = game && game.image;
     if (img) {
-      cover.className = 'dash-cover';
-      cover.style.backgroundImage = 'url("' + img + '")';
-      cover.innerHTML = '';
+      coverEl.className = 'dash-cover';
+      coverEl.style.backgroundImage = 'url("' + img + '")';
+      coverEl.innerHTML = '';
     } else {
-      cover.className = 'dash-cover empty';
-      cover.style.backgroundImage = '';
-      cover.innerHTML = '<span class="dash-cover-empty">Add a cover</span>';
+      coverEl.className = 'dash-cover empty';
+      coverEl.style.backgroundImage = '';
+      coverEl.innerHTML = '<span class="dash-cover-empty">' + (emptyText || 'No cover') + '</span>';
     }
   }
 
@@ -6015,12 +6012,14 @@ opacity: 0.18;
     });
   });
 
-  // --- Rename modal ---
+  // --- Edit game modal ---
   function openRenameModal(id) {
     const game = games.find(g => g.id === id);
     if (!game) return;
     pendingRenameGameId = id;
     document.getElementById('rename-input').value = game.name;
+    paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
+    document.getElementById('cover-url').value = '';
     document.getElementById('rename-modal').classList.add('open');
     setTimeout(() => document.getElementById('rename-input').focus(), 50);
   }
@@ -6038,7 +6037,7 @@ opacity: 0.18;
       saveGames(games);
       sessions.forEach(s => { if (s.gameId === game.id) s.gameName = name; });
       saveSessions(sessions);
-      toast('Renamed');
+      toast('Game updated');
       render();
     }
     document.getElementById('rename-modal').classList.remove('open');
@@ -6541,12 +6540,12 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('dashboard-modal').classList.remove('open');
   });
 
-  const setGameCover = img => {
-    const game = games.find(g => g.id === dashGameId);
+  const setGameCover = (gameId, img) => {
+    const game = games.find(g => g.id === gameId);
     if (!game) return;
     game.image = img;
     saveGames(games);
-    renderDashboardCover(game);
+    paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
     render();
     toast(img ? 'Cover saved' : 'Cover removed');
   };
@@ -6559,20 +6558,20 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     e.target.value = '';
     if (!file) return;
     if (!/^image\//.test(file.type)) { toast('Please pick an image file'); return; }
-    fileToThumb(file, dataUrl => setGameCover(dataUrl));
+    fileToThumb(file, dataUrl => setGameCover(pendingRenameGameId, dataUrl));
   });
   document.getElementById('cover-url-btn').addEventListener('click', () => {
     const v = document.getElementById('cover-url').value.trim().replace(/[\x22\x27]/g, '');
     if (!v) return;
     if (!/^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(v)) { toast('Enter a valid image URL'); return; }
     document.getElementById('cover-url').value = '';
-    setGameCover(v);
+    setGameCover(pendingRenameGameId, v);
   });
   document.getElementById('cover-url').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('cover-url-btn').click();
   });
   document.getElementById('cover-remove-btn').addEventListener('click', () => {
-    setGameCover(null);
+    setGameCover(pendingRenameGameId, null);
   });
 
   // --- Edit player name ---
