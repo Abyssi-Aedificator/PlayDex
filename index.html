@@ -4386,6 +4386,17 @@
       document.getElementById('active-start').textContent = fmtTime(activeSession.start);
       document.getElementById('target-progress').style.display = activeSession.targetMs ? '' : 'none';
       updateLiveCardPauseState();
+      const activeGame = games.find(g => g.id === activeSession.gameId);
+      const cover = activeGame && activeGame.image;
+      if (cover) {
+        card.style.background = 'linear-gradient(180deg, rgba(52,211,153,0.2), rgba(10,10,18,0.78)), url("' + cover + '") center/cover no-repeat';
+      } else {
+        card.style.background = '';
+      }
+    }
+    // Sync the live card cover when a session is active (render may run without isActive toggling)
+    else if (wasActive) {
+      card.style.background = '';
     }
 
     if (isActive === wasActive || animating) {
