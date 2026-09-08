@@ -2929,7 +2929,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.2.0</span>
+    <span class="version-badge">1.2.1</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3182,6 +3182,7 @@ opacity: 0.18;
         <input type="text" id="add-game-input" placeholder="Game name..." maxlength="50">
         <button class="btn btn-start" id="add-game-btn">Add</button>
       </div>
+      <input type="text" id="game-search-input" placeholder="Search games..." maxlength="50" autocomplete="off" style="margin:0 0 10px;">
       <div id="games-list"></div>
     </div>
   </div>
@@ -3723,6 +3724,7 @@ opacity: 0.18;
   let currentTab = 'today';
   let filterDate = todayStr();
   let syncFilter = 'all';
+  let gamesSearch = '';
   let pendingTargetMin = 0;
   let targetToastShown = false;
   let pendingDeleteGameId = null;
@@ -5712,8 +5714,10 @@ opacity: 0.18;
   function renderGamesTab() {
     const container = document.getElementById('games-list');
     const nameSort = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
-    const active = games.filter(g => !g.archived).sort(nameSort);
-    const archived = games.filter(g => g.archived).sort(nameSort);
+    const q = gamesSearch.trim().toLowerCase();
+    const filtered = q ? games.filter(g => g.name.toLowerCase().includes(q)) : games;
+    const active = filtered.filter(g => !g.archived).sort(nameSort);
+    const archived = filtered.filter(g => g.archived).sort(nameSort);
 
     const gs = {};
     sessions.forEach(s => {
@@ -5742,6 +5746,11 @@ opacity: 0.18;
     if (games.length === 0) {
       container.innerHTML =
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyGames') + '</span>No games added yet.</div>';
+      return;
+    }
+    if (filtered.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyGames') + '</span>No games match your search.</div>';
       return;
     }
 
@@ -5973,6 +5982,11 @@ opacity: 0.18;
       addGame(inp.value);
       inp.value = '';
     }
+  });
+
+  document.getElementById('game-search-input').addEventListener('input', e => {
+    gamesSearch = e.target.value;
+    renderGamesTab();
   });
 
   // --- Stop button ---
@@ -6785,7 +6799,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.2.0';
+    const APP_VERSION = '1.2.1';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
