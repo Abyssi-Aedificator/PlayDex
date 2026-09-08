@@ -405,6 +405,21 @@
     padding: 22px 16px;
   }
 
+  .active-session.has-cover { position: relative; }
+  .active-session.has-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--cover, none);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: inherit;
+  }
+  .active-session.has-cover > * { position: relative; z-index: 1; }
+
   .active-session .game-name {
     font-size: 1.1rem;
     font-weight: 800;
@@ -4389,13 +4404,19 @@
       const activeGame = games.find(g => g.id === activeSession.gameId);
       const cover = activeGame && activeGame.image;
       if (cover) {
-        card.style.background = 'linear-gradient(180deg, rgba(52,211,153,0.08), rgba(10,10,18,0.42)), url("' + cover + '") center/cover no-repeat';
+        card.classList.add('has-cover');
+        card.style.setProperty('--cover', 'url("' + cover + '")');
+        card.style.background = 'linear-gradient(180deg, rgba(52,211,153,0.08), rgba(10,10,18,0.42))';
       } else {
+        card.classList.remove('has-cover');
+        card.style.removeProperty('--cover');
         card.style.background = '';
       }
     }
     // Sync the live card cover when a session is active (render may run without isActive toggling)
     else if (wasActive) {
+      card.classList.remove('has-cover');
+      card.style.removeProperty('--cover');
       card.style.background = '';
     }
 
