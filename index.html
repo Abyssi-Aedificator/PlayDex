@@ -4389,7 +4389,7 @@
       const activeGame = games.find(g => g.id === activeSession.gameId);
       const cover = activeGame && activeGame.image;
       if (cover) {
-        card.style.background = 'linear-gradient(180deg, rgba(52,211,153,0.2), rgba(10,10,18,0.78)), url("' + cover + '") center/cover no-repeat';
+        card.style.background = 'linear-gradient(180deg, rgba(52,211,153,0.08), rgba(10,10,18,0.42)), url("' + cover + '") center/cover no-repeat';
       } else {
         card.style.background = '';
       }
