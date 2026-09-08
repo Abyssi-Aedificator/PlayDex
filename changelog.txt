@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.2.1
+-------------------
+- Switching tabs brings you back to the top of the app.
+
 Version 1.2.0
 -------------------
 - The live session timer can be paused and resumed, shows the session start
