@@ -4,6 +4,7 @@ PlayDex - Changelog
 Version 1.2.1
 -------------------
 - Switching tabs brings you back to the top of the app.
+- The Quests card shows the weekly board once all of today's quests are done.
 
 Version 1.2.0
 -------------------

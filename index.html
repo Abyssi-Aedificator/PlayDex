@@ -5299,7 +5299,8 @@ opacity: 0.18;
 
     const qc = document.getElementById('quest-card');
     if (qc) {
-      const view = settings.questView === 'weekly' ? 'weekly' : 'daily';
+      const allDailyDone = B.daily.length > 0 && B.daily.every(r => r.done);
+      const view = settings.questView === 'weekly' || allDailyDone ? 'weekly' : 'daily';
       const board = B[view];
       const xp = view === 'daily' ? QUEST_XP_DAILY : QUEST_XP_WEEKLY;
       const doneCount = board.filter(r => r.done).length;
