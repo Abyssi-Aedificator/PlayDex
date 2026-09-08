@@ -1408,8 +1408,9 @@ opacity: 0.18;
     transition: all 0.3s;
     z-index: 400;
     box-shadow: var(--shadow);
+    pointer-events: none;
   }
-  .dbx-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .dbx-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
   .dbx-banner-dot {
     flex-shrink: 0;
     width: 9px;
@@ -6019,7 +6020,8 @@ opacity: 0.18;
     pendingRenameGameId = id;
     document.getElementById('rename-input').value = game.name;
     paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
-    document.getElementById('cover-url').value = '';
+    const urlField = document.getElementById('cover-url');
+    urlField.value = (game.image && !/^data:image\//.test(game.image)) ? game.image : '';
     document.getElementById('rename-modal').classList.add('open');
     setTimeout(() => document.getElementById('rename-input').focus(), 50);
   }
