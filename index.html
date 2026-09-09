@@ -3235,6 +3235,19 @@ opacity: 0.18;
       </div>
     </div>
     <div class="card">
+      <div class="card-header">Live session</div>
+      <div class="dbx-toggles">
+        <label class="dbx-toggle">
+          <input type="checkbox" id="setTabTitle" checked>
+          <span class="dbx-toggle-label">Show the running time in the browser tab title</span>
+        </label>
+        <label class="dbx-toggle">
+          <input type="checkbox" id="setTargetNotif">
+          <span class="dbx-toggle-label">Notify me when a session hits its time target</span>
+        </label>
+      </div>
+    </div>
+    <div class="card">
       <div class="card-header">Dropbox Sync</div>
       <div id="dbx-disconnected">
         <p class="modal-subheader" style="margin:0 0 10px;">Back up your data to your own Dropbox and keep multiple devices in sync. Your data goes straight from your browser to Dropbox.</p>
@@ -3714,8 +3727,8 @@ opacity: 0.18;
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '' }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false }; }
   }
 
   function mergeFullClear(a, b) {
@@ -3756,6 +3769,7 @@ opacity: 0.18;
   let pendingRenameGameId = null;
   let editSessionId = null;
   let importData = null;
+  const APP_TITLE = document.title || 'PlayDex';
 
   // --- Helpers ---
   function todayStr() {
@@ -4102,7 +4116,7 @@ opacity: 0.18;
     const prevLevel = settings.achievementLevel || 0;
     const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
     const prevFullClear = settings.dailyFullClear && typeof settings.dailyFullClear === 'object' ? settings.dailyFullClear : null;
-    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '' }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
+    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
     settings.accent = localAccent;
     settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
     settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
@@ -6575,9 +6589,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
       if (importData.settings && typeof importData.settings === 'object') {
-        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', name: '' }, importData.settings);
+        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', name: '', tabTitle: true, targetNotif: false }, importData.settings);
       } else {
-        settings = { dailyGoalMinutes: 0, theme: 'system', name: '' };
+        settings = { dailyGoalMinutes: 0, theme: 'system', name: '', tabTitle: true, targetNotif: false };
       }
       saveGames(games);
       saveSessions(sessions);
@@ -6724,10 +6738,21 @@ document.getElementById('import-confirm').addEventListener('click', () => {
           targetToastShown = true;
           if (typeof navigator !== 'undefined' && navigator.vibrate) { navigator.vibrate([80, 60, 80]); }
           document.getElementById('target-reached-modal').classList.add('open');
+          if (settings.targetNotif && 'Notification' in window && Notification.permission === 'granted') {
+            try { new Notification('PlayDex — Target reached!', { body: (activeSession.gameName || 'Session') + ' · ' + fmtDurationShort(elapsed), tag: 'playdex-target' }); } catch (_) {}
+          }
         }
       } else {
         tp.style.display = 'none';
       }
+      if (settings.tabTitle) {
+        const paused = !!activeSession && !!activeSession.pausedAt;
+        document.title = (paused ? '\u23F8 ' : '') + fmtDurationShort(elapsed) + ' · ' + APP_TITLE;
+      } else {
+        document.title = APP_TITLE;
+      }
+    } else {
+      document.title = APP_TITLE;
     }
     timerRaf = requestAnimationFrame(updateTimer);
   }
@@ -6770,6 +6795,36 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     dbx.hideSyncBanner = e.target.checked;
     dbxSave();
     dbxRefreshIndicators();
+  });
+
+  // --- Settings: Live session ---
+  const setTabTitleEl = document.getElementById('setTabTitle');
+  setTabTitleEl.checked = !!settings.tabTitle;
+  setTabTitleEl.addEventListener('change', e => {
+    settings.tabTitle = e.target.checked;
+    saveSettings(settings);
+    if (!settings.tabTitle) document.title = APP_TITLE;
+  });
+
+  const setTargetNotifEl = document.getElementById('setTargetNotif');
+  setTargetNotifEl.checked = !!settings.targetNotif;
+  setTargetNotifEl.addEventListener('change', e => {
+    if (e.target.checked && 'Notification' in window && Notification.permission !== 'granted') {
+      Notification.requestPermission().then(p => {
+        if (p === 'granted') {
+          settings.targetNotif = true;
+          saveSettings(settings);
+        } else {
+          e.target.checked = false;
+          settings.targetNotif = false;
+          saveSettings(settings);
+          toast('Notifications blocked by the browser');
+        }
+      });
+    } else {
+      settings.targetNotif = e.target.checked;
+      saveSettings(settings);
+    }
   });
 
   document.getElementById('sync-btn').addEventListener('click', () => {

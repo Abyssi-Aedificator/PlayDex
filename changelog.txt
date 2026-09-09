@@ -9,6 +9,7 @@ Version 1.2.1
 - The Profile page stacks Next Badge and Favorite Game compactly beside Personal Records, with Playstyle on its own full-width row.
 - Pin your favourite games to the top of the Games tab and the quick-start list.
 - Session rows and game dashboards now show how many times a session was paused and for how long.
+- The running session shows in the browser tab title and can send a system notification when a target is reached.
 
 Version 1.2.0
 -------------------
