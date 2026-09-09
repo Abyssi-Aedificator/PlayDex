@@ -6,6 +6,7 @@ Version 1.2.1
 - Switching tabs brings you back to the top of the app.
 - The Quests card shows the weekly board once all of today's quests are done.
 - Find games fast with a search bar in the Games tab.
+- The Profile page pairs Favorite Game directly under Next Badge, sized like Personal Records, with Playstyle matching Weekday Habits.
 
 Version 1.2.0
 -------------------

@@ -1901,6 +1901,7 @@ opacity: 0.18;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-height: 164px;
   }
 
   .playstyle-bar {
@@ -1947,6 +1948,7 @@ opacity: 0.18;
     padding: 8px 2px;
   }
 
+  .weekday-habits { min-height: 164px; }
   .weekday-chart {
     display: flex;
     gap: 8px;
@@ -2880,6 +2882,7 @@ opacity: 0.18;
     }
     .profile-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: auto minmax(min-content, 1fr) minmax(min-content, 1fr) auto auto auto;
       gap: 20px;
     }
     .profile-card,
@@ -2888,6 +2891,14 @@ opacity: 0.18;
     .milestones-card {
       grid-column: 1 / -1;
     }
+    .profile-card { grid-row: 1; }
+    .records-card { grid-column: 1; grid-row: 2; }
+    .next-badge-card { grid-column: 2; grid-row: 2; }
+    .playstyle-card { grid-column: 1; grid-row: 3; }
+    .favorite-card { grid-column: 2; grid-row: 3; }
+    .weekday-habits-card { grid-row: 4; }
+    .streak-calendar-card { grid-row: 5; }
+    .milestones-card { grid-row: 6; }
     .streak-cell { border-radius: 3px; }
   }
 
@@ -3122,7 +3133,7 @@ opacity: 0.18;
       <div class="weekly-champion-wrap"><div class="weekly-champion" id="weekly-champion" style="display:none"></div></div>
       <div class="profile-next-hint" id="ach-next-hint"></div>
     </div>
-    <div class="card">
+    <div class="card records-card">
       <div class="card-header">Personal Records</div>
       <div class="records-empty" id="records-empty">No records yet — log some sessions and they’ll show up here.</div>
       <div class="stat-grid records-grid" id="records-grid">
@@ -3151,13 +3162,13 @@ opacity: 0.18;
       <div class="card-header">Next Badge to Unlock</div>
       <div class="next-badge-body" id="next-badge-body"></div>
     </div>
-    <div class="card favorite-card">
-      <div class="card-header">Favorite Game</div>
-      <div class="favorite-game" id="favorite-game-box"></div>
-    </div>
     <div class="card playstyle-card">
       <div class="card-header">Playstyle</div>
       <div class="playstyle" id="playstyle-box"></div>
+    </div>
+    <div class="card favorite-card">
+      <div class="card-header">Favorite Game</div>
+      <div class="favorite-game" id="favorite-game-box"></div>
     </div>
     <div class="card weekday-habits-card">
       <div class="card-header">Weekday Habits</div>
