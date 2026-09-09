@@ -1090,6 +1090,19 @@ opacity: 0.18;
     flex-shrink: 0;
   }
 
+  .session-pause-info {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 7px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text2);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    vertical-align: middle;
+  }
+
   .session-day-total {
     color: var(--accent);
     opacity: 0.6;
@@ -1232,6 +1245,7 @@ opacity: 0.18;
 
   .btn-icon.archive:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
   .btn-icon.restore:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+  .btn-icon.pin.on { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
   .archive-section-label {
     font-size: 0.7rem;
@@ -1901,6 +1915,7 @@ opacity: 0.18;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-height: 164px;
   }
 
   .playstyle-bar {
@@ -1947,6 +1962,7 @@ opacity: 0.18;
     padding: 8px 2px;
   }
 
+  .weekday-habits { min-height: 164px; }
   .weekday-chart {
     display: flex;
     gap: 8px;
@@ -2600,6 +2616,16 @@ opacity: 0.18;
   #month-chart { gap: 2px; padding-left: 0; padding-right: 0; }
   #month-chart .bar-track { max-width: 28px; }
 
+  /* Cumulative chart */
+  .cum-chart-wrap { position: relative; width: 100%; height: 130px; }
+  .cum-chart-wrap svg { width: 100%; height: 100%; display: block; }
+  .cum-chart-wrap svg .cum-line { stroke: var(--accent); stroke-width: 2; fill: none; vector-effect: non-scaling-stroke; }
+  .cum-chart-wrap svg .cum-area { fill: var(--accent-dim); opacity: 0.5; }
+  .cum-chart-wrap svg .cum-dot { fill: var(--accent); }
+  .cum-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; color: var(--text3); }
+  .cum-legend { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.72rem; color: var(--text3); }
+  .cum-legend .cum-total { font-weight: 700; color: var(--text2); }
+
   /* Game dashboard modal */
   .dash-cover {
     position: relative;
@@ -2883,11 +2909,22 @@ opacity: 0.18;
       gap: 20px;
     }
     .profile-card,
+    .playstyle-card,
     .weekday-habits-card,
     .streak-calendar-card,
+    .cum-card,
     .milestones-card {
       grid-column: 1 / -1;
     }
+    .profile-card { grid-row: 1; }
+    .records-card { grid-column: 1; grid-row: 2 / span 2; }
+    .next-badge-card { grid-column: 2; grid-row: 2; }
+    .favorite-card { grid-column: 2; grid-row: 3; }
+    .playstyle-card { grid-row: 4; }
+    .weekday-habits-card { grid-row: 5; }
+    .streak-calendar-card { grid-row: 6; }
+    .cum-card { grid-row: 7; }
+    .milestones-card { grid-row: 8; }
     .streak-cell { border-radius: 3px; }
   }
 
@@ -2929,7 +2966,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.2.0</span>
+    <span class="version-badge">1.2.1</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3122,7 +3159,7 @@ opacity: 0.18;
       <div class="weekly-champion-wrap"><div class="weekly-champion" id="weekly-champion" style="display:none"></div></div>
       <div class="profile-next-hint" id="ach-next-hint"></div>
     </div>
-    <div class="card">
+    <div class="card records-card">
       <div class="card-header">Personal Records</div>
       <div class="records-empty" id="records-empty">No records yet — log some sessions and they’ll show up here.</div>
       <div class="stat-grid records-grid" id="records-grid">
@@ -3167,6 +3204,14 @@ opacity: 0.18;
       <div class="card-header">Streak Calendar</div>
       <div class="streak-calendar" id="streak-calendar-box"></div>
     </div>
+    <div class="card cum-card">
+      <div class="card-header">Total Playtime</div>
+      <div class="cum-chart-wrap">
+        <svg id="cum-chart" viewBox="0 0 360 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="cum-empty" id="cum-empty"></div>
+      </div>
+      <div class="cum-legend" id="cum-legend"></div>
+    </div>
     <div class="card milestones-card">
       <div class="card-header">Milestones</div>
       <div class="milestones" id="milestones-box"></div>
@@ -3182,6 +3227,7 @@ opacity: 0.18;
         <input type="text" id="add-game-input" placeholder="Game name..." maxlength="50">
         <button class="btn btn-start" id="add-game-btn">Add</button>
       </div>
+      <input type="text" id="game-search-input" placeholder="Search games..." maxlength="50" autocomplete="off" style="margin:0 0 10px;">
       <div id="games-list"></div>
     </div>
   </div>
@@ -3206,6 +3252,19 @@ opacity: 0.18;
         <button class="accent-swatch" data-accent="ocean" style="background:linear-gradient(135deg,#3b82f6,#6366f1)" title="Blue to Indigo" aria-label="Blue to Indigo"></button>
         <button class="accent-swatch" data-accent="violet" style="background:linear-gradient(135deg,#8b5cf6,#a855f7)" title="Violet to Purple" aria-label="Violet to Purple"></button>
         <button class="accent-swatch" data-accent="gold" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)" title="Gold to Amber" aria-label="Gold to Amber"></button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Live session</div>
+      <div class="dbx-toggles">
+        <label class="dbx-toggle">
+          <input type="checkbox" id="setTabTitle" checked>
+          <span class="dbx-toggle-label">Show the running time in the browser tab title</span>
+        </label>
+        <label class="dbx-toggle">
+          <input type="checkbox" id="setTargetNotif">
+          <span class="dbx-toggle-label">Notify me when a session hits its time target</span>
+        </label>
       </div>
     </div>
     <div class="card">
@@ -3659,7 +3718,7 @@ opacity: 0.18;
 
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
-      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null };
+      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned };
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -3688,8 +3747,8 @@ opacity: 0.18;
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '' }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false }; }
   }
 
   function mergeFullClear(a, b) {
@@ -3723,12 +3782,14 @@ opacity: 0.18;
   let currentTab = 'today';
   let filterDate = todayStr();
   let syncFilter = 'all';
+  let gamesSearch = '';
   let pendingTargetMin = 0;
   let targetToastShown = false;
   let pendingDeleteGameId = null;
   let pendingRenameGameId = null;
   let editSessionId = null;
   let importData = null;
+  const APP_TITLE = document.title || 'PlayDex';
 
   // --- Helpers ---
   function todayStr() {
@@ -4075,7 +4136,7 @@ opacity: 0.18;
     const prevLevel = settings.achievementLevel || 0;
     const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
     const prevFullClear = settings.dailyFullClear && typeof settings.dailyFullClear === 'object' ? settings.dailyFullClear : null;
-    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '' }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
+    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
     settings.accent = localAccent;
     settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
     settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
@@ -4178,6 +4239,7 @@ opacity: 0.18;
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
     document.querySelector('.app-content').classList.toggle('merged', name === 'today');
     render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => goTab(btn.dataset.tab));
@@ -4245,6 +4307,15 @@ opacity: 0.18;
   function activeElapsedMs(s, nowMs) {
     const end = s.pausedAt ? new Date(s.pausedAt).getTime() : nowMs;
     return end - new Date(s.start).getTime() - totalPausedMs(s, end);
+  }
+
+  function sessionPauseInfo(s) {
+    const pauses = s.pauses || [];
+    const endMs = s.stop ? new Date(s.stop).getTime() : Date.now();
+    return {
+      count: pauses.length + (s.pausedAt ? 1 : 0),
+      totalMs: totalPausedMs(s, endMs)
+    };
   }
 
   function togglePause() {
@@ -4475,6 +4546,7 @@ opacity: 0.18;
       if (!lastUsed.has(s.gameId) || t > lastUsed.get(s.gameId)) lastUsed.set(s.gameId, t);
     });
     const sortedGames = activeGames.slice().sort((a, b) => {
+      if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
       const la = lastUsed.has(a.id) ? lastUsed.get(a.id) : -1;
       const lb = lastUsed.has(b.id) ? lastUsed.get(b.id) : -1;
       return lb - la;
@@ -4562,19 +4634,21 @@ opacity: 0.18;
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>' +
         msg + '</div>';
     } else {
-      container.innerHTML = filtered.map((s, i) =>
-        '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
+      container.innerHTML = filtered.map((s, i) => {
+        const pi = sessionPauseInfo(s);
+        const pauseTag = pi.count > 0 ? '<span class="session-pause-info" title="Paused">&#9208; ' + pi.count + (pi.totalMs > 0 ? ' \u00b7 ' + fmtDurationShort(pi.totalMs) : '') + '</span>' : '';
+        return '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
             '<div class="session-times">' + (showDate ? '' : fmtDateShort(s.start) + ' \u00b7 ') + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
           (showDate && filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : !showDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + dateKey(s.start)] || 0) + ')</span>' : '') +
-          '<span class="session-duration">' + fmtDuration(s.durationMs) + '</span>' +
+          '<span class="session-duration">' + fmtDuration(s.durationMs) + pauseTag + '</span>' +
           '<button class="session-edit" data-id="' + s.id + '" title="Edit session">Edit</button>' +
           '<button class="session-sync' + (s.synced ? ' on' : '') + '" data-id="' + s.id + '" title="Mark as sync">Sync</button>' +
           '<button class="session-delete" data-id="' + s.id + '" title="Delete session">' + iconSvg('deleteX') + '</button>' +
-        '</div>'
-      ).join('');
+        '</div>';
+      }).join('');
 
       container.querySelectorAll('.session-delete').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -4714,6 +4788,63 @@ opacity: 0.18;
         '<span class="bar-label">' + dayNames[new Date(d.date + 'T00:00:00').getDay()] + '</span>' +
       '</div>';
     }).join('');
+  }
+
+  function renderCumChart() {
+    const svg = document.getElementById('cum-chart');
+    const emptyEl = document.getElementById('cum-empty');
+    const legendEl = document.getElementById('cum-legend');
+    if (!svg || !emptyEl || !legendEl) return;
+    const completed = sessions.filter(s => s.stop !== null).slice().sort((a, b) => new Date(a.start) - new Date(b.start));
+    if (completed.length === 0) {
+      svg.innerHTML = '';
+      emptyEl.textContent = 'No sessions yet.';
+      legendEl.innerHTML = '';
+      return;
+    }
+    emptyEl.textContent = '';
+    const firstDate = new Date(completed[0].start + 'T00:00:00');
+    const lastDate = new Date(completed[completed.length - 1].stop);
+    const msPerDay = 86400000;
+    const totalDays = Math.max(1, Math.round((lastDate - firstDate) / msPerDay));
+    const bucketByMonth = totalDays > 400;
+    const buckets = {};
+    completed.forEach(s => {
+      let key;
+      if (bucketByMonth) {
+        const d = new Date(s.start);
+        key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+      } else {
+        key = s.start.slice(0, 10);
+      }
+      buckets[key] = (buckets[key] || 0) + (s.durationMs || 0);
+    });
+    const keys = Object.keys(buckets).sort();
+    let cum = 0;
+    const points = keys.map(k => { cum += buckets[k]; return { k: k, cum: cum }; });
+    const maxY = points[points.length - 1].cum;
+    if (maxY <= 0) { svg.innerHTML = ''; emptyEl.textContent = 'No playtime yet.'; legendEl.innerHTML = ''; return; }
+    const W = 360, H = 120, PAD_Y = 6, PAD_X = 2;
+    const toX = (i) => PAD_X + (points.length > 1 ? (i / (points.length - 1)) * (W - 2 * PAD_X) : (W - 2 * PAD_X) / 2);
+    const toY = (v) => H - PAD_Y - (v / maxY) * (H - 2 * PAD_Y);
+    let linePath = '';
+    let areaPath = '';
+    points.forEach((p, i) => {
+      const x = toX(i), y = toY(p.cum);
+      linePath += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+      areaPath += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    });
+    areaPath += 'L' + toX(points.length - 1).toFixed(1) + ',' + (H - PAD_Y) + 'L' + toX(0).toFixed(1) + ',' + (H - PAD_Y) + 'Z';
+    let dotsHtml = '';
+    if (points.length <= 100) {
+      dotsHtml = points.map((p, i) => '<circle class="cum-dot" cx="' + toX(i).toFixed(1) + '" cy="' + toY(p.cum).toFixed(1) + '" r="2.5" title="' + p.k + ' \u00b7 ' + fmtDuration(p.cum) + '"/>').join('');
+    }
+    svg.innerHTML = '<path class="cum-area" d="' + areaPath + '"/>' +
+      '<path class="cum-line" d="' + linePath + '"/>' + dotsHtml;
+    const firstLabel = bucketByMonth ? keys[0] : keys[0].slice(0, 7);
+    const lastLabel = bucketByMonth ? keys[keys.length - 1] : keys[keys.length - 1].slice(0, 7);
+    legendEl.innerHTML = '<span>' + escHtml(firstLabel) + ' \u2192 ' + escHtml(lastLabel) + '</span>' +
+      '<span class="cum-total">' + fmtDuration(maxY) + '</span>';
   }
 
   // --- Badges: catalog, helpers, and level ---
@@ -5298,7 +5429,8 @@ opacity: 0.18;
 
     const qc = document.getElementById('quest-card');
     if (qc) {
-      const view = settings.questView === 'weekly' ? 'weekly' : 'daily';
+      const allDailyDone = B.daily.length > 0 && B.daily.every(r => r.done);
+      const view = settings.questView === 'weekly' || allDailyDone ? 'weekly' : 'daily';
       const board = B[view];
       const xp = view === 'daily' ? QUEST_XP_DAILY : QUEST_XP_WEEKLY;
       const doneCount = board.filter(r => r.done).length;
@@ -5449,6 +5581,7 @@ opacity: 0.18;
   function renderProfileTab() {
     const nameEl = document.getElementById('profile-name');
     if (nameEl) nameEl.textContent = (settings.name || '').trim() || 'Player';
+    renderCumChart();
     const M = computeAchStats();
     const gridEl = document.getElementById('records-grid');
     const emptyEl = document.getElementById('records-empty');
@@ -5710,8 +5843,11 @@ opacity: 0.18;
   function renderGamesTab() {
     const container = document.getElementById('games-list');
     const nameSort = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
-    const active = games.filter(g => !g.archived).sort(nameSort);
-    const archived = games.filter(g => g.archived).sort(nameSort);
+    const pinnedFirst = (a, b) => (!!a.pinned !== !!b.pinned) ? (a.pinned ? -1 : 1) : nameSort(a, b);
+    const q = gamesSearch.trim().toLowerCase();
+    const filtered = q ? games.filter(g => g.name.toLowerCase().includes(q)) : games;
+    const active = filtered.filter(g => !g.archived).sort(pinnedFirst);
+    const archived = filtered.filter(g => g.archived).sort(pinnedFirst);
 
     const gs = {};
     sessions.forEach(s => {
@@ -5742,6 +5878,11 @@ opacity: 0.18;
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyGames') + '</span>No games added yet.</div>';
       return;
     }
+    if (filtered.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyGames') + '</span>No games match your search.</div>';
+      return;
+    }
 
     let html = '';
 
@@ -5757,6 +5898,7 @@ opacity: 0.18;
             gameMeta(count, e) +
           '</div>' +
           '<div class="game-item-actions">' +
+            '<button class="btn-icon pin' + (g.pinned ? ' on' : '') + '" data-action="pin" data-id="' + g.id + '" title="' + (g.pinned ? 'Unpin' : 'Pin to top') + '">' + iconSvg('pin') + '</button>' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
             '<button class="btn-icon" data-action="rename" data-id="' + g.id + '" title="Edit">' + iconSvg('rename') + '</button>' +
             '<button class="btn-icon archive" data-action="archive" data-id="' + g.id + '" title="Archive">' + iconSvg('archive') + '</button>' +
@@ -5777,6 +5919,7 @@ opacity: 0.18;
             gameMeta(count, e) +
           '</div>' +
           '<div class="game-item-actions">' +
+            '<button class="btn-icon pin' + (g.pinned ? ' on' : '') + '" data-action="pin" data-id="' + g.id + '" title="' + (g.pinned ? 'Unpin' : 'Pin to top') + '">' + iconSvg('pin') + '</button>' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
             '<button class="btn-icon restore" data-action="restore" data-id="' + g.id + '" title="Restore">' + iconSvg('restore') + '</button>' +
             '<button class="btn-icon danger" data-action="delete" data-id="' + g.id + '" title="Delete">' + iconSvg('delete') + '</button>' +
@@ -5790,7 +5933,8 @@ opacity: 0.18;
     container.querySelectorAll('.btn-icon').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
-        if (btn.dataset.action === 'view') openDashboard(id);
+        if (btn.dataset.action === 'pin') { togglePinGame(id); }
+        else if (btn.dataset.action === 'view') openDashboard(id);
         else if (btn.dataset.action === 'rename') openRenameModal(id);
         else if (btn.dataset.action === 'archive') archiveGame(id);
         else if (btn.dataset.action === 'restore') restoreGame(id);
@@ -5857,6 +6001,14 @@ opacity: 0.18;
     });
     const best = Object.entries(byDate).sort((a,b) => b[1] - a[1])[0];
 
+    // Pause totals
+    let pausedCount = 0, pausedMs = 0;
+    completed.forEach(s => {
+      const pi = sessionPauseInfo(s);
+      pausedCount += pi.count;
+      pausedMs += pi.totalMs;
+    });
+
     // Last 6 months
     const months = [];
     const now = new Date();
@@ -5878,6 +6030,7 @@ opacity: 0.18;
     let html = '<div class="dash-row"><span class="dash-label">Total playtime</span><span class="dash-value">' + fmtDuration(totalMs) + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Sessions</span><span class="dash-value">' + completed.length + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Average session</span><span class="dash-value">' + fmtDurationShort(avgMs) + '</span></div>' +
+      '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
     if (completed.length > 0) {
@@ -5920,6 +6073,7 @@ opacity: 0.18;
     view: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
     rename: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>',
     archive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
+    pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
     restore: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
     delete: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
     deleteX: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
@@ -5945,6 +6099,15 @@ opacity: 0.18;
   }
 
   // --- Add game ---
+  function togglePinGame(id) {
+    const game = games.find(g => g.id === id);
+    if (!game) return;
+    game.pinned = !game.pinned;
+    saveGames(games);
+    toast(game.pinned ? 'Pinned to top' : 'Unpinned');
+    renderGamesTab();
+  }
+
   function addGame(name) {
     name = name.trim();
     if (!name) return;
@@ -5952,7 +6115,7 @@ opacity: 0.18;
       toast('Game already exists');
       return;
     }
-    games.push({ id: uid(), name: name, archived: false, image: null });
+    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false });
     saveGames(games);
     toast('Added: ' + name);
     render();
@@ -5971,6 +6134,11 @@ opacity: 0.18;
       addGame(inp.value);
       inp.value = '';
     }
+  });
+
+  document.getElementById('game-search-input').addEventListener('input', e => {
+    gamesSearch = e.target.value;
+    renderGamesTab();
   });
 
   // --- Stop button ---
@@ -6499,9 +6667,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
       if (importData.settings && typeof importData.settings === 'object') {
-        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', name: '' }, importData.settings);
+        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', name: '', tabTitle: true, targetNotif: false }, importData.settings);
       } else {
-        settings = { dailyGoalMinutes: 0, theme: 'system', name: '' };
+        settings = { dailyGoalMinutes: 0, theme: 'system', name: '', tabTitle: true, targetNotif: false };
       }
       saveGames(games);
       saveSessions(sessions);
@@ -6648,10 +6816,21 @@ document.getElementById('import-confirm').addEventListener('click', () => {
           targetToastShown = true;
           if (typeof navigator !== 'undefined' && navigator.vibrate) { navigator.vibrate([80, 60, 80]); }
           document.getElementById('target-reached-modal').classList.add('open');
+          if (settings.targetNotif && 'Notification' in window && Notification.permission === 'granted') {
+            try { new Notification('PlayDex — Target reached!', { body: (activeSession.gameName || 'Session') + ' · ' + fmtDurationShort(elapsed), tag: 'playdex-target' }); } catch (_) {}
+          }
         }
       } else {
         tp.style.display = 'none';
       }
+      if (settings.tabTitle) {
+        const paused = !!activeSession && !!activeSession.pausedAt;
+        document.title = (paused ? '\u23F8 ' : '') + fmtDurationShort(elapsed) + ' · ' + APP_TITLE;
+      } else {
+        document.title = APP_TITLE;
+      }
+    } else {
+      document.title = APP_TITLE;
     }
     timerRaf = requestAnimationFrame(updateTimer);
   }
@@ -6694,6 +6873,36 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     dbx.hideSyncBanner = e.target.checked;
     dbxSave();
     dbxRefreshIndicators();
+  });
+
+  // --- Settings: Live session ---
+  const setTabTitleEl = document.getElementById('setTabTitle');
+  setTabTitleEl.checked = !!settings.tabTitle;
+  setTabTitleEl.addEventListener('change', e => {
+    settings.tabTitle = e.target.checked;
+    saveSettings(settings);
+    if (!settings.tabTitle) document.title = APP_TITLE;
+  });
+
+  const setTargetNotifEl = document.getElementById('setTargetNotif');
+  setTargetNotifEl.checked = !!settings.targetNotif;
+  setTargetNotifEl.addEventListener('change', e => {
+    if (e.target.checked && 'Notification' in window && Notification.permission !== 'granted') {
+      Notification.requestPermission().then(p => {
+        if (p === 'granted') {
+          settings.targetNotif = true;
+          saveSettings(settings);
+        } else {
+          e.target.checked = false;
+          settings.targetNotif = false;
+          saveSettings(settings);
+          toast('Notifications blocked by the browser');
+        }
+      });
+    } else {
+      settings.targetNotif = e.target.checked;
+      saveSettings(settings);
+    }
   });
 
   document.getElementById('sync-btn').addEventListener('click', () => {
@@ -6783,7 +6992,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.2.0';
+    const APP_VERSION = '1.2.1';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

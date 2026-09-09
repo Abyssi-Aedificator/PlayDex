@@ -68,6 +68,45 @@ Sessions CSV export ARE implemented - left out.
     sourced from the persisted settings.achievementUnlocks timestamps."
     - Scope: small. Risk: low.
 
+16. Background auto-backup on hide/close
+    "Upload a dirty backup to Dropbox the moment the tab is hidden or closed
+    (visibilitychange + beforeunload), so an unbacked session is never
+    stranded behind a closed tab. Distinct from the existing auto-upload
+    10s after editing."
+    - Scope: small. Risk: low.
+
+17. Merge duplicate games
+    "Pick a source + target game; reassign all of the source's sessions to
+    the target, port its cover and history, then archive the source. Solves
+    accidental duplicate entries that rename/archive can't fix. Different from
+    the planned session-range merge (plan item #7)."
+    - Scope: medium. Risk: medium.
+
+18. Merge-import backups
+    "Today's JSON import replaces everything. Add a merge mode: import
+    non-conflicting entries, keep the newer of conflicting ones, report
+    counts (games added/skipped, sessions added). Useful for combining
+    history from two devices."
+    - Scope: medium. Risk: medium.
+
+19. Per-game notes and store link
+    "A short free-text note + optional URL per game, editable in the Edit
+    (rename) modal, shown as a tappable link on the game dashboard. Game-level
+    metadata, distinct from the proposed session notes (plan item #1)."
+    - Scope: small. Risk: low.
+
+20. Stale-game 'Play again?' highlights
+    "Games untouched for a configurable stretch (7/14/30 days) get a subtle
+    accent line in the Games list and an optional one-time prompt on the Today
+    tab. Anti-zombie library; distinct from idle auto-pause (plan item #9)."
+    - Scope: small. Risk: low.
+
+21. Share/copy stat snapshot
+    "One-tap Share (Web Share API) or clipboard-copy of a plain-text summary
+    of your stats or profile, from the Stats and Profile tabs. No backend
+    needed; handy for communities and social media."
+    - Scope: small. Risk: low.
+
 --- Implementation reference notes ---
 - Version markers to keep in sync on any release: .version-badge,
   APP_VERSION (~line 3915), SW_VERSION + CACHE_NAME in sw.js.
