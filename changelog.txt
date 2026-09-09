@@ -10,7 +10,7 @@ Version 1.2.1
 - Pin your favourite games to the top of the Games tab and the quick-start list.
 - Session rows and game dashboards now show how many times a session was paused and for how long.
 - The running session shows in the browser tab title and can send a system notification when a target is reached.
-- The Stats tab shows a cumulative playtime curve covering all your sessions.
+- The Profile page shows a cumulative playtime curve over all your sessions.
 
 Version 1.2.0
 -------------------

@@ -2912,6 +2912,7 @@ opacity: 0.18;
     .playstyle-card,
     .weekday-habits-card,
     .streak-calendar-card,
+    .cum-card,
     .milestones-card {
       grid-column: 1 / -1;
     }
@@ -2922,7 +2923,8 @@ opacity: 0.18;
     .playstyle-card { grid-row: 4; }
     .weekday-habits-card { grid-row: 5; }
     .streak-calendar-card { grid-row: 6; }
-    .milestones-card { grid-row: 7; }
+    .cum-card { grid-row: 7; }
+    .milestones-card { grid-row: 8; }
     .streak-cell { border-radius: 3px; }
   }
 
@@ -3097,14 +3099,6 @@ opacity: 0.18;
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
     </div>
-    <div class="card">
-      <div class="card-header">Total Playtime</div>
-      <div class="cum-chart-wrap">
-        <svg id="cum-chart" viewBox="0 0 360 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
-        <div class="cum-empty" id="cum-empty"></div>
-      </div>
-      <div class="cum-legend" id="cum-legend"></div>
-    </div>
   </div>
 
   <!-- BADGES TAB -->
@@ -3209,6 +3203,14 @@ opacity: 0.18;
     <div class="card streak-calendar-card">
       <div class="card-header">Streak Calendar</div>
       <div class="streak-calendar" id="streak-calendar-box"></div>
+    </div>
+    <div class="card cum-card">
+      <div class="card-header">Total Playtime</div>
+      <div class="cum-chart-wrap">
+        <svg id="cum-chart" viewBox="0 0 360 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="cum-empty" id="cum-empty"></div>
+      </div>
+      <div class="cum-legend" id="cum-legend"></div>
     </div>
     <div class="card milestones-card">
       <div class="card-header">Milestones</div>
@@ -4788,8 +4790,7 @@ opacity: 0.18;
     }).join('');
   }
 
-  // Cumulative playtime chart
-  (function renderCumChart() {
+  function renderCumChart() {
     const svg = document.getElementById('cum-chart');
     const emptyEl = document.getElementById('cum-empty');
     const legendEl = document.getElementById('cum-legend');
@@ -4838,14 +4839,13 @@ opacity: 0.18;
     if (points.length <= 100) {
       dotsHtml = points.map((p, i) => '<circle class="cum-dot" cx="' + toX(i).toFixed(1) + '" cy="' + toY(p.cum).toFixed(1) + '" r="2.5" title="' + p.k + ' \u00b7 ' + fmtDuration(p.cum) + '"/>').join('');
     }
-    const lastPoint = points[points.length - 1];
     svg.innerHTML = '<path class="cum-area" d="' + areaPath + '"/>' +
       '<path class="cum-line" d="' + linePath + '"/>' + dotsHtml;
     const firstLabel = bucketByMonth ? keys[0] : keys[0].slice(0, 7);
     const lastLabel = bucketByMonth ? keys[keys.length - 1] : keys[keys.length - 1].slice(0, 7);
     legendEl.innerHTML = '<span>' + escHtml(firstLabel) + ' \u2192 ' + escHtml(lastLabel) + '</span>' +
       '<span class="cum-total">' + fmtDuration(maxY) + '</span>';
-  })();
+  }
 
   // --- Badges: catalog, helpers, and level ---
   const ACH_CATS = [
@@ -5581,6 +5581,7 @@ opacity: 0.18;
   function renderProfileTab() {
     const nameEl = document.getElementById('profile-name');
     if (nameEl) nameEl.textContent = (settings.name || '').trim() || 'Player';
+    renderCumChart();
     const M = computeAchStats();
     const gridEl = document.getElementById('records-grid');
     const emptyEl = document.getElementById('records-empty');
