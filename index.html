@@ -2882,23 +2882,23 @@ opacity: 0.18;
     }
     .profile-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-template-rows: auto minmax(min-content, 1fr) minmax(min-content, 1fr) auto auto auto;
       gap: 20px;
     }
     .profile-card,
+    .playstyle-card,
     .weekday-habits-card,
     .streak-calendar-card,
     .milestones-card {
       grid-column: 1 / -1;
     }
     .profile-card { grid-row: 1; }
-    .records-card { grid-column: 1; grid-row: 2; }
+    .records-card { grid-column: 1; grid-row: 2 / span 2; }
     .next-badge-card { grid-column: 2; grid-row: 2; }
-    .playstyle-card { grid-column: 1; grid-row: 3; }
     .favorite-card { grid-column: 2; grid-row: 3; }
-    .weekday-habits-card { grid-row: 4; }
-    .streak-calendar-card { grid-row: 5; }
-    .milestones-card { grid-row: 6; }
+    .playstyle-card { grid-row: 4; }
+    .weekday-habits-card { grid-row: 5; }
+    .streak-calendar-card { grid-row: 6; }
+    .milestones-card { grid-row: 7; }
     .streak-cell { border-radius: 3px; }
   }
 
@@ -3162,13 +3162,13 @@ opacity: 0.18;
       <div class="card-header">Next Badge to Unlock</div>
       <div class="next-badge-body" id="next-badge-body"></div>
     </div>
-    <div class="card playstyle-card">
-      <div class="card-header">Playstyle</div>
-      <div class="playstyle" id="playstyle-box"></div>
-    </div>
     <div class="card favorite-card">
       <div class="card-header">Favorite Game</div>
       <div class="favorite-game" id="favorite-game-box"></div>
+    </div>
+    <div class="card playstyle-card">
+      <div class="card-header">Playstyle</div>
+      <div class="playstyle" id="playstyle-box"></div>
     </div>
     <div class="card weekday-habits-card">
       <div class="card-header">Weekday Habits</div>
