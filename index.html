@@ -1090,6 +1090,19 @@ opacity: 0.18;
     flex-shrink: 0;
   }
 
+  .session-pause-info {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 7px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text2);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    vertical-align: middle;
+  }
+
   .session-day-total {
     color: var(--accent);
     opacity: 0.6;
@@ -4262,6 +4275,15 @@ opacity: 0.18;
     return end - new Date(s.start).getTime() - totalPausedMs(s, end);
   }
 
+  function sessionPauseInfo(s) {
+    const pauses = s.pauses || [];
+    const endMs = s.stop ? new Date(s.stop).getTime() : Date.now();
+    return {
+      count: pauses.length + (s.pausedAt ? 1 : 0),
+      totalMs: totalPausedMs(s, endMs)
+    };
+  }
+
   function togglePause() {
     if (!activeSession) return;
     activeSession.pauses = activeSession.pauses || [];
@@ -4578,19 +4600,21 @@ opacity: 0.18;
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>' +
         msg + '</div>';
     } else {
-      container.innerHTML = filtered.map((s, i) =>
-        '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
+      container.innerHTML = filtered.map((s, i) => {
+        const pi = sessionPauseInfo(s);
+        const pauseTag = pi.count > 0 ? '<span class="session-pause-info" title="Paused">&#9208; ' + pi.count + (pi.totalMs > 0 ? ' \u00b7 ' + fmtDurationShort(pi.totalMs) : '') + '</span>' : '';
+        return '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
             '<div class="session-times">' + (showDate ? '' : fmtDateShort(s.start) + ' \u00b7 ') + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
           (showDate && filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : !showDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + dateKey(s.start)] || 0) + ')</span>' : '') +
-          '<span class="session-duration">' + fmtDuration(s.durationMs) + '</span>' +
+          '<span class="session-duration">' + fmtDuration(s.durationMs) + pauseTag + '</span>' +
           '<button class="session-edit" data-id="' + s.id + '" title="Edit session">Edit</button>' +
           '<button class="session-sync' + (s.synced ? ' on' : '') + '" data-id="' + s.id + '" title="Mark as sync">Sync</button>' +
           '<button class="session-delete" data-id="' + s.id + '" title="Delete session">' + iconSvg('deleteX') + '</button>' +
-        '</div>'
-      ).join('');
+        '</div>';
+      }).join('');
 
       container.querySelectorAll('.session-delete').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -5885,6 +5909,14 @@ opacity: 0.18;
     });
     const best = Object.entries(byDate).sort((a,b) => b[1] - a[1])[0];
 
+    // Pause totals
+    let pausedCount = 0, pausedMs = 0;
+    completed.forEach(s => {
+      const pi = sessionPauseInfo(s);
+      pausedCount += pi.count;
+      pausedMs += pi.totalMs;
+    });
+
     // Last 6 months
     const months = [];
     const now = new Date();
@@ -5906,6 +5938,7 @@ opacity: 0.18;
     let html = '<div class="dash-row"><span class="dash-label">Total playtime</span><span class="dash-value">' + fmtDuration(totalMs) + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Sessions</span><span class="dash-value">' + completed.length + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Average session</span><span class="dash-value">' + fmtDurationShort(avgMs) + '</span></div>' +
+      '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
     if (completed.length > 0) {
