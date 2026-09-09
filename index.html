@@ -2616,6 +2616,16 @@ opacity: 0.18;
   #month-chart { gap: 2px; padding-left: 0; padding-right: 0; }
   #month-chart .bar-track { max-width: 28px; }
 
+  /* Cumulative chart */
+  .cum-chart-wrap { position: relative; width: 100%; height: 130px; }
+  .cum-chart-wrap svg { width: 100%; height: 100%; display: block; }
+  .cum-chart-wrap svg .cum-line { stroke: var(--accent); stroke-width: 2; fill: none; vector-effect: non-scaling-stroke; }
+  .cum-chart-wrap svg .cum-area { fill: var(--accent-dim); opacity: 0.5; }
+  .cum-chart-wrap svg .cum-dot { fill: var(--accent); }
+  .cum-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; color: var(--text3); }
+  .cum-legend { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.72rem; color: var(--text3); }
+  .cum-legend .cum-total { font-weight: 700; color: var(--text2); }
+
   /* Game dashboard modal */
   .dash-cover {
     position: relative;
@@ -3086,6 +3096,14 @@ opacity: 0.18;
     <div class="card">
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Total Playtime</div>
+      <div class="cum-chart-wrap">
+        <svg id="cum-chart" viewBox="0 0 360 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="cum-empty" id="cum-empty"></div>
+      </div>
+      <div class="cum-legend" id="cum-legend"></div>
     </div>
   </div>
 
@@ -4769,6 +4787,65 @@ opacity: 0.18;
       '</div>';
     }).join('');
   }
+
+  // Cumulative playtime chart
+  (function renderCumChart() {
+    const svg = document.getElementById('cum-chart');
+    const emptyEl = document.getElementById('cum-empty');
+    const legendEl = document.getElementById('cum-legend');
+    if (!svg || !emptyEl || !legendEl) return;
+    const completed = sessions.filter(s => s.stop !== null).slice().sort((a, b) => new Date(a.start) - new Date(b.start));
+    if (completed.length === 0) {
+      svg.innerHTML = '';
+      emptyEl.textContent = 'No sessions yet.';
+      legendEl.innerHTML = '';
+      return;
+    }
+    emptyEl.textContent = '';
+    const firstDate = new Date(completed[0].start + 'T00:00:00');
+    const lastDate = new Date(completed[completed.length - 1].stop);
+    const msPerDay = 86400000;
+    const totalDays = Math.max(1, Math.round((lastDate - firstDate) / msPerDay));
+    const bucketByMonth = totalDays > 400;
+    const buckets = {};
+    completed.forEach(s => {
+      let key;
+      if (bucketByMonth) {
+        const d = new Date(s.start);
+        key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+      } else {
+        key = s.start.slice(0, 10);
+      }
+      buckets[key] = (buckets[key] || 0) + (s.durationMs || 0);
+    });
+    const keys = Object.keys(buckets).sort();
+    let cum = 0;
+    const points = keys.map(k => { cum += buckets[k]; return { k: k, cum: cum }; });
+    const maxY = points[points.length - 1].cum;
+    if (maxY <= 0) { svg.innerHTML = ''; emptyEl.textContent = 'No playtime yet.'; legendEl.innerHTML = ''; return; }
+    const W = 360, H = 120, PAD_Y = 6, PAD_X = 2;
+    const toX = (i) => PAD_X + (points.length > 1 ? (i / (points.length - 1)) * (W - 2 * PAD_X) : (W - 2 * PAD_X) / 2);
+    const toY = (v) => H - PAD_Y - (v / maxY) * (H - 2 * PAD_Y);
+    let linePath = '';
+    let areaPath = '';
+    points.forEach((p, i) => {
+      const x = toX(i), y = toY(p.cum);
+      linePath += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+      areaPath += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    });
+    areaPath += 'L' + toX(points.length - 1).toFixed(1) + ',' + (H - PAD_Y) + 'L' + toX(0).toFixed(1) + ',' + (H - PAD_Y) + 'Z';
+    let dotsHtml = '';
+    if (points.length <= 100) {
+      dotsHtml = points.map((p, i) => '<circle class="cum-dot" cx="' + toX(i).toFixed(1) + '" cy="' + toY(p.cum).toFixed(1) + '" r="2.5" title="' + p.k + ' \u00b7 ' + fmtDuration(p.cum) + '"/>').join('');
+    }
+    const lastPoint = points[points.length - 1];
+    svg.innerHTML = '<path class="cum-area" d="' + areaPath + '"/>' +
+      '<path class="cum-line" d="' + linePath + '"/>' + dotsHtml;
+    const firstLabel = bucketByMonth ? keys[0] : keys[0].slice(0, 7);
+    const lastLabel = bucketByMonth ? keys[keys.length - 1] : keys[keys.length - 1].slice(0, 7);
+    legendEl.innerHTML = '<span>' + escHtml(firstLabel) + ' \u2192 ' + escHtml(lastLabel) + '</span>' +
+      '<span class="cum-total">' + fmtDuration(maxY) + '</span>';
+  })();
 
   // --- Badges: catalog, helpers, and level ---
   const ACH_CATS = [
