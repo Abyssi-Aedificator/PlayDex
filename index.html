@@ -1239,6 +1239,72 @@ opacity: 0.18;
     white-space: nowrap;
   }
 
+  .game-item.stale {
+    box-shadow: inset 3px 0 0 var(--yellow);
+    padding-left: 6px;
+  }
+
+  .stale-tag {
+    font-size: 0.7rem;
+    color: var(--yellow);
+    border: 1px solid var(--yellow);
+    background: rgba(250, 204, 21, 0.08);
+    padding: 1px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .stale-prompt {
+    border: 1px solid var(--yellow);
+    background: rgba(250, 204, 21, 0.06);
+  }
+
+  .stale-prompt-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .stale-prompt-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--yellow);
+  }
+
+  .stale-prompt-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stale-prompt-row:last-child { border-bottom: none; }
+
+  .stale-prompt-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stale-prompt-last {
+    font-size: 0.72rem;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .stale-prompt-play {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+
   .game-item-actions {
     display: flex;
     gap: 4px;
@@ -1797,6 +1863,7 @@ opacity: 0.18;
   .profile-grid > .card > .favorite-game-empty,
   .profile-grid > .card > .playstyle-empty,
   .profile-grid > .card > .weekday-habits-empty,
+  .profile-grid > .card > .time-heatmap-empty,
   .profile-grid > .card > .streak-empty,
   .profile-grid > .card > .milestones-empty,
   .profile-grid > .card > .next-badge-done {
@@ -2034,6 +2101,59 @@ opacity: 0.18;
     font-size: 0.82rem;
     color: var(--text2);
     padding: 8px 2px;
+  }
+
+  .time-heatmap {
+    container-type: inline-size;
+  }
+
+  .heat-grid {
+    display: grid;
+    grid-template-columns: auto repeat(24, minmax(0, 1fr));
+    gap: 3px;
+    align-items: center;
+  }
+
+  .heat-label {
+    font-size: 0.62rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: right;
+    padding-right: 7px;
+    white-space: nowrap;
+  }
+
+  .heat-hour {
+    font-size: 0.55rem;
+    color: var(--text3);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .heat-cell {
+    aspect-ratio: 1 / 1;
+    min-height: 6px;
+    border-radius: 2.5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-color: var(--border-strong);
+  }
+
+  .heat-cell.s0 { background: rgba(148, 163, 184, 0.08); }
+  .heat-cell.s1 { background: rgba(139, 92, 246, 0.3); border-color: transparent; }
+  .heat-cell.s2 { background: rgba(139, 92, 246, 0.55); border-color: transparent; }
+  .heat-cell.s3 { background: rgba(139, 92, 246, 0.8); border-color: transparent; }
+  .heat-cell.s4 { background: var(--accent-violet); border-color: var(--accent-violet); }
+
+  .time-heatmap-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
+  @container (max-width: 560px) {
+    .heat-hour { display: none; }
   }
 
   .streak-scroll {
@@ -2571,6 +2691,9 @@ opacity: 0.18;
     margin-top: 4px;
   }
 
+  .stat-value.up { color: var(--green); }
+  .stat-value.down { color: var(--red); }
+
   /* Bar chart */
   .bar-chart {
     display: flex;
@@ -2930,6 +3053,7 @@ opacity: 0.18;
     .profile-card,
     .playstyle-card,
     .weekday-habits-card,
+    .heatmap-card,
     .streak-calendar-card,
     .cum-card,
     .milestones-card {
@@ -2941,9 +3065,10 @@ opacity: 0.18;
     .favorite-card { grid-column: 2; grid-row: 3; }
     .playstyle-card { grid-row: 4; }
     .weekday-habits-card { grid-row: 5; }
-    .streak-calendar-card { grid-row: 6; }
-    .cum-card { grid-row: 7; }
-    .milestones-card { grid-row: 8; }
+    .heatmap-card { grid-row: 6; }
+    .streak-calendar-card { grid-row: 7; }
+    .cum-card { grid-row: 8; }
+    .milestones-card { grid-row: 9; }
     .streak-cell { border-radius: 3px; }
   }
 
@@ -2985,7 +3110,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.2.2</span>
+    <span class="version-badge">1.2.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -2996,6 +3121,13 @@ opacity: 0.18;
 <div class="app-content">
   <!-- TODAY TAB -->
   <div id="tab-today" class="tab-panel active">
+    <div class="card stale-prompt" id="stale-prompt" style="display:none">
+      <div class="stale-prompt-head">
+        <span class="stale-prompt-title">Games you haven&rsquo;t played in a while</span>
+        <button class="btn-icon" id="stale-prompt-close" title="Dismiss for today" aria-label="Dismiss for today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div id="stale-prompt-list"></div>
+    </div>
     <div id="active-session-card" class="card active-session" style="display:none">
       <div class="live-label"><span class="live-dot"></span> <span id="live-text">LIVE</span></div>
       <div class="game-name" id="active-game-name"></div>
@@ -3115,6 +3247,17 @@ opacity: 0.18;
       <div class="bar-chart" id="week-chart"></div>
     </div>
     <div class="card">
+      <div class="card-header">This Week Review</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-value" id="wr-week-total">0:00:00</div><div class="stat-label">Total Time</div></div>
+        <div class="stat-box"><div class="stat-value" id="wr-delta">+0m</div><div class="stat-label">vs Last Week</div></div>
+        <div class="stat-box"><div class="stat-value" id="wr-sessions">0</div><div class="stat-label">Sessions</div></div>
+        <div class="stat-box"><div class="stat-value" id="wr-top-game">-</div><div class="stat-label">Top Game</div></div>
+        <div class="stat-box"><div class="stat-value" id="wr-best-day">-</div><div class="stat-label">Best Day</div></div>
+        <div class="stat-box"><div class="stat-value" id="wr-streak">0</div><div class="stat-label">Streak</div></div>
+      </div>
+    </div>
+    <div class="card">
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
     </div>
@@ -3219,6 +3362,10 @@ opacity: 0.18;
       <div class="card-header">Weekday Habits</div>
       <div class="weekday-habits" id="weekday-habits-box"></div>
     </div>
+    <div class="card heatmap-card">
+      <div class="card-header">Time-of-Day Heatmap</div>
+      <div class="time-heatmap" id="heatmap-box"></div>
+    </div>
     <div class="card streak-calendar-card">
       <div class="card-header">Streak Calendar</div>
       <div class="streak-calendar" id="streak-calendar-box"></div>
@@ -3283,6 +3430,24 @@ opacity: 0.18;
         <label class="dbx-toggle">
           <input type="checkbox" id="setTargetNotif">
           <span class="dbx-toggle-label">Notify me when a session hits its time target</span>
+        </label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Game list</div>
+      <div class="target-row">
+        <span class="target-label">Flag stale games:</span>
+        <div class="target-presets" id="stale-presets">
+          <button class="target-opt" type="button" data-days="0">Off</button>
+          <button class="target-opt" type="button" data-days="7">7 days</button>
+          <button class="target-opt" type="button" data-days="14">14 days</button>
+          <button class="target-opt" type="button" data-days="30">30 days</button>
+        </div>
+      </div>
+      <div class="dbx-toggles" style="margin-top:10px;">
+        <label class="dbx-toggle">
+          <input type="checkbox" id="setStalePrompt">
+          <span class="dbx-toggle-label">Prompt me to revisit stale games on the Today tab</span>
         </label>
       </div>
     </div>
@@ -3766,8 +3931,8 @@ opacity: 0.18;
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }; }
   }
 
   function mergeFullClear(a, b) {
@@ -4155,7 +4320,7 @@ opacity: 0.18;
     const prevLevel = settings.achievementLevel || 0;
     const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
     const prevFullClear = settings.dailyFullClear && typeof settings.dailyFullClear === 'object' ? settings.dailyFullClear : null;
-    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
+    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
     settings.accent = localAccent;
     settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
     settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
@@ -4385,6 +4550,29 @@ opacity: 0.18;
     }
   }
 
+  // --- Stale-game helpers ---
+  function staleCutoffMs() {
+    const days = settings.staleDays || 0;
+    return days > 0 ? Date.now() - days * 86400000 : 0;
+  }
+
+  function staleGameEntries() {
+    const cut = staleCutoffMs();
+    if (!cut) return [];
+    const lastStop = {};
+    sessions.forEach(s => {
+      if (s.stop === null) return;
+      const t = new Date(s.stop).getTime();
+      if (!lastStop[s.gameId] || t > lastStop[s.gameId]) lastStop[s.gameId] = t;
+    });
+    const out = [];
+    games.forEach(g => {
+      if (g.archived || !lastStop[g.id]) return;
+      if (lastStop[g.id] < cut) out.push({ game: g, lastMs: lastStop[g.id] });
+    });
+    return out.sort((a, b) => b.lastMs - a.lastMs);
+  }
+
   // --- Render ---
   function render() {
     renderTodayTab();
@@ -4585,6 +4773,28 @@ opacity: 0.18;
     }
 
     renderGoal();
+
+    // Stale-game play-again prompt (optional, once per day)
+    const spEl = document.getElementById('stale-prompt');
+    if (spEl) {
+      const stale = staleGameEntries();
+      const show = settings.stalePrompt && !activeSession && stale.length > 0 && settings.stalePromptDismissed !== todayStr();
+      if (show) {
+        const spList = document.getElementById('stale-prompt-list');
+        spList.innerHTML = stale.slice(0, 3).map(x => {
+          const daysAgo = Math.max(1, Math.floor((Date.now() - x.lastMs) / 86400000));
+          return '<div class="stale-prompt-row">' +
+            '<span class="stale-prompt-name">' + escHtml(x.game.name) + '</span>' +
+            '<span class="stale-prompt-last">' + daysAgo + 'd ago</span>' +
+            '<button class="btn btn-start stale-prompt-play" data-game-id="' + x.game.id + '">&#9654; Play again</button>' +
+          '</div>';
+        }).join('');
+        spList.querySelectorAll('.stale-prompt-play').forEach(b => b.addEventListener('click', () => startGame(b.dataset.gameId)));
+        spEl.style.display = '';
+      } else {
+        spEl.style.display = 'none';
+      }
+    }
   }
 
   function renderSessionsTab(animate = true) {
@@ -4807,6 +5017,30 @@ opacity: 0.18;
         '<span class="bar-label">' + dayNames[new Date(d.date + 'T00:00:00').getDay()] + '</span>' +
       '</div>';
     }).join('');
+
+    // This Week Review card
+    const weekDates = new Set(days.map(d => d.date));
+    const weekSessions = completed.filter(s => weekDates.has(dateKey(s.start)));
+    const weekCount = weekSessions.length;
+    const weekByGame = {};
+    weekSessions.forEach(s => { weekByGame[s.gameName] = (weekByGame[s.gameName] || 0) + (s.durationMs || 0); });
+    const weekTop = Object.entries(weekByGame).sort((a, b) => b[1] - a[1])[0];
+    let bestDayMs = 0, bestDayStr = null;
+    days.forEach(d => { if (d.ms > bestDayMs) { bestDayMs = d.ms; bestDayStr = d.date; } });
+    let curStreak = 0, si = totalMsForDate(todayStr()) > 0 ? 0 : 1;
+    while (totalMsForDate(addDays(todayStr(), -si)) > 0) { curStreak++; si++; }
+    let prevWeekTotal = 0;
+    for (let i = 7; i <= 13; i++) prevWeekTotal += totalMsForDate(addDays(todayStr(), -i));
+    const delta = weekTotal - prevWeekTotal;
+    const deltaEl = document.getElementById('wr-delta');
+    const dAbs = Math.abs(delta);
+    deltaEl.textContent = (delta > 0 ? '+' : delta < 0 ? '-' : '') + (Math.floor(dAbs / 3600000) > 0 ? Math.floor(dAbs / 3600000) + 'h ' : '') + Math.round((dAbs % 3600000) / 60000) + 'm';
+    deltaEl.className = 'stat-value' + (delta > 0 ? ' up' : delta < 0 ? ' down' : '');
+    document.getElementById('wr-week-total').textContent = fmtDuration(weekTotal);
+    document.getElementById('wr-sessions').textContent = String(weekCount);
+    document.getElementById('wr-top-game').textContent = weekTop ? weekTop[0] : '-';
+    document.getElementById('wr-best-day').textContent = bestDayStr ? new Date(bestDayStr + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short' }) + ' \u00b7 ' + fmtDurationShort(bestDayMs) : '-';
+    document.getElementById('wr-streak').textContent = curStreak + ' day' + (curStreak !== 1 ? 's' : '');
   }
 
   function renderCumChart() {
@@ -5615,6 +5849,7 @@ opacity: 0.18;
       pf('favorite-game-box', 'favorite-game-empty');
       pf('playstyle-box', 'playstyle-empty');
       pf('weekday-habits-box', 'weekday-habits-empty');
+      pf('heatmap-box', 'time-heatmap-empty');
       pf('streak-calendar-box', 'streak-empty');
       pf('milestones-box', 'milestones-empty');
       const nb = document.getElementById('next-badge-body');
@@ -5728,6 +5963,45 @@ opacity: 0.18;
       }
     }
 
+    const HBOX = document.getElementById('heatmap-box');
+    if (HBOX) {
+      const heat = Array.from({ length: 7 }, () => new Array(24).fill(0));
+      let anyStart = 0;
+      sessions.forEach(s => {
+        if (s.stop === null) return;
+        const d = new Date(s.start);
+        heat[d.getDay()][d.getHours()]++;
+        anyStart++;
+      });
+      if (anyStart) {
+        const max = Math.max.apply(null, heat.map(r => Math.max.apply(null, r)));
+        const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const order = [1, 2, 3, 4, 5, 6, 0];
+        const hTick = h => {
+          if (h === 0) return '12a';
+          if (h === 12) return '12p';
+          return (h % 12) + (h < 12 ? 'a' : 'p');
+        };
+        let html = '<div class="heat-grid">';
+        html += '<span class="heat-label"></span>' +
+          Array.from({ length: 24 }, (_, h) => '<span class="heat-hour">' + (h % 6 === 0 ? hTick(h) : '') + '</span>').join('');
+        order.forEach(dow => {
+          html += '<span class="heat-label">' + names[dow] + '</span>';
+          for (let h = 0; h < 24; h++) {
+            const v = heat[dow][h];
+            const lvl = v === 0 ? 0 : v >= max * 0.75 ? 4 : v >= max * 0.5 ? 3 : v >= max * 0.25 ? 2 : 1;
+            html += '<div class="heat-cell s' + lvl + '" title="' + names[dow] + ' ' + hTick(h) + ' \u00b7 ' + v + ' session' + (v === 1 ? '' : 's') + '"></div>';
+          }
+        });
+        html += '</div>';
+        HBOX.className = 'time-heatmap';
+        HBOX.innerHTML = html;
+      } else {
+        HBOX.className = 'time-heatmap-empty';
+        HBOX.textContent = 'No sessions yet \u2014 your play-hour heatmap will appear here.';
+      }
+    }
+
     const SBOX = document.getElementById('streak-calendar-box');
     if (SBOX) {
       const wkMs = {};
@@ -5801,21 +6075,40 @@ opacity: 0.18;
         });
         firstBadge = firstBadge ? dateKey(firstBadge) : null;
         let tot = 0;
-        let first10 = null, first50 = null, first100 = null, hundredth = null;
+        let first10 = null, first50 = null, first100 = null, first250 = null;
+        let hundredth = null, twoHundredth = null, fiveHundredth = null, day30 = null;
         sortedAll.forEach(s => {
           tot += s.durationMs || 0;
           if (!first10 && tot >= 10 * 3600000) first10 = dateKey(s.start);
           if (!first50 && tot >= 50 * 3600000) first50 = dateKey(s.start);
           if (!first100 && tot >= 100 * 3600000) first100 = dateKey(s.start);
+          if (!first250 && tot >= 250 * 3600000) first250 = dateKey(s.start);
         });
         if (sortedAll.length >= 100) hundredth = dateKey(sortedAll[99].start);
+        if (sortedAll.length >= 200) twoHundredth = dateKey(sortedAll[199].start);
+        if (sortedAll.length >= 500) fiveHundredth = dateKey(sortedAll[499].start);
+        const playDays = [];
+        sortedAll.forEach(s => {
+          const d = dateKey(s.start);
+          if (!playDays.length || playDays[playDays.length - 1] !== d) playDays.push(d);
+        });
+        let streakRun = 0, prevDay = null;
+        playDays.forEach(d => {
+          streakRun = (prevDay && addDays(prevDay, 1) === d) ? streakRun + 1 : 1;
+          prevDay = d;
+          if (!day30 && streakRun >= 30) day30 = d;
+        });
         const milestones = [
           { label: 'First session', date: firstDate },
           { label: 'First badge', date: firstBadge },
           { label: '10h total playtime', date: first10 },
           { label: '100 completed sessions', date: hundredth },
+          { label: '200 completed sessions', date: twoHundredth },
           { label: '50h total playtime', date: first50 },
-          { label: '100h total playtime', date: first100 }
+          { label: '100h total playtime', date: first100 },
+          { label: '250h total playtime', date: first250 },
+          { label: '500 completed sessions', date: fiveHundredth },
+          { label: '30-day play streak', date: day30 }
         ];
         const nextIx = milestones.findIndex(x => !x.date);
         const rows = milestones.map((m, i) => {
@@ -5878,7 +6171,7 @@ opacity: 0.18;
       if (t > e.last) e.last = t;
     });
 
-    const gameMeta = (count, e) => {
+    const gameMeta = (count, e, stale) => {
       let last = '', perWeek = '';
       if (e.count > 0) {
         last = 'Last played ' + fmtDate(new Date(e.last).toISOString());
@@ -5889,6 +6182,7 @@ opacity: 0.18;
         '<span class="game-item-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</span>' +
         (last ? '<span class="game-item-last">' + last + '</span>' : '') +
         (perWeek ? '<span class="game-item-freq">' + perWeek + '</span>' : '') +
+        (stale ? '<span class="stale-tag">Play again?</span>' : '') +
       '</div>';
     };
 
@@ -5904,6 +6198,7 @@ opacity: 0.18;
     }
 
     let html = '';
+    const staleIds = new Set(staleGameEntries().map(x => x.game.id));
 
     if (active.length === 0) {
       html += '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyActive') + '</span>No active games.<br><span style="font-size:0.75rem;color:var(--text3)">Add a game or restore an archived one below.</span></div>';
@@ -5911,10 +6206,10 @@ opacity: 0.18;
       html += active.map((g, i) => {
         const count = sessions.filter(s => s.gameId === g.id).length;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
-        return '<div class="game-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
+        return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
-            gameMeta(count, e) +
+            gameMeta(count, e, staleIds.has(g.id)) +
           '</div>' +
           '<div class="game-item-actions">' +
             '<button class="btn-icon pin' + (g.pinned ? ' on' : '') + '" data-action="pin" data-id="' + g.id + '" title="' + (g.pinned ? 'Unpin' : 'Pin to top') + '">' + iconSvg('pin') + '</button>' +
@@ -6686,9 +6981,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
       if (importData.settings && typeof importData.settings === 'object') {
-        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', name: '', tabTitle: true, targetNotif: false }, importData.settings);
+        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, importData.settings);
       } else {
-        settings = { dailyGoalMinutes: 0, theme: 'system', name: '', tabTitle: true, targetNotif: false };
+        settings = { dailyGoalMinutes: 0, theme: 'system', name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null };
       }
       saveGames(games);
       saveSessions(sessions);
@@ -6924,6 +7219,32 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
   });
 
+  // --- Settings: Game list (stale-game highlights) ---
+  const stalePresetBtns = Array.prototype.slice.call(document.querySelectorAll('#stale-presets .target-opt'));
+  const applyStalePreset = v => {
+    settings.staleDays = v;
+    saveSettings(settings);
+    stalePresetBtns.forEach(b => b.classList.toggle('on', Number(b.dataset.days) === v));
+    renderGamesTab();
+    renderTodayTab();
+  };
+  stalePresetBtns.forEach(b => {
+    b.classList.toggle('on', (settings.staleDays || 0) === Number(b.dataset.days));
+    b.addEventListener('click', () => applyStalePreset(Number(b.dataset.days)));
+  });
+  const setStalePromptEl = document.getElementById('setStalePrompt');
+  setStalePromptEl.checked = !!settings.stalePrompt;
+  setStalePromptEl.addEventListener('change', e => {
+    settings.stalePrompt = e.target.checked;
+    saveSettings(settings);
+    renderTodayTab();
+  });
+  document.getElementById('stale-prompt-close').addEventListener('click', () => {
+    settings.stalePromptDismissed = todayStr();
+    saveSettings(settings);
+    document.getElementById('stale-prompt').style.display = 'none';
+  });
+
   document.getElementById('sync-btn').addEventListener('click', () => {
     if (!dbx.accessToken) return;
     clearTimeout(dbxSyncTimer);
@@ -7011,7 +7332,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.2.2';
+    const APP_VERSION = '1.2.3';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
