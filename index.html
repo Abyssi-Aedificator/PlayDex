@@ -4887,11 +4887,20 @@ opacity: 0.18;
           sessions = sessions.filter(x => x.id !== s.id);
           saveSessions(sessions);
           renderSessionsTab(false);
+          renderTodayTab();
+          renderStatsTab();
+          renderAchievementsTab();
+          renderProfileTab();
+          renderGamesTab();
           toast('Session deleted', 'Undo', () => {
             sessions.splice(Math.min(idx, sessions.length), 0, s);
             saveSessions(sessions);
             renderSessionsTab(false);
-            if (isToday(s.start)) renderTodayTab();
+            renderTodayTab();
+            renderStatsTab();
+            renderAchievementsTab();
+            renderProfileTab();
+            renderGamesTab();
           }, 6000);
         });
       });
@@ -6052,10 +6061,6 @@ opacity: 0.18;
           monthsRow.style.display = SBOX.clientWidth >= 673 ? '' : 'none';
         };
         updateMonths();
-        if (typeof ResizeObserver !== 'undefined' && SBOX.__monthsTo && !SBOX.__monthsTo._obs) {
-          SBOX.__monthsTo._obs = new ResizeObserver(updateMonths);
-          SBOX.__monthsTo._obs.observe(SBOX);
-        }
       } else {
         SBOX.className = 'streak-empty';
         SBOX.textContent = 'No playtime logged yet \u2014 your weekly streak calendar fills in as you play.';
@@ -6420,6 +6425,7 @@ opacity: 0.18;
     saveGames(games);
     toast(game.pinned ? 'Pinned to top' : 'Unpinned');
     renderGamesTab();
+    renderTodayTab();
   }
 
   function addGame(name) {
