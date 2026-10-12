@@ -1181,12 +1181,31 @@ opacity: 0.18;
 
   .game-item-info { flex: 1; min-width: 0; }
 
+  .game-item-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
   .game-item-name {
     font-weight: 600;
     font-size: 0.95rem;
+    flex: 0 1 auto;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .no-cover-tag {
+    flex-shrink: 0;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text3);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 1px 7px;
+    white-space: nowrap;
   }
 
   .game-item-count {
@@ -2966,7 +2985,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.2.1</span>
+    <span class="version-badge">1.2.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5894,7 +5913,7 @@ opacity: 0.18;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info">' +
-            '<div class="game-item-name">' + escHtml(g.name) + '</div>' +
+            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             gameMeta(count, e) +
           '</div>' +
           '<div class="game-item-actions">' +
@@ -5915,7 +5934,7 @@ opacity: 0.18;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info">' +
-            '<div class="game-item-name">' + escHtml(g.name) + '</div>' +
+            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             gameMeta(count, e) +
           '</div>' +
           '<div class="game-item-actions">' +
@@ -6992,7 +7011,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.2.1';
+    const APP_VERSION = '1.2.2';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
