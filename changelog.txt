@@ -6,6 +6,7 @@ Version 1.2.3
 - The Stats tab gets a this-week review card: total time, sessions, top game, best day, and play-streak, with a comparison against last week.
 - The Profile page shows a time-of-day heatmap of when you usually play.
 - The Profile milestone timeline gains 200- and 500-session marks, a 250-hour total, and a 30-day play-streak milestone.
+- Games you haven't played in 7, 14, or 30 days get a subtle 'Play again?' highlight in the Games list, with an optional Today-tab prompt to revisit them.
 
 Version 1.2.2
 -------------------

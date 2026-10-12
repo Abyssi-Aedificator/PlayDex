@@ -86,12 +86,6 @@ Sessions CSV export ARE implemented - left out.
     metadata, distinct from the proposed session notes (plan item #1)."
     - Scope: small. Risk: low.
 
-20. Stale-game 'Play again?' highlights
-    "Games untouched for a configurable stretch (7/14/30 days) get a subtle
-    accent line in the Games list and an optional one-time prompt on the Today
-    tab. Anti-zombie library; distinct from idle auto-pause (plan item #9)."
-    - Scope: small. Risk: low.
-
 21. Share/copy stat snapshot
     "One-tap Share (Web Share API) or clipboard-copy of a plain-text summary
     of your stats or profile, from the Stats and Profile tabs. No backend
