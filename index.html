@@ -5939,21 +5939,40 @@ opacity: 0.18;
         });
         firstBadge = firstBadge ? dateKey(firstBadge) : null;
         let tot = 0;
-        let first10 = null, first50 = null, first100 = null, hundredth = null;
+        let first10 = null, first50 = null, first100 = null, first250 = null;
+        let hundredth = null, twoHundredth = null, fiveHundredth = null, day30 = null;
         sortedAll.forEach(s => {
           tot += s.durationMs || 0;
           if (!first10 && tot >= 10 * 3600000) first10 = dateKey(s.start);
           if (!first50 && tot >= 50 * 3600000) first50 = dateKey(s.start);
           if (!first100 && tot >= 100 * 3600000) first100 = dateKey(s.start);
+          if (!first250 && tot >= 250 * 3600000) first250 = dateKey(s.start);
         });
         if (sortedAll.length >= 100) hundredth = dateKey(sortedAll[99].start);
+        if (sortedAll.length >= 200) twoHundredth = dateKey(sortedAll[199].start);
+        if (sortedAll.length >= 500) fiveHundredth = dateKey(sortedAll[499].start);
+        const playDays = [];
+        sortedAll.forEach(s => {
+          const d = dateKey(s.start);
+          if (!playDays.length || playDays[playDays.length - 1] !== d) playDays.push(d);
+        });
+        let streakRun = 0, prevDay = null;
+        playDays.forEach(d => {
+          streakRun = (prevDay && addDays(prevDay, 1) === d) ? streakRun + 1 : 1;
+          prevDay = d;
+          if (!day30 && streakRun >= 30) day30 = d;
+        });
         const milestones = [
           { label: 'First session', date: firstDate },
           { label: 'First badge', date: firstBadge },
           { label: '10h total playtime', date: first10 },
           { label: '100 completed sessions', date: hundredth },
+          { label: '200 completed sessions', date: twoHundredth },
           { label: '50h total playtime', date: first50 },
-          { label: '100h total playtime', date: first100 }
+          { label: '100h total playtime', date: first100 },
+          { label: '250h total playtime', date: first250 },
+          { label: '500 completed sessions', date: fiveHundredth },
+          { label: '30-day play streak', date: day30 }
         ];
         const nextIx = milestones.findIndex(x => !x.date);
         const rows = milestones.map((m, i) => {
