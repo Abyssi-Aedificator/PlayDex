@@ -5056,7 +5056,7 @@ opacity: 0.18;
       return;
     }
     emptyEl.textContent = '';
-    const firstDate = new Date(completed[0].start + 'T00:00:00');
+    const firstDate = new Date(completed[0].start);
     const lastDate = new Date(completed[completed.length - 1].stop);
     const msPerDay = 86400000;
     const totalDays = Math.max(1, Math.round((lastDate - firstDate) / msPerDay));
@@ -5068,7 +5068,7 @@ opacity: 0.18;
         const d = new Date(s.start);
         key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
       } else {
-        key = s.start.slice(0, 10);
+        key = dateKey(s.start);
       }
       buckets[key] = (buckets[key] || 0) + (s.durationMs || 0);
     });
