@@ -13,11 +13,6 @@ Sessions CSV export ARE implemented - left out.
    - Data: optional `note` string on sessions[], old data unaffected.
    - Scope: small-medium. Risk: low. High archival value.
 
-2. Weekly review card (Stats)
-   "This week recap: total time, sessions, top game, best day, streak,
-   delta vs last week. Fits in the Stats column beside the 7/30-day charts."
-   - Scope: small. Risk: low.
-
 3. Session timeline (history view)
    "Day-grouped chronological timeline of all sessions; click a day to jump
    to that filtered view. Reuse the session-row markup + a toggle."

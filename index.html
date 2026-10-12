@@ -2571,6 +2571,9 @@ opacity: 0.18;
     margin-top: 4px;
   }
 
+  .stat-value.up { color: var(--green); }
+  .stat-value.down { color: var(--red); }
+
   /* Bar chart */
   .bar-chart {
     display: flex;
@@ -2985,7 +2988,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.2.2</span>
+    <span class="version-badge">1.2.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3117,6 +3120,17 @@ opacity: 0.18;
     <div class="card">
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">This Week Review</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-value" id="wr-week-total">0:00:00</div><div class="stat-label">Total Time</div></div>
+        <div class="stat-box"><div class="stat-value" id="wr-delta">+0m</div><div class="stat-label">vs Last Week</div></div>
+        <div class="stat-box"><div class="stat-value" id="wr-sessions">0</div><div class="stat-label">Sessions</div></div>
+        <div class="stat-box"><div class="stat-value" id="wr-top-game">-</div><div class="stat-label">Top Game</div></div>
+        <div class="stat-box"><div class="stat-value" id="wr-best-day">-</div><div class="stat-label">Best Day</div></div>
+        <div class="stat-box"><div class="stat-value" id="wr-streak">0</div><div class="stat-label">Streak</div></div>
+      </div>
     </div>
   </div>
 
@@ -4807,6 +4821,30 @@ opacity: 0.18;
         '<span class="bar-label">' + dayNames[new Date(d.date + 'T00:00:00').getDay()] + '</span>' +
       '</div>';
     }).join('');
+
+    // This Week Review card
+    const weekDates = new Set(days.map(d => d.date));
+    const weekSessions = completed.filter(s => weekDates.has(dateKey(s.start)));
+    const weekCount = weekSessions.length;
+    const weekByGame = {};
+    weekSessions.forEach(s => { weekByGame[s.gameName] = (weekByGame[s.gameName] || 0) + (s.durationMs || 0); });
+    const weekTop = Object.entries(weekByGame).sort((a, b) => b[1] - a[1])[0];
+    let bestDayMs = 0, bestDayStr = null;
+    days.forEach(d => { if (d.ms > bestDayMs) { bestDayMs = d.ms; bestDayStr = d.date; } });
+    let curStreak = 0, si = totalMsForDate(todayStr()) > 0 ? 0 : 1;
+    while (totalMsForDate(addDays(todayStr(), -si)) > 0) { curStreak++; si++; }
+    let prevWeekTotal = 0;
+    for (let i = 7; i <= 13; i++) prevWeekTotal += totalMsForDate(addDays(todayStr(), -i));
+    const delta = weekTotal - prevWeekTotal;
+    const deltaEl = document.getElementById('wr-delta');
+    const dAbs = Math.abs(delta);
+    deltaEl.textContent = (delta > 0 ? '+' : delta < 0 ? '-' : '') + (Math.floor(dAbs / 3600000) > 0 ? Math.floor(dAbs / 3600000) + 'h ' : '') + Math.round((dAbs % 3600000) / 60000) + 'm';
+    deltaEl.className = 'stat-value' + (delta > 0 ? ' up' : delta < 0 ? ' down' : '');
+    document.getElementById('wr-week-total').textContent = fmtDuration(weekTotal);
+    document.getElementById('wr-sessions').textContent = String(weekCount);
+    document.getElementById('wr-top-game').textContent = weekTop ? weekTop[0] : '-';
+    document.getElementById('wr-best-day').textContent = bestDayStr ? new Date(bestDayStr + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short' }) + ' \u00b7 ' + fmtDurationShort(bestDayMs) : '-';
+    document.getElementById('wr-streak').textContent = curStreak + ' day' + (curStreak !== 1 ? 's' : '');
   }
 
   function renderCumChart() {
@@ -7011,7 +7049,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.2.2';
+    const APP_VERSION = '1.2.3';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
