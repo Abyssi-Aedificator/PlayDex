@@ -4996,22 +4996,18 @@ opacity: 0.18;
       weekTotal += days[days.length-1].ms;
     }
 
-    // Most played (all-time)
-    const byGame = {};
-    completed.forEach(s => {
-      if (!byGame[s.gameName]) byGame[s.gameName] = 0;
-      byGame[s.gameName] += s.durationMs || 0;
-    });
-    const top = Object.entries(byGame).sort((a,b) => b[1] - a[1])[0];
-
-    // Avg session length
-    const totalMs = completed.reduce((sum,s) => sum + (s.durationMs || 0), 0);
-    const avgMs = completed.length ? totalMs / completed.length : 0;
+    // Most played, avg session, and total sessions — scoped to the last 7 days
+    const weekDates = new Set(days.map(d => d.date));
+    const weekSessions = completed.filter(s => weekDates.has(dateKey(s.start)));
+    const weekCount = weekSessions.length;
+    const weekByGame = {};
+    weekSessions.forEach(s => { weekByGame[s.gameName] = (weekByGame[s.gameName] || 0) + (s.durationMs || 0); });
+    const weekTop = Object.entries(weekByGame).sort((a, b) => b[1] - a[1])[0];
 
     document.getElementById('stat-week-total').textContent = fmtDuration(weekTotal);
-    document.getElementById('stat-most-played').textContent = top ? top[0] : '-';
-    document.getElementById('stat-avg-session').textContent = fmtDurationShort(avgMs);
-    document.getElementById('stat-session-count').textContent = String(completed.length);
+    document.getElementById('stat-most-played').textContent = weekTop ? weekTop[0] : '-';
+    document.getElementById('stat-avg-session').textContent = fmtDurationShort(weekCount ? weekTotal / weekCount : 0);
+    document.getElementById('stat-session-count').textContent = String(weekCount);
 
     const max = Math.max.apply(null, days.map(d => d.ms));
     const chart = document.getElementById('week-chart');
@@ -5028,12 +5024,6 @@ opacity: 0.18;
     }).join('');
 
     // This Week Review card
-    const weekDates = new Set(days.map(d => d.date));
-    const weekSessions = completed.filter(s => weekDates.has(dateKey(s.start)));
-    const weekCount = weekSessions.length;
-    const weekByGame = {};
-    weekSessions.forEach(s => { weekByGame[s.gameName] = (weekByGame[s.gameName] || 0) + (s.durationMs || 0); });
-    const weekTop = Object.entries(weekByGame).sort((a, b) => b[1] - a[1])[0];
     let bestDayMs = 0, bestDayStr = null;
     days.forEach(d => { if (d.ms > bestDayMs) { bestDayMs = d.ms; bestDayStr = d.date; } });
     let curStreak = 0, si = totalMsForDate(todayStr()) > 0 ? 0 : 1;

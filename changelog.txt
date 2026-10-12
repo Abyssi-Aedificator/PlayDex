@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.3.2
+-------------------
+- The Last 7 Days card in Stats now scopes Most Played, Avg Session, and Total Sessions to the current week instead of all time.
+
 Version 1.3.1
 -------------------
 - The Profile playtime curve now rolls up by month for very long histories instead of breaking.
