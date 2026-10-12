@@ -1,9 +1,10 @@
 PlayDex - Future Feature Ideas
 ==============================
 
-Features proposed but not yet implemented. Combine two proposal rounds
-(the earlier 10-idea list and the 5-idea list). Pause/Resume and the
-Sessions CSV export ARE implemented - left out.
+Features proposed but not yet implemented. Combine three proposal rounds
+(the earlier 10-idea list, the 5-idea list, and the round-three list below).
+Pause/Resume and the Sessions CSV export ARE implemented - left out.
+The round-three streak freeze (#25) was implemented - left out.
 
 1. Notes on sessions
    "Optional memo per session (why you stopped, what happened). Add a note
@@ -90,6 +91,49 @@ Sessions CSV export ARE implemented - left out.
     "One-tap Share (Web Share API) or clipboard-copy of a plain-text summary
     of your stats or profile, from the Stats and Profile tabs. No backend
     needed; handy for communities and social media."
+    - Scope: small. Risk: low.
+
+22. Game statuses
+    "Status per game beyond archiving: Backlog / Playing / Finished / Dropped,
+    with the Games tab able to filter by status."
+    - Scope: small-medium. Risk: low.
+
+23. Custom accent colour
+    "Keep the preset swatches, add a free colour picker that writes any
+    colour into the --accent theme variables."
+    - Scope: small. Risk: low.
+
+24. Per-game platforms & tags
+    "Optional free-text tags per game ('PC', 'Switch', 'Game Pass', 'Co-op')
+    with filter chips in the Games tab."
+    - Scope: small. Risk: low.
+
+26. Daily-goal streak stat
+    "'Consecutive days hitting your daily goal' card in Stats/Profile,
+    distinct from the raw longest play-streak."
+    - Scope: tiny. Risk: low.
+
+27. Export a stat snapshot as an image
+    "Render the cumulative curve + heatmap + key numbers to a PNG (canvas)
+    for sharing; complements the existing CSV export."
+    - Scope: small-medium. Risk: low.
+
+28. Sessions to calendar (.ics)
+    "Export sessions as an .ics file so playtime shows up in any calendar app."
+    - Scope: small. Risk: low.
+
+29. Per-game playtime mini chart
+    "30-day playtime bar/sparkline on each game's dashboard, beside the
+    sessions list."
+    - Scope: small. Risk: low.
+
+30. Drag-and-drop pin ordering
+    "Reorder pinned games in the quick-start list and Games tab; persist the
+    manual order instead of 'pin to top' stacking."
+    - Scope: small-medium. Risk: low.
+
+31. Undo for game actions
+    "Toast-undo for game archive and delete, matching the session-delete undo."
     - Scope: small. Risk: low.
 
 --- Implementation reference notes ---
