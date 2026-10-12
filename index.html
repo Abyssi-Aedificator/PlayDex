@@ -2043,10 +2043,9 @@ opacity: 0.18;
 
   .heat-grid {
     display: grid;
-    grid-template-columns: auto repeat(24, minmax(5px, 12px));
+    grid-template-columns: auto repeat(24, minmax(0, 1fr));
     gap: 3px;
     align-items: center;
-    justify-content: center;
   }
 
   .heat-label {
@@ -2067,7 +2066,8 @@ opacity: 0.18;
   }
 
   .heat-cell {
-    height: 12px;
+    aspect-ratio: 1 / 1;
+    min-height: 6px;
     border-radius: 2.5px;
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -2087,10 +2087,6 @@ opacity: 0.18;
   }
 
   @container (max-width: 560px) {
-    .heat-grid {
-      grid-template-columns: auto repeat(24, minmax(4px, 1fr));
-      justify-content: stretch;
-    }
     .heat-hour { display: none; }
   }
 
