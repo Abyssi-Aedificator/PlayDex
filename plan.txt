@@ -45,10 +45,6 @@ Sessions CSV export ARE implemented - left out.
    stop or pause (complements the manual Pause)."
    - Scope: small-medium. Risk: low-medium (pick threshold carefully).
 
-10. Time-of-day heatmap (Stats)
-    "7x24 density grid of when sessions usually start."
-    - Scope: medium. Risk: low.
-
 11. Keyboard shortcuts / command palette
     "e.g. S = start/stop, G = Games tab, / = focus search; guard inputs."
     - Scope: small-medium. Risk: low.

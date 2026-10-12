@@ -4,6 +4,7 @@ PlayDex - Changelog
 Version 1.2.3
 -------------------
 - The Stats tab gets a this-week review card: total time, sessions, top game, best day, and play-streak, with a comparison against last week.
+- The Profile page shows a time-of-day heatmap of when you usually play.
 
 Version 1.2.2
 -------------------

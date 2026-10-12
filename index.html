@@ -1797,6 +1797,7 @@ opacity: 0.18;
   .profile-grid > .card > .favorite-game-empty,
   .profile-grid > .card > .playstyle-empty,
   .profile-grid > .card > .weekday-habits-empty,
+  .profile-grid > .card > .time-heatmap-empty,
   .profile-grid > .card > .streak-empty,
   .profile-grid > .card > .milestones-empty,
   .profile-grid > .card > .next-badge-done {
@@ -2034,6 +2035,63 @@ opacity: 0.18;
     font-size: 0.82rem;
     color: var(--text2);
     padding: 8px 2px;
+  }
+
+  .time-heatmap {
+    container-type: inline-size;
+  }
+
+  .heat-grid {
+    display: grid;
+    grid-template-columns: auto repeat(24, minmax(5px, 12px));
+    gap: 3px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .heat-label {
+    font-size: 0.62rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: right;
+    padding-right: 7px;
+    white-space: nowrap;
+  }
+
+  .heat-hour {
+    font-size: 0.55rem;
+    color: var(--text3);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .heat-cell {
+    height: 12px;
+    border-radius: 2.5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-color: var(--border-strong);
+  }
+
+  .heat-cell.s0 { background: rgba(148, 163, 184, 0.08); }
+  .heat-cell.s1 { background: rgba(139, 92, 246, 0.3); border-color: transparent; }
+  .heat-cell.s2 { background: rgba(139, 92, 246, 0.55); border-color: transparent; }
+  .heat-cell.s3 { background: rgba(139, 92, 246, 0.8); border-color: transparent; }
+  .heat-cell.s4 { background: var(--accent-violet); border-color: var(--accent-violet); }
+
+  .time-heatmap-empty {
+    font-size: 0.82rem;
+    color: var(--text2);
+    padding: 8px 2px;
+  }
+
+  @container (max-width: 560px) {
+    .heat-grid {
+      grid-template-columns: auto repeat(24, minmax(4px, 1fr));
+      justify-content: stretch;
+    }
+    .heat-hour { display: none; }
   }
 
   .streak-scroll {
@@ -2933,6 +2991,7 @@ opacity: 0.18;
     .profile-card,
     .playstyle-card,
     .weekday-habits-card,
+    .heatmap-card,
     .streak-calendar-card,
     .cum-card,
     .milestones-card {
@@ -2944,9 +3003,10 @@ opacity: 0.18;
     .favorite-card { grid-column: 2; grid-row: 3; }
     .playstyle-card { grid-row: 4; }
     .weekday-habits-card { grid-row: 5; }
-    .streak-calendar-card { grid-row: 6; }
-    .cum-card { grid-row: 7; }
-    .milestones-card { grid-row: 8; }
+    .heatmap-card { grid-row: 6; }
+    .streak-calendar-card { grid-row: 7; }
+    .cum-card { grid-row: 8; }
+    .milestones-card { grid-row: 9; }
     .streak-cell { border-radius: 3px; }
   }
 
@@ -3232,6 +3292,10 @@ opacity: 0.18;
     <div class="card weekday-habits-card">
       <div class="card-header">Weekday Habits</div>
       <div class="weekday-habits" id="weekday-habits-box"></div>
+    </div>
+    <div class="card heatmap-card">
+      <div class="card-header">Time-of-Day Heatmap</div>
+      <div class="time-heatmap" id="heatmap-box"></div>
     </div>
     <div class="card streak-calendar-card">
       <div class="card-header">Streak Calendar</div>
@@ -5653,6 +5717,7 @@ opacity: 0.18;
       pf('favorite-game-box', 'favorite-game-empty');
       pf('playstyle-box', 'playstyle-empty');
       pf('weekday-habits-box', 'weekday-habits-empty');
+      pf('heatmap-box', 'time-heatmap-empty');
       pf('streak-calendar-box', 'streak-empty');
       pf('milestones-box', 'milestones-empty');
       const nb = document.getElementById('next-badge-body');
@@ -5763,6 +5828,45 @@ opacity: 0.18;
       } else {
         WBOX.className = 'weekday-habits-empty';
         WBOX.textContent = 'No playtime logged yet \u2014 your weekday rhythm will appear here.';
+      }
+    }
+
+    const HBOX = document.getElementById('heatmap-box');
+    if (HBOX) {
+      const heat = Array.from({ length: 7 }, () => new Array(24).fill(0));
+      let anyStart = 0;
+      sessions.forEach(s => {
+        if (s.stop === null) return;
+        const d = new Date(s.start);
+        heat[d.getDay()][d.getHours()]++;
+        anyStart++;
+      });
+      if (anyStart) {
+        const max = Math.max.apply(null, heat.map(r => Math.max.apply(null, r)));
+        const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const order = [1, 2, 3, 4, 5, 6, 0];
+        const hTick = h => {
+          if (h === 0) return '12a';
+          if (h === 12) return '12p';
+          return (h % 12) + (h < 12 ? 'a' : 'p');
+        };
+        let html = '<div class="heat-grid">';
+        html += '<span class="heat-label"></span>' +
+          Array.from({ length: 24 }, (_, h) => '<span class="heat-hour">' + (h % 6 === 0 ? hTick(h) : '') + '</span>').join('');
+        order.forEach(dow => {
+          html += '<span class="heat-label">' + names[dow] + '</span>';
+          for (let h = 0; h < 24; h++) {
+            const v = heat[dow][h];
+            const lvl = v === 0 ? 0 : v >= max * 0.75 ? 4 : v >= max * 0.5 ? 3 : v >= max * 0.25 ? 2 : 1;
+            html += '<div class="heat-cell s' + lvl + '" title="' + names[dow] + ' ' + hTick(h) + ' \u00b7 ' + v + ' session' + (v === 1 ? '' : 's') + '"></div>';
+          }
+        });
+        html += '</div>';
+        HBOX.className = 'time-heatmap';
+        HBOX.innerHTML = html;
+      } else {
+        HBOX.className = 'time-heatmap-empty';
+        HBOX.textContent = 'No sessions yet \u2014 your play-hour heatmap will appear here.';
       }
     }
 
