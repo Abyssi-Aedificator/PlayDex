@@ -1,18 +1,7 @@
 PlayDex - Changelog
 ====================
 
-Version 1.2.3
--------------------
-- The Stats tab gets a this-week review card: total time, sessions, top game, best day, and play-streak, with a comparison against last week.
-- The Profile page shows a time-of-day heatmap of when you usually play.
-- The Profile milestone timeline gains 200- and 500-session marks, a 250-hour total, and a 30-day play-streak milestone.
-- Games you haven't played in 7, 14, or 30 days get a subtle 'Play again?' highlight in the Games list, with an optional Today-tab prompt to revisit them.
-
-Version 1.2.2
--------------------
-- Games without a cover are flagged in the Games tab.
-
-Version 1.2.1
+Version 1.3.0
 -------------------
 - Switching tabs brings you back to the top of the app.
 - The Quests card shows the weekly board once all of today's quests are done.
@@ -22,6 +11,11 @@ Version 1.2.1
 - Session rows and game dashboards now show how many times a session was paused and for how long.
 - The running session shows in the browser tab title and can send a system notification when a target is reached.
 - The Profile page shows a cumulative playtime curve over all your sessions.
+- Games without a cover are flagged in the Games tab.
+- The Stats tab gets a this-week review card: total time, sessions, top game, best day, and play-streak, with a comparison against last week.
+- The Profile page shows a time-of-day heatmap of when you usually play.
+- The Profile milestone timeline gains 200- and 500-session marks, a 250-hour total, and a 30-day play-streak milestone.
+- Games you haven't played in 7, 14, or 30 days get a subtle 'Play again?' highlight in the Games list, with an optional Today-tab prompt to revisit them.
 
 Version 1.2.0
 -------------------
