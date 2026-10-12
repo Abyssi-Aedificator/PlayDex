@@ -8,6 +8,7 @@ Version 1.3.1
 - Importing a backup no longer resets your accent color.
 - The Last 7 Days card in Stats now scopes Most Played, Avg Session, and Total Sessions to the current week instead of all time.
 - The Games list now shows when each game was last played as a relative time, like '36d ago', instead of the absolute date.
+- The Manage Games list on the Games tab is now a little wider on desktop screens.
 
 Version 1.3.0
 -------------------
