@@ -5044,8 +5044,17 @@ opacity: 0.18;
     // This Week Review card
     let bestDayMs = 0, bestDayStr = null;
     days.forEach(d => { if (d.ms > bestDayMs) { bestDayMs = d.ms; bestDayStr = d.date; } });
-    let curStreak = 0, si = totalMsForDate(todayStr()) > 0 ? 0 : 1;
+    // Current streak: real played days, bridged by one earned freeze when today is missed
+    const todayPlayed = totalMsForDate(todayStr()) > 0;
+    const yesterdayPlayed = totalMsForDate(addDays(todayStr(), -1)) > 0;
+    let curStreak = 0, si = todayPlayed ? 0 : 1;
     while (totalMsForDate(addDays(todayStr(), -si)) > 0) { curStreak++; si++; }
+    const freezeBank = Math.min(3, Math.floor(curStreak / 7));
+    let frozenToday = false;
+    if (!todayPlayed && yesterdayPlayed && freezeBank > 0) {
+      curStreak++;
+      frozenToday = true;
+    }
     let prevWeekTotal = 0;
     for (let i = 7; i <= 13; i++) prevWeekTotal += totalMsForDate(addDays(todayStr(), -i));
     const delta = weekTotal - prevWeekTotal;
@@ -5057,7 +5066,9 @@ opacity: 0.18;
     document.getElementById('wr-sessions').textContent = String(weekCount);
     document.getElementById('wr-top-game').textContent = weekTop ? weekTop[0] : '-';
     document.getElementById('wr-best-day').textContent = bestDayStr ? new Date(bestDayStr + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short' }) + ' \u00b7 ' + fmtDurationShort(bestDayMs) : '-';
-    document.getElementById('wr-streak').textContent = curStreak + ' day' + (curStreak !== 1 ? 's' : '');
+    document.getElementById('wr-streak').textContent = curStreak + ' day' + (curStreak !== 1 ? 's' : '') +
+      (freezeBank > 0 ? ' \u2744 ' + freezeBank : '') +
+      (frozenToday ? ' \u00b7 frozen day' : '');
   }
 
   function renderCumChart() {
