@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.2.2
+-------------------
+- Games without a cover are flagged in the Games tab.
+
 Version 1.2.1
 -------------------
 - Switching tabs brings you back to the top of the app.
