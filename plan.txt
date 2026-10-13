@@ -41,15 +41,6 @@ The round-three streak freeze (#25) was implemented - left out.
    - Data: schema addition to games[] + backup payload.
    - Scope: medium. Risk: medium.
 
-9. Idle auto-pause reminder
-   "If a running session is idle / backgrounded long enough, remind to
-   stop or pause (complements the manual Pause)."
-   - Scope: small-medium. Risk: low-medium (pick threshold carefully).
-
-11. Keyboard shortcuts / command palette
-    "e.g. S = start/stop, G = Games tab, / = focus search; guard inputs."
-    - Scope: small-medium. Risk: low.
-
 12. Quick-start a game from the Games list
     "Inline Start button on each game row that begins the live session for that
     game and switches to the Today tab (respects the one-active-session guard)."
@@ -101,11 +92,6 @@ The round-three streak freeze (#25) was implemented - left out.
 23. Custom accent colour
     "Keep the preset swatches, add a free colour picker that writes any
     colour into the --accent theme variables."
-    - Scope: small. Risk: low.
-
-24. Per-game platforms & tags
-    "Optional free-text tags per game ('PC', 'Switch', 'Game Pass', 'Co-op')
-    with filter chips in the Games tab."
     - Scope: small. Risk: low.
 
 26. Daily-goal streak stat

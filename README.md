@@ -6,14 +6,15 @@ A lightweight, installable web app that tracks your game sessions, playtime by g
 
 ## Features
 
-- **Track sessions** – start/stop a session for any game, with live elapsed time.
-- **Session log** – review completed sessions with start/end times and durations.
-- **Playtime by game** – see total time (and synced vs. not-synced) per game across your filtered range.
-- **Daily goal** – set a playtime goal and watch today's total fill the progress bar.
-- **Game library** – add, edit, and archive games.
-- **Dropbox sync** – back up your data to your own Dropbox and keep multiple devices in sync.
-- **Installable PWA** – install it as a standalone app on desktop or mobile.
-- **Dark / light themes** – follows your preferred color scheme.
+- **Track sessions** – start/stop with live elapsed time, pause/resume, and an optional time target (notifies when reached).
+- **Session log** – review, edit, sync-flag, and delete sessions; the running session shows in the tab title.
+- **Playtime stats** – last 7 / last 30 days charts and a this-week review compared with last week.
+- **Daily goal & quests** – daily playtime goal, daily/weekly quests, and play-streaks with earned streak freezes.
+- **Game library** – add, edit, archive, pin, and search games; see how long ago each was last played.
+- **Player profile & badges** – achievements and levels, milestones, a time-of-day heatmap, and a cumulative playtime curve.
+- **Backup & export** – JSON export/import and CSV export, plus optional Dropbox sync across devices.
+- **Installable PWA** – works offline; install it as a standalone app on desktop or mobile.
+- **Themes** – dark / light (follows your system) with accent-colour choices.
 
 ## Getting started
 

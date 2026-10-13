@@ -540,7 +540,31 @@ opacity: 0.18;
   .btn-start-game .play-icon {
     font-size: 1.05rem;
     color: var(--accent);
+    flex-shrink: 0;
   }
+
+  .start-game-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .start-game-name {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .start-game-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .start-game-tags .game-tag { font-size: 0.62rem; }
 
   .target-row {
     display: flex;
@@ -1252,6 +1276,58 @@ opacity: 0.18;
     padding: 1px 7px;
     border-radius: 999px;
     white-space: nowrap;
+  }
+
+  .game-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+  }
+
+  .game-tag {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 1px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .game-tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 12px;
+  }
+  .game-tag-filters:empty { display: none; }
+
+  .game-tag-filter {
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .game-tag-filter:hover { border-color: var(--accent); color: var(--accent); }
+  .game-tag-filter.on {
+    color: var(--accent);
+    background: var(--accent-dim);
+    border-color: var(--accent);
+  }
+
+  .dash-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
   }
 
   .stale-prompt {
@@ -2894,6 +2970,35 @@ opacity: 0.18;
     line-height: 1.5;
   }
 
+  /* Keyboard shortcuts list */
+  .shortcut-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .shortcut-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.82rem;
+    color: var(--text2);
+  }
+  .shortcut-row kbd {
+    flex-shrink: 0;
+    min-width: 26px;
+    text-align: center;
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    padding: 3px 7px;
+  }
+
   /* Appearance / theme selector */
   .theme-select {
     display: flex;
@@ -3114,7 +3219,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.3.1</span>
+    <span class="version-badge">1.3.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3398,6 +3503,7 @@ opacity: 0.18;
         <button class="btn btn-start" id="add-game-btn">Add</button>
       </div>
       <input type="text" id="game-search-input" placeholder="Search games..." maxlength="50" autocomplete="off" style="margin:0 0 10px;">
+      <div class="game-tag-filters" id="game-tag-filters"></div>
       <div id="games-list"></div>
     </div>
   </div>
@@ -3436,6 +3542,17 @@ opacity: 0.18;
           <span class="dbx-toggle-label">Notify me when a session hits its time target</span>
         </label>
       </div>
+      <div class="target-row" style="margin:14px 0 0;">
+        <span class="target-label">Remind me when idle:</span>
+        <div class="target-presets" id="idle-presets">
+          <button class="target-opt" type="button" data-idle="0">Off</button>
+          <button class="target-opt" type="button" data-idle="15">15m</button>
+          <button class="target-opt" type="button" data-idle="30">30m</button>
+          <button class="target-opt" type="button" data-idle="60">1h</button>
+          <button class="target-opt" type="button" data-idle="120">2h</button>
+        </div>
+      </div>
+      <div class="backup-hint" style="margin-top:8px;">If a running session goes idle this long, PlayDex asks whether to pause or stop it.</div>
     </div>
     <div class="card">
       <div class="card-header">Game list</div>
@@ -3508,6 +3625,22 @@ opacity: 0.18;
       <button class="btn-ghost" id="btn-recalc-unlock-dates" style="width:100%;padding:10px 14px;font-size:0.8rem;">Recalculate unlock dates from history</button>
       <div class="backup-hint" style="margin-top:8px;">Recomputes the earned date of every unlocked badge from your session history, replacing dates that were stamped when the Badges tab first arrived.</div>
     </div>
+    <div class="card">
+      <div class="card-header">Keyboard shortcuts</div>
+      <div class="shortcut-list">
+        <div class="shortcut-row"><kbd>S</kbd><span>Start or stop a session</span></div>
+        <div class="shortcut-row"><kbd>/</kbd><span>Focus the Games search</span></div>
+        <div class="shortcut-row"><kbd>T</kbd><span>Today</span></div>
+        <div class="shortcut-row"><kbd>G</kbd><span>Games</span></div>
+        <div class="shortcut-row"><kbd>H</kbd><span>Sessions history</span></div>
+        <div class="shortcut-row"><kbd>A</kbd><span>Stats</span></div>
+        <div class="shortcut-row"><kbd>B</kbd><span>Badges</span></div>
+        <div class="shortcut-row"><kbd>P</kbd><span>Profile</span></div>
+        <div class="shortcut-row"><kbd>C</kbd><span>Settings</span></div>
+        <div class="shortcut-row"><kbd>Esc</kbd><span>Close a dialog</span></div>
+      </div>
+      <div class="backup-hint" style="margin-top:8px;">Shortcuts are ignored while you're typing in a field or a dialog is open.</div>
+    </div>
   </div>
 </div>
 
@@ -3556,6 +3689,7 @@ opacity: 0.18;
       <button class="btn-ghost btn-danger" id="cover-remove-btn" style="padding:6px 10px;font-size:0.75rem;">Remove</button>
     </div>
     <input type="text" id="rename-input" maxlength="50">
+    <input type="text" id="rename-tags" placeholder="Tags, comma separated (e.g. PC, Co-op)" maxlength="180" autocomplete="off">
     <div class="modal-actions">
       <button class="btn-ghost" id="rename-cancel">Cancel</button>
       <button class="btn btn-start" id="rename-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -3889,6 +4023,19 @@ opacity: 0.18;
   </div>
 </div>
 
+<!-- Idle reminder modal -->
+<div class="modal-overlay" id="idle-reminder-modal">
+  <div class="modal">
+    <h3>Still playing?</h3>
+    <p class="modal-subheader" id="idle-reminder-text">Your session has been idle for a while.</p>
+    <div class="modal-actions" style="flex-wrap:wrap;">
+      <button class="btn-ghost" id="idle-still">I'm still here</button>
+      <button class="btn-ghost" id="idle-pause">Pause</button>
+      <button class="btn btn-stop" id="idle-stop" style="padding:8px 16px;font-size:0.85rem;">Stop session</button>
+    </div>
+  </div>
+</div>
+
 <div class="dbx-banner" id="dbx-banner" role="status">
   <span class="dbx-banner-dot"></span>
   <span>Unsaved backup &mdash; sync now to keep it safe</span>
@@ -3904,9 +4051,21 @@ opacity: 0.18;
   // --- Storage ---
   const KEYS = { games: 'playdex_games', sessions: 'playdex_sessions', settings: 'playdex_settings' };
 
+  function normalizeTags(arr) {
+    if (!Array.isArray(arr)) return [];
+    const out = [];
+    arr.forEach(t => {
+      if (typeof t !== 'string') return;
+      const v = t.trim().slice(0, 20);
+      if (!v) return;
+      if (!out.some(x => x.toLowerCase() === v.toLowerCase())) out.push(v);
+    });
+    return out.slice(0, 8);
+  }
+
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
-      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned };
+      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags) };
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -3935,8 +4094,8 @@ opacity: 0.18;
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }; }
   }
 
   function mergeFullClear(a, b) {
@@ -3971,6 +4130,7 @@ opacity: 0.18;
   let filterDate = todayStr();
   let syncFilter = 'all';
   let gamesSearch = '';
+  let gamesTagFilter = [];
   let pendingTargetMin = 0;
   let targetToastShown = false;
   let pendingDeleteGameId = null;
@@ -4338,7 +4498,7 @@ opacity: 0.18;
     const prevLevel = settings.achievementLevel || 0;
     const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
     const prevFullClear = settings.dailyFullClear && typeof settings.dailyFullClear === 'object' ? settings.dailyFullClear : null;
-    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
+    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
     settings.accent = localAccent;
     settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
     settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
@@ -4445,6 +4605,34 @@ opacity: 0.18;
   }
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => goTab(btn.dataset.tab));
+  });
+
+  // --- Keyboard shortcuts ---
+  const SHORTCUT_TABS = { t: 'today', g: 'games', h: 'sessions', a: 'stats', b: 'badges', p: 'profile', c: 'settings' };
+  document.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    const typing = !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
+    const openModals = document.querySelectorAll('.modal-overlay.open');
+    if (e.key === 'Escape') {
+      if (openModals.length) openModals[openModals.length - 1].classList.remove('open');
+      return;
+    }
+    if (typing || openModals.length || e.repeat) return;
+    const k = e.key.toLowerCase();
+    if (k === 's') {
+      if (activeSession) stopSession();
+      else { goTab('today'); toast('Pick a game to start'); }
+      return;
+    }
+    if (k === '/') {
+      e.preventDefault();
+      goTab('games');
+      const inp = document.getElementById('game-search-input');
+      if (inp) setTimeout(() => inp.focus(), 60);
+      return;
+    }
+    if (SHORTCUT_TABS[k]) goTab(SHORTCUT_TABS[k]);
   });
 
   document.getElementById('quest-board-select').addEventListener('change', e => {
@@ -4781,7 +4969,10 @@ opacity: 0.18;
     } else {
       container.innerHTML = sortedGames.map((g, i) =>
         '<button class="btn btn-start-game fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms" data-game-id="' + g.id + '">' +
-        '<span>' + escHtml(g.name) + '</span>' +
+        '<span class="start-game-info">' +
+          '<span class="start-game-name">' + escHtml(g.name) + '</span>' +
+          (g.tags && g.tags.length ? '<span class="start-game-tags">' + g.tags.map(t => '<span class="game-tag">' + escHtml(t) + '</span>').join('') + '</span>' : '') +
+        '</span>' +
         '<span class="play-icon">&#9654;</span>' +
         '</button>'
       ).join('');
@@ -6181,7 +6372,39 @@ opacity: 0.18;
     const nameSort = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
     const pinnedFirst = (a, b) => (!!a.pinned !== !!b.pinned) ? (a.pinned ? -1 : 1) : nameSort(a, b);
     const q = gamesSearch.trim().toLowerCase();
-    const filtered = q ? games.filter(g => g.name.toLowerCase().includes(q)) : games;
+
+    // Tag catalogue (case-insensitive, first-seen casing preserved)
+    const allTags = [];
+    games.forEach(g => (g.tags || []).forEach(t => {
+      if (!allTags.some(x => x.toLowerCase() === t.toLowerCase())) allTags.push(t);
+    }));
+    allTags.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    gamesTagFilter = gamesTagFilter.filter(sel => allTags.some(t => t.toLowerCase() === sel.toLowerCase()));
+    const tagMatch = g => !gamesTagFilter.length || (g.tags || []).some(t => gamesTagFilter.some(sel => sel.toLowerCase() === t.toLowerCase()));
+    const textMatch = g => !q || g.name.toLowerCase().includes(q) || (g.tags || []).some(t => t.toLowerCase().includes(q));
+    const matches = g => textMatch(g) && tagMatch(g);
+
+    const filterBox = document.getElementById('game-tag-filters');
+    if (filterBox) {
+      if (allTags.length) {
+        filterBox.innerHTML = allTags.map(t =>
+          '<button type="button" class="game-tag-filter' + (gamesTagFilter.some(sel => sel.toLowerCase() === t.toLowerCase()) ? ' on' : '') + '" data-tag="' + escHtml(t) + '">' + escHtml(t) + '</button>'
+        ).join('');
+        filterBox.querySelectorAll('.game-tag-filter').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const tag = btn.dataset.tag;
+            const i = gamesTagFilter.findIndex(sel => sel.toLowerCase() === tag.toLowerCase());
+            if (i >= 0) gamesTagFilter.splice(i, 1);
+            else gamesTagFilter.push(tag);
+            renderGamesTab();
+          });
+        });
+      } else {
+        filterBox.innerHTML = '';
+      }
+    }
+
+    const filtered = games.filter(matches);
     const active = filtered.filter(g => !g.archived).sort(pinnedFirst);
     const archived = filtered.filter(g => g.archived).sort(pinnedFirst);
 
@@ -6211,6 +6434,10 @@ opacity: 0.18;
       '</div>';
     };
 
+    const tagsHtml = g => (g.tags && g.tags.length)
+      ? '<div class="game-item-tags">' + g.tags.map(t => '<span class="game-tag">' + escHtml(t) + '</span>').join('') + '</div>'
+      : '';
+
     if (games.length === 0) {
       container.innerHTML =
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyGames') + '</span>No games added yet.</div>';
@@ -6234,6 +6461,7 @@ opacity: 0.18;
         return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            tagsHtml(g) +
             gameMeta(count, e, staleIds.has(g.id)) +
           '</div>' +
           '<div class="game-item-actions">' +
@@ -6255,6 +6483,7 @@ opacity: 0.18;
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            tagsHtml(g) +
             gameMeta(count, e) +
           '</div>' +
           '<div class="game-item-actions">' +
@@ -6366,7 +6595,10 @@ opacity: 0.18;
 
     const recent = completed.slice().sort((a,b) => new Date(b.start) - new Date(a.start)).slice(0, 5);
 
-    let html = '<div class="dash-row"><span class="dash-label">Total playtime</span><span class="dash-value">' + fmtDuration(totalMs) + '</span></div>' +
+    let html = ((game.tags && game.tags.length)
+      ? '<div class="dash-tags">' + game.tags.map(t => '<span class="game-tag">' + escHtml(t) + '</span>').join('') + '</div>'
+      : '') +
+      '<div class="dash-row"><span class="dash-label">Total playtime</span><span class="dash-value">' + fmtDuration(totalMs) + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Sessions</span><span class="dash-value">' + completed.length + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Average session</span><span class="dash-value">' + fmtDurationShort(avgMs) + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
@@ -6455,7 +6687,7 @@ opacity: 0.18;
       toast('Game already exists');
       return;
     }
-    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false });
+    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false, tags: [] });
     saveGames(games);
     toast('Added: ' + name);
     render();
@@ -6527,6 +6759,7 @@ opacity: 0.18;
     if (!game) return;
     pendingRenameGameId = id;
     document.getElementById('rename-input').value = game.name;
+    document.getElementById('rename-tags').value = (game.tags || []).join(', ');
     paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
     const urlField = document.getElementById('cover-url');
     urlField.value = (game.image && !/^data:image\//.test(game.image)) ? game.image : '';
@@ -6544,6 +6777,7 @@ opacity: 0.18;
     const game = games.find(g => g.id === pendingRenameGameId);
     if (game) {
       game.name = name;
+      game.tags = normalizeTags(document.getElementById('rename-tags').value.split(','));
       saveGames(games);
       sessions.forEach(s => { if (s.gameId === game.id) s.gameName = name; });
       saveSessions(sessions);
@@ -6622,7 +6856,7 @@ opacity: 0.18;
 
   // Close modals on overlay click (except the target-reached alert, which needs explicit confirmation)
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    if (overlay.id === 'target-reached-modal') return;
+    if (overlay.id === 'target-reached-modal' || overlay.id === 'idle-reminder-modal') return;
     overlay.addEventListener('click', e => {
       if (e.target === overlay) overlay.classList.remove('open');
     });
@@ -7008,9 +7242,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
       if (importData.settings && typeof importData.settings === 'object') {
-        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, importData.settings);
+        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, importData.settings);
       } else {
-        settings = { dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null };
+        settings = { dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null };
       }
       settings.accent = localAccent;
       saveGames(games);
@@ -7119,8 +7353,42 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if (id) openDashboard(id);
   });
 
+  // --- Idle auto-pause reminder ---
+  let lastActivityTs = Date.now();
+  let idlePrompted = false;
+  const markActivity = () => { lastActivityTs = Date.now(); idlePrompted = false; };
+  ['pointerdown', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(ev =>
+    document.addEventListener(ev, markActivity, { passive: true }));
+
+  const IDLE_MODAL = document.getElementById('idle-reminder-modal');
+  const fmtIdle = ms => {
+    const m = Math.max(1, Math.round(ms / 60000));
+    return m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'm' : m + ' min';
+  };
+  function checkIdle() {
+    if (!activeSession || activeSession.pausedAt) return;
+    const limit = (settings.idleRemindMin || 0) * 60000;
+    if (!limit) return;
+    const idle = Date.now() - lastActivityTs;
+    if (idle < limit || idlePrompted) return;
+    idlePrompted = true;
+    const txt = document.getElementById('idle-reminder-text');
+    if (txt) txt.textContent = 'Your session has been idle for about ' + fmtIdle(idle) + '. Still playing?';
+    IDLE_MODAL.classList.add('open');
+    if (typeof navigator !== 'undefined' && navigator.vibrate) { navigator.vibrate([80, 60, 80]); }
+    if (settings.targetNotif && 'Notification' in window && Notification.permission === 'granted') {
+      try { new Notification('PlayDex \u2014 Still playing?', { body: (activeSession.gameName || 'Session') + ' has been idle for about ' + fmtIdle(idle), tag: 'playdex-idle' }); } catch (_) {}
+    }
+  }
+  const dismissIdle = () => { markActivity(); IDLE_MODAL.classList.remove('open'); };
+  document.getElementById('idle-still').addEventListener('click', dismissIdle);
+  document.getElementById('idle-pause').addEventListener('click', () => { dismissIdle(); if (activeSession && !activeSession.pausedAt) togglePause(); });
+  document.getElementById('idle-stop').addEventListener('click', () => { dismissIdle(); if (activeSession) stopSession(); });
+  IDLE_MODAL.addEventListener('click', e => { if (e.target === IDLE_MODAL) dismissIdle(); });
+
   // --- Live timer ---
   function updateTimer() {
+    checkIdle();
     const countdownNow = Date.now();
     if (countdownNow - lastCountdownUpdate >= 15000) {
       lastCountdownUpdate = countdownNow;
@@ -7247,6 +7515,18 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
   });
 
+  // --- Settings: Idle reminder ---
+  const idlePresetBtns = Array.prototype.slice.call(document.querySelectorAll('#idle-presets .target-opt'));
+  const applyIdlePreset = v => {
+    settings.idleRemindMin = v;
+    saveSettings(settings);
+    idlePresetBtns.forEach(b => b.classList.toggle('on', Number(b.dataset.idle) === v));
+  };
+  idlePresetBtns.forEach(b => {
+    b.classList.toggle('on', (settings.idleRemindMin || 0) === Number(b.dataset.idle));
+    b.addEventListener('click', () => applyIdlePreset(Number(b.dataset.idle)));
+  });
+
   // --- Settings: Game list (stale-game highlights) ---
   const stalePresetBtns = Array.prototype.slice.call(document.querySelectorAll('#stale-presets .target-opt'));
   const applyStalePreset = v => {
@@ -7360,7 +7640,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.3.1';
+    const APP_VERSION = '1.3.2';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
