@@ -1254,6 +1254,58 @@ opacity: 0.18;
     white-space: nowrap;
   }
 
+  .game-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+  }
+
+  .game-tag {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 1px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .game-tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 12px;
+  }
+  .game-tag-filters:empty { display: none; }
+
+  .game-tag-filter {
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .game-tag-filter:hover { border-color: var(--accent); color: var(--accent); }
+  .game-tag-filter.on {
+    color: var(--accent);
+    background: var(--accent-dim);
+    border-color: var(--accent);
+  }
+
+  .dash-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
   .stale-prompt {
     border: 1px solid var(--yellow);
     background: rgba(250, 204, 21, 0.06);
@@ -3143,7 +3195,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.3.1</span>
+    <span class="version-badge">1.3.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3427,6 +3479,7 @@ opacity: 0.18;
         <button class="btn btn-start" id="add-game-btn">Add</button>
       </div>
       <input type="text" id="game-search-input" placeholder="Search games..." maxlength="50" autocomplete="off" style="margin:0 0 10px;">
+      <div class="game-tag-filters" id="game-tag-filters"></div>
       <div id="games-list"></div>
     </div>
   </div>
@@ -3612,6 +3665,7 @@ opacity: 0.18;
       <button class="btn-ghost btn-danger" id="cover-remove-btn" style="padding:6px 10px;font-size:0.75rem;">Remove</button>
     </div>
     <input type="text" id="rename-input" maxlength="50">
+    <input type="text" id="rename-tags" placeholder="Tags, comma separated (e.g. PC, Co-op)" maxlength="180" autocomplete="off">
     <div class="modal-actions">
       <button class="btn-ghost" id="rename-cancel">Cancel</button>
       <button class="btn btn-start" id="rename-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -3973,9 +4027,21 @@ opacity: 0.18;
   // --- Storage ---
   const KEYS = { games: 'playdex_games', sessions: 'playdex_sessions', settings: 'playdex_settings' };
 
+  function normalizeTags(arr) {
+    if (!Array.isArray(arr)) return [];
+    const out = [];
+    arr.forEach(t => {
+      if (typeof t !== 'string') return;
+      const v = t.trim().slice(0, 20);
+      if (!v) return;
+      if (!out.some(x => x.toLowerCase() === v.toLowerCase())) out.push(v);
+    });
+    return out.slice(0, 8);
+  }
+
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
-      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned };
+      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags) };
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -4040,6 +4106,7 @@ opacity: 0.18;
   let filterDate = todayStr();
   let syncFilter = 'all';
   let gamesSearch = '';
+  let gamesTagFilter = [];
   let pendingTargetMin = 0;
   let targetToastShown = false;
   let pendingDeleteGameId = null;
@@ -6278,7 +6345,39 @@ opacity: 0.18;
     const nameSort = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
     const pinnedFirst = (a, b) => (!!a.pinned !== !!b.pinned) ? (a.pinned ? -1 : 1) : nameSort(a, b);
     const q = gamesSearch.trim().toLowerCase();
-    const filtered = q ? games.filter(g => g.name.toLowerCase().includes(q)) : games;
+
+    // Tag catalogue (case-insensitive, first-seen casing preserved)
+    const allTags = [];
+    games.forEach(g => (g.tags || []).forEach(t => {
+      if (!allTags.some(x => x.toLowerCase() === t.toLowerCase())) allTags.push(t);
+    }));
+    allTags.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    gamesTagFilter = gamesTagFilter.filter(sel => allTags.some(t => t.toLowerCase() === sel.toLowerCase()));
+    const tagMatch = g => !gamesTagFilter.length || (g.tags || []).some(t => gamesTagFilter.some(sel => sel.toLowerCase() === t.toLowerCase()));
+    const textMatch = g => !q || g.name.toLowerCase().includes(q) || (g.tags || []).some(t => t.toLowerCase().includes(q));
+    const matches = g => textMatch(g) && tagMatch(g);
+
+    const filterBox = document.getElementById('game-tag-filters');
+    if (filterBox) {
+      if (allTags.length) {
+        filterBox.innerHTML = allTags.map(t =>
+          '<button type="button" class="game-tag-filter' + (gamesTagFilter.some(sel => sel.toLowerCase() === t.toLowerCase()) ? ' on' : '') + '" data-tag="' + escHtml(t) + '">' + escHtml(t) + '</button>'
+        ).join('');
+        filterBox.querySelectorAll('.game-tag-filter').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const tag = btn.dataset.tag;
+            const i = gamesTagFilter.findIndex(sel => sel.toLowerCase() === tag.toLowerCase());
+            if (i >= 0) gamesTagFilter.splice(i, 1);
+            else gamesTagFilter.push(tag);
+            renderGamesTab();
+          });
+        });
+      } else {
+        filterBox.innerHTML = '';
+      }
+    }
+
+    const filtered = games.filter(matches);
     const active = filtered.filter(g => !g.archived).sort(pinnedFirst);
     const archived = filtered.filter(g => g.archived).sort(pinnedFirst);
 
@@ -6308,6 +6407,10 @@ opacity: 0.18;
       '</div>';
     };
 
+    const tagsHtml = g => (g.tags && g.tags.length)
+      ? '<div class="game-item-tags">' + g.tags.map(t => '<span class="game-tag">' + escHtml(t) + '</span>').join('') + '</div>'
+      : '';
+
     if (games.length === 0) {
       container.innerHTML =
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyGames') + '</span>No games added yet.</div>';
@@ -6331,6 +6434,7 @@ opacity: 0.18;
         return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            tagsHtml(g) +
             gameMeta(count, e, staleIds.has(g.id)) +
           '</div>' +
           '<div class="game-item-actions">' +
@@ -6352,6 +6456,7 @@ opacity: 0.18;
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            tagsHtml(g) +
             gameMeta(count, e) +
           '</div>' +
           '<div class="game-item-actions">' +
@@ -6463,7 +6568,10 @@ opacity: 0.18;
 
     const recent = completed.slice().sort((a,b) => new Date(b.start) - new Date(a.start)).slice(0, 5);
 
-    let html = '<div class="dash-row"><span class="dash-label">Total playtime</span><span class="dash-value">' + fmtDuration(totalMs) + '</span></div>' +
+    let html = ((game.tags && game.tags.length)
+      ? '<div class="dash-tags">' + game.tags.map(t => '<span class="game-tag">' + escHtml(t) + '</span>').join('') + '</div>'
+      : '') +
+      '<div class="dash-row"><span class="dash-label">Total playtime</span><span class="dash-value">' + fmtDuration(totalMs) + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Sessions</span><span class="dash-value">' + completed.length + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Average session</span><span class="dash-value">' + fmtDurationShort(avgMs) + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
@@ -6552,7 +6660,7 @@ opacity: 0.18;
       toast('Game already exists');
       return;
     }
-    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false });
+    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false, tags: [] });
     saveGames(games);
     toast('Added: ' + name);
     render();
@@ -6624,6 +6732,7 @@ opacity: 0.18;
     if (!game) return;
     pendingRenameGameId = id;
     document.getElementById('rename-input').value = game.name;
+    document.getElementById('rename-tags').value = (game.tags || []).join(', ');
     paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
     const urlField = document.getElementById('cover-url');
     urlField.value = (game.image && !/^data:image\//.test(game.image)) ? game.image : '';
@@ -6641,6 +6750,7 @@ opacity: 0.18;
     const game = games.find(g => g.id === pendingRenameGameId);
     if (game) {
       game.name = name;
+      game.tags = normalizeTags(document.getElementById('rename-tags').value.split(','));
       saveGames(games);
       sessions.forEach(s => { if (s.gameId === game.id) s.gameName = name; });
       saveSessions(sessions);
@@ -7503,7 +7613,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.3.1';
+    const APP_VERSION = '1.3.2';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

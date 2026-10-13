@@ -94,11 +94,6 @@ The round-three streak freeze (#25) was implemented - left out.
     colour into the --accent theme variables."
     - Scope: small. Risk: low.
 
-24. Per-game platforms & tags
-    "Optional free-text tags per game ('PC', 'Switch', 'Game Pass', 'Co-op')
-    with filter chips in the Games tab."
-    - Scope: small. Risk: low.
-
 26. Daily-goal streak stat
     "'Consecutive days hitting your daily goal' card in Stats/Profile,
     distinct from the raw longest play-streak."
