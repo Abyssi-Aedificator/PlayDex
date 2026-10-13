@@ -2894,6 +2894,35 @@ opacity: 0.18;
     line-height: 1.5;
   }
 
+  /* Keyboard shortcuts list */
+  .shortcut-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .shortcut-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.82rem;
+    color: var(--text2);
+  }
+  .shortcut-row kbd {
+    flex-shrink: 0;
+    min-width: 26px;
+    text-align: center;
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    padding: 3px 7px;
+  }
+
   /* Appearance / theme selector */
   .theme-select {
     display: flex;
@@ -3518,6 +3547,22 @@ opacity: 0.18;
       <div class="card-header">Achievements</div>
       <button class="btn-ghost" id="btn-recalc-unlock-dates" style="width:100%;padding:10px 14px;font-size:0.8rem;">Recalculate unlock dates from history</button>
       <div class="backup-hint" style="margin-top:8px;">Recomputes the earned date of every unlocked badge from your session history, replacing dates that were stamped when the Badges tab first arrived.</div>
+    </div>
+    <div class="card">
+      <div class="card-header">Keyboard shortcuts</div>
+      <div class="shortcut-list">
+        <div class="shortcut-row"><kbd>S</kbd><span>Start or stop a session</span></div>
+        <div class="shortcut-row"><kbd>/</kbd><span>Focus the Games search</span></div>
+        <div class="shortcut-row"><kbd>T</kbd><span>Today</span></div>
+        <div class="shortcut-row"><kbd>G</kbd><span>Games</span></div>
+        <div class="shortcut-row"><kbd>H</kbd><span>Sessions history</span></div>
+        <div class="shortcut-row"><kbd>A</kbd><span>Stats</span></div>
+        <div class="shortcut-row"><kbd>B</kbd><span>Badges</span></div>
+        <div class="shortcut-row"><kbd>P</kbd><span>Profile</span></div>
+        <div class="shortcut-row"><kbd>C</kbd><span>Settings</span></div>
+        <div class="shortcut-row"><kbd>Esc</kbd><span>Close a dialog</span></div>
+      </div>
+      <div class="backup-hint" style="margin-top:8px;">Shortcuts are ignored while you're typing in a field or a dialog is open.</div>
     </div>
   </div>
 </div>
@@ -4469,6 +4514,34 @@ opacity: 0.18;
   }
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => goTab(btn.dataset.tab));
+  });
+
+  // --- Keyboard shortcuts ---
+  const SHORTCUT_TABS = { t: 'today', g: 'games', h: 'sessions', a: 'stats', b: 'badges', p: 'profile', c: 'settings' };
+  document.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    const typing = !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
+    const openModals = document.querySelectorAll('.modal-overlay.open');
+    if (e.key === 'Escape') {
+      if (openModals.length) openModals[openModals.length - 1].classList.remove('open');
+      return;
+    }
+    if (typing || openModals.length || e.repeat) return;
+    const k = e.key.toLowerCase();
+    if (k === 's') {
+      if (activeSession) stopSession();
+      else { goTab('today'); toast('Pick a game to start'); }
+      return;
+    }
+    if (k === '/') {
+      e.preventDefault();
+      goTab('games');
+      const inp = document.getElementById('game-search-input');
+      if (inp) setTimeout(() => inp.focus(), 60);
+      return;
+    }
+    if (SHORTCUT_TABS[k]) goTab(SHORTCUT_TABS[k]);
   });
 
   document.getElementById('quest-board-select').addEventListener('change', e => {

@@ -11,6 +11,7 @@ Version 1.3.1
 - The Manage Games list on the Games tab is now a little wider on desktop screens.
 - A play streak now survives one missed day: earn a freeze for each week of daily play, up to 3, shown as a snowflake on the Stats review card.
 - If a running session is left idle for a while, PlayDex now asks whether to keep going, pause, or stop (optional, off by default in Settings).
+- Keyboard shortcuts: press S to start/stop, G/T/H/A/B/P/C to jump between tabs, / to focus the Games search, and Esc to close a dialog.
 
 Version 1.3.0
 -------------------
