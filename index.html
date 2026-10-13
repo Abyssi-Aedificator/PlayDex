@@ -3436,6 +3436,17 @@ opacity: 0.18;
           <span class="dbx-toggle-label">Notify me when a session hits its time target</span>
         </label>
       </div>
+      <div class="target-row" style="margin:14px 0 0;">
+        <span class="target-label">Remind me when idle:</span>
+        <div class="target-presets" id="idle-presets">
+          <button class="target-opt" type="button" data-idle="0">Off</button>
+          <button class="target-opt" type="button" data-idle="15">15m</button>
+          <button class="target-opt" type="button" data-idle="30">30m</button>
+          <button class="target-opt" type="button" data-idle="60">1h</button>
+          <button class="target-opt" type="button" data-idle="120">2h</button>
+        </div>
+      </div>
+      <div class="backup-hint" style="margin-top:8px;">If a running session goes idle this long, PlayDex asks whether to pause or stop it.</div>
     </div>
     <div class="card">
       <div class="card-header">Game list</div>
@@ -3889,6 +3900,19 @@ opacity: 0.18;
   </div>
 </div>
 
+<!-- Idle reminder modal -->
+<div class="modal-overlay" id="idle-reminder-modal">
+  <div class="modal">
+    <h3>Still playing?</h3>
+    <p class="modal-subheader" id="idle-reminder-text">Your session has been idle for a while.</p>
+    <div class="modal-actions" style="flex-wrap:wrap;">
+      <button class="btn-ghost" id="idle-still">I'm still here</button>
+      <button class="btn-ghost" id="idle-pause">Pause</button>
+      <button class="btn btn-stop" id="idle-stop" style="padding:8px 16px;font-size:0.85rem;">Stop session</button>
+    </div>
+  </div>
+</div>
+
 <div class="dbx-banner" id="dbx-banner" role="status">
   <span class="dbx-banner-dot"></span>
   <span>Unsaved backup &mdash; sync now to keep it safe</span>
@@ -3935,8 +3959,8 @@ opacity: 0.18;
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }; }
   }
 
   function mergeFullClear(a, b) {
@@ -4338,7 +4362,7 @@ opacity: 0.18;
     const prevLevel = settings.achievementLevel || 0;
     const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
     const prevFullClear = settings.dailyFullClear && typeof settings.dailyFullClear === 'object' ? settings.dailyFullClear : null;
-    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
+    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
     settings.accent = localAccent;
     settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
     settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
@@ -6622,7 +6646,7 @@ opacity: 0.18;
 
   // Close modals on overlay click (except the target-reached alert, which needs explicit confirmation)
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    if (overlay.id === 'target-reached-modal') return;
+    if (overlay.id === 'target-reached-modal' || overlay.id === 'idle-reminder-modal') return;
     overlay.addEventListener('click', e => {
       if (e.target === overlay) overlay.classList.remove('open');
     });
@@ -7008,9 +7032,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
       if (importData.settings && typeof importData.settings === 'object') {
-        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, importData.settings);
+        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, importData.settings);
       } else {
-        settings = { dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, staleDays: 0, stalePrompt: false, stalePromptDismissed: null };
+        settings = { dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null };
       }
       settings.accent = localAccent;
       saveGames(games);
@@ -7119,8 +7143,42 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if (id) openDashboard(id);
   });
 
+  // --- Idle auto-pause reminder ---
+  let lastActivityTs = Date.now();
+  let idlePrompted = false;
+  const markActivity = () => { lastActivityTs = Date.now(); idlePrompted = false; };
+  ['pointerdown', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(ev =>
+    document.addEventListener(ev, markActivity, { passive: true }));
+
+  const IDLE_MODAL = document.getElementById('idle-reminder-modal');
+  const fmtIdle = ms => {
+    const m = Math.max(1, Math.round(ms / 60000));
+    return m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'm' : m + ' min';
+  };
+  function checkIdle() {
+    if (!activeSession || activeSession.pausedAt) return;
+    const limit = (settings.idleRemindMin || 0) * 60000;
+    if (!limit) return;
+    const idle = Date.now() - lastActivityTs;
+    if (idle < limit || idlePrompted) return;
+    idlePrompted = true;
+    const txt = document.getElementById('idle-reminder-text');
+    if (txt) txt.textContent = 'Your session has been idle for about ' + fmtIdle(idle) + '. Still playing?';
+    IDLE_MODAL.classList.add('open');
+    if (typeof navigator !== 'undefined' && navigator.vibrate) { navigator.vibrate([80, 60, 80]); }
+    if (settings.targetNotif && 'Notification' in window && Notification.permission === 'granted') {
+      try { new Notification('PlayDex \u2014 Still playing?', { body: (activeSession.gameName || 'Session') + ' has been idle for about ' + fmtIdle(idle), tag: 'playdex-idle' }); } catch (_) {}
+    }
+  }
+  const dismissIdle = () => { markActivity(); IDLE_MODAL.classList.remove('open'); };
+  document.getElementById('idle-still').addEventListener('click', dismissIdle);
+  document.getElementById('idle-pause').addEventListener('click', () => { dismissIdle(); if (activeSession && !activeSession.pausedAt) togglePause(); });
+  document.getElementById('idle-stop').addEventListener('click', () => { dismissIdle(); if (activeSession) stopSession(); });
+  IDLE_MODAL.addEventListener('click', e => { if (e.target === IDLE_MODAL) dismissIdle(); });
+
   // --- Live timer ---
   function updateTimer() {
+    checkIdle();
     const countdownNow = Date.now();
     if (countdownNow - lastCountdownUpdate >= 15000) {
       lastCountdownUpdate = countdownNow;
@@ -7245,6 +7303,18 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       settings.targetNotif = e.target.checked;
       saveSettings(settings);
     }
+  });
+
+  // --- Settings: Idle reminder ---
+  const idlePresetBtns = Array.prototype.slice.call(document.querySelectorAll('#idle-presets .target-opt'));
+  const applyIdlePreset = v => {
+    settings.idleRemindMin = v;
+    saveSettings(settings);
+    idlePresetBtns.forEach(b => b.classList.toggle('on', Number(b.dataset.idle) === v));
+  };
+  idlePresetBtns.forEach(b => {
+    b.classList.toggle('on', (settings.idleRemindMin || 0) === Number(b.dataset.idle));
+    b.addEventListener('click', () => applyIdlePreset(Number(b.dataset.idle)));
   });
 
   // --- Settings: Game list (stale-game highlights) ---

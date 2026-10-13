@@ -41,11 +41,6 @@ The round-three streak freeze (#25) was implemented - left out.
    - Data: schema addition to games[] + backup payload.
    - Scope: medium. Risk: medium.
 
-9. Idle auto-pause reminder
-   "If a running session is idle / backgrounded long enough, remind to
-   stop or pause (complements the manual Pause)."
-   - Scope: small-medium. Risk: low-medium (pick threshold carefully).
-
 11. Keyboard shortcuts / command palette
     "e.g. S = start/stop, G = Games tab, / = focus search; guard inputs."
     - Scope: small-medium. Risk: low.
