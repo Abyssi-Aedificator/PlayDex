@@ -540,7 +540,31 @@ opacity: 0.18;
   .btn-start-game .play-icon {
     font-size: 1.05rem;
     color: var(--accent);
+    flex-shrink: 0;
   }
+
+  .start-game-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .start-game-name {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .start-game-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .start-game-tags .game-tag { font-size: 0.62rem; }
 
   .target-row {
     display: flex;
@@ -4945,7 +4969,10 @@ opacity: 0.18;
     } else {
       container.innerHTML = sortedGames.map((g, i) =>
         '<button class="btn btn-start-game fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms" data-game-id="' + g.id + '">' +
-        '<span>' + escHtml(g.name) + '</span>' +
+        '<span class="start-game-info">' +
+          '<span class="start-game-name">' + escHtml(g.name) + '</span>' +
+          (g.tags && g.tags.length ? '<span class="start-game-tags">' + g.tags.map(t => '<span class="game-tag">' + escHtml(t) + '</span>').join('') + '</span>' : '') +
+        '</span>' +
         '<span class="play-icon">&#9654;</span>' +
         '</button>'
       ).join('');
