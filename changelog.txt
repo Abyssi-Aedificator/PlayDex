@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.3.3
+-------------------
+- Each game in the Today tab's Start a Game list now shows when you last played it, plus a Play again? tag for games you haven't touched in a while.
+
 Version 1.3.2
 -------------------
 - Per-game tags: add comma-separated labels to a game from its Edit dialog, see them as chips in the Games list, and click a tag to filter the list.
