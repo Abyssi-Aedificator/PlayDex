@@ -108,11 +108,6 @@ The round-three streak freeze (#25) was implemented - left out.
     "Export sessions as an .ics file so playtime shows up in any calendar app."
     - Scope: small. Risk: low.
 
-29. Per-game playtime mini chart
-    "30-day playtime bar/sparkline on each game's dashboard, beside the
-    sessions list."
-    - Scope: small. Risk: low.
-
 30. Drag-and-drop pin ordering
     "Reorder pinned games in the quick-start list and Games tab; persist the
     manual order instead of 'pin to top' stacking."
