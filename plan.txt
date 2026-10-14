@@ -118,10 +118,6 @@ The round-three streak freeze (#25) was implemented - left out.
     manual order instead of 'pin to top' stacking."
     - Scope: small-medium. Risk: low.
 
-31. Undo for game actions
-    "Toast-undo for game archive and delete, matching the session-delete undo."
-    - Scope: small. Risk: low.
-
 --- Implementation reference notes ---
 - Version markers to keep in sync on any release: .version-badge,
   APP_VERSION (~line 3915), SW_VERSION + CACHE_NAME in sw.js.

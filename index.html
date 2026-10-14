@@ -6840,12 +6840,21 @@ opacity: 0.18;
         document.getElementById('delete-modal').classList.remove('open');
         return;
       }
+      const gameIdx = games.indexOf(game);
+      const removedSessions = [];
+      sessions.forEach((s, i) => { if (s.gameId === id) removedSessions.push({ s, i }); });
       sessions = sessions.filter(s => s.gameId !== id);
       saveSessions(sessions);
       games = games.filter(g => g.id !== id);
       saveGames(games);
-      toast('Deleted: ' + game.name);
       render();
+      toast('Deleted: ' + game.name, 'Undo', () => {
+        games.splice(Math.min(gameIdx, games.length), 0, game);
+        saveGames(games);
+        removedSessions.forEach(it => sessions.splice(Math.min(it.i, sessions.length), 0, it.s));
+        saveSessions(sessions);
+        render();
+      }, 6000);
     }
     document.getElementById('delete-modal').classList.remove('open');
   });
@@ -6860,8 +6869,12 @@ opacity: 0.18;
     }
     game.archived = true;
     saveGames(games);
-    toast('Archived: ' + game.name);
     render();
+    toast('Archived: ' + game.name, 'Undo', () => {
+      game.archived = false;
+      saveGames(games);
+      render();
+    }, 6000);
   }
 
   function restoreGame(id) {
