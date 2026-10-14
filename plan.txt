@@ -1,10 +1,13 @@
 PlayDex - Future Feature Ideas
 ==============================
 
-Features proposed but not yet implemented. Combine three proposal rounds
-(the earlier 10-idea list, the 5-idea list, and the round-three list below).
+Features proposed but not yet implemented. Combine four proposal rounds
+(the earlier 10-idea list, the 5-idea list, and the round-three and round-four
+lists below).
 Pause/Resume and the Sessions CSV export ARE implemented - left out.
 The round-three streak freeze (#25) was implemented - left out.
+Quick-start from the Games list (#12) and the idle "Still playing?" reminder
+(#33) were implemented - left out.
 
 1. Notes on sessions
    "Optional memo per session (why you stopped, what happened). Add a note
@@ -107,6 +110,57 @@ The round-three streak freeze (#25) was implemented - left out.
     "Reorder pinned games in the quick-start list and Games tab; persist the
     manual order instead of 'pin to top' stacking."
     - Scope: small-medium. Risk: low.
+
+32. Session tags
+    "Tag individual sessions (e.g. co-op, ranked, speedrun) in the Add/Edit
+    Session modal, show chips in session rows, and add a stats breakdown by tag -
+    total time and count per tag. Distinct from free-text session notes (#1) and
+    from game-level tags."
+    - Data: optional tags array on sessions[], additive; old data unaffected.
+    - Scope: medium. Risk: low.
+
+34. Rolling local backup + restore
+    "Automatically keep the last N app states as local snapshots and add a
+    Restore dialog to roll back a bad import or delete. Local-only, wrapping the
+    existing save path. Distinct from Dropbox auto-upload (#16) and
+    merge-import (#18)."
+    - Data: extra localStorage keys or a small IndexedDB store.
+    - Scope: medium. Risk: low-medium.
+
+36. Games list sorting
+    "Sort the Games tab by name, last played, total playtime, or session count
+    (asc/desc), persisted in settings. Complements the existing search/filter
+    (#4)."
+    - Scope: small. Risk: low.
+
+37. Playtime limit alerts
+    "Set an optional daily and/or weekly playtime cap; warn in-app when you
+    approach it and note when you pass it. A limit concept, distinct from
+    per-game goals (#8) and the daily-goal streak (#26)."
+    - Scope: small-medium. Risk: low.
+
+38. Cost per hour
+    "Optional price per game; the dashboard and Stats show $/hour and a best
+    value ranking."
+    - Data: optional price number on games[] + backup payload.
+    - Scope: small. Risk: low.
+
+39. Period-over-period comparison
+    "On Stats, show this month vs last month and this year vs last with up/down
+    deltas on playtime and sessions. Distinct from plain yearly/all-time totals
+    (#5)."
+    - Scope: small-medium. Risk: low.
+
+40. PWA home-screen shortcuts
+    "Add shortcuts to manifest.webmanifest so a long-press on the installed icon
+    jumps straight to Today or opens Log Session. Pure manifest addition."
+    - Scope: tiny. Risk: low.
+
+41. Idle auto-pause
+    "Opt-in setting that automatically pauses the live timer when the tab/app is
+    hidden for a set time and resumes on return (visibility API). Extends the
+    existing pause helpers."
+    - Scope: small. Risk: medium (must not corrupt duration on resume).
 
 --- Implementation reference notes ---
 - Version markers to keep in sync on any release: .version-badge,
