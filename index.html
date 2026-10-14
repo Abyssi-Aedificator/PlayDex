@@ -589,6 +589,33 @@ opacity: 0.18;
   .target-opt:hover { border-color: var(--accent); color: var(--accent); }
   .target-opt.on { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 700; }
 
+  /* What should I play? picker */
+  .pick-mode {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 6px;
+  }
+
+  .pick-opt {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+
+  .pick-opt:hover { border-color: var(--accent); color: var(--accent); }
+  .pick-opt.on { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .pick-result { text-align: center; padding: 14px 6px 4px; }
+  .pick-name { font-size: 1.35rem; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
+  .pick-meta { font-size: 0.78rem; color: var(--text2); margin-top: 6px; min-height: 1.1em; }
+
   .target-custom {
     width: 110px;
     padding: 5px 10px;
@@ -3332,6 +3359,7 @@ opacity: 0.18;
       <div class="game-buttons" id="start-game-buttons">
         <div class="no-games-hint">No games yet. Add one in the Games tab.</div>
       </div>
+      <button class="btn-ghost" id="pick-game-btn-today" type="button" style="width:100%;margin-top:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
     </div>
   </div>
 
@@ -3535,6 +3563,7 @@ opacity: 0.18;
         <input type="text" id="add-game-input" placeholder="Game name..." maxlength="50">
         <button class="btn btn-start" id="add-game-btn">Add</button>
       </div>
+      <button class="btn-ghost" id="pick-game-btn" type="button" style="width:100%;margin:0 0 10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
       <input type="text" id="game-search-input" placeholder="Search games..." maxlength="50" autocomplete="off" style="margin:0 0 10px;">
       <div class="game-tag-filters" id="game-tag-filters"></div>
       <div id="games-list"></div>
@@ -4065,6 +4094,26 @@ opacity: 0.18;
       <button class="btn-ghost" id="idle-still">I'm still here</button>
       <button class="btn-ghost" id="idle-pause">Pause</button>
       <button class="btn btn-stop" id="idle-stop" style="padding:8px 16px;font-size:0.85rem;">Stop session</button>
+    </div>
+  </div>
+</div>
+
+<!-- What should I play? picker -->
+<div class="modal-overlay" id="pick-modal">
+  <div class="modal">
+    <h3>What should I play?</h3>
+    <div class="pick-mode" id="pick-mode">
+      <button class="pick-opt on" type="button" data-pickmode="random">Random</button>
+      <button class="pick-opt" type="button" data-pickmode="least">Least played</button>
+    </div>
+    <div class="pick-result">
+      <div class="pick-name" id="pick-name">&mdash;</div>
+      <div class="pick-meta" id="pick-meta"></div>
+    </div>
+    <div class="modal-actions" style="flex-wrap:wrap;">
+      <button class="btn-ghost" id="pick-close">Close</button>
+      <button class="btn-ghost" id="pick-again">Pick another</button>
+      <button class="btn-primary" id="pick-start">Start session</button>
     </div>
   </div>
 </div>
@@ -4707,6 +4756,94 @@ opacity: 0.18;
     startGame(gameId);
     goTab('today');
   }
+
+  // --- What should I play? picker ---
+  let pickMode = 'random';
+  let pickLastId = null;
+
+  function pickCount(g) { return sessions.filter(s => s.gameId === g.id && s.stop !== null).length; }
+
+  function pickLastPlayed(g) {
+    let last = 0;
+    sessions.forEach(s => {
+      if (s.gameId === g.id && s.stop !== null) {
+        const t = new Date(s.start).getTime();
+        if (t > last) last = t;
+      }
+    });
+    return last;
+  }
+
+  // Candidate pool: all active games, or only the least-played ones in 'least' mode
+  function pickPool() {
+    const list = games.filter(g => !g.archived);
+    if (pickMode === 'least' && list.length) {
+      let min = Infinity;
+      list.forEach(g => { const c = pickCount(g); if (c < min) min = c; });
+      return list.filter(g => pickCount(g) === min);
+    }
+    return list;
+  }
+
+  function choosePick() {
+    let pool = pickPool();
+    // Re-roll avoids repeating the pick currently shown, when there is a choice
+    if (pool.length > 1 && pickLastId) {
+      const rest = pool.filter(g => g.id !== pickLastId);
+      if (rest.length) pool = rest;
+    }
+    return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+  }
+
+  function renderPick() {
+    document.querySelectorAll('#pick-mode .pick-opt').forEach(b => b.classList.toggle('on', b.dataset.pickmode === pickMode));
+    const nameEl = document.getElementById('pick-name');
+    const metaEl = document.getElementById('pick-meta');
+    const startBtn = document.getElementById('pick-start');
+    const againBtn = document.getElementById('pick-again');
+    const g = choosePick();
+    if (!g) {
+      pickLastId = null;
+      nameEl.textContent = 'No games yet';
+      metaEl.textContent = 'Add one on the Games tab first.';
+      startBtn.style.display = 'none';
+      againBtn.style.display = 'none';
+      return;
+    }
+    pickLastId = g.id;
+    nameEl.textContent = g.name;
+    const n = pickCount(g);
+    const last = pickLastPlayed(g);
+    metaEl.textContent = n + ' session' + (n !== 1 ? 's' : '') + (last ? ' · last played ' + timeAgo(last) : ' · never played');
+    startBtn.style.display = activeSession ? 'none' : '';
+    againBtn.style.display = '';
+  }
+
+  function openPick() {
+    document.getElementById('pick-modal').classList.add('open');
+    renderPick();
+  }
+
+  function pickStart() {
+    if (activeSession) { toast('Stop the current session first'); return; }
+    const g = games.find(x => x.id === pickLastId);
+    document.getElementById('pick-modal').classList.remove('open');
+    if (g) startGameFromList(g.id);
+  }
+
+  ['pick-game-btn', 'pick-game-btn-today'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', openPick);
+  });
+  document.getElementById('pick-again').addEventListener('click', renderPick);
+  document.getElementById('pick-close').addEventListener('click', () => document.getElementById('pick-modal').classList.remove('open'));
+  document.getElementById('pick-start').addEventListener('click', pickStart);
+  document.querySelectorAll('#pick-mode .pick-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      pickMode = btn.dataset.pickmode || 'random';
+      renderPick();
+    });
+  });
 
   // --- Stop session ---
   function stopSession() {

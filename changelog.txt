@@ -7,6 +7,7 @@ Version 1.3.4
 - Each game's dashboard now shows a 30-day playtime mini chart alongside the monthly bars and recent sessions.
 - The Today tab's Start a Game list is back to just the game name and a play icon — removed the per-game tags, last-played time, and Play again? tag.
 - Start a session straight from the Games tab: a play button on each game row begins the live timer and takes you to Today.
+- A "What should I play?" button on the Today and Games tabs suggests a game at random (or the least-played one), with one-tap start and re-roll.
 
 Version 1.3.3
 -------------------
