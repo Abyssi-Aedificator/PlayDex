@@ -1188,6 +1188,8 @@ opacity: 0.18;
   /* Games list */
   .game-item {
     display: flex;
+    flex-wrap: wrap;
+    row-gap: 8px;
     justify-content: space-between;
     align-items: center;
     padding: 12px 0;
@@ -1196,7 +1198,7 @@ opacity: 0.18;
 
   .game-item:last-child { border-bottom: none; }
 
-  .game-item-info { flex: 1; min-width: 0; }
+  .game-item-info { flex: 1 1 190px; min-width: 0; }
 
   .game-item-name-row {
     display: flex;
@@ -1376,8 +1378,10 @@ opacity: 0.18;
 
   .game-item-actions {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: 4px;
-    margin-left: 8px;
+    margin-left: auto;
   }
 
   .btn-icon {
@@ -1400,6 +1404,10 @@ opacity: 0.18;
   .btn-icon.archive:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
   .btn-icon.restore:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
   .btn-icon.pin.on { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  .btn-icon.play { color: var(--accent); }
+  .btn-icon.play:hover { border-color: var(--accent); background: var(--accent-dim); }
+  .btn-icon.play.on { border-color: var(--accent); background: var(--accent-dim); }
 
   .archive-section-label {
     font-size: 0.7rem;
@@ -4693,6 +4701,13 @@ opacity: 0.18;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // Start a game from the Games list, then jump to Today (respects the one-active-session guard)
+  function startGameFromList(gameId) {
+    if (activeSession) { toast('Stop the current session first'); return; }
+    startGame(gameId);
+    goTab('today');
+  }
+
   // --- Stop session ---
   function stopSession() {
     if (!activeSession) return;
@@ -6482,6 +6497,7 @@ opacity: 0.18;
       html += active.map((g, i) => {
         const count = sessions.filter(s => s.gameId === g.id).length;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
+        const running = activeSession && activeSession.gameId === g.id;
         return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
@@ -6489,6 +6505,7 @@ opacity: 0.18;
             gameMeta(count, e, staleIds.has(g.id)) +
           '</div>' +
           '<div class="game-item-actions">' +
+            '<button class="btn-icon play' + (running ? ' on' : '') + '" data-action="start" data-id="' + g.id + '" title="' + (running ? 'Playing now' : 'Start session') + '">' + iconSvg('play') + '</button>' +
             '<button class="btn-icon pin' + (g.pinned ? ' on' : '') + '" data-action="pin" data-id="' + g.id + '" title="' + (g.pinned ? 'Unpin' : 'Pin to top') + '">' + iconSvg('pin') + '</button>' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
             '<button class="btn-icon" data-action="rename" data-id="' + g.id + '" title="Edit">' + iconSvg('rename') + '</button>' +
@@ -6526,6 +6543,7 @@ opacity: 0.18;
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
         if (btn.dataset.action === 'pin') { togglePinGame(id); }
+        else if (btn.dataset.action === 'start') startGameFromList(id);
         else if (btn.dataset.action === 'view') openDashboard(id);
         else if (btn.dataset.action === 'rename') openRenameModal(id);
         else if (btn.dataset.action === 'archive') archiveGame(id);

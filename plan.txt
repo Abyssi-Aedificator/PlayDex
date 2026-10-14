@@ -41,11 +41,6 @@ The round-three streak freeze (#25) was implemented - left out.
    - Data: schema addition to games[] + backup payload.
    - Scope: medium. Risk: medium.
 
-12. Quick-start a game from the Games list
-    "Inline Start button on each game row that begins the live session for that
-    game and switches to the Today tab (respects the one-active-session guard)."
-    - Scope: small. Risk: low.
-
 15. Recently unlocked strip in the Player Profile
     "Show the last few badge icons with relative unlock time (e.g. '2h ago'),
     sourced from the persisted settings.achievementUnlocks timestamps."
