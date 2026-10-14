@@ -5008,15 +5008,10 @@ opacity: 0.18;
     if (activeGames.length === 0) {
       container.innerHTML = '<div class="no-games-hint">No games yet. Add one below.</div>';
     } else {
-      const todayStaleIds = new Set(staleGameEntries().map(x => x.game.id));
       container.innerHTML = sortedGames.map((g, i) => {
         const lastMs = lastUsed.has(g.id) ? lastUsed.get(g.id) : 0;
-        const stale = todayStaleIds.has(g.id);
-        const meta = (lastMs || stale)
-          ? '<span class="start-game-meta">' +
-              (lastMs ? '<span class="start-game-last" title="' + fmtDate(new Date(lastMs).toISOString()) + '">Last played ' + timeAgo(lastMs) + '</span>' : '') +
-              (stale ? '<span class="stale-tag">Play again?</span>' : '') +
-            '</span>'
+        const meta = lastMs
+          ? '<span class="start-game-meta"><span class="start-game-last" title="' + fmtDate(new Date(lastMs).toISOString()) + '">Last played ' + timeAgo(lastMs) + '</span></span>'
           : '';
         return '<button class="btn btn-start-game fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms" data-game-id="' + g.id + '">' +
           '<span class="start-game-info">' +
