@@ -6,6 +6,7 @@ Version 1.3.6
 - Top tab: pick the period to rank by - This week, the last 7 days, the current month, or all time - and the trend compares against the previous equal period.
 - The Top tab now shows the period's total playtime, how it changed against the previous period, and the number of sessions.
 - Each game row in the Top tab shows how much more or less you played it compared with the previous period.
+- The top three games in the Top tab are marked with medals.
 
 Version 1.3.5
 -------------------

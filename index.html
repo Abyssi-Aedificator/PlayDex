@@ -1459,6 +1459,10 @@ opacity: 0.18;
     color: var(--text2);
     font-variant-numeric: tabular-nums;
   }
+  .top-rank.medal {
+    font-size: 1.02rem;
+    font-weight: 400;
+  }
   .top-name {
     flex: 1;
     min-width: 0;
@@ -4974,8 +4978,12 @@ opacity: 0.18;
         else if (p < pos) trend = '<span class="top-trend down" title="Was #' + p + '">\u2193<span class="was">' + p + '</span></span>';
         else trend = '<span class="top-trend flat" title="Still #' + p + '">\u2013<span class="was">' + p + '</span></span>';
       }
+      const medal = pos === 1 ? '\uD83E\uDD47' : (pos === 2 ? '\uD83E\uDD48' : (pos === 3 ? '\uD83E\uDD49' : ''));
+      const rankHtml = medal
+        ? '<span class="top-rank medal" title="Rank ' + pos + '">' + medal + '</span>'
+        : '<span class="top-rank">' + pos + '</span>';
       return '<div class="top-row">' +
-        '<span class="top-rank">' + pos + '</span>' +
+        rankHtml +
         '<span class="top-name"><span class="top-name-text">' + escHtml(g.name) + '</span>' +
           (hasTrend ? topDeltaHtml(thisMs[g.id], prevMs[g.id], false) : '') +
         '</span>' +
