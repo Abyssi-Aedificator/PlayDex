@@ -1436,6 +1436,59 @@ opacity: 0.18;
   .btn-icon.play:hover { border-color: var(--accent); background: var(--accent-dim); }
   .btn-icon.play.on { border-color: var(--accent); background: var(--accent-dim); }
 
+  /* Top tab */
+  .top-legend {
+    font-size: 0.72rem;
+    color: var(--text3);
+    margin-bottom: 4px;
+    line-height: 1.5;
+  }
+  .top-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .top-row:last-child { border-bottom: none; }
+  .top-rank {
+    flex: 0 0 24px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--text2);
+    font-variant-numeric: tabular-nums;
+  }
+  .top-name {
+    flex: 1;
+    min-width: 0;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .top-time {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+  .top-trend {
+    flex: 0 0 58px;
+    text-align: right;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .top-trend.up { color: var(--green); }
+  .top-trend.down { color: var(--red); }
+  .top-trend.flat { color: var(--text3); }
+  .top-trend.new {
+    color: var(--accent);
+    font-size: 0.66rem;
+    letter-spacing: 0.5px;
+    font-weight: 800;
+  }
+  .top-trend .was { color: var(--text3); font-weight: 600; margin-left: 2px; }
+
   .archive-section-label {
     font-size: 0.7rem;
     font-weight: 700;
@@ -3215,6 +3268,10 @@ opacity: 0.18;
     .app-content:has(#tab-games.active) {
       max-width: 760px;
     }
+    /* Top tab: a little more width on desktop so the header/legend don't wrap as much */
+    .app-content:has(#tab-top.active) {
+      max-width: 800px;
+    }
     .profile-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
@@ -3279,7 +3336,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.3.4</span>
+    <span class="version-badge">1.3.5</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3570,6 +3627,16 @@ opacity: 0.18;
     </div>
   </div>
 
+  <!-- Top tab -->
+  <div id="tab-top" class="tab-panel">
+    <div class="card">
+      <div class="card-header">Top - This week vs last week (by total playtime)</div>
+      <div class="top-legend" id="top-range"></div>
+      <div class="top-legend">&#8593; moved up &nbsp;&middot;&nbsp; &#8595; moved down &nbsp;&middot;&nbsp; &#8211; no change &nbsp;&middot;&nbsp; NEW = not played last week. The number is last week's position.</div>
+      <div id="top-list"></div>
+    </div>
+  </div>
+
   <!-- SETTINGS TAB -->
   <div id="tab-settings" class="tab-panel">
     <div class="card">
@@ -3695,6 +3762,7 @@ opacity: 0.18;
         <div class="shortcut-row"><kbd>/</kbd><span>Focus the Games search</span></div>
         <div class="shortcut-row"><kbd>T</kbd><span>Today</span></div>
         <div class="shortcut-row"><kbd>G</kbd><span>Games</span></div>
+        <div class="shortcut-row"><kbd>O</kbd><span>Top</span></div>
         <div class="shortcut-row"><kbd>H</kbd><span>Sessions history</span></div>
         <div class="shortcut-row"><kbd>A</kbd><span>Stats</span></div>
         <div class="shortcut-row"><kbd>B</kbd><span>Badges</span></div>
@@ -3732,6 +3800,10 @@ opacity: 0.18;
   <button class="tab-btn" data-tab="games">
     <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.94 3.56L2 15.56a2.5 2.5 0 0 0 3.32 2.61l1.82-.68a1 1 0 0 1 .82 0l3.13 1.04a2.5 2.5 0 0 0 1.9 0l3.13-1.04a1 1 0 0 1 .82 0l1.82.68A2.5 2.5 0 0 0 22 15.56l-1.06-7A4 4 0 0 0 17.32 5z"/></svg></span>
     Games
+  </button>
+  <button class="tab-btn" data-tab="top">
+    <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
+    Top
   </button>
   <button class="tab-btn" data-tab="settings">
     <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
@@ -4678,6 +4750,95 @@ opacity: 0.18;
     dbxSyncTimer = setTimeout(() => dropboxUpload(true), 10000);
   }
 
+  // --- Week range helpers ---
+  function getWeekBounds(date = new Date()) {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    const day = d.getDay();
+    const diffToMon = (day === 0) ? -6 : 1 - day;
+    const start = new Date(d);
+    start.setDate(d.getDate() + diffToMon);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+    return { start, end };
+  }
+
+  function fmtDayMonth(date) {
+    return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+  }
+
+  // --- Top tab: games ranked by total playtime this week, trend vs last week ---
+  function renderTop() {
+    const container = document.getElementById('top-list');
+    if (!container) return;
+
+    const now = new Date();
+    const thisWeek = getWeekBounds(now);
+    // The day before this week's start belongs to last week
+    const prevDay = new Date(thisWeek.start);
+    prevDay.setDate(prevDay.getDate() - 1);
+    const lastWeek = getWeekBounds(prevDay);
+
+    const rangeEl = document.getElementById('top-range');
+    if (rangeEl) {
+      rangeEl.textContent = 'This week ' + fmtDayMonth(thisWeek.start) + ' \u2013 ' + fmtDayMonth(thisWeek.end) +
+        ' \u00b7 compared with ' + fmtDayMonth(lastWeek.start) + ' \u2013 ' + fmtDayMonth(lastWeek.end) + '.';
+    }
+
+    const msInWeek = (s, week) => {
+      if (s.stop === null) return 0;
+      const t = new Date(s.start).getTime();
+      return (t >= week.start.getTime() && t <= week.end.getTime()) ? (s.durationMs || 0) : 0;
+    };
+
+    const thisMs = {};
+    const prevMs = {};
+    games.forEach(g => { thisMs[g.id] = 0; prevMs[g.id] = 0; });
+    sessions.forEach(s => {
+      if (!(s.gameId in thisMs)) return;
+      thisMs[s.gameId] += msInWeek(s, thisWeek);
+      prevMs[s.gameId] += msInWeek(s, lastWeek);
+    });
+
+    const byPlaytime = (a, b) => (thisMs[b.id] - thisMs[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+
+    // Current ranking: active games with playtime this week
+    const ranked = games.filter(g => !g.archived && thisMs[g.id] > 0).sort(byPlaytime);
+
+    // Last week's positions (active games with playtime last week), keyed by id
+    const prevRank = {};
+    games.filter(g => !g.archived && prevMs[g.id] > 0)
+      .sort((a, b) => (prevMs[b.id] - prevMs[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+      .forEach((g, i) => { prevRank[g.id] = i + 1; });
+
+    if (!ranked.length) {
+      container.innerHTML = '<div class="no-games-hint">No playtime recorded this week yet.</div>';
+      return;
+    }
+
+    container.innerHTML = ranked.map((g, i) => {
+      const pos = i + 1;
+      const prev = prevRank[g.id];
+      let trend;
+      if (!prev) {
+        trend = '<span class="top-trend new">NEW</span>';
+      } else if (prev > pos) {
+        trend = '<span class="top-trend up" title="Was #' + prev + ' last week">\u2191<span class="was">' + prev + '</span></span>';
+      } else if (prev < pos) {
+        trend = '<span class="top-trend down" title="Was #' + prev + ' last week">\u2193<span class="was">' + prev + '</span></span>';
+      } else {
+        trend = '<span class="top-trend flat" title="Still #' + prev + '">\u2013<span class="was">' + prev + '</span></span>';
+      }
+      return '<div class="top-row">' +
+        '<span class="top-rank">' + pos + '</span>' +
+        '<span class="top-name">' + escHtml(g.name) + '</span>' +
+        '<span class="top-time">' + fmtDurationShort(thisMs[g.id]) + '</span>' +
+        trend +
+      '</div>';
+    }).join('');
+  }
+
   // --- Tab switching ---
   function goTab(name) {
     currentTab = name;
@@ -4692,7 +4853,7 @@ opacity: 0.18;
   });
 
   // --- Keyboard shortcuts ---
-  const SHORTCUT_TABS = { t: 'today', g: 'games', h: 'sessions', a: 'stats', b: 'badges', p: 'profile', c: 'settings' };
+  const SHORTCUT_TABS = { t: 'today', g: 'games', h: 'sessions', a: 'stats', b: 'badges', p: 'profile', c: 'settings', o: 'top' };
   document.addEventListener('keydown', e => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const t = e.target;
@@ -4966,6 +5127,7 @@ opacity: 0.18;
     renderAchievementsTab();
     renderProfileTab();
     renderGamesTab();
+    renderTop();
   }
 
   function renderGoal() {
@@ -7860,7 +8022,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.3.4';
+    const APP_VERSION = '1.3.5';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
