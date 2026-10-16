@@ -1513,6 +1513,33 @@ opacity: 0.18;
     color: var(--accent);
     background: var(--accent-dim);
   }
+  .top-summary {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 4px 0 8px;
+  }
+  .top-summary-total {
+    font-size: 1.4rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .top-summary-count {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: var(--text3);
+  }
+  .top-delta {
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .top-delta.up { color: var(--green); }
+  .top-delta.down { color: var(--red); }
+  .top-delta.flat { color: var(--text3); }
 
   .archive-section-label {
     font-size: 0.7rem;
@@ -3662,6 +3689,7 @@ opacity: 0.18;
         <button class="top-period" type="button" data-period="month">Month</button>
         <button class="top-period" type="button" data-period="all">All time</button>
       </div>
+      <div class="top-summary" id="top-summary"></div>
       <div class="top-legend" id="top-range"></div>
       <div class="top-legend">&#8593; moved up &nbsp;&middot;&nbsp; &#8595; moved down &nbsp;&middot;&nbsp; &#8211; no change &nbsp;&middot;&nbsp; NEW = not played in the previous period. The number is the previous position.</div>
       <div id="top-list"></div>
@@ -4851,6 +4879,17 @@ opacity: 0.18;
     return 'This week (' + fmtDayMonth(cur.start) + ' \u2013 ' + fmtDayMonth(cur.end) + ') \u00b7 compared with ' + fmtDayMonth(prev.start) + ' \u2013 ' + fmtDayMonth(prev.end) + '.';
   }
 
+  // Relative change vs a previous total, e.g. "+1h 20m" / "−45m (−18%)".
+  function topDeltaHtml(curMs, prevMs, withPct) {
+    if (!prevMs) return '';
+    const d = curMs - prevMs;
+    if (d === 0) return '<span class="top-delta flat">\u00b10' + (withPct ? ' (0%)' : '') + '</span>';
+    const sign = d > 0 ? '+' : '\u2212';
+    let html = sign + fmtDurationShort(Math.abs(d));
+    if (withPct) html += ' (' + sign + Math.round(Math.abs(d) / prevMs * 100) + '%)';
+    return '<span class="top-delta ' + (d > 0 ? 'up' : 'down') + '">' + html + '</span>';
+  }
+
   // --- Top tab: games ranked by total playtime in the selected period ---
   function renderTop() {
     const container = document.getElementById('top-list');
@@ -4893,6 +4932,21 @@ opacity: 0.18;
       games.filter(g => !g.archived && prevMs[g.id] > 0)
         .sort((a, b) => (prevMs[b.id] - prevMs[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
         .forEach((g, i) => { prevRank[g.id] = i + 1; });
+    }
+
+    // Period summary: total playtime, change vs the previous period, session count
+    const summaryEl = document.getElementById('top-summary');
+    if (summaryEl) {
+      const active = games.filter(g => !g.archived);
+      const activeIds = {};
+      active.forEach(g => { activeIds[g.id] = 1; });
+      const totalMs = active.reduce((a, g) => a + thisMs[g.id], 0);
+      const prevTotalMs = hasTrend ? active.reduce((a, g) => a + prevMs[g.id], 0) : 0;
+      const count = sessions.filter(s => s.stop !== null && activeIds[s.gameId] && (period === 'all' || inBounds(s, cur))).length;
+      summaryEl.innerHTML =
+        '<span class="top-summary-total">' + fmtDurationShort(totalMs) + '</span>' +
+        topDeltaHtml(totalMs, prevTotalMs, true) +
+        '<span class="top-summary-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</span>';
     }
 
     if (!ranked.length) {
