@@ -78,6 +78,13 @@ Commit/push only when explicitly asked. Follow existing message style (`git log 
 - **Time picker (Add/Edit Session):** the four HH/MM inputs are custom RTF controls, not `<input type="time">`. The trigger ids (`add-session-time`, ...) live on the `.cal-field` wrapper divs, set via `createTimeField()`. `setCalDateTime`/`getCalDateTime(dateField, timeField, iso)` take field *objects*, not string ids. Value is stored 24h `HH:MM` but shown as AM/PM.
 - **Animations:** all smooth motion is `cubic-bezier(0.4,0,0.2,1)`; stagger delays are capped (`Math.min(i*40,320)`). A `@media (prefers-reduced-motion: reduce)` block (line ~1445) forces durations to 0.01ms. `renderSessionsTab(animate=true)` — pass `animate=false` for in-place updates (sync/delete toggles) so the whole list doesn't re-animate.
 
+## Top tab
+
+- Period is user-selectable (`This week` / `7 days` / `Month` / `All time`), persisted in `settings.topPeriod` and validated against `TOP_PERIODS` via `getTopPeriod()`.
+- Bounds come from `getPeriodBounds(period)` / `getPrevPeriodBounds(period)`; `start` is `null` for `all` (no previous period ⇒ trends, deltas and the "Fell out" section are hidden).
+- `week` is **calendar** (Mon–Sun, via `getWeekBounds`); `rolling7` is the trailing 7 days. Note the Stats tab's "This week" is rolling 7 days — the two differ by design.
+- `renderTop()` owns the whole panel: the period selector is static markup (`#top-periods`), but the summary (`#top-summary`), list (`#top-list`) and fell-out block (`#top-fellout`) are rebuilt on every render. Shared helpers: `topDeltaHtml`, `championStreak`, `topPeriodBuckets`, `sparkBarsHtml`.
+
 ## Workflow conventions
 
 - This repo is served via GitHub Pages under `/PlayDex/`; asset links are relative so they work at any subpath.
