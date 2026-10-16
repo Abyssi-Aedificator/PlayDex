@@ -1479,6 +1479,13 @@ opacity: 0.18;
     font-size: 0.68rem;
     font-weight: 600;
   }
+  .top-streak {
+    margin-left: 6px;
+    font-size: 0.66rem;
+    font-weight: 800;
+    color: #f5c542;
+    white-space: nowrap;
+  }
   .top-time {
     font-variant-numeric: tabular-nums;
     font-size: 0.85rem;
@@ -4920,6 +4927,32 @@ opacity: 0.18;
     return '<span class="top-delta ' + (d > 0 ? 'up' : 'down') + '">' + html + '</span>';
   }
 
+  // Consecutive calendar weeks the same game has held the #1 spot (capped lookback)
+  function championStreak(now = new Date()) {
+    const CAP = 52;
+    let anchor = new Date(now);
+    let championId = null;
+    let streak = 0;
+    for (let i = 0; i < CAP; i++) {
+      const wb = getWeekBounds(anchor);
+      const totals = {};
+      sessions.forEach(s => {
+        if (s.stop === null) return;
+        const t = new Date(s.start).getTime();
+        if (t >= wb.start.getTime() && t <= wb.end.getTime()) totals[s.gameId] = (totals[s.gameId] || 0) + (s.durationMs || 0);
+      });
+      const list = games.filter(g => !g.archived && totals[g.id] > 0)
+        .sort((a, b) => (totals[b.id] - totals[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+      if (!list.length) break;
+      const weekChamp = list[0].id;
+      if (i === 0) { championId = weekChamp; streak = 1; }
+      else if (weekChamp === championId) streak++;
+      else break;
+      anchor = new Date(wb.start.getTime() - 1);
+    }
+    return { championId, streak };
+  }
+
   // --- Top tab: games ranked by total playtime in the selected period ---
   function renderTop() {
     const container = document.getElementById('top-list');
@@ -4932,6 +4965,7 @@ opacity: 0.18;
     const cur = getPeriodBounds(period, now);
     const prev = getPrevPeriodBounds(period, now);
     const hasTrend = !!prev.start;
+    const champ = championStreak(now);
 
     const rangeEl = document.getElementById('top-range');
     if (rangeEl) rangeEl.textContent = periodRangeText(period, cur, prev);
@@ -5018,9 +5052,12 @@ opacity: 0.18;
       const rankHtml = medal
         ? '<span class="top-rank medal" title="Rank ' + pos + '">' + medal + '</span>'
         : '<span class="top-rank">' + pos + '</span>';
+      const streakHtml = (champ.championId === g.id && champ.streak >= 2)
+        ? '<span class="top-streak" title="' + champ.streak + ' weeks in a row at #1">\uD83C\uDFC6 ' + champ.streak + 'w</span>'
+        : '';
       return '<div class="top-row">' +
         rankHtml +
-        '<span class="top-name"><span class="top-name-text">' + escHtml(g.name) + '</span>' +
+        '<span class="top-name"><span class="top-name-text">' + escHtml(g.name) + streakHtml + '</span>' +
           (hasTrend ? topDeltaHtml(thisMs[g.id], prevMs[g.id], false) : '') +
         '</span>' +
         '<span class="top-time">' + fmtDurationShort(thisMs[g.id]) + '</span>' +
