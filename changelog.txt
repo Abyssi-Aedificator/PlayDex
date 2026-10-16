@@ -9,6 +9,7 @@ Version 1.3.6
 - The top three games in the Top tab are marked with medals.
 - The Top tab shows a "Fell out" section for games that were on the previous period's list but have no playtime in the current one.
 - The current number-one game in the Top tab is marked when it has held the top spot for several weeks in a row.
+- Each game in the Top tab shows a small bar chart of when it was played during the period.
 
 Version 1.3.5
 -------------------

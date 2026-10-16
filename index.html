@@ -1486,6 +1486,21 @@ opacity: 0.18;
     color: #f5c542;
     white-space: nowrap;
   }
+  .top-spark {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 16px;
+    flex: 0 0 auto;
+  }
+  .top-spark-bar {
+    width: 3px;
+    align-self: flex-end;
+    background: var(--accent);
+    border-radius: 1px;
+    opacity: 0.75;
+  }
+  .top-spark-bar.empty { opacity: 0.15; }
   .top-time {
     font-variant-numeric: tabular-nums;
     font-size: 0.85rem;
@@ -4953,6 +4968,48 @@ opacity: 0.18;
     return { championId, streak };
   }
 
+  // Buckets the selected period is split into for the per-row sparkline
+  function topPeriodBuckets(period, cur) {
+    const buckets = [];
+    if (period === 'week' || period === 'rolling7') {
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(cur.start);
+        d.setDate(d.getDate() + i);
+        buckets.push({ start: startOfDay(d), end: endOfDay(d) });
+      }
+    } else if (period === 'month') {
+      let d = new Date(cur.start);
+      while (d <= cur.end) {
+        const wb = getWeekBounds(d);
+        buckets.push({
+          start: wb.start < cur.start ? cur.start : wb.start,
+          end: wb.end > cur.end ? cur.end : wb.end
+        });
+        d = new Date(wb.start);
+        d.setDate(d.getDate() + 7);
+      }
+    } else {
+      const endMonth = new Date(cur.end.getFullYear(), cur.end.getMonth(), 1);
+      for (let i = 11; i >= 0; i--) {
+        const m = new Date(endMonth.getFullYear(), endMonth.getMonth() - i, 1, 0, 0, 0, 0);
+        buckets.push({ start: m, end: new Date(m.getFullYear(), m.getMonth() + 1, 0, 23, 59, 59, 999) });
+      }
+    }
+    return buckets;
+  }
+
+  function sparkBarsHtml(arr) {
+    if (!arr || !arr.length) return '';
+    let max = 0;
+    for (let i = 0; i < arr.length; i++) if (arr[i] > max) max = arr[i];
+    let html = '<span class="top-spark">';
+    for (let i = 0; i < arr.length; i++) {
+      const h = max > 0 ? Math.max(2, Math.round(arr[i] / max * 15)) : 2;
+      html += '<span class="top-spark-bar' + (arr[i] > 0 ? '' : ' empty') + '" style="height:' + h + 'px"></span>';
+    }
+    return html + '</span>';
+  }
+
   // --- Top tab: games ranked by total playtime in the selected period ---
   function renderTop() {
     const container = document.getElementById('top-list');
@@ -4997,6 +5054,24 @@ opacity: 0.18;
         .sort((a, b) => (prevMs[b.id] - prevMs[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
         .forEach((g, i) => { prevRank[g.id] = i + 1; });
     }
+
+    // Per-bucket playtime (for the sparkline)
+    const buckets = topPeriodBuckets(period, cur);
+    const bucketMs = {};
+    games.forEach(g => {
+      bucketMs[g.id] = [];
+      for (let i = 0; i < buckets.length; i++) bucketMs[g.id].push(0);
+    });
+    sessions.forEach(s => {
+      if (s.stop === null || !(s.gameId in bucketMs)) return;
+      const t = new Date(s.start).getTime();
+      for (let i = 0; i < buckets.length; i++) {
+        if (t >= buckets[i].start.getTime() && t <= buckets[i].end.getTime()) {
+          bucketMs[s.gameId][i] += (s.durationMs || 0);
+          break;
+        }
+      }
+    });
 
     // Period summary: total playtime, change vs the previous period, session count
     const summaryEl = document.getElementById('top-summary');
@@ -5055,12 +5130,14 @@ opacity: 0.18;
       const streakHtml = (champ.championId === g.id && champ.streak >= 2)
         ? '<span class="top-streak" title="' + champ.streak + ' weeks in a row at #1">\uD83C\uDFC6 ' + champ.streak + 'w</span>'
         : '';
+      const sparkHtml = sparkBarsHtml(bucketMs[g.id]);
       return '<div class="top-row">' +
         rankHtml +
         '<span class="top-name"><span class="top-name-text">' + escHtml(g.name) + streakHtml + '</span>' +
           (hasTrend ? topDeltaHtml(thisMs[g.id], prevMs[g.id], false) : '') +
         '</span>' +
         '<span class="top-time">' + fmtDurationShort(thisMs[g.id]) + '</span>' +
+        sparkHtml +
         trend +
       '</div>';
     }).join('');
