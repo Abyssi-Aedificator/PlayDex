@@ -1462,8 +1462,18 @@ opacity: 0.18;
   .top-name {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow-wrap: anywhere;
+  }
+  .top-name-text {
     font-weight: 600;
     overflow-wrap: anywhere;
+  }
+  .top-name .top-delta {
+    font-size: 0.68rem;
+    font-weight: 600;
   }
   .top-time {
     font-variant-numeric: tabular-nums;
@@ -4966,7 +4976,9 @@ opacity: 0.18;
       }
       return '<div class="top-row">' +
         '<span class="top-rank">' + pos + '</span>' +
-        '<span class="top-name">' + escHtml(g.name) + '</span>' +
+        '<span class="top-name"><span class="top-name-text">' + escHtml(g.name) + '</span>' +
+          (hasTrend ? topDeltaHtml(thisMs[g.id], prevMs[g.id], false) : '') +
+        '</span>' +
         '<span class="top-time">' + fmtDurationShort(thisMs[g.id]) + '</span>' +
         trend +
       '</div>';
