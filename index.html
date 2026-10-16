@@ -3268,6 +3268,10 @@ opacity: 0.18;
     .app-content:has(#tab-games.active) {
       max-width: 760px;
     }
+    /* Top tab: a little more width on desktop so the header/legend don't wrap as much */
+    .app-content:has(#tab-top.active) {
+      max-width: 800px;
+    }
     .profile-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;

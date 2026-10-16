@@ -4,6 +4,7 @@ PlayDex - Changelog
 Version 1.3.5
 -------------------
 - New Top tab showing games sorted by most played this week, with a trend arrow (↑/↓) or dash showing each game's position last week and a NEW badge for games not played last week.
+- The Top tab uses a wider layout on desktop.
 
 Version 1.3.4
 -------------------
