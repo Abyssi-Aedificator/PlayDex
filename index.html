@@ -1502,6 +1502,21 @@ opacity: 0.18;
     font-weight: 800;
   }
   .top-trend .was { color: var(--text3); font-weight: 600; margin-left: 2px; }
+  .top-fellout-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 16px 0 2px;
+  }
+  .top-row.fellout { opacity: 0.6; }
+  .top-trend.out {
+    color: var(--text3);
+    font-size: 0.66rem;
+    letter-spacing: 0.5px;
+    font-weight: 800;
+  }
   .top-periods {
     display: flex;
     gap: 6px;
@@ -3707,6 +3722,7 @@ opacity: 0.18;
       <div class="top-legend" id="top-range"></div>
       <div class="top-legend">&#8593; moved up &nbsp;&middot;&nbsp; &#8595; moved down &nbsp;&middot;&nbsp; &#8211; no change &nbsp;&middot;&nbsp; NEW = not played in the previous period. The number is the previous position.</div>
       <div id="top-list"></div>
+      <div id="top-fellout"></div>
     </div>
   </div>
 
@@ -4961,6 +4977,26 @@ opacity: 0.18;
         '<span class="top-summary-total">' + fmtDurationShort(totalMs) + '</span>' +
         topDeltaHtml(totalMs, prevTotalMs, true) +
         '<span class="top-summary-count">' + count + ' session' + (count !== 1 ? 's' : '') + '</span>';
+    }
+
+    // Games that were on the previous period's list but have no playtime in this one
+    const felloutEl = document.getElementById('top-fellout');
+    if (felloutEl) {
+      if (!hasTrend) {
+        felloutEl.innerHTML = '';
+      } else {
+        const dropped = games.filter(g => !g.archived && thisMs[g.id] === 0 && prevMs[g.id] > 0)
+          .sort((a, b) => prevRank[a.id] - prevRank[b.id]);
+        felloutEl.innerHTML = dropped.length
+          ? '<div class="top-fellout-title">Fell out</div>' + dropped.map(g =>
+              '<div class="top-row fellout">' +
+                '<span class="top-rank">' + prevRank[g.id] + '</span>' +
+                '<span class="top-name"><span class="top-name-text">' + escHtml(g.name) + '</span></span>' +
+                '<span class="top-time">' + fmtDurationShort(prevMs[g.id]) + '</span>' +
+                '<span class="top-trend out" title="Not played in this period">OUT</span>' +
+              '</div>').join('')
+          : '';
+      }
     }
 
     if (!ranked.length) {
