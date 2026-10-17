@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.4.2
+-------------------
+- A paused timer is now obvious at a glance: the live card turns amber, shows a PAUSED badge, and dims the clock while it's held.
+
 Version 1.4.1
 -------------------
 - The Last 6 months bars in a game's dashboard now fill to show each month's playtime.
