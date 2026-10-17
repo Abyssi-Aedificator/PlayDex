@@ -44,6 +44,9 @@
     --green-dim: rgba(52, 211, 153, 0.12);
     --red-dim: rgba(248, 113, 113, 0.14);
     --yellow-dim: rgba(251, 191, 36, 0.12);
+    /* Text-safe accent inks: bright colours read fine on dark surfaces. */
+    --green-ink: #34d399;
+    --yellow-ink: #fbbf24;
     --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
     --shadow-soft: 0 6px 24px -10px rgba(0, 0, 0, 0.5);
     --glass-bg: rgba(21, 24, 35, 0.72);
@@ -66,6 +69,9 @@
     --green-dim: rgba(16, 185, 129, 0.12);
     --red-dim: rgba(239, 68, 68, 0.12);
     --yellow-dim: rgba(217, 119, 6, 0.12);
+    /* Text-safe accent inks: darkened so they stay readable on light surfaces. */
+    --green-ink: #047857;
+    --yellow-ink: #8a5300;
     --shadow: 0 12px 32px -14px rgba(15, 23, 42, 0.22);
     --shadow-soft: 0 6px 20px -12px rgba(15, 23, 42, 0.16);
     --glass-bg: rgba(255, 255, 255, 0.75);
@@ -443,7 +449,7 @@ opacity: 0.18;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--green);
+    color: var(--green-ink);
     margin-bottom: 6px;
     display: flex;
     align-items: center;
@@ -453,7 +459,7 @@ opacity: 0.18;
 
   /* Paused status line: a centered amber pill instead of a plain green label */
   .active-session.paused .live-label {
-    color: var(--yellow);
+    color: var(--yellow-ink);
     background: var(--yellow-dim);
     border: 1px solid rgba(251, 191, 36, 0.4);
     border-radius: 999px;
@@ -466,7 +472,7 @@ opacity: 0.18;
   .live-dot {
     width: 8px;
     height: 8px;
-    background: var(--green);
+    background: var(--green-ink);
     border-radius: 50%;
     animation: pulse 1.5s ease-in-out infinite;
   }
@@ -541,7 +547,7 @@ opacity: 0.18;
   .btn-pause svg { width: 16px; height: 16px; flex-shrink: 0; }
   .btn-pause:hover { filter: brightness(1.08); }
   .active-session.paused .live-dot {
-    background: var(--yellow);
+    background: var(--yellow-ink);
     animation: none;
     opacity: 1;
   }
@@ -554,7 +560,7 @@ opacity: 0.18;
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.3px;
-    color: var(--yellow);
+    color: var(--yellow-ink);
     font-variant-numeric: tabular-nums;
   }
   .active-session.paused .paused-for { display: block; }
