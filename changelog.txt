@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.4.1
+-------------------
+- The Last 6 months bars in a game's dashboard now fill to show each month's playtime.
+
 Version 1.4.0
 -------------------
 - The Profile playtime curve now rolls up by month for very long histories instead of breaking.
