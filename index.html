@@ -44,6 +44,9 @@
     --green-dim: rgba(52, 211, 153, 0.12);
     --red-dim: rgba(248, 113, 113, 0.14);
     --yellow-dim: rgba(251, 191, 36, 0.12);
+    /* Text-safe accent inks: bright colours read fine on dark surfaces. */
+    --green-ink: #34d399;
+    --yellow-ink: #fbbf24;
     --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
     --shadow-soft: 0 6px 24px -10px rgba(0, 0, 0, 0.5);
     --glass-bg: rgba(21, 24, 35, 0.72);
@@ -66,6 +69,9 @@
     --green-dim: rgba(16, 185, 129, 0.12);
     --red-dim: rgba(239, 68, 68, 0.12);
     --yellow-dim: rgba(217, 119, 6, 0.12);
+    /* Text-safe accent inks: darkened so they stay readable on light surfaces. */
+    --green-ink: #047857;
+    --yellow-ink: #8a5300;
     --shadow: 0 12px 32px -14px rgba(15, 23, 42, 0.22);
     --shadow-soft: 0 6px 20px -12px rgba(15, 23, 42, 0.16);
     --glass-bg: rgba(255, 255, 255, 0.75);
@@ -398,11 +404,23 @@
 
   /* Active session */
   .active-session {
+    --live-tint: rgba(52, 211, 153, 0.12);
+    --live-tint-top: rgba(52, 211, 153, 0.08);
     border-color: rgba(52, 211, 153, 0.4);
     background:
-      radial-gradient(120% 120% at 50% 0%, rgba(52, 211, 153, 0.12), var(--green-dim) 60%, var(--surface2) 100%);
+      radial-gradient(120% 120% at 50% 0%, var(--live-tint), var(--green-dim) 60%, var(--surface2) 100%);
     text-align: center;
     padding: 22px 16px;
+  }
+
+  /* Paused: switch the whole live card from the green "running" theme to amber
+     so a paused timer is obvious at a glance. */
+  .active-session.paused {
+    --live-tint: rgba(251, 191, 36, 0.14);
+    --live-tint-top: rgba(251, 191, 36, 0.10);
+    border-color: rgba(251, 191, 36, 0.5);
+    background:
+      radial-gradient(120% 120% at 50% 0%, var(--live-tint), var(--yellow-dim) 60%, var(--surface2) 100%);
   }
 
   .active-session.has-cover { position: relative; }
@@ -431,7 +449,7 @@ opacity: 0.18;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--green);
+    color: var(--green-ink);
     margin-bottom: 6px;
     display: flex;
     align-items: center;
@@ -439,10 +457,22 @@ opacity: 0.18;
     gap: 6px;
   }
 
+  /* Paused status line: a centered amber pill instead of a plain green label */
+  .active-session.paused .live-label {
+    color: var(--yellow-ink);
+    background: var(--yellow-dim);
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    border-radius: 999px;
+    padding: 3px 12px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .live-dot {
     width: 8px;
     height: 8px;
-    background: var(--green);
+    background: var(--green-ink);
     border-radius: 50%;
     animation: pulse 1.5s ease-in-out infinite;
   }
@@ -516,7 +546,24 @@ opacity: 0.18;
   }
   .btn-pause svg { width: 16px; height: 16px; flex-shrink: 0; }
   .btn-pause:hover { filter: brightness(1.08); }
-  .active-session.paused .live-dot { animation: none; opacity: 0.35; }
+  .active-session.paused .live-dot {
+    background: var(--yellow-ink);
+    animation: none;
+    opacity: 1;
+  }
+  .active-session.paused .elapsed { opacity: 0.55; }
+
+  /* Live pause readout: how long the timer has been held. Shown only while paused. */
+  .active-session .paused-for {
+    display: none;
+    margin: -4px 0 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--yellow-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .active-session.paused .paused-for { display: block; }
   .btn-start {
     background: var(--accent-gradient);
     color: #fff;
@@ -3440,7 +3487,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.4.1</span>
+    <span class="version-badge">1.4.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3472,6 +3519,7 @@ opacity: 0.18;
           <span id="active-current">--:--</span>
         </div>
       </div>
+      <div class="paused-for" id="paused-for"></div>
       <div class="active-session-actions">
         <button class="btn btn-pause" id="btn-pause" style="flex:1">Pause</button>
         <button class="btn btn-stop" id="btn-stop" style="flex:1">Stop Session</button>
@@ -4390,6 +4438,7 @@ opacity: 0.18;
   let timerRaf = null;
   let lastElapsedSec = -1;
   let lastClockStr = '';
+  let lastPausedSec = -1;
   let lastCountdownUpdate = 0;
   let lastQuestDay = todayStr();
   let lastStreak = null;
@@ -5383,6 +5432,10 @@ opacity: 0.18;
     card.classList.toggle('paused', paused);
     document.getElementById('btn-pause').innerHTML = iconSvg(paused ? 'play' : 'pause') + (paused ? ' Resume' : ' Pause');
     document.getElementById('live-text').textContent = paused ? 'PAUSED' : 'LIVE';
+    document.getElementById('paused-for').textContent = paused
+      ? 'Paused for ' + fmtDuration(Date.now() - new Date(activeSession.pausedAt).getTime())
+      : '';
+    lastPausedSec = -1;
   }
 
   function updateLiveChase(elapsed) {
@@ -5548,7 +5601,7 @@ opacity: 0.18;
       if (cover) {
         card.classList.add('has-cover');
         card.style.setProperty('--cover', 'url("' + cover + '")');
-        card.style.background = 'linear-gradient(180deg, rgba(52,211,153,0.08), rgba(10,10,18,0.42))';
+        card.style.background = 'linear-gradient(180deg, var(--live-tint-top), rgba(10,10,18,0.42))';
       } else {
         card.classList.remove('has-cover');
         card.style.removeProperty('--cover');
@@ -8111,6 +8164,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         lastClockStr = nowStr;
         document.getElementById('active-current').textContent = nowStr;
       }
+      if (activeSession.pausedAt) {
+        const pausedMs = Date.now() - new Date(activeSession.pausedAt).getTime();
+        const psec = Math.floor(pausedMs / 1000);
+        if (psec !== lastPausedSec) {
+          lastPausedSec = psec;
+          document.getElementById('paused-for').textContent = 'Paused for ' + fmtDuration(pausedMs);
+        }
+      }
       const tgt = activeSession.targetMs;
       const tp = document.getElementById('target-progress');
       if (tgt > 0) {
@@ -8131,7 +8192,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       }
       if (settings.tabTitle) {
         const paused = !!activeSession && !!activeSession.pausedAt;
-        document.title = (paused ? '\u23F8 ' : '') + fmtDurationShort(elapsed) + ' · ' + APP_TITLE;
+        const pausedMs = paused ? Date.now() - new Date(activeSession.pausedAt).getTime() : 0;
+        document.title = (paused ? '\u23F8 PAUSED ' + fmtDuration(pausedMs) + ' · ' : '') + fmtDurationShort(elapsed) + ' · ' + APP_TITLE;
       } else {
         document.title = APP_TITLE;
       }
@@ -8336,7 +8398,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.4.1';
+    const APP_VERSION = '1.4.2';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
