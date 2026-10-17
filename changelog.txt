@@ -4,6 +4,7 @@ PlayDex - Changelog
 Version 1.4.2
 -------------------
 - A paused timer is now obvious at a glance: the live card turns amber, shows a PAUSED badge, and dims the clock while it's held.
+- While a session is paused, the live card shows how long the timer has been paused, and the pause time also appears in the browser tab title.
 
 Version 1.4.1
 -------------------

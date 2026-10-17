@@ -546,6 +546,18 @@ opacity: 0.18;
     opacity: 1;
   }
   .active-session.paused .elapsed { opacity: 0.55; }
+
+  /* Live pause readout: how long the timer has been held. Shown only while paused. */
+  .active-session .paused-for {
+    display: none;
+    margin: -4px 0 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--yellow);
+    font-variant-numeric: tabular-nums;
+  }
+  .active-session.paused .paused-for { display: block; }
   .btn-start {
     background: var(--accent-gradient);
     color: #fff;
@@ -3501,6 +3513,7 @@ opacity: 0.18;
           <span id="active-current">--:--</span>
         </div>
       </div>
+      <div class="paused-for" id="paused-for"></div>
       <div class="active-session-actions">
         <button class="btn btn-pause" id="btn-pause" style="flex:1">Pause</button>
         <button class="btn btn-stop" id="btn-stop" style="flex:1">Stop Session</button>
@@ -4419,6 +4432,7 @@ opacity: 0.18;
   let timerRaf = null;
   let lastElapsedSec = -1;
   let lastClockStr = '';
+  let lastPausedSec = -1;
   let lastCountdownUpdate = 0;
   let lastQuestDay = todayStr();
   let lastStreak = null;
@@ -5412,6 +5426,10 @@ opacity: 0.18;
     card.classList.toggle('paused', paused);
     document.getElementById('btn-pause').innerHTML = iconSvg(paused ? 'play' : 'pause') + (paused ? ' Resume' : ' Pause');
     document.getElementById('live-text').textContent = paused ? 'PAUSED' : 'LIVE';
+    document.getElementById('paused-for').textContent = paused
+      ? 'Paused for ' + fmtDuration(Date.now() - new Date(activeSession.pausedAt).getTime())
+      : '';
+    lastPausedSec = -1;
   }
 
   function updateLiveChase(elapsed) {
@@ -8140,6 +8158,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         lastClockStr = nowStr;
         document.getElementById('active-current').textContent = nowStr;
       }
+      if (activeSession.pausedAt) {
+        const pausedMs = Date.now() - new Date(activeSession.pausedAt).getTime();
+        const psec = Math.floor(pausedMs / 1000);
+        if (psec !== lastPausedSec) {
+          lastPausedSec = psec;
+          document.getElementById('paused-for').textContent = 'Paused for ' + fmtDuration(pausedMs);
+        }
+      }
       const tgt = activeSession.targetMs;
       const tp = document.getElementById('target-progress');
       if (tgt > 0) {
@@ -8160,7 +8186,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       }
       if (settings.tabTitle) {
         const paused = !!activeSession && !!activeSession.pausedAt;
-        document.title = (paused ? '\u23F8 PAUSED \u00b7 ' : '') + fmtDurationShort(elapsed) + ' · ' + APP_TITLE;
+        const pausedMs = paused ? Date.now() - new Date(activeSession.pausedAt).getTime() : 0;
+        document.title = (paused ? '\u23F8 PAUSED ' + fmtDuration(pausedMs) + ' · ' : '') + fmtDurationShort(elapsed) + ' · ' + APP_TITLE;
       } else {
         document.title = APP_TITLE;
       }
