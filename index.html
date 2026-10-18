@@ -3314,23 +3314,6 @@ opacity: 0.18;
       linear-gradient(135deg, #8b5cf6 50%, #22d3ee 50%);
   }
 
-  /* Windows / OS accent. Chromium 149+ exposes the real value only inside an
-     installed web app, so the swatch is revealed from JS when that applies.
-     The `background` fallback covers browsers that reject the keyword. */
-  .accent-swatch[data-accent="system"] {
-    background: #a78bfa;
-    background: AccentColor;
-  }
-  :root[data-accent="system"] {
-    --accent: AccentColor;
-    --accent-violet: AccentColor;
-    --accent-dim: color-mix(in srgb, AccentColor 14%, transparent);
-    --accent-gradient: linear-gradient(135deg, AccentColor, color-mix(in srgb, AccentColor 55%, #22d3ee));
-  }
-  :root[data-accent="system"][data-theme="light"] {
-    --accent-dim: color-mix(in srgb, AccentColor 10%, transparent);
-  }
-
   /* Dropbox sync */
   .dbx-status-row {
     display: flex;
@@ -3504,7 +3487,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.4.3</span>
+    <span class="version-badge">1.4.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3826,7 +3809,6 @@ opacity: 0.18;
       <div class="card-header" id="accent-header" style="margin-top:18px;">Theme Colour</div>
       <div class="accent-picker" id="accent-picker">
         <button class="accent-swatch" data-accent="" title="Default" aria-label="Default colour"></button>
-        <button class="accent-swatch" id="accent-system" data-accent="system" hidden title="Windows accent" aria-label="Windows accent"></button>
         <button class="accent-swatch" data-accent="cyanblue" style="background:linear-gradient(135deg,#22d3ee,#3b82f6)" title="Cyan to Blue" aria-label="Cyan to Blue"></button>
         <button class="accent-swatch" data-accent="greenteal" style="background:linear-gradient(135deg,#10b981,#14b8a6)" title="Green to Teal" aria-label="Green to Teal"></button>
         <button class="accent-swatch" data-accent="rose" style="background:linear-gradient(135deg,#f43f5e,#ec4899)" title="Rose to Pink" aria-label="Rose to Pink"></button>
@@ -4621,62 +4603,24 @@ opacity: 0.18;
     return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
   }
 
-  let accentKeywordCache = null;
-  function accentKeywordSupported() {
-    if (accentKeywordCache === null) {
-      const probe = document.createElement('span');
-      probe.style.color = 'AccentColor';
-      accentKeywordCache = probe.style.color !== '';
-    }
-    return accentKeywordCache;
-  }
-
-  function isInstalledApp() {
-    if (window.navigator.standalone === true) return true;
-    if (!window.matchMedia) return false;
-    return ['standalone', 'window-controls-overlay', 'minimal-ui', 'fullscreen']
-      .some(mode => window.matchMedia('(display-mode: ' + mode + ')').matches);
-  }
-
-  function systemAccentAvailable() {
-    return settings.accent === 'system' && isInstalledApp() && accentKeywordSupported();
-  }
-
-  function refreshSystemAccentOption() {
-    const btn = document.getElementById('accent-system');
-    if (btn) btn.hidden = !(isInstalledApp() && accentKeywordSupported());
-  }
-
   function applyAccent(theme) {
     const root = document.documentElement;
-    if (systemAccentAvailable()) {
-      // Lives entirely in CSS so the OS accent (and any later change) applies live.
-      root.setAttribute('data-accent', 'system');
+    const preset = settings.accent && ACCENT_PRESETS[settings.accent];
+    if (preset) {
+      const rgb = hexToRgb(preset.c1);
+      const alpha = theme === 'light' ? 0.1 : 0.14;
+      root.style.setProperty('--accent', preset.c1);
+      root.style.setProperty('--accent-gradient', 'linear-gradient(135deg,' + preset.c1 + ',' + preset.c2 + ')');
+      root.style.setProperty('--accent-violet', preset.c1);
+      root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha + ')');
+    } else {
       root.style.removeProperty('--accent');
       root.style.removeProperty('--accent-gradient');
       root.style.removeProperty('--accent-violet');
       root.style.removeProperty('--accent-dim');
-    } else {
-      root.removeAttribute('data-accent');
-      const preset = settings.accent && ACCENT_PRESETS[settings.accent];
-      if (preset) {
-        const rgb = hexToRgb(preset.c1);
-        const alpha = theme === 'light' ? 0.1 : 0.14;
-        root.style.setProperty('--accent', preset.c1);
-        root.style.setProperty('--accent-gradient', 'linear-gradient(135deg,' + preset.c1 + ',' + preset.c2 + ')');
-        root.style.setProperty('--accent-violet', preset.c1);
-        root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha + ')');
-      } else {
-        root.style.removeProperty('--accent');
-        root.style.removeProperty('--accent-gradient');
-        root.style.removeProperty('--accent-violet');
-        root.style.removeProperty('--accent-dim');
-      }
     }
-    const preset = settings.accent && ACCENT_PRESETS[settings.accent];
-    const effective = systemAccentAvailable() ? 'system' : (preset ? settings.accent : null);
     document.querySelectorAll('.accent-swatch').forEach(c => {
-      c.classList.toggle('active', (c.dataset.accent || null) === effective);
+      c.classList.toggle('active', (c.dataset.accent || null) === (settings.accent || null));
     });
   }
 
@@ -8410,7 +8354,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
 
   // --- Initial render ---
   backfillUnlockDates('gentle');
-  refreshSystemAccentOption();
   applyTheme();
   document.querySelector('.app-content').classList.toggle('merged', currentTab === 'today');
   updateDropboxUI();
@@ -8446,8 +8389,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const btn = document.querySelector('.install-btn');
     if (btn) btn.remove();
     deferredInstallPrompt = null;
-    refreshSystemAccentOption();
-    applyTheme();
   });
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -8457,7 +8398,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.4.3';
+    const APP_VERSION = '1.4.2';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

@@ -1,10 +1,6 @@
 PlayDex - Changelog
 ====================
 
-Version 1.4.3
--------------------
-- Theme Colour now offers a Windows accent swatch that follows your system accent colour and updates live when you change it. It appears when PlayDex is installed as an app in Edge or Chrome on Windows.
-
 Version 1.4.2
 -------------------
 - A paused timer is now obvious at a glance: the live card turns amber, shows a PAUSED badge, and dims the clock while it's held.
