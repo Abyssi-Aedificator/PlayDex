@@ -1,6 +1,12 @@
 PlayDex - Changelog
 ====================
 
+Version 1.4.5
+-------------------
+- Settings has a new Interface choice. Pick Material 3 for a Google Material Design look, or keep Classic.
+- Material 3 restyles the whole app with tonal colour, rounded shapes, floating field labels, switches and cards, and gives the Today tab a floating Log session button.
+- The Material 3 interface follows your Theme and Theme Colour choices, so your accent still drives the palette.
+
 Version 1.4.4
 -------------------
 - The + Add button on the Sessions tab no longer spills outside the card when the screen is narrow.

@@ -14,7 +14,7 @@ A lightweight, installable web app that tracks your game sessions, playtime by g
 - **Player profile & badges** – achievements and levels, milestones, a time-of-day heatmap, and a cumulative playtime curve.
 - **Backup & export** – JSON export/import and CSV export, plus optional Dropbox sync across devices.
 - **Installable PWA** – works offline; install it as a standalone app on desktop or mobile.
-- **Themes** – dark / light (follows your system) with accent-colour choices.
+- **Themes & interfaces** – dark / light (follows your system) with accent-colour choices, and a choice of the Classic look or a Google Material 3 look.
 
 ## Getting started
 

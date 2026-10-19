@@ -82,6 +82,42 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - **Time picker (Add/Edit Session):** the four HH/MM inputs are custom RTF controls, not `<input type="time">`. The trigger ids (`add-session-time`, ...) live on the `.cal-field` wrapper divs, set via `createTimeField()`. `setCalDateTime`/`getCalDateTime(dateField, timeField, iso)` take field *objects*, not string ids. Value is stored 24h `HH:MM` but shown as AM/PM.
 - **Animations:** all smooth motion is `cubic-bezier(0.4,0,0.2,1)`; stagger delays are capped (`Math.min(i*40,320)`). A `@media (prefers-reduced-motion: reduce)` block (line ~1445) forces durations to 0.01ms. `renderSessionsTab(animate=true)` — pass `animate=false` for in-place updates (sync/delete toggles) so the whole list doesn't re-animate.
 
+## Interface skins (Classic / Material 3)
+
+- `settings.uiStyle` is `'classic'` (default) or `'material'`. It is applied as a
+  `data-ui` attribute on `<html>` by `applyUI()` and, to avoid a flash, by the
+  pre-paint script in `<head>` alongside `data-theme`.
+- Every Material 3 rule lives in one block scoped to `:root[data-ui="material"]`
+  appended at the **end** of the stylesheet. It must stay last: it ties on
+  specificity with `:root[data-theme="dark"]`/`[data-theme="light"]` and only
+  wins on source order. The classic skin is untouched by construction.
+- The M3 colour roles (`--md-primary`, `--md-surface-container*`, `--md-outline*`,
+  …) are generated in JS by `m3Roles()` from whichever accent + theme are
+  active — an HSL-tone approximation of Material You (tone 40 light / 80 dark),
+  **not** a real HCT port. `applyAccent()` collapses the classic two-colour
+  gradient to the single M3 primary tone while Material is on, so the Theme and
+  Theme Colour pickers keep working.
+- The app's own colour tokens are re-pointed at the roles in JS
+  (`applyMaterialTokens`, `M3_TOKEN_MAP`), not in CSS. That way, before the main
+  script runs, the theme's normal palette still applies and the boot splash
+  never flashes the wrong colours. Switching back to Classic removes exactly the
+  properties it set.
+- Floating labels: modals that already have `.field-group > label` get a real M3
+  float, triggered with `:has()` (focus, filled input, select, or a non-placeholder
+  `.cal-label`). Bare modal inputs are wrapped in `.m3-field`; that wrapper is
+  `display:contents` with a hidden label outside Material mode, so the markup
+  change is invisible in Classic.
+- `.m3-fab` is a **body-level** button (never inside a tab panel — `.tab-panel.active`
+  animates a transform, which would break `position:fixed`). It is shown by a
+  `.show` class toggled in `goTab()` and at init, and only when Material is on.
+- Deliberate scope limits: native `<select>` popups stay native (only the closed
+  state is themed); the custom RTF time picker keeps its own compact HH/MM boxes
+  rather than an M3 dial; the HSL palette is close to, but not exactly,
+  Material You.
+- Watch the equal-specificity trap: `:root[data-ui="material"] input[type="text"]`
+  and `:root[data-ui="material"] input.time-input` are both (0,3,1), so the
+  `.time-input` override must stay **after** the generic input rule.
+
 ## Top tab
 
 - Period is user-selectable (`This week` / `7 days` / `Month` / `All time`), persisted in `settings.topPeriod` and validated against `TOP_PERIODS` via `getTopPeriod()`.
