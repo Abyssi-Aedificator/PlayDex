@@ -3363,6 +3363,14 @@ opacity: 0.18;
     background-image:
       linear-gradient(135deg, #8b5cf6 50%, #22d3ee 50%);
   }
+  /* Grey needs a different value per theme to stay readable, so preview it
+     with the same colours applyAccent() actually uses for the current theme. */
+  .accent-swatch[data-accent="grey"] {
+    background-image: linear-gradient(135deg, #94a3b8, #64748b);
+  }
+  :root[data-theme="light"] .accent-swatch[data-accent="grey"] {
+    background-image: linear-gradient(135deg, #475569, #334155);
+  }
 
   /* Dropbox sync */
   .dbx-status-row {
@@ -3888,6 +3896,7 @@ opacity: 0.18;
         <button class="accent-swatch" data-accent="violet" style="background:linear-gradient(135deg,#8b5cf6,#a855f7)" title="Violet to Purple" aria-label="Violet to Purple"></button>
         <button class="accent-swatch" data-accent="gold" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)" title="Gold to Amber" aria-label="Gold to Amber"></button>
         <button class="accent-swatch" data-accent="red" style="background:linear-gradient(135deg,#ef4444,#f87171)" title="Red" aria-label="Red"></button>
+        <button class="accent-swatch" data-accent="grey" title="Grey" aria-label="Grey"></button>
       </div>
     </div>
     <div class="card">
@@ -4687,7 +4696,10 @@ opacity: 0.18;
     ocean:       { c1: '#3b82f6', c2: '#6366f1' },
     violet:      { c1: '#8b5cf6', c2: '#a855f7' },
     gold:        { c1: '#f59e0b', c2: '#fbbf24' },
-    red:         { c1: '#ef4444', c2: '#f87171' }
+    red:         { c1: '#ef4444', c2: '#f87171' },
+    // Grey is the one preset that has to differ per theme: a single grey cannot
+    // be readable on both a near-white and a near-black surface.
+    grey:        { c1: '#94a3b8', c2: '#64748b', lightC1: '#475569', lightC2: '#334155' }
   };
 
   function hexToRgb(hex) {
@@ -4702,11 +4714,13 @@ opacity: 0.18;
     const root = document.documentElement;
     const preset = settings.accent && ACCENT_PRESETS[settings.accent];
     if (preset) {
-      const rgb = hexToRgb(preset.c1);
+      const c1 = (theme === 'light' && preset.lightC1) ? preset.lightC1 : preset.c1;
+      const c2 = (theme === 'light' && preset.lightC2) ? preset.lightC2 : preset.c2;
+      const rgb = hexToRgb(c1);
       const alpha = theme === 'light' ? 0.1 : 0.14;
-      root.style.setProperty('--accent', preset.c1);
-      root.style.setProperty('--accent-gradient', 'linear-gradient(135deg,' + preset.c1 + ',' + preset.c2 + ')');
-      root.style.setProperty('--accent-violet', preset.c1);
+      root.style.setProperty('--accent', c1);
+      root.style.setProperty('--accent-gradient', 'linear-gradient(135deg,' + c1 + ',' + c2 + ')');
+      root.style.setProperty('--accent-violet', c1);
       root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha + ')');
     } else {
       root.style.removeProperty('--accent');
