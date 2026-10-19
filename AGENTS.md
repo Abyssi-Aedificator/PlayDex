@@ -27,6 +27,10 @@ Single-file PWA game-session tracker. No build, lint, test, or typecheck tooling
 
 Commit/push only when explicitly asked. Follow existing message style (`git log --oneline`).
 
+**Never push `main`.** Do not push `main` under any circumstances, including when a release is
+requested. Releasing — merging `dev` into `main` and publishing it — is the user's job; the agent
+stays on `dev`. Pushing `dev` when asked is fine.
+
 ## Commit policy
 
 - Each bug fix or feature change is a separate, individual commit; short imperative description.
