@@ -902,6 +902,7 @@ opacity: 0.18;
   /* Sessions list */
   .filter-bar {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 12px;
     align-items: center;
@@ -915,6 +916,16 @@ opacity: 0.18;
 
   .filter-bar .cal-field {
     max-width: 180px;
+  }
+
+  /* The segmented filter and the Add button travel together, so + Add is never
+     left on a line of its own when the bar wraps. */
+  .filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
   }
 
   /* Glass-themed calendar date picker (replaces native date inputs) */
@@ -1172,6 +1183,13 @@ opacity: 0.18;
     background-image: var(--accent-gradient);
     color: #fff;
     border-color: transparent;
+  }
+
+  /* On the narrowest phones the segmented control and the Add button need a
+     little less padding to still fit on one line together. */
+  @media (max-width: 360px) {
+    .filter-actions { gap: 6px; }
+    .sync-seg button { padding: 6px 8px; }
   }
   .list-summary {
     display: flex;
@@ -3565,7 +3583,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.4.3</span>
+    <span class="version-badge">1.4.4</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3675,12 +3693,14 @@ opacity: 0.18;
             </div>
           </div>
         </div>
-        <div class="sync-seg" id="sync-filter">
-          <button type="button" data-sync="all" class="active">All</button>
-          <button type="button" data-sync="synced">Synced</button>
-          <button type="button" data-sync="unsynced">Unsynced</button>
+        <div class="filter-actions">
+          <div class="sync-seg" id="sync-filter">
+            <button type="button" data-sync="all" class="active">All</button>
+            <button type="button" data-sync="synced">Synced</button>
+            <button type="button" data-sync="unsynced">Unsynced</button>
+          </div>
+          <button class="btn-clear-date" id="btn-add-session" style="margin-left:auto;">&#43; Add</button>
         </div>
-        <button class="btn-clear-date" id="btn-add-session" style="margin-left:auto;">&#43; Add</button>
       </div>
       <div class="list-summary" id="sessions-summary" style="display:none;"></div>
       <div id="sessions-list"></div>
@@ -4441,14 +4461,14 @@ opacity: 0.18;
 <div class="toast" id="toast"></div>
 
 <script>
-/* Boot splash: stays up for a random 3-5s per launch, then fades out.
+/* Boot splash: stays up for a random 1-3s per launch, then fades out.
    hideBootSplash() is called when the app is ready (and on load as a
    fallback), but it never fades before the random minimum has elapsed. */
 (function () {
   var el = document.getElementById('boot-splash');
   if (!el) { window.hideBootSplash = function () {}; return; }
   var startedAt = Date.now();
-  var minVisible = 3000 + Math.random() * 2000; // 3-5s, chosen once per startup
+  var minVisible = 1000 + Math.random() * 2000; // 1-3s, chosen once per startup
   var faded = false;
   function fade() {
     if (faded) return;
@@ -8510,7 +8530,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.4.3';
+    const APP_VERSION = '1.4.4';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
