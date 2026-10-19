@@ -95,6 +95,56 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
+  /* Boot splash: visible from the first paint until the first render. */
+  #boot-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: var(--bg);
+    transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s;
+  }
+  #boot-splash.done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .boot-logo {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .boot-bar {
+    width: 132px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--surface3);
+    overflow: hidden;
+  }
+  .boot-bar span {
+    display: block;
+    width: 40%;
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent-gradient);
+    animation: boot-slide 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  @keyframes boot-slide {
+    0% { transform: translateX(-110%); }
+    100% { transform: translateX(330%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .boot-bar span { animation: none; width: 100%; opacity: 0.45; transform: none; }
+  }
+
   .ambient-orbs {
     position: fixed;
     inset: 0;
@@ -3313,6 +3363,14 @@ opacity: 0.18;
     background-image:
       linear-gradient(135deg, #8b5cf6 50%, #22d3ee 50%);
   }
+  /* Grey needs a different value per theme to stay readable, so preview it
+     with the same colours applyAccent() actually uses for the current theme. */
+  .accent-swatch[data-accent="grey"] {
+    background-image: linear-gradient(135deg, #94a3b8, #64748b);
+  }
+  :root[data-theme="light"] .accent-swatch[data-accent="grey"] {
+    background-image: linear-gradient(135deg, #475569, #334155);
+  }
 
   /* Dropbox sync */
   .dbx-status-row {
@@ -3475,8 +3533,28 @@ opacity: 0.18;
     }
   }
 </style>
+<script>
+/* Apply the saved theme before the first paint so it never flashes the wrong one. */
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem('playdex_settings')) || {};
+    var t = s.theme || 'system';
+    if (t === 'system') {
+      t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', t === 'light' ? '#f2f4fa' : '#0b0d14');
+  } catch (e) {}
+})();
+</script>
 </head>
 <body>
+
+<div id="boot-splash" role="status" aria-label="Loading PlayDex">
+  <div class="boot-logo">PLAYDEX</div>
+  <div class="boot-bar"><span></span></div>
+</div>
 
 <div class="ambient-orbs" aria-hidden="true">
   <span class="orb orb-violet"></span>
@@ -3487,7 +3565,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.4.2</span>
+    <span class="version-badge">1.4.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3818,6 +3896,7 @@ opacity: 0.18;
         <button class="accent-swatch" data-accent="violet" style="background:linear-gradient(135deg,#8b5cf6,#a855f7)" title="Violet to Purple" aria-label="Violet to Purple"></button>
         <button class="accent-swatch" data-accent="gold" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)" title="Gold to Amber" aria-label="Gold to Amber"></button>
         <button class="accent-swatch" data-accent="red" style="background:linear-gradient(135deg,#ef4444,#f87171)" title="Red" aria-label="Red"></button>
+        <button class="accent-swatch" data-accent="grey" title="Grey" aria-label="Grey"></button>
       </div>
     </div>
     <div class="card">
@@ -4362,6 +4441,31 @@ opacity: 0.18;
 <div class="toast" id="toast"></div>
 
 <script>
+/* Boot splash: stays up for a random 3-5s per launch, then fades out.
+   hideBootSplash() is called when the app is ready (and on load as a
+   fallback), but it never fades before the random minimum has elapsed. */
+(function () {
+  var el = document.getElementById('boot-splash');
+  if (!el) { window.hideBootSplash = function () {}; return; }
+  var startedAt = Date.now();
+  var minVisible = 3000 + Math.random() * 2000; // 3-5s, chosen once per startup
+  var faded = false;
+  function fade() {
+    if (faded) return;
+    faded = true;
+    el.classList.add('done');
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 400);
+  }
+  window.hideBootSplash = function () {
+    var remaining = minVisible - (Date.now() - startedAt);
+    if (remaining <= 0) fade(); else setTimeout(fade, remaining);
+  };
+  window.addEventListener('load', function () { window.hideBootSplash(); });
+  setTimeout(window.hideBootSplash, minVisible + 6000);
+})();
+</script>
+
+<script>
 (function() {
   // --- Storage ---
   const KEYS = { games: 'playdex_games', sessions: 'playdex_sessions', settings: 'playdex_settings' };
@@ -4592,7 +4696,10 @@ opacity: 0.18;
     ocean:       { c1: '#3b82f6', c2: '#6366f1' },
     violet:      { c1: '#8b5cf6', c2: '#a855f7' },
     gold:        { c1: '#f59e0b', c2: '#fbbf24' },
-    red:         { c1: '#ef4444', c2: '#f87171' }
+    red:         { c1: '#ef4444', c2: '#f87171' },
+    // Grey is the one preset that has to differ per theme: a single grey cannot
+    // be readable on both a near-white and a near-black surface.
+    grey:        { c1: '#94a3b8', c2: '#64748b', lightC1: '#475569', lightC2: '#334155' }
   };
 
   function hexToRgb(hex) {
@@ -4607,11 +4714,13 @@ opacity: 0.18;
     const root = document.documentElement;
     const preset = settings.accent && ACCENT_PRESETS[settings.accent];
     if (preset) {
-      const rgb = hexToRgb(preset.c1);
+      const c1 = (theme === 'light' && preset.lightC1) ? preset.lightC1 : preset.c1;
+      const c2 = (theme === 'light' && preset.lightC2) ? preset.lightC2 : preset.c2;
+      const rgb = hexToRgb(c1);
       const alpha = theme === 'light' ? 0.1 : 0.14;
-      root.style.setProperty('--accent', preset.c1);
-      root.style.setProperty('--accent-gradient', 'linear-gradient(135deg,' + preset.c1 + ',' + preset.c2 + ')');
-      root.style.setProperty('--accent-violet', preset.c1);
+      root.style.setProperty('--accent', c1);
+      root.style.setProperty('--accent-gradient', 'linear-gradient(135deg,' + c1 + ',' + c2 + ')');
+      root.style.setProperty('--accent-violet', c1);
       root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha + ')');
     } else {
       root.style.removeProperty('--accent');
@@ -4627,6 +4736,8 @@ opacity: 0.18;
   function applyTheme() {
     const theme = resolvedTheme();
     document.documentElement.setAttribute('data-theme', theme);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f2f4fa' : '#0b0d14');
     document.querySelectorAll('.theme-opt').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.themeOpt === settings.theme);
     });
@@ -8360,6 +8471,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   dropboxHandleRedirect().then(() => {
     render();
     dropboxCheckForUpdates();
+    if (window.hideBootSplash) window.hideBootSplash();
   });
 
   // --- PWA install ---
@@ -8398,7 +8510,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.4.2';
+    const APP_VERSION = '1.4.3';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
