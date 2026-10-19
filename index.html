@@ -95,6 +95,56 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
+  /* Boot splash: visible from the first paint until the first render. */
+  #boot-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: var(--bg);
+    transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s;
+  }
+  #boot-splash.done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .boot-logo {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .boot-bar {
+    width: 132px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--surface3);
+    overflow: hidden;
+  }
+  .boot-bar span {
+    display: block;
+    width: 40%;
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent-gradient);
+    animation: boot-slide 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  @keyframes boot-slide {
+    0% { transform: translateX(-110%); }
+    100% { transform: translateX(330%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .boot-bar span { animation: none; width: 100%; opacity: 0.45; transform: none; }
+  }
+
   .ambient-orbs {
     position: fixed;
     inset: 0;
@@ -3475,8 +3525,28 @@ opacity: 0.18;
     }
   }
 </style>
+<script>
+/* Apply the saved theme before the first paint so it never flashes the wrong one. */
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem('playdex_settings')) || {};
+    var t = s.theme || 'system';
+    if (t === 'system') {
+      t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', t === 'light' ? '#f2f4fa' : '#0b0d14');
+  } catch (e) {}
+})();
+</script>
 </head>
 <body>
+
+<div id="boot-splash" role="status" aria-label="Loading PlayDex">
+  <div class="boot-logo">PLAYDEX</div>
+  <div class="boot-bar"><span></span></div>
+</div>
 
 <div class="ambient-orbs" aria-hidden="true">
   <span class="orb orb-violet"></span>
@@ -3487,7 +3557,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.4.2</span>
+    <span class="version-badge">1.4.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -4362,6 +4432,23 @@ opacity: 0.18;
 <div class="toast" id="toast"></div>
 
 <script>
+/* Boot-splash safety net: hides the splash even if the main script throws. */
+(function () {
+  var el = document.getElementById('boot-splash');
+  if (!el) { window.hideBootSplash = function () {}; return; }
+  var hidden = false;
+  window.hideBootSplash = function () {
+    if (hidden) return;
+    hidden = true;
+    el.classList.add('done');
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 400);
+  };
+  window.addEventListener('load', function () { window.hideBootSplash(); });
+  setTimeout(window.hideBootSplash, 8000);
+})();
+</script>
+
+<script>
 (function() {
   // --- Storage ---
   const KEYS = { games: 'playdex_games', sessions: 'playdex_sessions', settings: 'playdex_settings' };
@@ -4627,6 +4714,8 @@ opacity: 0.18;
   function applyTheme() {
     const theme = resolvedTheme();
     document.documentElement.setAttribute('data-theme', theme);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f2f4fa' : '#0b0d14');
     document.querySelectorAll('.theme-opt').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.themeOpt === settings.theme);
     });
@@ -8360,6 +8449,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   dropboxHandleRedirect().then(() => {
     render();
     dropboxCheckForUpdates();
+    if (window.hideBootSplash) window.hideBootSplash();
   });
 
   // --- PWA install ---
@@ -8398,7 +8488,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.4.2';
+    const APP_VERSION = '1.4.3';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

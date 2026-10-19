@@ -1,6 +1,11 @@
 PlayDex - Changelog
 ====================
 
+Version 1.4.3
+-------------------
+- PlayDex now shows a brief loading screen with the app logo while it starts up.
+- The app no longer flashes the dark theme before your chosen light theme loads.
+
 Version 1.4.2
 -------------------
 - A paused timer is now obvious at a glance: the live card turns amber, shows a PAUSED badge, and dims the clock while it's held.
