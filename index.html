@@ -4442,14 +4442,14 @@ opacity: 0.18;
 <div class="toast" id="toast"></div>
 
 <script>
-/* Boot splash: stays up for a random 3-5s per launch, then fades out.
+/* Boot splash: stays up for a random 1-3s per launch, then fades out.
    hideBootSplash() is called when the app is ready (and on load as a
    fallback), but it never fades before the random minimum has elapsed. */
 (function () {
   var el = document.getElementById('boot-splash');
   if (!el) { window.hideBootSplash = function () {}; return; }
   var startedAt = Date.now();
-  var minVisible = 3000 + Math.random() * 2000; // 3-5s, chosen once per startup
+  var minVisible = 1000 + Math.random() * 2000; // 1-3s, chosen once per startup
   var faded = false;
   function fade() {
     if (faded) return;
