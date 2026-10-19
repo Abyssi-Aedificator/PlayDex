@@ -918,6 +918,16 @@ opacity: 0.18;
     max-width: 180px;
   }
 
+  /* The segmented filter and the Add button travel together, so + Add is never
+     left on a line of its own when the bar wraps. */
+  .filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
+  }
+
   /* Glass-themed calendar date picker (replaces native date inputs) */
   .cal-field {
     position: relative;
@@ -1173,6 +1183,13 @@ opacity: 0.18;
     background-image: var(--accent-gradient);
     color: #fff;
     border-color: transparent;
+  }
+
+  /* On the narrowest phones the segmented control and the Add button need a
+     little less padding to still fit on one line together. */
+  @media (max-width: 360px) {
+    .filter-actions { gap: 6px; }
+    .sync-seg button { padding: 6px 8px; }
   }
   .list-summary {
     display: flex;
@@ -3676,12 +3693,14 @@ opacity: 0.18;
             </div>
           </div>
         </div>
-        <div class="sync-seg" id="sync-filter">
-          <button type="button" data-sync="all" class="active">All</button>
-          <button type="button" data-sync="synced">Synced</button>
-          <button type="button" data-sync="unsynced">Unsynced</button>
+        <div class="filter-actions">
+          <div class="sync-seg" id="sync-filter">
+            <button type="button" data-sync="all" class="active">All</button>
+            <button type="button" data-sync="synced">Synced</button>
+            <button type="button" data-sync="unsynced">Unsynced</button>
+          </div>
+          <button class="btn-clear-date" id="btn-add-session" style="margin-left:auto;">&#43; Add</button>
         </div>
-        <button class="btn-clear-date" id="btn-add-session" style="margin-left:auto;">&#43; Add</button>
       </div>
       <div class="list-summary" id="sessions-summary" style="display:none;"></div>
       <div id="sessions-list"></div>
