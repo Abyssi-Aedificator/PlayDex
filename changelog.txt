@@ -6,6 +6,8 @@ Version 1.4.5
 - Settings has a new Interface choice. Pick Material 3 for a Google Material Design look, or keep Classic.
 - Material 3 restyles the whole app with tonal colour, rounded shapes, floating field labels, switches and cards, and gives the Today tab a floating Log session button.
 - The Material 3 interface follows your Theme and Theme Colour choices, so your accent still drives the palette.
+- Material 3 notification banners now wrap onto several lines and stay above
+  the Log session button instead of running off the screen or covering it.
 
 Version 1.4.4
 -------------------

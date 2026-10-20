@@ -4005,13 +4005,28 @@ opacity: 0.18;
     padding: 14px 16px;
     font-size: 0.875rem;
     font-weight: 400;
+    /* M3 snackbars are capped at 344dp and may wrap to two lines, rather than
+       growing without limit off the edge of a narrow screen. */
+    max-width: min(344px, calc(100vw - 32px));
+    white-space: normal;
+    text-align: left;
+  }
+  /* M3 places the snackbar 16dp above the FAB when one is on screen, so the two
+     can never overlap. body:has() is already a dependency (the badges tab rule
+     in the classic sheet uses it). 146px = 74px FAB offset + 56px FAB + 16dp. */
+  :root[data-ui="material"] body:has(.m3-fab.show) .toast {
+    bottom: calc(146px + env(safe-area-inset-bottom, 0px));
   }
   :root[data-ui="material"] .toast .toast-action {
     background: transparent;
     border: none;
     color: var(--md-inverse-primary);
-    padding: 0 8px;
+    padding: 0 4px 0 8px;
+    margin-left: 8px;
     font-weight: 500;
+    font-size: 0.875rem;
+    border-radius: var(--md-full);
+    flex-shrink: 0;
   }
   :root[data-ui="material"] .dbx-banner {
     background: var(--md-inverse-surface);
@@ -4080,8 +4095,15 @@ opacity: 0.18;
   :root[data-ui="material"] .m3-fab.show { display: flex; }
   :root[data-ui="material"] .m3-fab:hover { transform: translateY(-2px); box-shadow: var(--md-elev-3); }
   :root[data-ui="material"] .m3-fab:active { transform: none; }
+  /* --- Desktop --------------------------------------------------------------
+     Desktop keeps the bottom navigation bar in Material mode, so the FAB stays
+     on its 96px desktop offset and the snackbar rides up to remain 16dp above
+     it: 168px = 96px FAB offset + 56px FAB + 16dp. */
   @media (min-width: 768px) {
     .m3-fab { right: 28px; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+    :root[data-ui="material"] body:has(.m3-fab.show) .toast {
+      bottom: calc(168px + env(safe-area-inset-bottom, 0px));
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .m3-fab { transition: none; }

@@ -110,6 +110,14 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - `.m3-fab` is a **body-level** button (never inside a tab panel — `.tab-panel.active`
   animates a transform, which would break `position:fixed`). It is shown by a
   `.show` class toggled in `goTab()` and at init, and only when Material is on.
+- **Snackbar:** capped at `min(344px, calc(100vw - 32px))` and allowed to wrap,
+  then lifted to 146px (mobile) / 168px (desktop) by
+  `body:has(.m3-fab.show)` so it always sits 16dp above the FAB. The desktop
+  number tracks the FAB's 96px desktop offset — retune both together.
+- **Desktop keeps the bottom tab bar** (all 8 tabs) in Material mode; `body` has
+  no `padding-left` and `.app-content` keeps `28px 28px 96px`. A 88px M3
+  navigation rail was built and then removed at the user's request — do not
+  reintroduce it without asking.
 - Deliberate scope limits: native `<select>` popups stay native (only the closed
   state is themed); the custom RTF time picker keeps its own compact HH/MM boxes
   rather than an M3 dial; the HSL palette is close to, but not exactly,
