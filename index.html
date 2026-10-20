@@ -4268,7 +4268,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.5.1</span>
+    <span class="version-badge">1.5.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5648,7 +5648,7 @@ opacity: 0.18;
   const dbxSave = () => { try { localStorage.setItem(DBX_KEY, JSON.stringify(dbx)); } catch {} };
   const dbxRedirectUri = () => location.origin + location.pathname;
   const syncSettings = () => { const s = Object.assign({}, settings); delete s.accent; return s; };
-  const dbxSnapshot = () => JSON.stringify({ games, sessions, settings: syncSettings() });
+  const dbxSnapshot = () => JSON.stringify({ games, sessions });
   let dbxSyncTimer = null, dbxSkipAutoUpload = false, dbxLastUploadedState = '';
   let dbxDirty = false, dbxBannerDismissed = false;
   let dbxSyncOps = 0, dbxPendingDownload = null;
@@ -5786,7 +5786,7 @@ opacity: 0.18;
   async function dropboxUpload(auto) {
     const ok = await dropboxRefreshIfNeeded();
     if (!ok) { toast('\u26A0 Dropbox session expired \u2014 reconnect'); return; }
-    const payload = { app: 'PlayDex', version: 1, exportedAt: new Date().toISOString(), games, sessions, settings: syncSettings() };
+    const payload = { app: 'PlayDex', version: 1, exportedAt: new Date().toISOString(), games, sessions };
     dbxSyncSpinning(true);
     try {
       const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
@@ -5810,20 +5810,10 @@ opacity: 0.18;
     }
     games = normalizeGames(parsed.games);
     sessions = parsed.sessions;
-    const localAccent = settings.accent;
-    const prevUnlocks = settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object' ? settings.achievementUnlocks : {};
-    const prevLevel = settings.achievementLevel || 0;
-    const prevQuestNotified = settings.questNotified && typeof settings.questNotified === 'object' ? settings.questNotified : {};
-    const prevFullClear = settings.dailyFullClear && typeof settings.dailyFullClear === 'object' ? settings.dailyFullClear : null;
-    settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null }, (parsed.settings && typeof parsed.settings === 'object') ? parsed.settings : {});
-    settings.accent = localAccent;
-    settings.achievementUnlocks = Object.assign({}, (settings.achievementUnlocks && typeof settings.achievementUnlocks === 'object') ? settings.achievementUnlocks : {}, prevUnlocks);
-    settings.achievementLevel = Math.max(settings.achievementLevel || 0, prevLevel);
-    settings.questNotified = Object.assign({}, (settings.questNotified && typeof settings.questNotified === 'object') ? settings.questNotified : {}, prevQuestNotified);
-    settings.dailyFullClear = mergeFullClear(settings.dailyFullClear, prevFullClear);
+    // Never overwrite device-local settings from Dropbox sync/backups pulled via sync
+    // (manual full exports are handled by the explicit import action below)
     saveGames(games);
     saveSessions(sessions);
-    saveSettings(settings);
     backfillUnlockDates('gentle');
     activeSession = sessions.find(s => s.stop === null) || null;
     applyTheme();
@@ -8973,7 +8963,8 @@ opacity: 0.18;
           toast('Invalid backup file');
           return;
         }
-        importData = data;
+        // Manual imports keep local settings; ignore backup settings
+        importData = { games: data.games, sessions: data.sessions };
         document.getElementById('import-modal').classList.add('open');
       } catch {
         toast('Invalid JSON file');
@@ -8990,15 +8981,11 @@ opacity: 0.18;
 
 document.getElementById('import-confirm').addEventListener('click', () => {
     if (importData) {
-      const localAccent = settings.accent;
+      const localSettings = JSON.parse(JSON.stringify(settings));
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
-      if (importData.settings && typeof importData.settings === 'object') {
-        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic' }, importData.settings);
-      } else {
-        settings = { dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic' };
-      }
-      settings.accent = localAccent;
+      // Never overwrite local settings from manual imports either
+      settings = localSettings;
       saveGames(games);
       saveSessions(sessions);
       saveSettings(settings);
@@ -9412,7 +9399,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.5.1';
+    const APP_VERSION = '1.5.2';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
