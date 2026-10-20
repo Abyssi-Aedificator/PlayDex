@@ -4169,7 +4169,9 @@ opacity: 0.18;
   :root[data-ui="material"] .cal-trigger .cal-chevron,
   :root[data-ui="material"] .cal-trigger .cal-icon { color: var(--md-on-surface-variant); }
 
-  /* --- Floating action button (Today tab, Material interface only) --------- */
+  /* --- Floating action button (Today tab, Material interface only) ---------
+     Extended form (icon + label), compacting to the 56px icon form under
+     400px wide, which is M3's own guidance. */
   .m3-fab {
     display: none;
     position: fixed;
@@ -4188,9 +4190,27 @@ opacity: 0.18;
     transition: box-shadow var(--md-dur-short4) var(--md-emph),
                 transform var(--md-dur-short4) var(--md-emph);
   }
-  .m3-fab svg { width: 24px; height: 24px; display: block; }
-  :root[data-ui="material"] .m3-fab { border-radius: var(--md-lg); }
+  .m3-fab svg { width: 24px; height: 24px; display: block; flex-shrink: 0; }
+  /* The label only exists in Material mode. */
+  .m3-fab-label { display: none; }
+  :root[data-ui="material"] .m3-fab {
+    border-radius: var(--md-lg);
+    width: auto;
+    padding: 0 16px;
+    gap: 12px;
+  }
+  :root[data-ui="material"] .m3-fab-label {
+    display: inline;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+  }
   :root[data-ui="material"] .m3-fab.show { display: flex; }
+  @media (max-width: 399px) {
+    :root[data-ui="material"] .m3-fab { width: 56px; padding: 0; gap: 0; }
+    :root[data-ui="material"] .m3-fab-label { display: none; }
+  }
   /* --- Desktop --------------------------------------------------------------
      Desktop keeps the bottom navigation bar in Material mode, so the FAB stays
      on its 96px desktop offset and the snackbar rides up to remain 16dp above
@@ -4708,6 +4728,7 @@ opacity: 0.18;
 <!-- Material 3 floating action button: Today tab only, Material interface only -->
 <button class="m3-fab" id="m3-fab-log" type="button" title="Log a session" aria-label="Log a session">
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>
+  <span class="m3-fab-label" aria-hidden="true">Log session</span>
 </button>
 
 <!-- Tab bar -->

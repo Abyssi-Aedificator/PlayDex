@@ -117,6 +117,8 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - `.m3-fab` is a **body-level** button (never inside a tab panel — `.tab-panel.active`
   animates a transform, which would break `position:fixed`). It is shown by a
   `.show` class toggled in `goTab()` and at init, and only when Material is on.
+  It is an **extended** FAB (icon + `.m3-fab-label`), collapsing to the 56px icon
+  form under 400px wide.
 - **State layers:** one grouped rule paints `::after { background: currentColor;
   border-radius: inherit }` at 8% hover / 10% focus / 12% pressed, and the old
   `:hover` colour-swap and elevation rules were removed in favour of it. Never
