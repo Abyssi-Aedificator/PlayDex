@@ -8,6 +8,11 @@ Version 1.4.5
 - The Material 3 interface follows your Theme and Theme Colour choices, so your accent still drives the palette.
 - Material 3 notification banners now wrap onto several lines and stay above
   the Log session button instead of running off the screen or covering it.
+- Material 3 buttons, tabs and options now show a soft highlight when you point
+  at or press them, instead of changing colour or lifting, and cards no longer
+  pick up a shadow when you point at them.
+- Material 3 screens now transition in smoothly with the Material easing curve
+  instead of the old fade.
 
 Version 1.4.4
 -------------------

@@ -110,6 +110,18 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - `.m3-fab` is a **body-level** button (never inside a tab panel — `.tab-panel.active`
   animates a transform, which would break `position:fixed`). It is shown by a
   `.show` class toggled in `goTab()` and at init, and only when Material is on.
+- **State layers:** one grouped rule paints `::after { background: currentColor;
+  border-radius: inherit }` at 8% hover / 10% focus / 12% pressed, and the old
+  `:hover` colour-swap and elevation rules were removed in favour of it. Never
+  add `.m3-fab` to that group's `position: relative` declaration — the FAB is
+  `position: fixed`, the group's `relative` would win on source order, and the
+  button stretches across the whole content column. Also excluded because their
+  `::after` is already taken: `.dbx-toggle input` (switch thumb) and
+  `.progress-fill` (shimmer).
+- **Motion:** `--md-dur-short2/3/4`, `--md-dur-medium2`, `--md-decel`,
+  `--md-accel` live in the token block; `.tab-panel.active` uses
+  `panel-in var(--md-dur-medium2) var(--md-decel)`. Use the tokens rather than
+  new literal durations.
 - **Snackbar:** capped at `min(344px, calc(100vw - 32px))` and allowed to wrap,
   then lifted to 146px (mobile) / 168px (desktop) by
   `body:has(.m3-fab.show)` so it always sits 16dp above the FAB. The desktop

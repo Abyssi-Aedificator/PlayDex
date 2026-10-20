@@ -3559,8 +3559,15 @@ opacity: 0.18;
     --md-elev-1: 0 1px 2px rgba(0,0,0,0.30), 0 1px 3px 1px rgba(0,0,0,0.15);
     --md-elev-2: 0 1px 2px rgba(0,0,0,0.30), 0 2px 6px 2px rgba(0,0,0,0.15);
     --md-elev-3: 0 1px 3px rgba(0,0,0,0.30), 0 4px 8px 3px rgba(0,0,0,0.15);
-    /* M3 "emphasised" easing, used for the nav indicator and state changes. */
+    /* M3 motion. "emphasised" easing plus the standard duration scale, so
+       transitions read as Material rather than as assorted web timings. */
     --md-emph: cubic-bezier(0.2, 0, 0, 1);
+    --md-decel: cubic-bezier(0.05, 0.7, 0.1, 1);
+    --md-accel: cubic-bezier(0.3, 0, 0.8, 0.15);
+    --md-dur-short2: 100ms;
+    --md-dur-short3: 150ms;
+    --md-dur-short4: 200ms;
+    --md-dur-medium2: 300ms;
     /* M3 shape scale. */
     --md-sm: 8px;
     --md-md: 12px;
@@ -3571,6 +3578,10 @@ opacity: 0.18;
     --radius-sm: 8px;
     --radius-lg: 12px;
     --glass-border: transparent;
+    /* M3 state layer opacities: hover, focus, pressed. */
+    --md-state-hover: 0.08;
+    --md-state-focus: 0.1;
+    --md-state-press: 0.12;
   }
 
   /* --- Type ---------------------------------------------------------------- */
@@ -3595,6 +3606,13 @@ opacity: 0.18;
   }
   :root[data-ui="material"] .big-time { font-weight: 500; letter-spacing: -1px; }
 
+  /* --- Motion ---------------------------------------------------------------
+     Tab-panel changes use M3's standard container transform timing rather than
+     the classic 0.24s ease, so a tab switch reads as a Material transition. */
+  :root[data-ui="material"] .tab-panel.active {
+    animation: panel-in var(--md-dur-medium2) var(--md-decel);
+  }
+
   /* --- Ornament: Material has no ambient glow or gradient wordmark --------- */
   :root[data-ui="material"] .ambient-orbs { display: none; }
   :root[data-ui="material"] .boot-logo {
@@ -3614,10 +3632,9 @@ opacity: 0.18;
     border-radius: var(--md-md);
     box-shadow: none;
   }
-  :root[data-ui="material"] .card:hover {
-    border-color: transparent;
-    box-shadow: var(--md-elev-1);
-  }
+  /* M3 cards have no hover elevation - nothing here is clickable, so there is
+     no affordance to signal. */
+  :root[data-ui="material"] .card:hover { border-color: transparent; }
   :root[data-ui="material"] .stat-box,
   :root[data-ui="material"] .empty-state {
     background: var(--md-surface-container);
@@ -3649,7 +3666,7 @@ opacity: 0.18;
     box-shadow: none;
   }
   :root[data-ui="material"] .btn:hover,
-  :root[data-ui="material"] .btn-primary:hover { filter: none; box-shadow: var(--md-elev-1); }
+  :root[data-ui="material"] .btn-primary:hover { filter: none; box-shadow: none; }
   :root[data-ui="material"] .btn:active,
   :root[data-ui="material"] .btn-primary:active { transform: none; }
   /* Filled button */
@@ -3668,18 +3685,14 @@ opacity: 0.18;
     color: var(--md-on-error);
     box-shadow: none;
   }
-  /* Outlined / text button */
+  /* Outlined / text button. Hover and press feedback comes from the state layer
+     below, not from a colour swap. */
   :root[data-ui="material"] .btn-ghost {
     background: transparent;
     border: 1px solid var(--md-outline);
     color: var(--md-primary);
     border-radius: var(--md-full);
     font-weight: 500;
-  }
-  :root[data-ui="material"] .btn-ghost:hover {
-    background: var(--md-secondary-container);
-    border-color: transparent;
-    color: var(--md-on-secondary-container);
   }
   :root[data-ui="material"] .btn-ghost.btn-danger {
     background: transparent;
@@ -3693,22 +3706,64 @@ opacity: 0.18;
     color: var(--md-on-surface-variant);
     border-radius: var(--md-full);
   }
-  :root[data-ui="material"] .btn-icon:hover {
-    background: var(--md-surface-container-highest);
-    border-color: transparent;
-    color: var(--md-on-surface);
-  }
   :root[data-ui="material"] .btn-goal-edit {
     border-color: var(--md-outline);
     color: var(--md-primary);
     border-radius: var(--md-full);
     font-weight: 500;
   }
-  :root[data-ui="material"] .btn-goal-edit:hover {
-    background: var(--md-secondary-container);
-    border-color: transparent;
-    color: var(--md-on-secondary-container);
+
+  /* --- State layers --------------------------------------------------------
+     The M3 signature: a currentColor overlay at 8% hover / 10% focus /
+     12% pressed. Excludes .dbx-toggle input and .progress-fill, whose ::after
+     is already the switch thumb and the progress shimmer.
+     The FAB is deliberately absent from the position: relative list - it is
+     position: fixed, which already contains its ::after. */
+  :root[data-ui="material"] .btn,
+  :root[data-ui="material"] .btn-primary,
+  :root[data-ui="material"] .btn-icon,
+  :root[data-ui="material"] .theme-opt,
+  :root[data-ui="material"] .target-opt,
+  :root[data-ui="material"] .pick-opt {
+    position: relative;
   }
+  :root[data-ui="material"] .btn::after,
+  :root[data-ui="material"] .btn-primary::after,
+  :root[data-ui="material"] .btn-icon::after,
+  :root[data-ui="material"] .theme-opt::after,
+  :root[data-ui="material"] .target-opt::after,
+  :root[data-ui="material"] .pick-opt::after,
+  :root[data-ui="material"] .m3-fab::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--md-dur-short2) linear;
+  }
+  :root[data-ui="material"] .btn:hover::after,
+  :root[data-ui="material"] .btn-primary:hover::after,
+  :root[data-ui="material"] .btn-icon:hover::after,
+  :root[data-ui="material"] .theme-opt:hover::after,
+  :root[data-ui="material"] .target-opt:hover::after,
+  :root[data-ui="material"] .pick-opt:hover::after,
+  :root[data-ui="material"] .m3-fab:hover::after { opacity: var(--md-state-hover); }
+  :root[data-ui="material"] .btn:focus-visible::after,
+  :root[data-ui="material"] .btn-primary:focus-visible::after,
+  :root[data-ui="material"] .btn-icon:focus-visible::after,
+  :root[data-ui="material"] .theme-opt:focus-visible::after,
+  :root[data-ui="material"] .target-opt:focus-visible::after,
+  :root[data-ui="material"] .pick-opt:focus-visible::after,
+  :root[data-ui="material"] .m3-fab:focus-visible::after { opacity: var(--md-state-focus); }
+  :root[data-ui="material"] .btn:active::after,
+  :root[data-ui="material"] .btn-primary:active::after,
+  :root[data-ui="material"] .btn-icon:active::after,
+  :root[data-ui="material"] .theme-opt:active::after,
+  :root[data-ui="material"] .target-opt:active::after,
+  :root[data-ui="material"] .pick-opt:active::after,
+  :root[data-ui="material"] .m3-fab:active::after { opacity: var(--md-state-press); }
 
   /* --- Navigation bar ------------------------------------------------------ */
   :root[data-ui="material"] .tab-bar {
@@ -3736,7 +3791,7 @@ opacity: 0.18;
     border-radius: var(--md-full);
     background: transparent;
     transform: none;
-    transition: background-color 0.2s var(--md-emph);
+    transition: background-color var(--md-dur-short4) var(--md-emph);
   }
   :root[data-ui="material"] .tab-btn.active { color: var(--md-on-surface); }
   :root[data-ui="material"] .tab-btn.active .tab-icon {
@@ -3744,9 +3799,21 @@ opacity: 0.18;
     color: var(--md-on-secondary-container);
     transform: none;
   }
+  /* Retire the classic underline; its ::after becomes the state layer. */
   :root[data-ui="material"] .tab-btn.active::after { display: none; }
   /* The "syncing" spinner still needs its rotate animation. */
   :root[data-ui="material"] button.syncing .tab-icon { display: inline-block; }
+  :root[data-ui="material"] .tab-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--md-full);
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--md-dur-short2) linear;
+  }
+  :root[data-ui="material"] .tab-btn:hover::after { opacity: var(--md-state-hover); }
 
   /* --- Text fields: M3 outlined fields with a floating label ---------------- */
   :root[data-ui="material"] input[type="text"],
@@ -3848,8 +3915,9 @@ opacity: 0.18;
     color: var(--md-on-surface-variant);
     pointer-events: none;
     transform-origin: left top;
-    transition: transform 0.15s var(--md-emph), color 0.15s var(--md-emph),
-                background-color 0.15s var(--md-emph);
+    transition: transform var(--md-dur-short3) var(--md-emph),
+                color var(--md-dur-short3) var(--md-emph),
+                background-color var(--md-dur-short3) var(--md-emph);
   }
   :root[data-ui="material"] .field-group:focus-within > label,
   :root[data-ui="material"] .m3-field:focus-within > label,
@@ -3882,7 +3950,8 @@ opacity: 0.18;
     position: relative;
     cursor: pointer;
     flex-shrink: 0;
-    transition: background-color 0.2s var(--md-emph), border-color 0.2s var(--md-emph);
+    transition: background-color var(--md-dur-short4) var(--md-emph),
+                border-color var(--md-dur-short4) var(--md-emph);
   }
   :root[data-ui="material"] .dbx-toggle input[type="checkbox"]::after {
     content: '';
@@ -3894,8 +3963,10 @@ opacity: 0.18;
     border-radius: 50%;
     background: var(--md-outline);
     transform: translateY(-50%);
-    transition: transform 0.2s var(--md-emph), width 0.2s var(--md-emph),
-                height 0.2s var(--md-emph), background-color 0.2s var(--md-emph);
+    transition: transform var(--md-dur-short4) var(--md-emph),
+                width var(--md-dur-short4) var(--md-emph),
+                height var(--md-dur-short4) var(--md-emph),
+                background-color var(--md-dur-short4) var(--md-emph);
   }
   :root[data-ui="material"] .dbx-toggle input[type="checkbox"]:checked {
     background: var(--md-primary);
@@ -3925,12 +3996,10 @@ opacity: 0.18;
     color: var(--md-on-surface);
     font-weight: 500;
     padding: 10px 12px;
-    transition: background-color 0.2s var(--md-emph);
+    transition: background-color var(--md-dur-short4) var(--md-emph);
   }
   :root[data-ui="material"] .theme-opt + .theme-opt,
   :root[data-ui="material"] .sync-seg button + button { border-left: 1px solid var(--md-outline); }
-  :root[data-ui="material"] .theme-opt:hover,
-  :root[data-ui="material"] .sync-seg button:hover { background: var(--md-surface-container-highest); color: var(--md-on-surface); }
   :root[data-ui="material"] .theme-opt.active,
   :root[data-ui="material"] .sync-seg button.active {
     background: var(--md-secondary-container);
@@ -3950,8 +4019,7 @@ opacity: 0.18;
     color: var(--md-on-surface-variant);
     font-weight: 500;
   }
-  :root[data-ui="material"] .target-opt:hover,
-  :root[data-ui="material"] .pick-opt:hover,
+  /* Hover/press feedback for the chips comes from the state layer below. */
   :root[data-ui="material"] .btn-clear-date:hover {
     background: var(--md-surface-container-highest);
     border-color: transparent;
@@ -4005,6 +4073,7 @@ opacity: 0.18;
     padding: 14px 16px;
     font-size: 0.875rem;
     font-weight: 400;
+    transition: all var(--md-dur-medium2) var(--md-decel);
     /* M3 snackbars are capped at 344dp and may wrap to two lines, rather than
        growing without limit off the edge of a narrow screen. */
     max-width: min(344px, calc(100vw - 32px));
@@ -4088,13 +4157,12 @@ opacity: 0.18;
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    transition: box-shadow 0.2s var(--md-emph), transform 0.2s var(--md-emph);
+    transition: box-shadow var(--md-dur-short4) var(--md-emph),
+                transform var(--md-dur-short4) var(--md-emph);
   }
   .m3-fab svg { width: 24px; height: 24px; display: block; }
   :root[data-ui="material"] .m3-fab { border-radius: var(--md-lg); }
   :root[data-ui="material"] .m3-fab.show { display: flex; }
-  :root[data-ui="material"] .m3-fab:hover { transform: translateY(-2px); box-shadow: var(--md-elev-3); }
-  :root[data-ui="material"] .m3-fab:active { transform: none; }
   /* --- Desktop --------------------------------------------------------------
      Desktop keeps the bottom navigation bar in Material mode, so the FAB stays
      on its 96px desktop offset and the snackbar rides up to remain 16dp above
