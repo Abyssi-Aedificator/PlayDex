@@ -1,8 +1,18 @@
 PlayDex - Changelog
 ====================
 
-Version 1.4.5
+Version 1.5.0
 -------------------
+- The Last 6 months bars in a game's dashboard now fill to show each month's playtime.
+- A paused timer is now obvious at a glance: the live card turns amber, shows a PAUSED badge, and dims the clock while it's held.
+- While a session is paused, the live card shows how long the timer has been paused, and the pause time also appears in the browser tab title.
+- The LIVE and PAUSED labels on the timer card are now easy to read in the light theme, where they previously blended into the pale background.
+- PlayDex now shows a loading screen with the app logo that stays up for a few seconds while it starts up.
+- The app no longer flashes the dark theme before your chosen light theme loads.
+- Theme Colour has a new Grey option that stays readable in both the light and dark themes.
+- The + Add button on the Sessions tab no longer spills outside the card when the screen is narrow.
+- The startup loading screen is now shorter, staying up for 1 to 3 seconds.
+- When the filter row is narrow, the All/Synced/Unsynced control now stays with the + Add button instead of leaving it on a line of its own.
 - Settings has a new Interface choice. Pick Material 3 for a Google Material Design look, or keep Classic.
 - Material 3 restyles the whole app with tonal colour, rounded shapes, floating field labels, switches and cards, and gives the Today tab a floating Log session button.
 - The Material 3 interface follows your Theme and Theme Colour choices, so your accent still drives the palette.
@@ -18,28 +28,6 @@ Version 1.4.5
   longer looks like a second copy of your main colour.
 - On wide screens the Material 3 Log session button now shows its label as well
   as the icon; on narrow phones it collapses to just the icon.
-
-Version 1.4.4
--------------------
-- The + Add button on the Sessions tab no longer spills outside the card when the screen is narrow.
-- The startup loading screen is now shorter, staying up for 1 to 3 seconds.
-- When the filter row is narrow, the All/Synced/Unsynced control now stays with the + Add button instead of leaving it on a line of its own.
-
-Version 1.4.3
--------------------
-- PlayDex now shows a loading screen with the app logo that stays up for a few seconds while it starts up.
-- The app no longer flashes the dark theme before your chosen light theme loads.
-- Theme Colour has a new Grey option that stays readable in both the light and dark themes.
-
-Version 1.4.2
--------------------
-- A paused timer is now obvious at a glance: the live card turns amber, shows a PAUSED badge, and dims the clock while it's held.
-- While a session is paused, the live card shows how long the timer has been paused, and the pause time also appears in the browser tab title.
-- The LIVE and PAUSED labels on the timer card are now easy to read in the light theme, where they previously blended into the pale background.
-
-Version 1.4.1
--------------------
-- The Last 6 months bars in a game's dashboard now fill to show each month's playtime.
 
 Version 1.4.0
 -------------------
