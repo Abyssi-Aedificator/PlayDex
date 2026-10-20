@@ -94,9 +94,16 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - The M3 colour roles (`--md-primary`, `--md-surface-container*`, `--md-outline*`,
   …) are generated in JS by `m3Roles()` from whichever accent + theme are
   active — an HSL-tone approximation of Material You (tone 40 light / 80 dark),
-  **not** a real HCT port. `applyAccent()` collapses the classic two-colour
-  gradient to the single M3 primary tone while Material is on, so the Theme and
-  Theme Colour pickers keep working.
+  **not** a real HCT port. Secondary is the source hue with saturation pulled
+  right down (`src.s * 0.22`, floored at 6%) so its containers read as a
+  *different* colour from the primary palette rather than more of the same;
+  tertiary keeps the hue rotation (`src.h - 55`) and is extracted as
+  `m3TertiaryHsl()` so `m3Roles()` and `applyAccent()` share one copy of the
+  maths. `applyAccent()` retargets the classic two-colour gradient at
+  primary → tertiary while Material is on, so the Theme and Theme Colour pickers
+  keep working and the decorative accents (medals, level badge, weekday bars)
+  keep a two-tone look. `header h1` and `.boot-logo` are flattened to a solid
+  primary in Material — M3 has no gradient wordmark.
 - The app's own colour tokens are re-pointed at the roles in JS
   (`applyMaterialTokens`, `M3_TOKEN_MAP`), not in CSS. That way, before the main
   script runs, the theme's normal palette still applies and the boot splash
@@ -122,6 +129,12 @@ stays on `dev`. Pushing `dev` when asked is fine.
   `--md-accel` live in the token block; `.tab-panel.active` uses
   `panel-in var(--md-dur-medium2) var(--md-decel)`. Use the tokens rather than
   new literal durations.
+- **Type:** Material applies the M3 scale explicitly — `.stat-value`,
+  `.modal h3` and `header h1` are title-large (22px/500); `.card-header`,
+  `.stat-label` and the tab labels are label-medium (12px/500); `.big-time` is
+  display-large (45px, **fixed**, so it does not grow to 3.6rem on desktop like
+  Classic does). **`.big-time` weight 500 is a deliberate deviation** from the
+  spec's 400, for legibility on a live-updating timer — keep it.
 - **Snackbar:** capped at `min(344px, calc(100vw - 32px))` and allowed to wrap,
   then lifted to 146px (mobile) / 168px (desktop) by
   `body:has(.m3-fab.show)` so it always sits 16dp above the FAB. The desktop

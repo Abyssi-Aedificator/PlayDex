@@ -13,6 +13,9 @@ Version 1.4.5
   pick up a shadow when you point at them.
 - Material 3 screens now transition in smoothly with the Material easing curve
   instead of the old fade.
+- Material 3 headings, numbers and card titles now use the sizes and weights of
+  the Material type scale, and the supporting colour is much softer so it no
+  longer looks like a second copy of your main colour.
 
 Version 1.4.4
 -------------------
