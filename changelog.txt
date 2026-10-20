@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.5.2
+-------------------
+- Fix theme settings that where still synced to Dropbox.
+
 Version 1.5.1
 -------------------
 - Settings are no longer synced to Dropbox; they remain device-local. Manual exports still include all settings for full backups.
