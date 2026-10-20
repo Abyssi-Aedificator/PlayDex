@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.5.1
+-------------------
+- Settings are no longer synced to Dropbox; they remain device-local. Manual exports still include all settings for full backups.
+
 Version 1.5.0
 -------------------
 - The Last 6 months bars in a game's dashboard now fill to show each month's playtime.
