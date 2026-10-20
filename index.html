@@ -3541,6 +3541,690 @@ opacity: 0.18;
     .tab-bar .tab-btn[data-tab="stats"] { display: none; }
   }
 
+  /* ==========================================================================
+     Material Design 3 interface
+     Opt-in via Settings > Interface > Material 3. Everything here is scoped to
+     :root[data-ui="material"], so the classic skin is untouched by construction.
+     The M3 colour roles (--md-*) are generated in JS from whichever accent and
+     theme are active; the app's own colour tokens are also re-pointed in JS
+     (applyMaterialTokens) rather than here, so that in the gap before the main
+     script runs the theme's normal colours still apply and the boot splash
+     never flashes the wrong palette.
+     ========================================================================== */
+
+  /* --- Static M3 tokens: type, motion, shape, elevation -------------------- */
+  :root[data-ui="material"] {
+    --md-font: Roboto, "Roboto Flex", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    /* M3 elevation levels 1-3 (umbra + penumbra). */
+    --md-elev-1: 0 1px 2px rgba(0,0,0,0.30), 0 1px 3px 1px rgba(0,0,0,0.15);
+    --md-elev-2: 0 1px 2px rgba(0,0,0,0.30), 0 2px 6px 2px rgba(0,0,0,0.15);
+    --md-elev-3: 0 1px 3px rgba(0,0,0,0.30), 0 4px 8px 3px rgba(0,0,0,0.15);
+    /* M3 motion. "emphasised" easing plus the standard duration scale, so
+       transitions read as Material rather than as assorted web timings. */
+    --md-emph: cubic-bezier(0.2, 0, 0, 1);
+    --md-decel: cubic-bezier(0.05, 0.7, 0.1, 1);
+    --md-accel: cubic-bezier(0.3, 0, 0.8, 0.15);
+    --md-dur-short2: 100ms;
+    --md-dur-short3: 150ms;
+    --md-dur-short4: 200ms;
+    --md-dur-medium2: 300ms;
+    /* M3 shape scale. */
+    --md-sm: 8px;
+    --md-md: 12px;
+    --md-lg: 16px;
+    --md-xl: 28px;
+    --md-full: 999px;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-lg: 12px;
+    --glass-border: transparent;
+    /* M3 state layer opacities: hover, focus, pressed. */
+    --md-state-hover: 0.08;
+    --md-state-focus: 0.1;
+    --md-state-press: 0.12;
+  }
+
+  /* --- Type: M3 scale (display / title / label) ---------------------------- */
+  :root[data-ui="material"] body {
+    font-family: var(--md-font);
+    letter-spacing: 0.1px;
+  }
+  /* display-large, for the elapsed timer. Weight 500 rather than the spec's 400
+     so a live-updating timer stays legible; size is fixed by the M3 scale. */
+  :root[data-ui="material"] .big-time {
+    font-size: 45px;
+    font-weight: 500;
+    letter-spacing: -1px;
+  }
+  /* title-large */
+  :root[data-ui="material"] .stat-value {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  /* label-medium */
+  :root[data-ui="material"] .card-header {
+    text-transform: none;
+    letter-spacing: 0.5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--md-on-surface-variant);
+  }
+  :root[data-ui="material"] .stat-label,
+  :root[data-ui="material"] .target-label {
+    text-transform: none;
+    letter-spacing: 0.4px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  /* The classic skin marks card headers with an accent bar; Material doesn't. */
+  :root[data-ui="material"] .card-header::before { display: none; }
+
+  /* --- Motion ---------------------------------------------------------------
+     Tab-panel changes use M3's standard container transform timing rather than
+     the classic 0.24s ease, so a tab switch reads as a Material transition. */
+  :root[data-ui="material"] .tab-panel.active {
+    animation: panel-in var(--md-dur-medium2) var(--md-decel);
+  }
+
+  /* --- Ornament: Material has no ambient glow or gradient wordmark --------- */
+  :root[data-ui="material"] .ambient-orbs { display: none; }
+  /* M3 has no gradient text: the app title reads as a solid primary, at the
+     title-large weight rather than the classic extra-bold wordmark. */
+  :root[data-ui="material"] header h1 {
+    background: none;
+    background-clip: border-box;
+    -webkit-text-fill-color: currentColor;
+    color: var(--md-primary);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  :root[data-ui="material"] .boot-logo {
+    background: none;
+    -webkit-text-fill-color: currentColor;
+    color: var(--md-primary);
+    font-weight: 500;
+    letter-spacing: 2px;
+  }
+  :root[data-ui="material"] .boot-bar { background: var(--md-surface-variant); height: 4px; border-radius: 2px; }
+  :root[data-ui="material"] .boot-bar span { background: var(--md-primary); border-radius: 2px; }
+
+  /* --- Surfaces ------------------------------------------------------------ */
+  :root[data-ui="material"] .card {
+    background: var(--md-surface-container-low);
+    border-color: transparent;
+    border-radius: var(--md-md);
+    box-shadow: none;
+  }
+  /* M3 cards have no hover elevation - nothing here is clickable, so there is
+     no affordance to signal. */
+  :root[data-ui="material"] .card:hover { border-color: transparent; }
+  :root[data-ui="material"] .stat-box,
+  :root[data-ui="material"] .empty-state {
+    background: var(--md-surface-container);
+    border-color: transparent;
+    border-radius: var(--md-md);
+    box-shadow: none;
+  }
+  :root[data-ui="material"] .active-session {
+    background: var(--md-primary-container);
+    border-color: transparent;
+    border-radius: var(--md-lg);
+    box-shadow: none;
+  }
+  :root[data-ui="material"] .active-session .big-time,
+  :root[data-ui="material"] .active-session .big-time-label,
+  :root[data-ui="material"] .active-session .elapsed {
+    color: var(--md-on-primary-container);
+  }
+  :root[data-ui="material"] .stat-grid { gap: 10px; }
+
+  /* --- Buttons ------------------------------------------------------------- */
+  :root[data-ui="material"] .btn,
+  :root[data-ui="material"] .btn-primary {
+    border-radius: var(--md-full);
+    padding: 10px 24px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    box-shadow: none;
+  }
+  :root[data-ui="material"] .btn:hover,
+  :root[data-ui="material"] .btn-primary:hover { filter: none; box-shadow: none; }
+  :root[data-ui="material"] .btn:active,
+  :root[data-ui="material"] .btn-primary:active { transform: none; }
+  /* Filled button */
+  :root[data-ui="material"] .btn-primary,
+  :root[data-ui="material"] .btn-start,
+  :root[data-ui="material"] .btn-pause {
+    background: var(--md-primary);
+    background-image: none;
+    color: var(--md-on-primary);
+  }
+  /* Destructive actions take the M3 error role. */
+  :root[data-ui="material"] .btn-danger,
+  :root[data-ui="material"] .btn-stop {
+    background: var(--md-error);
+    background-image: none;
+    color: var(--md-on-error);
+    box-shadow: none;
+  }
+  /* Outlined / text button. Hover and press feedback comes from the state layer
+     below, not from a colour swap. */
+  :root[data-ui="material"] .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--md-outline);
+    color: var(--md-primary);
+    border-radius: var(--md-full);
+    font-weight: 500;
+  }
+  :root[data-ui="material"] .btn-ghost.btn-danger {
+    background: transparent;
+    border-color: var(--md-outline);
+    color: var(--md-error);
+  }
+  /* Icon button: borderless with a circular state layer. */
+  :root[data-ui="material"] .btn-icon {
+    border-color: transparent;
+    background: transparent;
+    color: var(--md-on-surface-variant);
+    border-radius: var(--md-full);
+  }
+  :root[data-ui="material"] .btn-goal-edit {
+    border-color: var(--md-outline);
+    color: var(--md-primary);
+    border-radius: var(--md-full);
+    font-weight: 500;
+  }
+
+  /* --- State layers --------------------------------------------------------
+     The M3 signature: a currentColor overlay at 8% hover / 10% focus /
+     12% pressed. Excludes .dbx-toggle input and .progress-fill, whose ::after
+     is already the switch thumb and the progress shimmer.
+     The FAB is deliberately absent from the position: relative list - it is
+     position: fixed, which already contains its ::after. */
+  :root[data-ui="material"] .btn,
+  :root[data-ui="material"] .btn-primary,
+  :root[data-ui="material"] .btn-icon,
+  :root[data-ui="material"] .theme-opt,
+  :root[data-ui="material"] .target-opt,
+  :root[data-ui="material"] .pick-opt {
+    position: relative;
+  }
+  :root[data-ui="material"] .btn::after,
+  :root[data-ui="material"] .btn-primary::after,
+  :root[data-ui="material"] .btn-icon::after,
+  :root[data-ui="material"] .theme-opt::after,
+  :root[data-ui="material"] .target-opt::after,
+  :root[data-ui="material"] .pick-opt::after,
+  :root[data-ui="material"] .m3-fab::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--md-dur-short2) linear;
+  }
+  :root[data-ui="material"] .btn:hover::after,
+  :root[data-ui="material"] .btn-primary:hover::after,
+  :root[data-ui="material"] .btn-icon:hover::after,
+  :root[data-ui="material"] .theme-opt:hover::after,
+  :root[data-ui="material"] .target-opt:hover::after,
+  :root[data-ui="material"] .pick-opt:hover::after,
+  :root[data-ui="material"] .m3-fab:hover::after { opacity: var(--md-state-hover); }
+  :root[data-ui="material"] .btn:focus-visible::after,
+  :root[data-ui="material"] .btn-primary:focus-visible::after,
+  :root[data-ui="material"] .btn-icon:focus-visible::after,
+  :root[data-ui="material"] .theme-opt:focus-visible::after,
+  :root[data-ui="material"] .target-opt:focus-visible::after,
+  :root[data-ui="material"] .pick-opt:focus-visible::after,
+  :root[data-ui="material"] .m3-fab:focus-visible::after { opacity: var(--md-state-focus); }
+  :root[data-ui="material"] .btn:active::after,
+  :root[data-ui="material"] .btn-primary:active::after,
+  :root[data-ui="material"] .btn-icon:active::after,
+  :root[data-ui="material"] .theme-opt:active::after,
+  :root[data-ui="material"] .target-opt:active::after,
+  :root[data-ui="material"] .pick-opt:active::after,
+  :root[data-ui="material"] .m3-fab:active::after { opacity: var(--md-state-press); }
+
+  /* --- Navigation bar ------------------------------------------------------ */
+  :root[data-ui="material"] .tab-bar {
+    background: var(--md-surface-container);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-top: 1px solid var(--md-outline-variant);
+    box-shadow: none;
+    padding-top: 8px;
+  }
+  :root[data-ui="material"] .tab-btn {
+    color: var(--md-on-surface-variant);
+    font-weight: 500;
+    font-size: 12px;
+    gap: 2px;
+    padding: 4px 2px 6px;
+  }
+  /* M3 active indicator: a pill behind the icon, not an underline. */
+  :root[data-ui="material"] .tab-btn .tab-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 56px;
+    height: 30px;
+    border-radius: var(--md-full);
+    background: transparent;
+    transform: none;
+    transition: background-color var(--md-dur-short4) var(--md-emph);
+  }
+  :root[data-ui="material"] .tab-btn.active { color: var(--md-on-surface); }
+  :root[data-ui="material"] .tab-btn.active .tab-icon {
+    background: var(--md-secondary-container);
+    color: var(--md-on-secondary-container);
+    transform: none;
+  }
+  /* Retire the classic underline; its ::after becomes the state layer. */
+  :root[data-ui="material"] .tab-btn.active::after { display: none; }
+  /* The "syncing" spinner still needs its rotate animation. */
+  :root[data-ui="material"] button.syncing .tab-icon { display: inline-block; }
+  :root[data-ui="material"] .tab-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--md-full);
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--md-dur-short2) linear;
+  }
+  :root[data-ui="material"] .tab-btn:hover::after { opacity: var(--md-state-hover); }
+
+  /* --- Text fields: M3 outlined fields with a floating label ---------------- */
+  :root[data-ui="material"] input[type="text"],
+  :root[data-ui="material"] input[type="number"],
+  :root[data-ui="material"] .cal-trigger {
+    background: transparent;
+    border: 1px solid var(--md-outline);
+    border-radius: 4px;
+    color: var(--md-on-surface);
+    padding: 15px 14px;
+  }
+  :root[data-ui="material"] input[type="text"]:focus,
+  :root[data-ui="material"] input[type="number"]:focus,
+  :root[data-ui="material"] .cal-trigger:focus-visible,
+  :root[data-ui="material"] .cal-field.open .cal-trigger {
+    border-color: var(--md-primary);
+    box-shadow: none;
+    outline: 1px solid var(--md-primary);
+    outline-offset: -1px;
+  }
+  /* Where a floating label exists, it replaces the placeholder hint. */
+  :root[data-ui="material"] .field-group input::placeholder,
+  :root[data-ui="material"] .m3-field input::placeholder { color: transparent; }
+  /* Closed-state M3 outlining for native selects; the popup itself stays
+     native, which is a deliberate scope limit. */
+  :root[data-ui="material"] select {
+    background-color: transparent;
+    border-color: var(--md-outline);
+    border-radius: 4px;
+    padding: 15px 38px 15px 14px;
+    color: var(--md-on-surface);
+  }
+  :root[data-ui="material"] select:focus {
+    border-color: var(--md-primary);
+    box-shadow: none;
+    outline: 1px solid var(--md-primary);
+    outline-offset: -1px;
+  }
+  /* The Games search box reads as an M3 search bar rather than a labelled field. */
+  :root[data-ui="material"] #game-search-input {
+    background: var(--md-surface-container-high);
+    border-color: transparent;
+    border-radius: var(--md-full);
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  :root[data-ui="material"] #game-search-input:focus {
+    background: var(--md-surface-container-highest);
+    border-color: var(--md-primary);
+  }
+  /* The custom HH/MM time picker keeps its compact numeric boxes; a full M3
+     outlined field would be far too tall for it. Must stay after the generic
+     input rule above - the two have equal specificity. */
+  :root[data-ui="material"] input.time-input {
+    width: 44px;
+    padding: 9px 0;
+    border-radius: var(--md-sm);
+    border-color: transparent;
+    background: var(--md-surface-container-high);
+  }
+  :root[data-ui="material"] input.time-input:focus {
+    border-color: var(--md-primary);
+    background: var(--md-surface-container-highest);
+    box-shadow: none;
+    outline: 1px solid var(--md-primary);
+    outline-offset: -1px;
+  }
+  :root[data-ui="material"] .ampm-btn {
+    border-radius: var(--md-full);
+    border-color: var(--md-outline);
+    background: transparent;
+    color: var(--md-on-surface-variant);
+  }
+  :root[data-ui="material"] .ampm-btn.on {
+    background: var(--md-secondary-container);
+    border-color: transparent;
+    color: var(--md-on-secondary-container);
+  }
+
+  /* Floating labels. Modals that already carry a .field-group label get the
+     full M3 float; the few bare inputs are wrapped in .m3-field in the markup. */
+  :root[data-ui="material"] .field-group,
+  :root[data-ui="material"] .m3-field {
+    display: block;
+    position: relative;
+    margin-bottom: 18px;
+  }
+  :root[data-ui="material"] .field-group > label,
+  :root[data-ui="material"] .m3-field > label {
+    display: block;
+    position: absolute;
+    left: 11px;
+    top: 15px;
+    z-index: 2;
+    margin: 0;
+    padding: 0 4px;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--md-on-surface-variant);
+    pointer-events: none;
+    transform-origin: left top;
+    transition: transform var(--md-dur-short3) var(--md-emph),
+                color var(--md-dur-short3) var(--md-emph),
+                background-color var(--md-dur-short3) var(--md-emph);
+  }
+  :root[data-ui="material"] .field-group:focus-within > label,
+  :root[data-ui="material"] .m3-field:focus-within > label,
+  :root[data-ui="material"] .field-group:has(input:not(:placeholder-shown)) > label,
+  :root[data-ui="material"] .m3-field:has(input:not(:placeholder-shown)) > label,
+  :root[data-ui="material"] .field-group:has(select) > label,
+  :root[data-ui="material"] .field-group:has(.cal-label:not(.placeholder)) > label {
+    transform: translateY(-24px) scale(0.78);
+    background-color: var(--md-surface-container-high);
+  }
+  :root[data-ui="material"] .field-group:focus-within > label,
+  :root[data-ui="material"] .m3-field:focus-within > label {
+    color: var(--md-primary);
+  }
+
+  /* In the classic skin the wrappers are layout-transparent, so adding them to
+     the markup changes nothing at all. */
+  .m3-field { display: contents; }
+  .m3-field > label { display: none; }
+
+  /* --- Switches ------------------------------------------------------------ */
+  :root[data-ui="material"] .dbx-toggle input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 52px;
+    height: 32px;
+    border-radius: var(--md-full);
+    border: 2px solid var(--md-outline);
+    background: var(--md-surface-container-highest);
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color var(--md-dur-short4) var(--md-emph),
+                border-color var(--md-dur-short4) var(--md-emph);
+  }
+  :root[data-ui="material"] .dbx-toggle input[type="checkbox"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--md-outline);
+    transform: translateY(-50%);
+    transition: transform var(--md-dur-short4) var(--md-emph),
+                width var(--md-dur-short4) var(--md-emph),
+                height var(--md-dur-short4) var(--md-emph),
+                background-color var(--md-dur-short4) var(--md-emph);
+  }
+  :root[data-ui="material"] .dbx-toggle input[type="checkbox"]:checked {
+    background: var(--md-primary);
+    border-color: var(--md-primary);
+  }
+  :root[data-ui="material"] .dbx-toggle input[type="checkbox"]:checked::after {
+    width: 24px;
+    height: 24px;
+    background: var(--md-on-primary);
+    transform: translate(20px, -50%);
+  }
+
+  /* --- Segmented buttons (theme, interface, sync filter) ------------------- */
+  :root[data-ui="material"] .theme-select,
+  :root[data-ui="material"] .sync-seg {
+    gap: 0;
+    border: 1px solid var(--md-outline);
+    border-radius: var(--md-full);
+    overflow: hidden;
+  }
+  :root[data-ui="material"] .theme-opt,
+  :root[data-ui="material"] .sync-seg button {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    background-image: none;
+    color: var(--md-on-surface);
+    font-weight: 500;
+    padding: 10px 12px;
+    transition: background-color var(--md-dur-short4) var(--md-emph);
+  }
+  :root[data-ui="material"] .theme-opt + .theme-opt,
+  :root[data-ui="material"] .sync-seg button + button { border-left: 1px solid var(--md-outline); }
+  :root[data-ui="material"] .theme-opt.active,
+  :root[data-ui="material"] .sync-seg button.active {
+    background: var(--md-secondary-container);
+    background-image: none;
+    color: var(--md-on-secondary-container);
+    border-color: transparent;
+  }
+
+  /* --- Filter chips -------------------------------------------------------- */
+  :root[data-ui="material"] .target-opt,
+  :root[data-ui="material"] .pick-opt,
+  :root[data-ui="material"] .btn-clear-date,
+  :root[data-ui="material"] .list-summary button {
+    border-radius: var(--md-sm);
+    border-color: var(--md-outline-variant);
+    background: transparent;
+    color: var(--md-on-surface-variant);
+    font-weight: 500;
+  }
+  /* Hover/press feedback for the chips comes from the state layer below. */
+  :root[data-ui="material"] .btn-clear-date:hover {
+    background: var(--md-surface-container-highest);
+    border-color: transparent;
+    color: var(--md-on-surface);
+  }
+  :root[data-ui="material"] .target-opt.on,
+  :root[data-ui="material"] .pick-opt.on,
+  :root[data-ui="material"] .pick-opt.active {
+    background: var(--md-secondary-container);
+    border-color: transparent;
+    color: var(--md-on-secondary-container);
+    font-weight: 500;
+  }
+  :root[data-ui="material"] .streak-pill {
+    border-radius: var(--md-sm);
+    background: var(--md-tertiary-container);
+    border-color: transparent;
+    color: var(--md-on-tertiary-container);
+  }
+  :root[data-ui="material"] .streak-pill.off {
+    background: var(--md-surface-container-highest);
+    border-color: transparent;
+    color: var(--md-on-surface-variant);
+  }
+
+  /* --- Dialogs ------------------------------------------------------------- */
+  :root[data-ui="material"] .modal-overlay.open { background: rgba(0, 0, 0, 0.32); }
+  :root[data-ui="material"] .modal {
+    background: var(--md-surface-container-high);
+    border-color: transparent;
+    border-radius: var(--md-xl);
+    padding: 24px;
+    box-shadow: var(--md-elev-3);
+  }
+  /* title-large */
+  :root[data-ui="material"] .modal h3 {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--md-on-surface);
+  }
+  :root[data-ui="material"] .modal-subheader { color: var(--md-on-surface-variant); }
+
+  /* --- Snackbar ------------------------------------------------------------ */
+  :root[data-ui="material"] .toast {
+    background: var(--md-inverse-surface);
+    color: var(--md-inverse-on-surface);
+    border: none;
+    border-radius: 4px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: var(--md-elev-3);
+    padding: 14px 16px;
+    font-size: 0.875rem;
+    font-weight: 400;
+    transition: all var(--md-dur-medium2) var(--md-decel);
+    /* M3 snackbars are capped at 344dp and may wrap to two lines, rather than
+       growing without limit off the edge of a narrow screen. */
+    max-width: min(344px, calc(100vw - 32px));
+    white-space: normal;
+    text-align: left;
+  }
+  /* M3 places the snackbar 16dp above the FAB when one is on screen, so the two
+     can never overlap. body:has() is already a dependency (the badges tab rule
+     in the classic sheet uses it). 146px = 74px FAB offset + 56px FAB + 16dp. */
+  :root[data-ui="material"] body:has(.m3-fab.show) .toast {
+    bottom: calc(146px + env(safe-area-inset-bottom, 0px));
+  }
+  :root[data-ui="material"] .toast .toast-action {
+    background: transparent;
+    border: none;
+    color: var(--md-inverse-primary);
+    padding: 0 4px 0 8px;
+    margin-left: 8px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border-radius: var(--md-full);
+    flex-shrink: 0;
+  }
+  :root[data-ui="material"] .dbx-banner {
+    background: var(--md-inverse-surface);
+    color: var(--md-inverse-on-surface);
+    border: none;
+    border-radius: 4px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: var(--md-elev-3);
+  }
+
+  /* --- Progress and charts ------------------------------------------------- */
+  :root[data-ui="material"] .progress-track {
+    background: var(--md-surface-variant);
+    border: none;
+    border-radius: var(--md-full);
+    height: 4px;
+    box-shadow: none;
+  }
+  :root[data-ui="material"] .progress-fill {
+    background: var(--md-primary);
+    background-image: none;
+    border-radius: var(--md-full);
+  }
+  :root[data-ui="material"] .progress-fill::after { display: none; }
+  :root[data-ui="material"] .bar-track {
+    background: var(--md-surface-container-highest);
+    border-color: transparent;
+    box-shadow: none;
+  }
+  :root[data-ui="material"] .bar {
+    background: var(--md-primary);
+    border-radius: var(--md-sm) var(--md-sm) 0 0;
+  }
+
+  /* --- Popovers (date / time pickers) -------------------------------------- */
+  :root[data-ui="material"] .cal-popover {
+    background: var(--md-surface-container-high);
+    border-color: transparent;
+    border-radius: var(--md-lg);
+    box-shadow: var(--md-elev-3);
+  }
+  :root[data-ui="material"] .cal-trigger .cal-chevron,
+  :root[data-ui="material"] .cal-trigger .cal-icon { color: var(--md-on-surface-variant); }
+
+  /* --- Floating action button (Today tab, Material interface only) ---------
+     Extended form (icon + label), compacting to the 56px icon form under
+     400px wide, which is M3's own guidance. */
+  .m3-fab {
+    display: none;
+    position: fixed;
+    right: 16px;
+    bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+    z-index: 150;
+    width: 56px;
+    height: 56px;
+    border: none;
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+    box-shadow: var(--md-elev-3);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow var(--md-dur-short4) var(--md-emph),
+                transform var(--md-dur-short4) var(--md-emph);
+  }
+  .m3-fab svg { width: 24px; height: 24px; display: block; flex-shrink: 0; }
+  /* The label only exists in Material mode. */
+  .m3-fab-label { display: none; }
+  :root[data-ui="material"] .m3-fab {
+    border-radius: var(--md-lg);
+    width: auto;
+    padding: 0 16px;
+    gap: 12px;
+  }
+  :root[data-ui="material"] .m3-fab-label {
+    display: inline;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+  }
+  :root[data-ui="material"] .m3-fab.show { display: flex; }
+  @media (max-width: 399px) {
+    :root[data-ui="material"] .m3-fab { width: 56px; padding: 0; gap: 0; }
+    :root[data-ui="material"] .m3-fab-label { display: none; }
+  }
+  /* --- Desktop --------------------------------------------------------------
+     Desktop keeps the bottom navigation bar in Material mode, so the FAB stays
+     on its 96px desktop offset and the snackbar rides up to remain 16dp above
+     it: 168px = 96px FAB offset + 56px FAB + 16dp. */
+  @media (min-width: 768px) {
+    .m3-fab { right: 28px; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+    :root[data-ui="material"] body:has(.m3-fab.show) .toast {
+      bottom: calc(168px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .m3-fab { transition: none; }
+  }
+
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -3561,6 +4245,7 @@ opacity: 0.18;
       t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
     document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('data-ui', s.uiStyle === 'material' ? 'material' : 'classic');
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', t === 'light' ? '#f2f4fa' : '#0b0d14');
   } catch (e) {}
@@ -3583,7 +4268,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.4.4</span>
+    <span class="version-badge">1.5.0</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -3904,6 +4589,12 @@ opacity: 0.18;
         <button class="theme-opt" data-theme-opt="light">Light</button>
         <button class="theme-opt" data-theme-opt="dark">Dark</button>
       </div>
+      <div class="card-header" style="margin-top:18px;">Interface</div>
+      <div class="theme-select" id="ui-select">
+        <button class="theme-opt" data-ui-opt="classic">Classic</button>
+        <button class="theme-opt" data-ui-opt="material">Material 3</button>
+      </div>
+      <div class="backup-hint" style="margin-top:8px;">Material 3 restyles the app with Google&rsquo;s Material Design: tonal colour, rounded shapes and a floating action button.</div>
       <div class="card-header" id="accent-header" style="margin-top:18px;">Theme Colour</div>
       <div class="accent-picker" id="accent-picker">
         <button class="accent-swatch" data-accent="" title="Default" aria-label="Default colour"></button>
@@ -4034,6 +4725,12 @@ opacity: 0.18;
   </div>
 </div>
 
+<!-- Material 3 floating action button: Today tab only, Material interface only -->
+<button class="m3-fab" id="m3-fab-log" type="button" title="Log a session" aria-label="Log a session">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>
+  <span class="m3-fab-label" aria-hidden="true">Log session</span>
+</button>
+
 <!-- Tab bar -->
 <div class="tab-bar">
   <button class="tab-btn active" data-tab="today">
@@ -4082,8 +4779,14 @@ opacity: 0.18;
       <button class="btn-ghost" id="cover-url-btn" style="padding:6px 10px;font-size:0.75rem;">Set URL</button>
       <button class="btn-ghost btn-danger" id="cover-remove-btn" style="padding:6px 10px;font-size:0.75rem;">Remove</button>
     </div>
-    <input type="text" id="rename-input" maxlength="50">
-    <input type="text" id="rename-tags" placeholder="Tags, comma separated (e.g. PC, Co-op)" maxlength="180" autocomplete="off">
+    <div class="m3-field">
+      <input type="text" id="rename-input" maxlength="50">
+      <label for="rename-input">Name</label>
+    </div>
+    <div class="m3-field">
+      <input type="text" id="rename-tags" placeholder="Tags, comma separated (e.g. PC, Co-op)" maxlength="180" autocomplete="off">
+      <label for="rename-tags">Tags, comma separated</label>
+    </div>
     <div class="modal-actions">
       <button class="btn-ghost" id="rename-cancel">Cancel</button>
       <button class="btn btn-start" id="rename-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -4386,7 +5089,10 @@ opacity: 0.18;
 <div class="modal-overlay" id="name-modal">
   <div class="modal">
     <h3>Edit name</h3>
-    <input type="text" id="name-input" maxlength="24" placeholder="Your name" autocomplete="off">
+    <div class="m3-field">
+      <input type="text" id="name-input" maxlength="24" placeholder="Your name" autocomplete="off">
+      <label for="name-input">Name</label>
+    </div>
     <div class="modal-actions">
       <button class="btn-ghost" id="name-cancel">Cancel</button>
       <button class="btn-primary" id="name-save">Save</button>
@@ -4533,8 +5239,8 @@ opacity: 0.18;
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week' }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic' }; }
   }
 
   function mergeFullClear(a, b) {
@@ -4730,12 +5436,173 @@ opacity: 0.18;
     return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
   }
 
+  // --- Material 3 colour roles ---------------------------------------------
+  // Material You derives its palette from one source colour through HCT tonal
+  // palettes. Porting that maths exactly is a few hundred lines, so this
+  // approximates it: the source accent's hue is kept and each M3 role takes an
+  // HSL lightness equal to its tone (tone 40 -> 40% L), with the neutral
+  // palettes desaturated towards grey. Close to Material You, deliberately not
+  // pixel-exact.
+  function hexToHsl(hex) {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return { h: 0, s: 0, l: 0 };
+    const r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    let h = 0, s = 0;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+      else if (max === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h *= 60;
+    }
+    return { h: h, s: s * 100, l: l * 100 };
+  }
+
+  function hslToHex(h, s, l) {
+    h = ((h % 360) + 360) % 360;
+    s = Math.max(0, Math.min(100, s)) / 100;
+    l = Math.max(0, Math.min(100, l)) / 100;
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+    let r = 0, g = 0, b = 0;
+    if (h < 60) { r = c; g = x; }
+    else if (h < 120) { r = x; g = c; }
+    else if (h < 180) { g = c; b = x; }
+    else if (h < 240) { g = x; b = c; }
+    else if (h < 300) { r = x; b = c; }
+    else { r = c; b = x; }
+    const to = v => Math.round((v + m) * 255).toString(16).padStart(2, '0');
+    return '#' + to(r) + to(g) + to(b);
+  }
+
+  // The tertiary source colour for the theme. Shared by m3Roles() and the
+  // accent gradient below so the hue maths lives in exactly one place.
+  function m3TertiaryHsl(theme) {
+    const src = hexToHsl(accentSourceHex(theme));
+    return { h: src.h - 55, s: Math.max(12, Math.min(46, src.s * 0.7)) };
+  }
+
+  // One tonal palette step. Passing `sat` overrides the source saturation so
+  // the neutral palettes can be near-grey steps of the same hue.
+  function m3Tone(hsl, tone, sat) {
+    return hslToHex(hsl.h, sat == null ? hsl.s : sat, tone);
+  }
+
+  // The untoned source colour for the theme: the chosen accent, or the default.
+  function accentSourceHex(theme) {
+    const preset = settings.accent && ACCENT_PRESETS[settings.accent];
+    if (preset) return (theme === 'light' && preset.lightC1) ? preset.lightC1 : preset.c1;
+    return theme === 'light' ? '#7c3aed' : '#a78bfa';
+  }
+
+  function m3Roles(theme) {
+    const light = theme === 'light';
+    const src = hexToHsl(accentSourceHex(theme));
+    const P = t => m3Tone(src, t);              // primary palette
+    const N = t => m3Tone(src, t, 8);           // neutral palette
+    const NV = t => m3Tone(src, t, 18);         // neutral variant palette
+    // M3's secondary is the source hue with its chroma pulled right down - that
+    // is what makes containers read as a different colour from the primary
+    // palette rather than as more of the same. Tertiary is the one that moves.
+    const sec = { h: src.h + 12, s: Math.max(6, Math.min(22, src.s * 0.22)) };
+    const ter = m3TertiaryHsl(theme);
+    const S = t => m3Tone(sec, t);
+    const T = t => m3Tone(ter, t);
+    if (light) return {
+      'primary': P(40), 'on-primary': P(100),
+      'primary-container': P(90), 'on-primary-container': P(10),
+      'secondary': S(40), 'secondary-container': S(90), 'on-secondary-container': S(10),
+      'tertiary': T(40), 'tertiary-container': T(90), 'on-tertiary-container': T(10),
+      'error': '#b3261e', 'on-error': '#ffffff', 'error-container': '#f9dedc',
+      'background': N(99), 'on-background': N(10),
+      'on-surface': N(10), 'surface-variant': NV(90), 'on-surface-variant': NV(30),
+      'surface-container-lowest': N(100), 'surface-container-low': N(96),
+      'surface-container': N(94), 'surface-container-high': N(92), 'surface-container-highest': N(90),
+      'outline': NV(50), 'outline-variant': NV(80),
+      'inverse-surface': N(20), 'inverse-on-surface': N(95), 'inverse-primary': P(80)
+    };
+    return {
+      'primary': P(80), 'on-primary': P(20),
+      'primary-container': P(30), 'on-primary-container': P(90),
+      'secondary': S(80), 'secondary-container': S(30), 'on-secondary-container': S(90),
+      'tertiary': T(80), 'tertiary-container': T(30), 'on-tertiary-container': T(90),
+      'error': '#f2b8b5', 'on-error': '#601410', 'error-container': '#8c1d18',
+      'background': N(6), 'on-background': N(90),
+      'on-surface': N(90), 'surface-variant': NV(30), 'on-surface-variant': NV(80),
+      'surface-container-lowest': N(4), 'surface-container-low': N(10),
+      'surface-container': N(12), 'surface-container-high': N(17), 'surface-container-highest': N(22),
+      'outline': NV(60), 'outline-variant': NV(30),
+      'inverse-surface': N(90), 'inverse-on-surface': N(20), 'inverse-primary': P(40)
+    };
+  }
+
+  // Names written by the last Material render, so switching back to the classic
+  // interface can remove exactly those custom properties again.
+  const m3Applied = [];
+
+  // The app's own colour tokens are re-pointed at M3 roles here rather than in
+  // CSS, so that until this runs the theme's normal palette still applies and
+  // the boot splash never flashes the wrong colours.
+  const M3_TOKEN_MAP = {
+    '--bg': 'background',
+    '--surface': 'surface-container-low',
+    '--surface2': 'surface-container-high',
+    '--surface3': 'surface-container-highest',
+    '--border': 'outline-variant',
+    '--border-strong': 'outline',
+    '--text': 'on-surface',
+    '--text2': 'on-surface-variant',
+    '--text3': 'outline',
+    '--glass-bg': 'surface-container',
+    '--shadow': 'elev-2',
+    '--shadow-soft': 'elev-1'
+  };
+
+  function applyMaterialTokens(theme) {
+    const root = document.documentElement;
+    while (m3Applied.length) root.style.removeProperty(m3Applied.pop());
+    if (settings.uiStyle !== 'material') return;
+    const roles = m3Roles(theme);
+    Object.keys(roles).forEach(k => {
+      const prop = '--md-' + k;
+      root.style.setProperty(prop, roles[k]);
+      m3Applied.push(prop);
+    });
+    Object.keys(M3_TOKEN_MAP).forEach(prop => {
+      root.style.setProperty(prop, 'var(--md-' + M3_TOKEN_MAP[prop] + ')');
+      m3Applied.push(prop);
+    });
+  }
+
+  function applyUI() {
+    const ui = settings.uiStyle === 'material' ? 'material' : 'classic';
+    document.documentElement.setAttribute('data-ui', ui);
+    document.querySelectorAll('.theme-opt[data-ui-opt]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.uiOpt === ui);
+    });
+  }
+
   function applyAccent(theme) {
     const root = document.documentElement;
     const preset = settings.accent && ACCENT_PRESETS[settings.accent];
-    if (preset) {
-      const c1 = (theme === 'light' && preset.lightC1) ? preset.lightC1 : preset.c1;
-      const c2 = (theme === 'light' && preset.lightC2) ? preset.lightC2 : preset.c2;
+    const material = settings.uiStyle === 'material';
+    if (preset || material) {
+      let c1 = preset ? ((theme === 'light' && preset.lightC1) ? preset.lightC1 : preset.c1) : accentSourceHex(theme);
+      let c2 = preset ? ((theme === 'light' && preset.lightC2) ? preset.lightC2 : preset.c2) : accentSourceHex(theme);
+      if (material) {
+        // Material has a single primary tone for fills, so c1 collapses to it.
+        // The gradient survives as primary -> tertiary: only the decorative
+        // accents (medals, level badge, the "today" bar) still read it in
+        // Material mode, where it restores the two-tone character they lost
+        // when every other consumer was repointed at a flat role.
+        const tone = theme === 'light' ? 40 : 80;
+        c1 = m3Tone(hexToHsl(c1), tone);
+        c2 = m3Tone(m3TertiaryHsl(theme), tone);
+      }
       const rgb = hexToRgb(c1);
       const alpha = theme === 'light' ? 0.1 : 0.14;
       root.style.setProperty('--accent', c1);
@@ -4758,10 +5625,12 @@ opacity: 0.18;
     document.documentElement.setAttribute('data-theme', theme);
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', theme === 'light' ? '#f2f4fa' : '#0b0d14');
-    document.querySelectorAll('.theme-opt').forEach(btn => {
+    document.querySelectorAll('.theme-opt[data-theme-opt]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.themeOpt === settings.theme);
     });
+    applyUI();
     applyAccent(theme);
+    applyMaterialTokens(theme);
   }
 
   if (window.matchMedia) {
@@ -5330,6 +6199,8 @@ opacity: 0.18;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
     document.querySelector('.app-content').classList.toggle('merged', name === 'today');
+    const fab = document.getElementById('m3-fab-log');
+    if (fab) fab.classList.toggle('show', name === 'today');
     render();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -7958,6 +8829,7 @@ opacity: 0.18;
   }
 
   document.getElementById('btn-add-session').addEventListener('click', openAddSessionModal);
+  document.getElementById('m3-fab-log').addEventListener('click', openAddSessionModal);
 
   document.getElementById('add-session-cancel').addEventListener('click', () => {
     document.getElementById('add-session-modal').classList.remove('open');
@@ -8122,9 +8994,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
       if (importData.settings && typeof importData.settings === 'object') {
-        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week' }, importData.settings);
+        settings = Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic' }, importData.settings);
       } else {
-        settings = { dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week' };
+        settings = { dailyGoalMinutes: 0, theme: 'system', accent: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic' };
       }
       settings.accent = localAccent;
       saveGames(games);
@@ -8337,9 +9209,18 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   timerRaf = requestAnimationFrame(updateTimer);
 
   // --- Appearance (theme select) ---
-  document.querySelectorAll('.theme-opt').forEach(btn => {
+  document.querySelectorAll('.theme-opt[data-theme-opt]').forEach(btn => {
     btn.addEventListener('click', () => {
       settings.theme = btn.dataset.themeOpt;
+      saveSettings(settings);
+      applyTheme();
+    });
+  });
+
+  // --- Appearance (interface style) ---
+  document.querySelectorAll('.theme-opt[data-ui-opt]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      settings.uiStyle = btn.dataset.uiOpt === 'material' ? 'material' : 'classic';
       saveSettings(settings);
       applyTheme();
     });
@@ -8487,6 +9368,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   backfillUnlockDates('gentle');
   applyTheme();
   document.querySelector('.app-content').classList.toggle('merged', currentTab === 'today');
+  document.getElementById('m3-fab-log').classList.toggle('show', currentTab === 'today');
   updateDropboxUI();
   dropboxHandleRedirect().then(() => {
     render();
@@ -8530,7 +9412,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.4.4';
+    const APP_VERSION = '1.5.0';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
