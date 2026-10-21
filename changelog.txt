@@ -1,9 +1,17 @@
 PlayDex - Changelog
 ====================
 
+Version 1.5.3
+-------------------
+- New app icons.
+- In the Classic interface, the background follows your Theme Colour, so the corner glow and drifting background match your chosen accent instead of staying violet and cyan.
+- Theme Colour now offers 11 more options in a second column, from Mint to Lime through Slate to Navy. All two-colour swatches now fill their whole circle.
+- In the Material 3 interface, the second Theme Colour column is hidden and the first column spreads across the full width.
+- The accent is now a single flat colour instead of a gradient, so the app title, buttons, badges and highlights all use one solid Theme Colour — including the Appearance and Interface selector buttons in Settings, the All/Synced/Unsynced filter, the "What should I play?" button, and the default colour, which used to fall back to a separate purple.
+
 Version 1.5.2
 -------------------
-- Fix theme settings that where still synced to Dropbox.
+- Settings are no longer synced to Dropbox; they remain device-local. Manual exports still include all settings for full backups.
 
 Version 1.5.1
 -------------------
@@ -24,18 +32,11 @@ Version 1.5.0
 - Settings has a new Interface choice. Pick Material 3 for a Google Material Design look, or keep Classic.
 - Material 3 restyles the whole app with tonal colour, rounded shapes, floating field labels, switches and cards, and gives the Today tab a floating Log session button.
 - The Material 3 interface follows your Theme and Theme Colour choices, so your accent still drives the palette.
-- Material 3 notification banners now wrap onto several lines and stay above
-  the Log session button instead of running off the screen or covering it.
-- Material 3 buttons, tabs and options now show a soft highlight when you point
-  at or press them, instead of changing colour or lifting, and cards no longer
-  pick up a shadow when you point at them.
-- Material 3 screens now transition in smoothly with the Material easing curve
-  instead of the old fade.
-- Material 3 headings, numbers and card titles now use the sizes and weights of
-  the Material type scale, and the supporting colour is much softer so it no
-  longer looks like a second copy of your main colour.
-- On wide screens the Material 3 Log session button now shows its label as well
-  as the icon; on narrow phones it collapses to just the icon.
+- Material 3 notification banners now wrap onto several lines and stay above the Log session button instead of running off the screen or covering it.
+- Material 3 buttons, tabs and options now show a soft highlight when you point at or press them, instead of changing colour or lifting, and cards no longer pick up a shadow when you point at them.
+- Material 3 screens now transition in smoothly with the Material easing curve instead of the old fade.
+- Material 3 headings, numbers and card titles now use the sizes and weights of the Material type scale, and the supporting colour is much softer so it no longer looks like a second copy of your main colour.
+- On wide screens the Material 3 Log session button now shows its label as well as the icon; on narrow phones it collapses to just the icon.
 
 Version 1.4.0
 -------------------
@@ -83,96 +84,41 @@ Version 1.3.0
 
 Version 1.2.0
 -------------------
-- The live session timer can be paused and resumed, shows the session start
-  time and the current time in 24-hour format beside the running elapsed
-  time, and tells you how long until your next playtime badge.
-- Set an optional time target when starting a session, watch progress toward
-  it on the timer card, and your phone buzzes with a confirmation message
-  when your session reaches it.
-- Deleted sessions can be undone from the confirmation toast, and completed
-  sessions can be exported to CSV from Settings.
+- The live session timer can be paused and resumed, shows the session start time and the current time in 24-hour format beside the running elapsed time, and tells you how long until your next playtime badge.
+- Set an optional time target when starting a session, watch progress toward it on the timer card, and your phone buzzes with a confirmation message when your session reaches it.
+- Deleted sessions can be undone from the confirmation toast, and completed sessions can be exported to CSV from Settings.
 - The Games list shows when each game was last played and how often.
-- A new Badges tab tracks milestone achievements, play streaks, and a player
-  level earned from your play history; badge cards show their rarity tier, a
-  freshly unlocked badge glows for 24 hours, earned badges show their unlock
-  date, and they flow into multiple columns on wide screens.
-- Badge unlocks trigger celebrations on the spot — and never repeat one you
-  have already seen — while your phone buzzes when you unlock a badge or
-  level up, and you earn XP for time played.
-- Locked badges estimate how long until you can earn them from your average
-  weekly play, stay on one line even on narrow cards, and their estimates
-  hold up in any timezone.
-- Daily and weekly quest boards with XP rewards keep the level meter moving,
-  quests are drawn at random (five new each day and each Monday), the Quests
-  card counts what you have completed and when it resets, daily streaks and
-  a Weekly Champion banner reward full completions — and the profile shows
-  your achievement XP (with a share of the maximum) and XP remaining to the
-  next level.
-- 14 new badges extend Game Variety, Epic Sessions, and Dedication with
-  game-count ladders, 3- and 8-hour sessions, single-day play and session
-  records, day-count milestones, and early-bird and night-owl chains.
-- A new Profile tab introduces your player record: a custom name, badge
-  count and XP, playtime and streak totals, and a progress ring of overall
-  badge completion; set your name, see which badge unlocks next, and jump to
-  your favorite game.
-- The profile splits your sessions into a playstyle bar (Quick, Standard,
-  Marathon) and charts your playtimes by weekday.
-- A weekly streak calendar shows the past 52 weeks, with a milestone timeline
-  for firsts and totals; your longest streak counts the weeks you played, and
-  month labels swap in or out automatically so the grid stays uniform on any
-  screen.
-- Review sessions you haven't marked as synced: filter the list by sync
-  status, see every unsynced entry across all dates with a running total of
-  remaining time, and mark them all synced in one tap (with undo); filtered
-  rows also show each session's date and that day's total.
-- Your profile's longest session record names the game it was played on, and
-  a game's session history shows the last 5 sessions instead of 10.
-- Give a game a cover image — upload a picture or paste an image URL, manage
-  it from the game's Edit screen, and see it on the game's stats page; while
-  a session runs, the live timer fades its game's cover behind a subtle
-  backdrop with the next-badge hint in dimmed white.
-- Game stats (the game dashboard) open reliably again, long stats dialogs
-  scroll so their Close button is always reachable, URL covers stay editable
-  in the Edit screen, and the pending-sync banner no longer grabs taps while
-  hidden.
+- A new Badges tab tracks milestone achievements, play streaks, and a player level earned from your play history; badge cards show their rarity tier, a freshly unlocked badge glows for 24 hours, earned badges show their unlock date, and they flow into multiple columns on wide screens.
+- Badge unlocks trigger celebrations on the spot — and never repeat one you have already seen — while your phone buzzes when you unlock a badge or level up, and you earn XP for time played.
+- Locked badges estimate how long until you can earn them from your average weekly play, stay on one line even on narrow cards, and their estimates hold up in any timezone.
+- Daily and weekly quest boards with XP rewards keep the level meter moving, quests are drawn at random (five new each day and each Monday), the Quests card counts what you have completed and when it resets, daily streaks and a Weekly Champion banner reward full completions — and the profile shows your achievement XP (with a share of the maximum) and XP remaining to the next level.
+- 14 new badges extend Game Variety, Epic Sessions, and Dedication with game-count ladders, 3- and 8-hour sessions, single-day play and session records, day-count milestones, and early-bird and night-owl chains.
+- A new Profile tab introduces your player record: a custom name, badge count and XP, playtime and streak totals, and a progress ring of overall badge completion; set your name, see which badge unlocks next, and jump to your favorite game.
+- The profile splits your sessions into a playstyle bar (Quick, Standard, Marathon) and charts your playtimes by weekday.
+- A weekly streak calendar shows the past 52 weeks, with a milestone timeline for firsts and totals; your longest streak counts the weeks you played, and month labels swap in or out automatically so the grid stays uniform on any screen.
+- Review sessions you haven't marked as synced: filter the list by sync status, see every unsynced entry across all dates with a running total of remaining time, and mark them all synced in one tap (with undo); filtered rows also show each session's date and that day's total.
+- Your profile's longest session record names the game it was played on, and a game's session history shows the last 5 sessions instead of 10.
+- Give a game a cover image — upload a picture or paste an image URL, manage it from the game's Edit screen, and see it on the game's stats page; while a session runs, the live timer fades its game's cover behind a subtle backdrop with the next-badge hint in dimmed white.
+- Game stats (the game dashboard) open reliably again, long stats dialogs scroll so their Close button is always reachable, URL covers stay editable in the Edit screen, and the pending-sync banner no longer grabs taps while hidden.
 
 Version 1.1.0
 -------------------
-- Added full PWA support (manifest, service worker, installable icons) with an
-  Install app button, and scoped the app so it no longer collides with other
-  apps on the same GitHub Pages origin.
-- Fixed the service worker so it only manages PlayDex's own caches and reliably
-  installs the corrected, origin-safe worker across existing installs.
-- Replaced the native time inputs in the Add/Edit Session modals with a themed
-  AM/PM time picker and fixed the HH/MM field sizing.
-- Stopped the whole session list from re-animating when you mark a session
-  Synced or Deleted, and removed the "Quick add game" field.
-- Added a themed messagebox that notifies you when a new version of PlayDex is
-  available and ready to install, with a "Reload now" action that shows once
-  per version.
-- Added a Theme Colour picker in Settings so you can change the app's accent
-  colour, applied instantly across buttons, tabs, calendar and highlights.
-- On wider screens, the Today and Sessions tabs are combined into a single
-  page: today's overview on the left and the session list on the right, with
-  the separate Sessions tab hidden.
-- Added a "Last 30 Days" playtime graph to the Stats tab and, on wide PC
-  screens, showed Stats as a third column in the combined Today page.
-- Kept the theme colour (accent) device-local so it is no longer synced or
-  overwritten through Dropbox.
-- Widened the combined desktop page and gave Today and Sessions slightly more
-  room than Stats.
-- Listed the Games tab and the Playtime by Game breakdown alphabetically, and
-  sorted the Start a Game list on the Today page by most recently played.
-- Today's bar in the Last 7 Days chart now matches the accent colour of the
-  other bars.
+- Added full PWA support (manifest, service worker, installable icons) with an Install app button, and scoped the app so it no longer collides with other apps on the same GitHub Pages origin.
+- Fixed the service worker so it only manages PlayDex's own caches and reliably installs the corrected, origin-safe worker across existing installs.
+- Replaced the native time inputs in the Add/Edit Session modals with a themed AM/PM time picker and fixed the HH/MM field sizing.
+- Stopped the whole session list from re-animating when you mark a session Synced or Deleted, and removed the "Quick add game" field.
+- Added a themed messagebox that notifies you when a new version of PlayDex is available and ready to install, with a "Reload now" action that shows once per version.
+- Added a Theme Colour picker in Settings so you can change the app's accent colour, applied instantly across buttons, tabs, calendar and highlights.
+- On wider screens, the Today and Sessions tabs are combined into a single page: today's overview on the left and the session list on the right, with the separate Sessions tab hidden.
+- Added a "Last 30 Days" playtime graph to the Stats tab and, on wide PC screens, showed Stats as a third column in the combined Today page.
+- Kept the theme colour (accent) device-local so it is no longer synced or overwritten through Dropbox.
+- Widened the combined desktop page and gave Today and Sessions slightly more room than Stats.
+- Listed the Games tab and the Playtime by Game breakdown alphabetically, and sorted the Start a Game list on the Today page by most recently played.
+- Today's bar in the Last 7 Days chart now matches the accent colour of the other bars.
 - Starting a game now scrolls you back to the top so the live timer is in view.
-- On a filtered date, each session shows that game's total playtime for the day
-  in pale accent text next to its own duration.
-- Games with unsynced time now show their name in red in the Playtime by Game
-  list.
-- Added a sync button in the header with a warning dot, and a reminder banner
-  with a Sync now shortcut, a dismiss button, and an option to hide it, shown
-  when changes haven't been backed up to Dropbox yet.
+- On a filtered date, each session shows that game's total playtime for the day in pale accent text next to its own duration.
+- Games with unsynced time now show their name in red in the Playtime by Game list.
+- Added a sync button in the header with a warning dot, and a reminder banner with a Sync now shortcut, a dismiss button, and an option to hide it, shown when changes haven't been backed up to Dropbox yet.
 
 Version 1.0.0
 ----------------
