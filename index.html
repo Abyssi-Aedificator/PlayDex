@@ -18,7 +18,6 @@
   :root {
     --accent-violet: #8b5cf6;
     --accent-cyan: #22d3ee;
-    --accent-gradient: linear-gradient(135deg, #8b5cf6, #22d3ee);
     --green: #34d399;
     --red: #f87171;
     --yellow: #fbbf24;
@@ -40,6 +39,7 @@
     --text2: #98a2b8;
     --text3: #5c6577;
     --accent: #a78bfa;
+    --accent-gradient: #a78bfa;
     --accent-dim: rgba(139, 92, 246, 0.14);
     --green-dim: rgba(52, 211, 153, 0.12);
     --red-dim: rgba(248, 113, 113, 0.14);
@@ -65,6 +65,7 @@
     --text2: #475569;
     --text3: #94a3b8;
     --accent: #7c3aed;
+    --accent-gradient: #7c3aed;
     --accent-dim: rgba(124, 58, 237, 0.1);
     --green-dim: rgba(16, 185, 129, 0.12);
     --red-dim: rgba(239, 68, 68, 0.12);
@@ -89,8 +90,8 @@
     flex-direction: column;
     overflow-x: hidden;
     background-image:
-      radial-gradient(900px 500px at 8% -8%, rgba(139, 92, 246, 0.09), transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, rgba(34, 211, 238, 0.09), transparent 55%);
+      radial-gradient(900px 500px at 8% -8%, var(--bg-tint1, rgba(139, 92, 246, 0.09)), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, var(--bg-tint2, rgba(34, 211, 238, 0.09)), transparent 55%);
     background-attachment: fixed;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
@@ -165,7 +166,7 @@
     left: -22vmax;
     top: -20vmax;
     opacity: 0.16;
-    background: radial-gradient(circle at center, #8b5cf6, transparent 62%);
+    background: radial-gradient(circle at center, var(--orb1, #8b5cf6), transparent 62%);
     animation: orb-drift-1 46s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   }
 
@@ -175,7 +176,7 @@
     right: -24vmax;
     top: 6vmax;
     opacity: 0.14;
-    background: radial-gradient(circle at center, #22d3ee, transparent 62%);
+    background: radial-gradient(circle at center, var(--orb2, #22d3ee), transparent 62%);
     animation: orb-drift-2 54s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   }
 
@@ -185,7 +186,7 @@
     left: 4vmax;
     bottom: -28vmax;
     opacity: 0.11;
-    background: radial-gradient(circle at center, #34d399, transparent 62%);
+    background: radial-gradient(circle at center, var(--orb3, #34d399), transparent 62%);
     animation: orb-drift-3 60s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   }
 
@@ -1179,10 +1180,12 @@ opacity: 0.18;
     transition: all 0.2s ease;
   }
   .sync-seg button:hover { border-color: var(--accent-dim); color: var(--text); }
+  /* The selected filter uses the same accent-tint treatment as the
+     "What should I play?" button: dim accent fill, accent border and text. */
   .sync-seg button.active {
-    background-image: var(--accent-gradient);
-    color: #fff;
-    border-color: transparent;
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   /* On the narrowest phones the segmented control and the Add button need a
@@ -1789,6 +1792,15 @@ opacity: 0.18;
   }
 
   .btn-ghost:hover { border-color: var(--text2); color: var(--text); }
+
+  /* Accent-tinted ghost button: the "What should I play?" prompt. Uses the
+     Theme Colour instead of the neutral surface the plain ghost button uses. */
+  .btn-accent {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn-accent:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); filter: brightness(1.08); }
 
   .btn-danger {
     background: var(--red);
@@ -3349,19 +3361,29 @@ opacity: 0.18;
     transition: all 0.2s ease;
   }
   .theme-opt:hover { border-color: var(--accent-dim); color: var(--text); }
+  /* The selected option uses the same accent-tint treatment as the
+     "What should I play?" button: dim accent fill, accent border and text. */
   .theme-opt.active {
-    background-image: var(--accent-gradient);
-    color: #fff;
-    border-color: transparent;
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
     box-shadow: var(--shadow-soft);
   }
 
   /* Accent colour picker */
   .accent-picker {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px 22px;
+    align-items: start;
+    justify-content: start;
+  }
+  .accent-col {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
+    max-width: 220px;
   }
   .accent-swatch {
     width: 34px;
@@ -3370,6 +3392,10 @@ opacity: 0.18;
     border: 2px solid var(--border);
     cursor: pointer;
     padding: 0;
+    /* Gradients are painted from the padding box by default, which leaves the
+       2px border ring unfilled and makes two-colour swatches look clipped.
+       Originate the background at the border box so it fills the whole circle. */
+    background-origin: border-box;
     transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, border-color 0.2s;
   }
   .accent-swatch:hover { transform: scale(1.1); border-color: var(--text2); }
@@ -3378,8 +3404,8 @@ opacity: 0.18;
     box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow-soft);
   }
   .accent-swatch[data-accent=""] {
-    background-image:
-      linear-gradient(135deg, #8b5cf6 50%, #22d3ee 50%);
+    background-image: none;
+    background-color: #9333ea;
   }
   /* Grey needs a different value per theme to stay readable, so preview it
      with the same colours applyAccent() actually uses for the current theme. */
@@ -3724,6 +3750,12 @@ opacity: 0.18;
     border-color: var(--md-outline);
     color: var(--md-error);
   }
+  /* The "What should I play?" prompt keeps the Theme Colour in Material too. */
+  :root[data-ui="material"] .btn-ghost.btn-accent {
+    background: var(--md-primary-container);
+    border-color: transparent;
+    color: var(--md-on-primary-container);
+  }
   /* Icon button: borderless with a circular state layer. */
   :root[data-ui="material"] .btn-icon {
     border-color: transparent;
@@ -4028,9 +4060,9 @@ opacity: 0.18;
   :root[data-ui="material"] .sync-seg button + button { border-left: 1px solid var(--md-outline); }
   :root[data-ui="material"] .theme-opt.active,
   :root[data-ui="material"] .sync-seg button.active {
-    background: var(--md-secondary-container);
+    background: var(--md-primary-container);
     background-image: none;
-    color: var(--md-on-secondary-container);
+    color: var(--md-on-primary-container);
     border-color: transparent;
   }
 
@@ -4225,6 +4257,12 @@ opacity: 0.18;
     .m3-fab { transition: none; }
   }
 
+  /* In Material 3, hide the second Theme Colour column and let the first one
+     spread across the full picker width, using the space the second column had. */
+  :root[data-ui="material"] #accent-picker .accent-col:last-child { display: none; }
+  :root[data-ui="material"] #accent-picker { grid-template-columns: 1fr; }
+  :root[data-ui="material"] #accent-picker .accent-col { max-width: none; }
+
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -4268,7 +4306,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.5.2</span>
+    <span class="version-badge">1.5.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -4349,7 +4387,7 @@ opacity: 0.18;
       <div class="game-buttons" id="start-game-buttons">
         <div class="no-games-hint">No games yet. Add one in the Games tab.</div>
       </div>
-      <button class="btn-ghost" id="pick-game-btn-today" type="button" style="width:100%;margin-top:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
+      <button class="btn-ghost btn-accent" id="pick-game-btn-today" type="button" style="width:100%;margin-top:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
     </div>
   </div>
 
@@ -4555,7 +4593,7 @@ opacity: 0.18;
         <input type="text" id="add-game-input" placeholder="Game name..." maxlength="50">
         <button class="btn btn-start" id="add-game-btn">Add</button>
       </div>
-      <button class="btn-ghost" id="pick-game-btn" type="button" style="width:100%;margin:0 0 10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
+      <button class="btn-ghost btn-accent" id="pick-game-btn" type="button" style="width:100%;margin:0 0 10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
       <input type="text" id="game-search-input" placeholder="Search games..." maxlength="50" autocomplete="off" style="margin:0 0 10px;">
       <div class="game-tag-filters" id="game-tag-filters"></div>
       <div id="games-list"></div>
@@ -4597,17 +4635,32 @@ opacity: 0.18;
       <div class="backup-hint" style="margin-top:8px;">Material 3 restyles the app with Google&rsquo;s Material Design: tonal colour, rounded shapes and a floating action button.</div>
       <div class="card-header" id="accent-header" style="margin-top:18px;">Theme Colour</div>
       <div class="accent-picker" id="accent-picker">
-        <button class="accent-swatch" data-accent="" title="Default" aria-label="Default colour"></button>
-        <button class="accent-swatch" data-accent="cyanblue" style="background:linear-gradient(135deg,#22d3ee,#3b82f6)" title="Cyan to Blue" aria-label="Cyan to Blue"></button>
-        <button class="accent-swatch" data-accent="greenteal" style="background:linear-gradient(135deg,#10b981,#14b8a6)" title="Green to Teal" aria-label="Green to Teal"></button>
-        <button class="accent-swatch" data-accent="rose" style="background:linear-gradient(135deg,#f43f5e,#ec4899)" title="Rose to Pink" aria-label="Rose to Pink"></button>
-        <button class="accent-swatch" data-accent="sunset" style="background:linear-gradient(135deg,#fb923c,#ef4444)" title="Orange to Red" aria-label="Orange to Red"></button>
-        <button class="accent-swatch" data-accent="pinkviolet" style="background:linear-gradient(135deg,#ec4899,#8b5cf6)" title="Pink to Violet" aria-label="Pink to Violet"></button>
-        <button class="accent-swatch" data-accent="ocean" style="background:linear-gradient(135deg,#3b82f6,#6366f1)" title="Blue to Indigo" aria-label="Blue to Indigo"></button>
-        <button class="accent-swatch" data-accent="violet" style="background:linear-gradient(135deg,#8b5cf6,#a855f7)" title="Violet to Purple" aria-label="Violet to Purple"></button>
-        <button class="accent-swatch" data-accent="gold" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)" title="Gold to Amber" aria-label="Gold to Amber"></button>
-        <button class="accent-swatch" data-accent="red" style="background:linear-gradient(135deg,#ef4444,#f87171)" title="Red" aria-label="Red"></button>
-        <button class="accent-swatch" data-accent="grey" title="Grey" aria-label="Grey"></button>
+        <div class="accent-col">
+          <button class="accent-swatch" data-accent="" title="Default" aria-label="Default colour"></button>
+          <button class="accent-swatch" data-accent="cyanblue" style="background-image:linear-gradient(135deg,#22d3ee,#3b82f6)" title="Cyan to Blue" aria-label="Cyan to Blue"></button>
+          <button class="accent-swatch" data-accent="greenteal" style="background-image:linear-gradient(135deg,#10b981,#14b8a6)" title="Green to Teal" aria-label="Green to Teal"></button>
+          <button class="accent-swatch" data-accent="rose" style="background-image:linear-gradient(135deg,#f43f5e,#ec4899)" title="Rose to Pink" aria-label="Rose to Pink"></button>
+          <button class="accent-swatch" data-accent="sunset" style="background-image:linear-gradient(135deg,#fb923c,#ef4444)" title="Orange to Red" aria-label="Orange to Red"></button>
+          <button class="accent-swatch" data-accent="pinkviolet" style="background-image:linear-gradient(135deg,#ec4899,#8b5cf6)" title="Pink to Violet" aria-label="Pink to Violet"></button>
+          <button class="accent-swatch" data-accent="ocean" style="background-image:linear-gradient(135deg,#3b82f6,#6366f1)" title="Blue to Indigo" aria-label="Blue to Indigo"></button>
+          <button class="accent-swatch" data-accent="violet" style="background-image:linear-gradient(135deg,#8b5cf6,#a855f7)" title="Violet to Purple" aria-label="Violet to Purple"></button>
+          <button class="accent-swatch" data-accent="gold" style="background-image:linear-gradient(135deg,#f59e0b,#fbbf24)" title="Gold to Amber" aria-label="Gold to Amber"></button>
+          <button class="accent-swatch" data-accent="red" style="background-image:linear-gradient(135deg,#ef4444,#f87171)" title="Red" aria-label="Red"></button>
+          <button class="accent-swatch" data-accent="grey" title="Grey" aria-label="Grey"></button>
+        </div>
+        <div class="accent-col">
+          <button class="accent-swatch" data-accent="mintlime" style="background-image:linear-gradient(135deg,#34d399 50%,#a3e635 50%)" title="Mint to Lime" aria-label="Mint to Lime"></button>
+          <button class="accent-swatch" data-accent="skyindigo" style="background-image:linear-gradient(135deg,#0ea5e9 50%,#4f46e5 50%)" title="Sky to Indigo" aria-label="Sky to Indigo"></button>
+          <button class="accent-swatch" data-accent="berry" style="background-image:linear-gradient(135deg,#d946ef 50%,#8b5cf6 50%)" title="Fuchsia to Violet" aria-label="Fuchsia to Violet"></button>
+          <button class="accent-swatch" data-accent="coral" style="background-image:linear-gradient(135deg,#fb7185 50%,#fb923c 50%)" title="Coral to Peach" aria-label="Coral to Peach"></button>
+          <button class="accent-swatch" data-accent="forest" style="background-image:linear-gradient(135deg,#059669 50%,#065f46 50%)" title="Emerald to Forest" aria-label="Emerald to Forest"></button>
+          <button class="accent-swatch" data-accent="amethyst" style="background-image:linear-gradient(135deg,#a855f7 50%,#6366f1 50%)" title="Purple to Indigo" aria-label="Purple to Indigo"></button>
+          <button class="accent-swatch" data-accent="amber" style="background-image:linear-gradient(135deg,#f59e0b 50%,#ef4444 50%)" title="Amber to Red" aria-label="Amber to Red"></button>
+          <button class="accent-swatch" data-accent="slate" style="background-image:linear-gradient(135deg,#64748b 50%,#0f172a 50%)" title="Slate to Navy" aria-label="Slate to Navy"></button>
+          <button class="accent-swatch" data-accent="aqua" style="background-image:linear-gradient(135deg,#06b6d4 50%,#14b8a6 50%)" title="Cyan to Teal" aria-label="Cyan to Teal"></button>
+          <button class="accent-swatch" data-accent="plum" style="background-image:linear-gradient(135deg,#7e22ce 50%,#db2777 50%)" title="Plum to Magenta" aria-label="Plum to Magenta"></button>
+          <button class="accent-swatch" data-accent="mango" style="background-image:linear-gradient(135deg,#fbbf24 50%,#f97316 50%)" title="Mango to Tangerine" aria-label="Mango to Tangerine"></button>
+        </div>
       </div>
     </div>
     <div class="card">
@@ -5423,6 +5476,18 @@ opacity: 0.18;
     violet:      { c1: '#8b5cf6', c2: '#a855f7' },
     gold:        { c1: '#f59e0b', c2: '#fbbf24' },
     red:         { c1: '#ef4444', c2: '#f87171' },
+    // Second column: 11 more two-colour gradients.
+    mintlime:    { c1: '#34d399', c2: '#a3e635' },
+    skyindigo:   { c1: '#0ea5e9', c2: '#4f46e5' },
+    berry:       { c1: '#d946ef', c2: '#8b5cf6' },
+    coral:       { c1: '#fb7185', c2: '#fb923c' },
+    forest:      { c1: '#059669', c2: '#065f46' },
+    amethyst:    { c1: '#a855f7', c2: '#6366f1' },
+    amber:       { c1: '#f59e0b', c2: '#ef4444' },
+    slate:       { c1: '#64748b', c2: '#0f172a' },
+    aqua:        { c1: '#06b6d4', c2: '#14b8a6' },
+    plum:        { c1: '#7e22ce', c2: '#db2777' },
+    mango:       { c1: '#fbbf24', c2: '#f97316' },
     // Grey is the one preset that has to differ per theme: a single grey cannot
     // be readable on both a near-white and a near-black surface.
     grey:        { c1: '#94a3b8', c2: '#64748b', lightC1: '#475569', lightC2: '#334155' }
@@ -5606,14 +5671,39 @@ opacity: 0.18;
       const rgb = hexToRgb(c1);
       const alpha = theme === 'light' ? 0.1 : 0.14;
       root.style.setProperty('--accent', c1);
-      root.style.setProperty('--accent-gradient', 'linear-gradient(135deg,' + c1 + ',' + c2 + ')');
+      root.style.setProperty('--accent-gradient', c1);
       root.style.setProperty('--accent-violet', c1);
       root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha + ')');
+      // Classic body background: the ambient corner glows and drifting orbs
+      // follow the chosen Theme Colour instead of the fixed violet/cyan/green.
+      // Material keeps its own neutral roles (and hides the orbs entirely).
+      if (!material) {
+        const rgb2 = hexToRgb(c2) || rgb;
+        const bgAlpha = theme === 'light' ? 0.1 : 0.09;
+        root.style.setProperty('--bg-tint1', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + bgAlpha + ')');
+        root.style.setProperty('--bg-tint2', 'rgba(' + rgb2.r + ',' + rgb2.g + ',' + rgb2.b + ',' + bgAlpha + ')');
+        root.style.setProperty('--orb1', c1);
+        root.style.setProperty('--orb2', c2);
+        root.style.setProperty('--orb3', c1);
+      } else {
+        root.style.removeProperty('--bg-tint1');
+        root.style.removeProperty('--bg-tint2');
+        root.style.removeProperty('--orb1');
+        root.style.removeProperty('--orb2');
+        root.style.removeProperty('--orb3');
+      }
     } else {
       root.style.removeProperty('--accent');
       root.style.removeProperty('--accent-gradient');
       root.style.removeProperty('--accent-violet');
       root.style.removeProperty('--accent-dim');
+      // No preset chosen: the classic body keeps its built-in violet/cyan/green
+      // glows, so drop the overrides and fall back to the stylesheet defaults.
+      root.style.removeProperty('--bg-tint1');
+      root.style.removeProperty('--bg-tint2');
+      root.style.removeProperty('--orb1');
+      root.style.removeProperty('--orb2');
+      root.style.removeProperty('--orb3');
     }
     document.querySelectorAll('.accent-swatch').forEach(c => {
       c.classList.toggle('active', (c.dataset.accent || null) === (settings.accent || null));
@@ -9399,7 +9489,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.5.2';
+    const APP_VERSION = '1.5.3';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

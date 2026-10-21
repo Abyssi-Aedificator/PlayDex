@@ -25,7 +25,7 @@ Single-file PWA game-session tracker. No build, lint, test, or typecheck tooling
 - `dev` — active development (current default)
 - `main` — production / stable
 
-Commit/push only when explicitly asked. Follow existing message style (`git log --oneline`).
+**Never commit or push unless explicitly asked.** Commit/push only when explicitly asked. Follow existing message style (`git log --oneline`).
 
 **Never push `main`.** Do not push `main` under any circumstances, including when a release is
 requested. Releasing — merging `dev` into `main` and publishing it — is the user's job; the agent
@@ -38,6 +38,7 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - **Never bump the version unless explicitly asked.**
 - Version bumps are folded into the commit for the release's last actual change — never a standalone "Bump version" commit. The `changelog.txt` version header and the `.version-badge` span ship in that same commit.
 - **Changelog entries describe user-facing changes only.** Never write a standalone version/cache-bump line in a `changelog.txt` bullet (e.g. "Bumped SW_VERSION/cache to playdex-vX"). Version/cache bumps are implicit in the release commit, not listed as a change.
+- **Every changelog bullet is exactly one line.** Never wrap a bullet onto a continuation line — keep each entry on a single line regardless of length.
 
 ## Version representation
 
