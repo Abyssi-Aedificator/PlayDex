@@ -3358,10 +3358,18 @@ opacity: 0.18;
 
   /* Accent colour picker */
   .accent-picker {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px 22px;
+    align-items: start;
+    justify-content: start;
+  }
+  .accent-col {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
+    max-width: 220px;
   }
   .accent-swatch {
     width: 34px;
@@ -3370,6 +3378,10 @@ opacity: 0.18;
     border: 2px solid var(--border);
     cursor: pointer;
     padding: 0;
+    /* Gradients are painted from the padding box by default, which leaves the
+       2px border ring unfilled and makes two-colour swatches look clipped.
+       Originate the background at the border box so it fills the whole circle. */
+    background-origin: border-box;
     transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, border-color 0.2s;
   }
   .accent-swatch:hover { transform: scale(1.1); border-color: var(--text2); }
@@ -3378,8 +3390,8 @@ opacity: 0.18;
     box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow-soft);
   }
   .accent-swatch[data-accent=""] {
-    background-image:
-      linear-gradient(135deg, #8b5cf6 50%, #22d3ee 50%);
+    background-image: none;
+    background-color: #9333ea;
   }
   /* Grey needs a different value per theme to stay readable, so preview it
      with the same colours applyAccent() actually uses for the current theme. */
@@ -4597,17 +4609,32 @@ opacity: 0.18;
       <div class="backup-hint" style="margin-top:8px;">Material 3 restyles the app with Google&rsquo;s Material Design: tonal colour, rounded shapes and a floating action button.</div>
       <div class="card-header" id="accent-header" style="margin-top:18px;">Theme Colour</div>
       <div class="accent-picker" id="accent-picker">
-        <button class="accent-swatch" data-accent="" title="Default" aria-label="Default colour"></button>
-        <button class="accent-swatch" data-accent="cyanblue" style="background:linear-gradient(135deg,#22d3ee,#3b82f6)" title="Cyan to Blue" aria-label="Cyan to Blue"></button>
-        <button class="accent-swatch" data-accent="greenteal" style="background:linear-gradient(135deg,#10b981,#14b8a6)" title="Green to Teal" aria-label="Green to Teal"></button>
-        <button class="accent-swatch" data-accent="rose" style="background:linear-gradient(135deg,#f43f5e,#ec4899)" title="Rose to Pink" aria-label="Rose to Pink"></button>
-        <button class="accent-swatch" data-accent="sunset" style="background:linear-gradient(135deg,#fb923c,#ef4444)" title="Orange to Red" aria-label="Orange to Red"></button>
-        <button class="accent-swatch" data-accent="pinkviolet" style="background:linear-gradient(135deg,#ec4899,#8b5cf6)" title="Pink to Violet" aria-label="Pink to Violet"></button>
-        <button class="accent-swatch" data-accent="ocean" style="background:linear-gradient(135deg,#3b82f6,#6366f1)" title="Blue to Indigo" aria-label="Blue to Indigo"></button>
-        <button class="accent-swatch" data-accent="violet" style="background:linear-gradient(135deg,#8b5cf6,#a855f7)" title="Violet to Purple" aria-label="Violet to Purple"></button>
-        <button class="accent-swatch" data-accent="gold" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)" title="Gold to Amber" aria-label="Gold to Amber"></button>
-        <button class="accent-swatch" data-accent="red" style="background:linear-gradient(135deg,#ef4444,#f87171)" title="Red" aria-label="Red"></button>
-        <button class="accent-swatch" data-accent="grey" title="Grey" aria-label="Grey"></button>
+        <div class="accent-col">
+          <button class="accent-swatch" data-accent="" title="Default" aria-label="Default colour"></button>
+          <button class="accent-swatch" data-accent="cyanblue" style="background-image:linear-gradient(135deg,#22d3ee,#3b82f6)" title="Cyan to Blue" aria-label="Cyan to Blue"></button>
+          <button class="accent-swatch" data-accent="greenteal" style="background-image:linear-gradient(135deg,#10b981,#14b8a6)" title="Green to Teal" aria-label="Green to Teal"></button>
+          <button class="accent-swatch" data-accent="rose" style="background-image:linear-gradient(135deg,#f43f5e,#ec4899)" title="Rose to Pink" aria-label="Rose to Pink"></button>
+          <button class="accent-swatch" data-accent="sunset" style="background-image:linear-gradient(135deg,#fb923c,#ef4444)" title="Orange to Red" aria-label="Orange to Red"></button>
+          <button class="accent-swatch" data-accent="pinkviolet" style="background-image:linear-gradient(135deg,#ec4899,#8b5cf6)" title="Pink to Violet" aria-label="Pink to Violet"></button>
+          <button class="accent-swatch" data-accent="ocean" style="background-image:linear-gradient(135deg,#3b82f6,#6366f1)" title="Blue to Indigo" aria-label="Blue to Indigo"></button>
+          <button class="accent-swatch" data-accent="violet" style="background-image:linear-gradient(135deg,#8b5cf6,#a855f7)" title="Violet to Purple" aria-label="Violet to Purple"></button>
+          <button class="accent-swatch" data-accent="gold" style="background-image:linear-gradient(135deg,#f59e0b,#fbbf24)" title="Gold to Amber" aria-label="Gold to Amber"></button>
+          <button class="accent-swatch" data-accent="red" style="background-image:linear-gradient(135deg,#ef4444,#f87171)" title="Red" aria-label="Red"></button>
+          <button class="accent-swatch" data-accent="grey" title="Grey" aria-label="Grey"></button>
+        </div>
+        <div class="accent-col">
+          <button class="accent-swatch" data-accent="mintlime" style="background-image:linear-gradient(135deg,#34d399 50%,#a3e635 50%)" title="Mint to Lime" aria-label="Mint to Lime"></button>
+          <button class="accent-swatch" data-accent="skyindigo" style="background-image:linear-gradient(135deg,#0ea5e9 50%,#4f46e5 50%)" title="Sky to Indigo" aria-label="Sky to Indigo"></button>
+          <button class="accent-swatch" data-accent="berry" style="background-image:linear-gradient(135deg,#d946ef 50%,#8b5cf6 50%)" title="Fuchsia to Violet" aria-label="Fuchsia to Violet"></button>
+          <button class="accent-swatch" data-accent="coral" style="background-image:linear-gradient(135deg,#fb7185 50%,#fb923c 50%)" title="Coral to Peach" aria-label="Coral to Peach"></button>
+          <button class="accent-swatch" data-accent="forest" style="background-image:linear-gradient(135deg,#059669 50%,#065f46 50%)" title="Emerald to Forest" aria-label="Emerald to Forest"></button>
+          <button class="accent-swatch" data-accent="amethyst" style="background-image:linear-gradient(135deg,#a855f7 50%,#6366f1 50%)" title="Purple to Indigo" aria-label="Purple to Indigo"></button>
+          <button class="accent-swatch" data-accent="amber" style="background-image:linear-gradient(135deg,#f59e0b 50%,#ef4444 50%)" title="Amber to Red" aria-label="Amber to Red"></button>
+          <button class="accent-swatch" data-accent="slate" style="background-image:linear-gradient(135deg,#64748b 50%,#0f172a 50%)" title="Slate to Navy" aria-label="Slate to Navy"></button>
+          <button class="accent-swatch" data-accent="aqua" style="background-image:linear-gradient(135deg,#06b6d4 50%,#14b8a6 50%)" title="Cyan to Teal" aria-label="Cyan to Teal"></button>
+          <button class="accent-swatch" data-accent="plum" style="background-image:linear-gradient(135deg,#7e22ce 50%,#db2777 50%)" title="Plum to Magenta" aria-label="Plum to Magenta"></button>
+          <button class="accent-swatch" data-accent="mango" style="background-image:linear-gradient(135deg,#fbbf24 50%,#f97316 50%)" title="Mango to Tangerine" aria-label="Mango to Tangerine"></button>
+        </div>
       </div>
     </div>
     <div class="card">
@@ -5423,6 +5450,18 @@ opacity: 0.18;
     violet:      { c1: '#8b5cf6', c2: '#a855f7' },
     gold:        { c1: '#f59e0b', c2: '#fbbf24' },
     red:         { c1: '#ef4444', c2: '#f87171' },
+    // Second column: 11 more two-colour gradients.
+    mintlime:    { c1: '#34d399', c2: '#a3e635' },
+    skyindigo:   { c1: '#0ea5e9', c2: '#4f46e5' },
+    berry:       { c1: '#d946ef', c2: '#8b5cf6' },
+    coral:       { c1: '#fb7185', c2: '#fb923c' },
+    forest:      { c1: '#059669', c2: '#065f46' },
+    amethyst:    { c1: '#a855f7', c2: '#6366f1' },
+    amber:       { c1: '#f59e0b', c2: '#ef4444' },
+    slate:       { c1: '#64748b', c2: '#0f172a' },
+    aqua:        { c1: '#06b6d4', c2: '#14b8a6' },
+    plum:        { c1: '#7e22ce', c2: '#db2777' },
+    mango:       { c1: '#fbbf24', c2: '#f97316' },
     // Grey is the one preset that has to differ per theme: a single grey cannot
     // be readable on both a near-white and a near-black surface.
     grey:        { c1: '#94a3b8', c2: '#64748b', lightC1: '#475569', lightC2: '#334155' }
