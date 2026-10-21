@@ -18,7 +18,6 @@
   :root {
     --accent-violet: #8b5cf6;
     --accent-cyan: #22d3ee;
-    --accent-gradient: linear-gradient(135deg, #8b5cf6, #22d3ee);
     --green: #34d399;
     --red: #f87171;
     --yellow: #fbbf24;
@@ -40,6 +39,7 @@
     --text2: #98a2b8;
     --text3: #5c6577;
     --accent: #a78bfa;
+    --accent-gradient: #a78bfa;
     --accent-dim: rgba(139, 92, 246, 0.14);
     --green-dim: rgba(52, 211, 153, 0.12);
     --red-dim: rgba(248, 113, 113, 0.14);
@@ -65,6 +65,7 @@
     --text2: #475569;
     --text3: #94a3b8;
     --accent: #7c3aed;
+    --accent-gradient: #7c3aed;
     --accent-dim: rgba(124, 58, 237, 0.1);
     --green-dim: rgba(16, 185, 129, 0.12);
     --red-dim: rgba(239, 68, 68, 0.12);
@@ -1179,10 +1180,12 @@ opacity: 0.18;
     transition: all 0.2s ease;
   }
   .sync-seg button:hover { border-color: var(--accent-dim); color: var(--text); }
+  /* The selected filter uses the same accent-tint treatment as the
+     "What should I play?" button: dim accent fill, accent border and text. */
   .sync-seg button.active {
-    background-image: var(--accent-gradient);
-    color: #fff;
-    border-color: transparent;
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   /* On the narrowest phones the segmented control and the Add button need a
@@ -1789,6 +1792,15 @@ opacity: 0.18;
   }
 
   .btn-ghost:hover { border-color: var(--text2); color: var(--text); }
+
+  /* Accent-tinted ghost button: the "What should I play?" prompt. Uses the
+     Theme Colour instead of the neutral surface the plain ghost button uses. */
+  .btn-accent {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn-accent:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); filter: brightness(1.08); }
 
   .btn-danger {
     background: var(--red);
@@ -3349,10 +3361,12 @@ opacity: 0.18;
     transition: all 0.2s ease;
   }
   .theme-opt:hover { border-color: var(--accent-dim); color: var(--text); }
+  /* The selected option uses the same accent-tint treatment as the
+     "What should I play?" button: dim accent fill, accent border and text. */
   .theme-opt.active {
-    background-image: var(--accent-gradient);
-    color: #fff;
-    border-color: transparent;
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
     box-shadow: var(--shadow-soft);
   }
 
@@ -3736,6 +3750,12 @@ opacity: 0.18;
     border-color: var(--md-outline);
     color: var(--md-error);
   }
+  /* The "What should I play?" prompt keeps the Theme Colour in Material too. */
+  :root[data-ui="material"] .btn-ghost.btn-accent {
+    background: var(--md-primary-container);
+    border-color: transparent;
+    color: var(--md-on-primary-container);
+  }
   /* Icon button: borderless with a circular state layer. */
   :root[data-ui="material"] .btn-icon {
     border-color: transparent;
@@ -4040,9 +4060,9 @@ opacity: 0.18;
   :root[data-ui="material"] .sync-seg button + button { border-left: 1px solid var(--md-outline); }
   :root[data-ui="material"] .theme-opt.active,
   :root[data-ui="material"] .sync-seg button.active {
-    background: var(--md-secondary-container);
+    background: var(--md-primary-container);
     background-image: none;
-    color: var(--md-on-secondary-container);
+    color: var(--md-on-primary-container);
     border-color: transparent;
   }
 
@@ -4361,7 +4381,7 @@ opacity: 0.18;
       <div class="game-buttons" id="start-game-buttons">
         <div class="no-games-hint">No games yet. Add one in the Games tab.</div>
       </div>
-      <button class="btn-ghost" id="pick-game-btn-today" type="button" style="width:100%;margin-top:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
+      <button class="btn-ghost btn-accent" id="pick-game-btn-today" type="button" style="width:100%;margin-top:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
     </div>
   </div>
 
@@ -4567,7 +4587,7 @@ opacity: 0.18;
         <input type="text" id="add-game-input" placeholder="Game name..." maxlength="50">
         <button class="btn btn-start" id="add-game-btn">Add</button>
       </div>
-      <button class="btn-ghost" id="pick-game-btn" type="button" style="width:100%;margin:0 0 10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
+      <button class="btn-ghost btn-accent" id="pick-game-btn" type="button" style="width:100%;margin:0 0 10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
       <input type="text" id="game-search-input" placeholder="Search games..." maxlength="50" autocomplete="off" style="margin:0 0 10px;">
       <div class="game-tag-filters" id="game-tag-filters"></div>
       <div id="games-list"></div>
@@ -5645,7 +5665,7 @@ opacity: 0.18;
       const rgb = hexToRgb(c1);
       const alpha = theme === 'light' ? 0.1 : 0.14;
       root.style.setProperty('--accent', c1);
-      root.style.setProperty('--accent-gradient', 'linear-gradient(135deg,' + c1 + ',' + c2 + ')');
+      root.style.setProperty('--accent-gradient', c1);
       root.style.setProperty('--accent-violet', c1);
       root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha + ')');
       // Classic body background: the ambient corner glows and drifting orbs
