@@ -89,8 +89,8 @@
     flex-direction: column;
     overflow-x: hidden;
     background-image:
-      radial-gradient(900px 500px at 8% -8%, rgba(139, 92, 246, 0.09), transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, rgba(34, 211, 238, 0.09), transparent 55%);
+      radial-gradient(900px 500px at 8% -8%, var(--bg-tint1, rgba(139, 92, 246, 0.09)), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, var(--bg-tint2, rgba(34, 211, 238, 0.09)), transparent 55%);
     background-attachment: fixed;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
@@ -165,7 +165,7 @@
     left: -22vmax;
     top: -20vmax;
     opacity: 0.16;
-    background: radial-gradient(circle at center, #8b5cf6, transparent 62%);
+    background: radial-gradient(circle at center, var(--orb1, #8b5cf6), transparent 62%);
     animation: orb-drift-1 46s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   }
 
@@ -175,7 +175,7 @@
     right: -24vmax;
     top: 6vmax;
     opacity: 0.14;
-    background: radial-gradient(circle at center, #22d3ee, transparent 62%);
+    background: radial-gradient(circle at center, var(--orb2, #22d3ee), transparent 62%);
     animation: orb-drift-2 54s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   }
 
@@ -185,7 +185,7 @@
     left: 4vmax;
     bottom: -28vmax;
     opacity: 0.11;
-    background: radial-gradient(circle at center, #34d399, transparent 62%);
+    background: radial-gradient(circle at center, var(--orb3, #34d399), transparent 62%);
     animation: orb-drift-3 60s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   }
 
@@ -5609,11 +5609,36 @@ opacity: 0.18;
       root.style.setProperty('--accent-gradient', 'linear-gradient(135deg,' + c1 + ',' + c2 + ')');
       root.style.setProperty('--accent-violet', c1);
       root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha + ')');
+      // Classic body background: the ambient corner glows and drifting orbs
+      // follow the chosen Theme Colour instead of the fixed violet/cyan/green.
+      // Material keeps its own neutral roles (and hides the orbs entirely).
+      if (!material) {
+        const rgb2 = hexToRgb(c2) || rgb;
+        const bgAlpha = theme === 'light' ? 0.1 : 0.09;
+        root.style.setProperty('--bg-tint1', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + bgAlpha + ')');
+        root.style.setProperty('--bg-tint2', 'rgba(' + rgb2.r + ',' + rgb2.g + ',' + rgb2.b + ',' + bgAlpha + ')');
+        root.style.setProperty('--orb1', c1);
+        root.style.setProperty('--orb2', c2);
+        root.style.setProperty('--orb3', c1);
+      } else {
+        root.style.removeProperty('--bg-tint1');
+        root.style.removeProperty('--bg-tint2');
+        root.style.removeProperty('--orb1');
+        root.style.removeProperty('--orb2');
+        root.style.removeProperty('--orb3');
+      }
     } else {
       root.style.removeProperty('--accent');
       root.style.removeProperty('--accent-gradient');
       root.style.removeProperty('--accent-violet');
       root.style.removeProperty('--accent-dim');
+      // No preset chosen: the classic body keeps its built-in violet/cyan/green
+      // glows, so drop the overrides and fall back to the stylesheet defaults.
+      root.style.removeProperty('--bg-tint1');
+      root.style.removeProperty('--bg-tint2');
+      root.style.removeProperty('--orb1');
+      root.style.removeProperty('--orb2');
+      root.style.removeProperty('--orb3');
     }
     document.querySelectorAll('.accent-swatch').forEach(c => {
       c.classList.toggle('active', (c.dataset.accent || null) === (settings.accent || null));
