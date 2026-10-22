@@ -4284,8 +4284,14 @@ opacity: 0.18;
     }
     document.documentElement.setAttribute('data-theme', t);
     document.documentElement.setAttribute('data-ui', s.uiStyle === 'material' ? 'material' : 'classic');
+    // Tint the browser / status bar. At this point the stylesheet's --accent is
+    // the theme default (a saved preset is applied by the main script moments
+    // later, which refreshes this), so this just avoids a dark flash.
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', t === 'light' ? '#f2f4fa' : '#0b0d14');
+    if (meta) {
+      var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+      meta.setAttribute('content', accent || (t === 'light' ? '#f2f4fa' : '#0b0d14'));
+    }
   } catch (e) {}
 })();
 </script>
@@ -4306,7 +4312,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.5.3</span>
+    <span class="version-badge">1.5.4</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5710,17 +5716,27 @@ opacity: 0.18;
     });
   }
 
+  // Tint the browser / status bar with the active Theme Colour. Reads the
+  // computed --accent so it stays correct in both skins (Classic uses --accent
+  // directly; Material repoints it at the primary role). Must run after
+  // applyAccent(), otherwise the tokens are still the previous colour.
+  function updateThemeColorMeta() {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) return;
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    if (accent) meta.setAttribute('content', accent);
+  }
+
   function applyTheme() {
     const theme = resolvedTheme();
     document.documentElement.setAttribute('data-theme', theme);
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', theme === 'light' ? '#f2f4fa' : '#0b0d14');
     document.querySelectorAll('.theme-opt[data-theme-opt]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.themeOpt === settings.theme);
     });
     applyUI();
     applyAccent(theme);
     applyMaterialTokens(theme);
+    updateThemeColorMeta();
   }
 
   if (window.matchMedia) {
@@ -9489,7 +9505,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.5.3';
+    const APP_VERSION = '1.5.4';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
