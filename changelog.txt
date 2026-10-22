@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.5.4
+-------------------
+- The browser and status bar now take on your Theme Colour, matching the app, instead of staying dark.
+
 Version 1.5.3
 -------------------
 - New app icons.
