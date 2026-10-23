@@ -1,6 +1,12 @@
 PlayDex - Changelog
 ====================
 
+Version 1.5.5
+-------------------
+- A new loading screen with an animated logo, progress bar and dots.
+- New app icon — a game controller on a dark tile — used for the tab, home screen and install.
+- The loading-screen logo follows your Theme Colour from the first frame, with no violet flash while the app starts.
+
 Version 1.5.4
 -------------------
 - The browser and status bar now take on your Theme Colour, matching the app, instead of staying dark.
