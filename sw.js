@@ -1,6 +1,6 @@
 /* PlayDex service worker */
-const SW_VERSION = '1.5.5';
-const CACHE_NAME = 'playdex-v55';
+const SW_VERSION = '1.5.6';
+const CACHE_NAME = 'playdex-v56';
 const APP_SHELL = [
   './',
   './index.html',
