@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.5.6
+-------------------
+- Pause display now shows total paused time plus the current pause when resuming for a second time, and only the current pause on the first pause.
+
 Version 1.5.5
 -------------------
 - A new loading screen with an animated logo, progress bar and dots.
