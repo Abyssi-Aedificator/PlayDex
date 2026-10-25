@@ -8375,7 +8375,7 @@ opacity: 0.18;
       });
       if (anyTime) {
         const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const order = [1, 2, 3, 4, 5, 6, 0];
+        const order = weekStartsOnMonday() ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6];
         const max = Math.max.apply(null, daw);
         WBOX.className = 'weekday-habits';
         WBOX.innerHTML =
@@ -8408,7 +8408,7 @@ opacity: 0.18;
       if (anyStart) {
         const max = Math.max.apply(null, heat.map(r => Math.max.apply(null, r)));
         const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const order = [1, 2, 3, 4, 5, 6, 0];
+        const order = weekStartsOnMonday() ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6];
         const hTick = h => {
           if (h === 0) return '12a';
           if (h === 12) return '12p';
