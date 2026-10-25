@@ -4643,7 +4643,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.6.0</span>
+    <span class="version-badge">1.6.1</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -4880,6 +4880,10 @@ opacity: 0.18;
         <div class="stat-box">
           <div class="stat-value" id="record-streak">0 weeks</div>
           <div class="stat-label">Longest streak</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-goal-streak">0 days</div>
+          <div class="stat-label">Daily goal streak</div>
         </div>
       </div>
     </div>
@@ -7653,6 +7657,29 @@ opacity: 0.18;
       if (weekRun > longestWeekStreak) longestWeekStreak = weekRun;
     });
 
+    const goalMin = settings.dailyGoalMinutes || 0;
+    let longestDailyGoalStreak = 0;
+    if (goalMin > 0 && completed.length) {
+      const goalMs = goalMin * 60000;
+      const dayKeys = Array.from(new Set(completed.map(s => dateKey(s.start)))).sort();
+      if (dayKeys.length) {
+        const first = dayKeys[0];
+        const last = dayKeys[dayKeys.length - 1];
+        let run = 0;
+        let d = first;
+        while (d <= last) {
+          const ms = totalMsForDate(d);
+          if (ms >= goalMs) {
+            run++;
+            if (run > longestDailyGoalStreak) longestDailyGoalStreak = run;
+          } else {
+            run = 0;
+          }
+          d = addDays(d, 1);
+        }
+      }
+    }
+
     const dayVals = Object.values(byDay);
     const sessDayVals = Object.values(sessionsByDay);
 
@@ -7670,6 +7697,7 @@ opacity: 0.18;
       longestMsGame: longestMsGame,
       longestStreak: longestStreak,
       longestWeekStreak: longestWeekStreak,
+      longestDailyGoalStreak: longestDailyGoalStreak,
       maxSessionsDay: sessDayVals.length ? Math.max.apply(null, sessDayVals) : 0,
       maxSessionsDayDate: maxSessionsDayDate,
       maxMsDay: dayVals.length ? Math.max.apply(null, dayVals) : 0,
@@ -8234,6 +8262,11 @@ opacity: 0.18;
     document.getElementById('record-most-sessions').textContent = String(M.maxSessionsDay);
     document.getElementById('record-most-sessions-date').textContent = M.maxSessionsDayDate ? fmtDay(M.maxSessionsDayDate) : '';
     document.getElementById('record-streak').textContent = M.longestWeekStreak + (M.longestWeekStreak === 1 ? ' week' : ' weeks');
+    const goalStreakEl = document.getElementById('record-goal-streak');
+    if (goalStreakEl) {
+      const g = typeof M.longestDailyGoalStreak === 'number' ? M.longestDailyGoalStreak : 0;
+      goalStreakEl.textContent = g + (g === 1 ? ' day' : ' days');
+    }
 
     const favBox = document.getElementById('favorite-game-box');
     if (favBox) {
@@ -9853,7 +9886,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.6.0';
+    const APP_VERSION = '1.6.1';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
