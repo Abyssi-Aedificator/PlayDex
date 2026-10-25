@@ -256,12 +256,39 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .boot-glow, .boot-mark, .boot-ring, .boot-logo, .boot-bar, .boot-dots, .boot-dots i {
+    .boot-glow, .boot-mark, .boot-ring, .boot-logo, .boot-bar, .boot-dots, .boot-dots i,
+    .tab-panel.active,
+    .fade-in,
+    .modal-overlay.open,
+    .modal,
+    .card.collapsing,
+    .card.expand-in {
       animation: none !important;
     }
     .boot-glow { opacity: 0.7; }
     .boot-bar span { width: 100%; opacity: 0.5; transform: none; }
     .boot-dots i { opacity: 0.6; }
+    .tab-panel.active,
+    .fade-in { opacity: 1 !important; transform: none !important; }
+    .modal { opacity: 1 !important; transform: none !important; }
+    .game-item:hover,
+    .session-item:hover,
+    .top-row:hover,
+    .tab-btn:hover,
+    .tab-btn:active,
+    .btn-ghost:active,
+    .btn-icon:active,
+    .session-delete:active {
+      transform: none !important;
+    }
+  }
+  :root[data-ui="material"] .m3-reduced-motion *,
+  :root[data-ui="material"] .m3-reduced-motion *::before,
+  :root[data-ui="material"] .m3-reduced-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 
   .ambient-orbs {
@@ -464,6 +491,16 @@
   .tab-btn .tab-icon { font-size: 1.3rem; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
   .tab-btn .tab-icon svg { width: 22px; height: 22px; display: block; }
 
+  :root:not([data-ui="material"]) .tab-btn {
+    transition: color 0.2s ease, background 0.2s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  :root:not([data-ui="material"]) .tab-btn:hover {
+    transform: translateY(-1px);
+  }
+  :root:not([data-ui="material"]) .tab-btn:active {
+    transform: translateY(0) scale(0.97);
+  }
+
   .tab-btn.active { color: var(--accent); }
   .tab-btn.active .tab-icon { transform: translateY(-2px) scale(1.08); }
 
@@ -480,11 +517,11 @@
   }
 
   .tab-panel { display: none; }
-  .tab-panel.active { display: block; animation: panel-in 0.24s ease; }
+  .tab-panel.active { display: block; animation: panel-in 0.28s cubic-bezier(0.4, 0, 0.2, 1); }
 
   @keyframes panel-in {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(4px) scale(0.995); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   /* Smooth entrance animations (stagger lists, rise bars, pop feedback) */
@@ -542,7 +579,18 @@
     padding: 18px 18px;
     margin-bottom: 14px;
     box-shadow: var(--shadow-soft);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease;
+  }
+  :root:not([data-ui="material"]) .game-item,
+  :root:not([data-ui="material"]) .session-item,
+  :root:not([data-ui="material"]) .top-row {
+    transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+  }
+  :root:not([data-ui="material"]) .game-item:hover,
+  :root:not([data-ui="material"]) .session-item:hover,
+  :root:not([data-ui="material"]) .top-row:hover {
+    background: var(--surface2);
+    transform: translateX(2px);
   }
 
   .card:hover {
@@ -1406,6 +1454,12 @@ opacity: 0.18;
     transition: color 0.15s, background 0.15s;
     flex-shrink: 0;
   }
+  :root:not([data-ui="material"]) .session-delete {
+    transition: color 0.15s, background 0.15s, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  :root:not([data-ui="material"]) .session-delete:active:not(:disabled) {
+    transform: scale(0.94);
+  }
 
   .session-delete:hover { color: var(--red); background: var(--red-dim); }
   .session-delete svg { width: 14px; height: 14px; display: block; }
@@ -1869,7 +1923,7 @@ opacity: 0.18;
     overflow-y: auto;
   }
 
-  .modal-overlay.open { display: flex; animation: overlay-fade 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+  .modal-overlay.open { display: flex; animation: overlay-fade 0.28s cubic-bezier(0.4, 0, 0.2, 1); }
 
   .modal {
     background: var(--surface);
@@ -1880,7 +1934,8 @@ opacity: 0.18;
     max-width: 360px;
     margin: auto;
     box-shadow: var(--shadow);
-    animation: modal-pop 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: modal-pop 0.32s cubic-bezier(0.34, 1.2, 0.64, 1);
+    will-change: transform, opacity;
   }
 
   .modal h3 {
@@ -3768,7 +3823,12 @@ opacity: 0.18;
      Tab-panel changes use M3's standard container transform timing rather than
      the classic 0.24s ease, so a tab switch reads as a Material transition. */
   :root[data-ui="material"] .tab-panel.active {
-    animation: panel-in var(--md-dur-medium2) var(--md-decel);
+    animation: m3-shared-axis-y var(--md-dur-medium2) var(--md-decel);
+  }
+
+  @keyframes m3-shared-axis-y {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   /* --- Ornament: Material has no ambient glow or gradient wordmark --------- */
@@ -3916,6 +3976,12 @@ opacity: 0.18;
   :root[data-ui="material"] .target-opt,
   :root[data-ui="material"] .pick-opt {
     position: relative;
+    transition: transform var(--md-dur-short3) var(--md-emph);
+  }
+  :root[data-ui="material"] .btn:active,
+  :root[data-ui="material"] .btn-primary:active,
+  :root[data-ui="material"] .btn-icon:active {
+    transform: scale(0.98);
   }
   :root[data-ui="material"] .btn::after,
   :root[data-ui="material"] .btn-primary::after,
@@ -3992,6 +4058,12 @@ opacity: 0.18;
   }
   /* Retire the classic underline; its ::after becomes the state layer. */
   :root[data-ui="material"] .tab-btn.active::after { display: none; }
+  :root[data-ui="material"] .tab-btn {
+    transition: background-color var(--md-dur-short4) var(--md-emph), color var(--md-dur-short4) var(--md-emph), transform var(--md-dur-short3) var(--md-emph);
+  }
+  :root[data-ui="material"] .tab-btn:active {
+    transform: scale(0.95);
+  }
   /* The "syncing" spinner still needs its rotate animation. */
   :root[data-ui="material"] button.syncing .tab-icon { display: inline-block; }
   :root[data-ui="material"] .tab-btn::after {
@@ -4244,6 +4316,7 @@ opacity: 0.18;
     border-radius: var(--md-xl);
     padding: 24px;
     box-shadow: var(--md-elev-3);
+    animation: m3-container-expand var(--md-dur-medium2) var(--md-decel);
   }
   /* title-large */
   :root[data-ui="material"] .modal h3 {
@@ -4570,7 +4643,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.5.6</span>
+    <span class="version-badge">1.6.0</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -9780,7 +9853,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.5.6';
+    const APP_VERSION = '1.6.0';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
