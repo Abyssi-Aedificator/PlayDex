@@ -4,6 +4,7 @@ PlayDex - Changelog
 Version 1.6.1
 -------------------
 - Added a "Daily goal streak" stat showing consecutive days hitting your daily goal.
+- Added option to choose week start day (Sunday or Monday) in Settings.
 
 Version 1.6.0
 -------------------

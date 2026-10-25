@@ -4973,6 +4973,14 @@ opacity: 0.18;
         <button class="theme-opt" data-ui-opt="classic">Classic</button>
         <button class="theme-opt" data-ui-opt="material">Material 3</button>
       </div>
+      <div class="card-header" style="margin-top:18px;">Calendar</div>
+      <div class="target-row">
+        <span class="target-label">Week starts on:</span>
+        <div class="target-presets" id="week-start-presets">
+          <button class="target-opt" type="button" data-weekstart="monday">Monday</button>
+          <button class="target-opt" type="button" data-weekstart="sunday">Sunday</button>
+        </div>
+      </div>
       <div class="backup-hint" style="margin-top:8px;">Material 3 restyles the app with Google&rsquo;s Material Design: tonal colour, rounded shapes and a floating action button.</div>
       <div class="card-header" id="accent-header" style="margin-top:18px;">Theme Colour</div>
       <div class="accent-picker" id="accent-picker">
@@ -5633,8 +5641,8 @@ opacity: 0.18;
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic' }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' }; }
   }
 
   function mergeFullClear(a, b) {
@@ -5685,20 +5693,36 @@ opacity: 0.18;
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
 
-  function weekStartStr() {
-    const d = new Date();
-    const dow = d.getDay();
-    const diff = dow === 0 ? -6 : 1 - dow;
-    const mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
-    return mon.getFullYear() + '-' + String(mon.getMonth()+1).padStart(2,'0') + '-' + String(mon.getDate()).padStart(2,'0');
+  function weekStartsOnMonday() {
+    return (settings.weekStartsOn || 'monday') === 'monday';
+  }
+
+  function weekStartStr(date = new Date()) {
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const dow = d.getDay(); // 0 Sun, 1 Mon, ..., 6 Sat
+    if (weekStartsOnMonday()) {
+      const diff = dow === 0 ? -6 : 1 - dow;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+      return start.getFullYear() + '-' + String(start.getMonth()+1).padStart(2,'0') + '-' + String(start.getDate()).padStart(2,'0');
+    } else {
+      const diff = -dow;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+      return start.getFullYear() + '-' + String(start.getMonth()+1).padStart(2,'0') + '-' + String(start.getDate()).padStart(2,'0');
+    }
   }
 
   function weekKeyFor(dateStr) {
     const d = new Date(dateStr.slice(0, 10) + 'T00:00:00');
     const dow = d.getDay();
-    const diff = dow === 0 ? -6 : 1 - dow;
-    const mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
-    return mon.getFullYear() + '-' + String(mon.getMonth()+1).padStart(2,'0') + '-' + String(mon.getDate()).padStart(2,'0');
+    if (weekStartsOnMonday()) {
+      const diff = dow === 0 ? -6 : 1 - dow;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+      return start.getFullYear() + '-' + String(start.getMonth()+1).padStart(2,'0') + '-' + String(start.getDate()).padStart(2,'0');
+    } else {
+      const diff = -dow;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+      return start.getFullYear() + '-' + String(start.getMonth()+1).padStart(2,'0') + '-' + String(start.getDate()).padStart(2,'0');
+    }
   }
 
   function fmtDuration(ms) {
@@ -6346,10 +6370,15 @@ opacity: 0.18;
   function getWeekBounds(date = new Date()) {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
-    const day = d.getDay();
-    const diffToMon = (day === 0) ? -6 : 1 - day;
+    const day = d.getDay(); // 0 Sun
+    let diffToStart;
+    if (weekStartsOnMonday()) {
+      diffToStart = (day === 0) ? -6 : 1 - day;
+    } else {
+      diffToStart = -day;
+    }
     const start = new Date(d);
-    start.setDate(d.getDate() + diffToMon);
+    start.setDate(d.getDate() + diffToStart);
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
     end.setHours(23, 59, 59, 999);
@@ -8016,13 +8045,18 @@ opacity: 0.18;
     return d.getTime();
   }
 
-  function nextMondayMs() {
+  function nextWeekStartMs() {
     const d = new Date();
-    const dow = d.getDay();
-    const diff = dow === 0 ? 1 : 8 - dow;
-    d.setDate(d.getDate() + diff);
     d.setHours(0, 0, 0, 0);
-    return d.getTime();
+    const dow = d.getDay();
+    let diff;
+    if (weekStartsOnMonday()) {
+      diff = dow === 0 ? 1 : 8 - dow;
+    } else {
+      diff = 7 - dow;
+    }
+    const next = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+    return next.getTime();
   }
 
   function fmtCountdown(ms) {
@@ -8039,7 +8073,7 @@ opacity: 0.18;
     const el = document.getElementById('quest-reset');
     if (!el) return;
     el.textContent = 'Daily resets in ' + fmtCountdown(nextMidnightMs() - Date.now()) +
-      ' \u00b7 Weekly in ' + fmtCountdown(nextMondayMs() - Date.now());
+      ' \u00b7 Weekly in ' + fmtCountdown(nextWeekStartMs() - Date.now());
   }
 
   function questRowHtml(r, xp) {
@@ -9769,6 +9803,26 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   idlePresetBtns.forEach(b => {
     b.classList.toggle('on', (settings.idleRemindMin || 0) === Number(b.dataset.idle));
     b.addEventListener('click', () => applyIdlePreset(Number(b.dataset.idle)));
+  });
+
+  // --- Settings: Week start ---
+  const weekStartPresetBtns = Array.prototype.slice.call(document.querySelectorAll('#week-start-presets .target-opt'));
+  const applyWeekStart = v => {
+    if (v !== 'sunday' && v !== 'monday') return;
+    settings.weekStartsOn = v;
+    saveSettings(settings);
+    weekStartPresetBtns.forEach(b => b.classList.toggle('on', b.dataset.weekstart === v));
+    renderTodayTab();
+    renderSessionsTab(false);
+    renderStatsTab();
+    renderAchievementsTab();
+    renderProfileTab();
+    renderGamesTab();
+    renderTop();
+  };
+  weekStartPresetBtns.forEach(b => {
+    b.classList.toggle('on', (settings.weekStartsOn || 'monday') === b.dataset.weekstart);
+    b.addEventListener('click', () => applyWeekStart(b.dataset.weekstart));
   });
 
   // --- Settings: Game list (stale-game highlights) ---
