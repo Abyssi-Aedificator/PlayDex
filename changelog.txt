@@ -1,35 +1,20 @@
 PlayDex - Changelog
 ====================
 
-Version 1.5.6
+Version 1.6.0
 -------------------
-- Pause display now shows total paused time plus the current pause when resuming for a second time, and only the current pause on the first pause.
-
-Version 1.5.5
--------------------
-- A new loading screen with an animated logo, progress bar and dots.
-- New app icon — a game controller on a dark tile — used for the tab, home screen and install.
-- The loading-screen logo follows your Theme Colour from the first frame, with no violet flash while the app starts.
-
-Version 1.5.4
--------------------
-- The browser and status bar now take on your Theme Colour, matching the app, instead of staying dark.
-
-Version 1.5.3
--------------------
+- Settings are no longer synced to Dropbox; they remain device-local. Manual exports still include all settings for full backups.
 - New app icons.
 - In the Classic interface, the background follows your Theme Colour, so the corner glow and drifting background match your chosen accent instead of staying violet and cyan.
 - Theme Colour now offers 11 more options in a second column, from Mint to Lime through Slate to Navy. All two-colour swatches now fill their whole circle.
 - In the Material 3 interface, the second Theme Colour column is hidden and the first column spreads across the full width.
 - The accent is now a single flat colour instead of a gradient, so the app title, buttons, badges and highlights all use one solid Theme Colour — including the Appearance and Interface selector buttons in Settings, the All/Synced/Unsynced filter, the "What should I play?" button, and the default colour, which used to fall back to a separate purple.
-
-Version 1.5.2
--------------------
-- Settings are no longer synced to Dropbox; they remain device-local. Manual exports still include all settings for full backups.
-
-Version 1.5.1
--------------------
-- Settings are no longer synced to Dropbox; they remain device-local. Manual exports still include all settings for full backups.
+- The browser and status bar now take on your Theme Colour, matching the app, instead of staying dark.
+- A new loading screen with an animated logo, progress bar and dots.
+- New app icon — a game controller on a dark tile — used for the tab, home screen and install.
+- The loading-screen logo follows your Theme Colour from the first frame, with no violet flash while the app starts.
+- Pause display now shows total paused time plus the current pause when resuming for a second time, and only the current pause on the first pause.
+- Smoother animations and transitions across the app, following Material 3 motion guidelines.
 
 Version 1.5.0
 -------------------
