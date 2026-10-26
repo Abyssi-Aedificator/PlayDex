@@ -1,6 +1,11 @@
 PlayDex - Changelog
 ====================
 
+Version 1.6.1
+-------------------
+- Added a "Daily goal streak" stat showing consecutive days hitting your daily goal.
+- Added option to choose week start day (Sunday or Monday) in Settings; week-based charts, streaks and resets follow the setting.
+
 Version 1.6.0
 -------------------
 - Settings are no longer synced to Dropbox; they remain device-local. Manual exports still include all settings for full backups.

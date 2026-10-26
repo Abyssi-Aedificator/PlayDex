@@ -4643,7 +4643,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.6.0</span>
+    <span class="version-badge">1.6.1</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -4881,6 +4881,10 @@ opacity: 0.18;
           <div class="stat-value" id="record-streak">0 weeks</div>
           <div class="stat-label">Longest streak</div>
         </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-goal-streak">0 days</div>
+          <div class="stat-label">Daily goal streak</div>
+        </div>
       </div>
     </div>
     <div class="card next-badge-card">
@@ -4968,6 +4972,14 @@ opacity: 0.18;
       <div class="theme-select" id="ui-select">
         <button class="theme-opt" data-ui-opt="classic">Classic</button>
         <button class="theme-opt" data-ui-opt="material">Material 3</button>
+      </div>
+      <div class="card-header" style="margin-top:18px;">Calendar</div>
+      <div class="target-row">
+        <span class="target-label">Week starts on:</span>
+        <div class="target-presets" id="week-start-presets">
+          <button class="target-opt" type="button" data-weekstart="monday">Monday</button>
+          <button class="target-opt" type="button" data-weekstart="sunday">Sunday</button>
+        </div>
       </div>
       <div class="backup-hint" style="margin-top:8px;">Material 3 restyles the app with Google&rsquo;s Material Design: tonal colour, rounded shapes and a floating action button.</div>
       <div class="card-header" id="accent-header" style="margin-top:18px;">Theme Colour</div>
@@ -5629,8 +5641,8 @@ opacity: 0.18;
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic' }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' }; }
   }
 
   function mergeFullClear(a, b) {
@@ -5681,20 +5693,36 @@ opacity: 0.18;
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
 
-  function weekStartStr() {
-    const d = new Date();
-    const dow = d.getDay();
-    const diff = dow === 0 ? -6 : 1 - dow;
-    const mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
-    return mon.getFullYear() + '-' + String(mon.getMonth()+1).padStart(2,'0') + '-' + String(mon.getDate()).padStart(2,'0');
+  function weekStartsOnMonday() {
+    return (settings.weekStartsOn || 'monday') === 'monday';
+  }
+
+  function weekStartStr(date = new Date()) {
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const dow = d.getDay(); // 0 Sun, 1 Mon, ..., 6 Sat
+    if (weekStartsOnMonday()) {
+      const diff = dow === 0 ? -6 : 1 - dow;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+      return start.getFullYear() + '-' + String(start.getMonth()+1).padStart(2,'0') + '-' + String(start.getDate()).padStart(2,'0');
+    } else {
+      const diff = -dow;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+      return start.getFullYear() + '-' + String(start.getMonth()+1).padStart(2,'0') + '-' + String(start.getDate()).padStart(2,'0');
+    }
   }
 
   function weekKeyFor(dateStr) {
     const d = new Date(dateStr.slice(0, 10) + 'T00:00:00');
     const dow = d.getDay();
-    const diff = dow === 0 ? -6 : 1 - dow;
-    const mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
-    return mon.getFullYear() + '-' + String(mon.getMonth()+1).padStart(2,'0') + '-' + String(mon.getDate()).padStart(2,'0');
+    if (weekStartsOnMonday()) {
+      const diff = dow === 0 ? -6 : 1 - dow;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+      return start.getFullYear() + '-' + String(start.getMonth()+1).padStart(2,'0') + '-' + String(start.getDate()).padStart(2,'0');
+    } else {
+      const diff = -dow;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+      return start.getFullYear() + '-' + String(start.getMonth()+1).padStart(2,'0') + '-' + String(start.getDate()).padStart(2,'0');
+    }
   }
 
   function fmtDuration(ms) {
@@ -6342,10 +6370,15 @@ opacity: 0.18;
   function getWeekBounds(date = new Date()) {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
-    const day = d.getDay();
-    const diffToMon = (day === 0) ? -6 : 1 - day;
+    const day = d.getDay(); // 0 Sun
+    let diffToStart;
+    if (weekStartsOnMonday()) {
+      diffToStart = (day === 0) ? -6 : 1 - day;
+    } else {
+      diffToStart = -day;
+    }
     const start = new Date(d);
-    start.setDate(d.getDate() + diffToMon);
+    start.setDate(d.getDate() + diffToStart);
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
     end.setHours(23, 59, 59, 999);
@@ -7653,6 +7686,29 @@ opacity: 0.18;
       if (weekRun > longestWeekStreak) longestWeekStreak = weekRun;
     });
 
+    const goalMin = settings.dailyGoalMinutes || 0;
+    let longestDailyGoalStreak = 0;
+    if (goalMin > 0 && completed.length) {
+      const goalMs = goalMin * 60000;
+      const dayKeys = Array.from(new Set(completed.map(s => dateKey(s.start)))).sort();
+      if (dayKeys.length) {
+        const first = dayKeys[0];
+        const last = dayKeys[dayKeys.length - 1];
+        let run = 0;
+        let d = first;
+        while (d <= last) {
+          const ms = totalMsForDate(d);
+          if (ms >= goalMs) {
+            run++;
+            if (run > longestDailyGoalStreak) longestDailyGoalStreak = run;
+          } else {
+            run = 0;
+          }
+          d = addDays(d, 1);
+        }
+      }
+    }
+
     const dayVals = Object.values(byDay);
     const sessDayVals = Object.values(sessionsByDay);
 
@@ -7670,6 +7726,7 @@ opacity: 0.18;
       longestMsGame: longestMsGame,
       longestStreak: longestStreak,
       longestWeekStreak: longestWeekStreak,
+      longestDailyGoalStreak: longestDailyGoalStreak,
       maxSessionsDay: sessDayVals.length ? Math.max.apply(null, sessDayVals) : 0,
       maxSessionsDayDate: maxSessionsDayDate,
       maxMsDay: dayVals.length ? Math.max.apply(null, dayVals) : 0,
@@ -7988,13 +8045,18 @@ opacity: 0.18;
     return d.getTime();
   }
 
-  function nextMondayMs() {
+  function nextWeekStartMs() {
     const d = new Date();
-    const dow = d.getDay();
-    const diff = dow === 0 ? 1 : 8 - dow;
-    d.setDate(d.getDate() + diff);
     d.setHours(0, 0, 0, 0);
-    return d.getTime();
+    const dow = d.getDay();
+    let diff;
+    if (weekStartsOnMonday()) {
+      diff = dow === 0 ? 1 : 8 - dow;
+    } else {
+      diff = 7 - dow;
+    }
+    const next = new Date(d.getFullYear(), d.getMonth(), d.getDate() + diff);
+    return next.getTime();
   }
 
   function fmtCountdown(ms) {
@@ -8011,7 +8073,7 @@ opacity: 0.18;
     const el = document.getElementById('quest-reset');
     if (!el) return;
     el.textContent = 'Daily resets in ' + fmtCountdown(nextMidnightMs() - Date.now()) +
-      ' \u00b7 Weekly in ' + fmtCountdown(nextMondayMs() - Date.now());
+      ' \u00b7 Weekly in ' + fmtCountdown(nextWeekStartMs() - Date.now());
   }
 
   function questRowHtml(r, xp) {
@@ -8234,6 +8296,11 @@ opacity: 0.18;
     document.getElementById('record-most-sessions').textContent = String(M.maxSessionsDay);
     document.getElementById('record-most-sessions-date').textContent = M.maxSessionsDayDate ? fmtDay(M.maxSessionsDayDate) : '';
     document.getElementById('record-streak').textContent = M.longestWeekStreak + (M.longestWeekStreak === 1 ? ' week' : ' weeks');
+    const goalStreakEl = document.getElementById('record-goal-streak');
+    if (goalStreakEl) {
+      const g = typeof M.longestDailyGoalStreak === 'number' ? M.longestDailyGoalStreak : 0;
+      goalStreakEl.textContent = g + (g === 1 ? ' day' : ' days');
+    }
 
     const favBox = document.getElementById('favorite-game-box');
     if (favBox) {
@@ -8308,7 +8375,7 @@ opacity: 0.18;
       });
       if (anyTime) {
         const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const order = [1, 2, 3, 4, 5, 6, 0];
+        const order = weekStartsOnMonday() ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6];
         const max = Math.max.apply(null, daw);
         WBOX.className = 'weekday-habits';
         WBOX.innerHTML =
@@ -8341,7 +8408,7 @@ opacity: 0.18;
       if (anyStart) {
         const max = Math.max.apply(null, heat.map(r => Math.max.apply(null, r)));
         const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const order = [1, 2, 3, 4, 5, 6, 0];
+        const order = weekStartsOnMonday() ? [1, 2, 3, 4, 5, 6, 0] : [0, 1, 2, 3, 4, 5, 6];
         const hTick = h => {
           if (h === 0) return '12a';
           if (h === 12) return '12p';
@@ -9738,6 +9805,26 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     b.addEventListener('click', () => applyIdlePreset(Number(b.dataset.idle)));
   });
 
+  // --- Settings: Week start ---
+  const weekStartPresetBtns = Array.prototype.slice.call(document.querySelectorAll('#week-start-presets .target-opt'));
+  const applyWeekStart = v => {
+    if (v !== 'sunday' && v !== 'monday') return;
+    settings.weekStartsOn = v;
+    saveSettings(settings);
+    weekStartPresetBtns.forEach(b => b.classList.toggle('on', b.dataset.weekstart === v));
+    renderTodayTab();
+    renderSessionsTab(false);
+    renderStatsTab();
+    renderAchievementsTab();
+    renderProfileTab();
+    renderGamesTab();
+    renderTop();
+  };
+  weekStartPresetBtns.forEach(b => {
+    b.classList.toggle('on', (settings.weekStartsOn || 'monday') === b.dataset.weekstart);
+    b.addEventListener('click', () => applyWeekStart(b.dataset.weekstart));
+  });
+
   // --- Settings: Game list (stale-game highlights) ---
   const stalePresetBtns = Array.prototype.slice.call(document.querySelectorAll('#stale-presets .target-opt'));
   const applyStalePreset = v => {
@@ -9853,7 +9940,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.6.0';
+    const APP_VERSION = '1.6.1';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');

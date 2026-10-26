@@ -92,10 +92,7 @@ Quick-start from the Games list (#12) and the idle "Still playing?" reminder
     colour into the --accent theme variables."
     - Scope: small. Risk: low.
 
-26. Daily-goal streak stat
-    "'Consecutive days hitting your daily goal' card in Stats/Profile,
-    distinct from the raw longest play-streak."
-    - Scope: tiny. Risk: low.
+
 
 27. Export a stat snapshot as an image
     "Render the cumulative curve + heatmap + key numbers to a PNG (canvas)
