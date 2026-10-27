@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.6.2
+-------------------
+- Moved This Week Review above Last 7 Days in the Stats tab.
+
 Version 1.6.1
 -------------------
 - Added a "Daily goal streak" stat showing consecutive days hitting your daily goal.

@@ -4643,7 +4643,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.6.1</span>
+    <span class="version-badge">1.6.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -4774,16 +4774,6 @@ opacity: 0.18;
   <!-- STATS TAB -->
   <div id="tab-stats" class="tab-panel">
     <div class="card">
-      <div class="card-header">Last 7 Days</div>
-      <div class="stat-grid">
-        <div class="stat-box"><div class="stat-value" id="stat-week-total">0:00:00</div><div class="stat-label">This Week</div></div>
-        <div class="stat-box"><div class="stat-value" id="stat-most-played">-</div><div class="stat-label">Most Played</div></div>
-        <div class="stat-box"><div class="stat-value" id="stat-avg-session">0:00</div><div class="stat-label">Avg Session</div></div>
-        <div class="stat-box"><div class="stat-value" id="stat-session-count">0</div><div class="stat-label">Total Sessions</div></div>
-      </div>
-      <div class="bar-chart" id="week-chart"></div>
-    </div>
-    <div class="card">
       <div class="card-header">This Week Review</div>
       <div class="stat-grid">
         <div class="stat-box"><div class="stat-value" id="wr-week-total">0:00:00</div><div class="stat-label">Total Time</div></div>
@@ -4793,6 +4783,16 @@ opacity: 0.18;
         <div class="stat-box"><div class="stat-value" id="wr-best-day">-</div><div class="stat-label">Best Day</div></div>
         <div class="stat-box"><div class="stat-value" id="wr-streak">0</div><div class="stat-label">Streak</div></div>
       </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Last 7 Days</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-value" id="stat-week-total">0:00:00</div><div class="stat-label">This Week</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-most-played">-</div><div class="stat-label">Most Played</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-avg-session">0:00</div><div class="stat-label">Avg Session</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-session-count">0</div><div class="stat-label">Total Sessions</div></div>
+      </div>
+      <div class="bar-chart" id="week-chart"></div>
     </div>
     <div class="card">
       <div class="card-header">Last 30 Days</div>
@@ -9940,7 +9940,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.6.1';
+    const APP_VERSION = '1.6.2';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
