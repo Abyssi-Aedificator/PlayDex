@@ -1,6 +1,6 @@
 /* PlayDex service worker */
 const SW_VERSION = '1.6.2';
-const CACHE_NAME = 'playdex-v76';
+const CACHE_NAME = 'playdex-v79';
 const UPDATE_CACHE = 'playdex-update-control';
 const APPROVED_KEY = new URL('./__approved-version__', self.registration.scope).href;
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];

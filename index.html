@@ -918,6 +918,13 @@ opacity: 0.18;
   .pick-opt.on { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 700; }
 
   .pick-result { text-align: center; padding: 14px 6px 4px; }
+  #pick-modal .modal.has-game-cover {
+    background-image:linear-gradient(rgba(15,18,28,.62),rgba(15,18,28,.88)),var(--pick-cover);
+    background-size:100% 100%,100% 100%; background-position:center; background-repeat:no-repeat;
+  }
+  :root[data-theme="light"] #pick-modal .modal.has-game-cover {
+    background-image:linear-gradient(rgba(255,255,255,.76),rgba(255,255,255,.94)),var(--pick-cover);
+  }
   .pick-name { font-size: 1.35rem; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
   .pick-meta { font-size: 0.78rem; color: var(--text2); margin-top: 6px; min-height: 1.1em; }
 
@@ -7152,6 +7159,11 @@ opacity: 0.18;
     const startBtn = document.getElementById('pick-start');
     const againBtn = document.getElementById('pick-again');
     const g = choosePick();
+    const dialog = document.querySelector('#pick-modal .modal');
+    const image = g && g.image;
+    dialog.classList.toggle('has-game-cover', !!image);
+    if (image) dialog.style.setProperty('--pick-cover', 'url(' + JSON.stringify(image) + ')');
+    else dialog.style.removeProperty('--pick-cover');
     if (!g) {
       pickLastId = null;
       nameEl.textContent = 'No games yet';

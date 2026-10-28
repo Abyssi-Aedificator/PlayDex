@@ -4,6 +4,9 @@ PlayDex - Changelog
 Version 1.6.2
 -------------------
 - Fixed question marks appearing instead of date separators in the Top custom-range description.
+- Suggested-game artwork stretches to fill the entire dialog background without empty bands.
+- Suggested-game backgrounds now show the full artwork without cropping, with a lighter overlay for better visibility.
+- What should I play now uses the suggested game's cover as its dialog background, with a readable theme-aware overlay and a plain fallback for games without covers.
 - App updates now wait for Update now confirmation; choosing Later keeps the approved version and offers the pending update again when the app reopens.
 - Dropbox keeps a live file plus its five previous changes, with dated version history and confirmed rollback in Settings; rollback preserves the previous live version and a local recovery copy.
 - Game rows now keep action buttons inset within their highlighted background, including Delete, and wrap safely on narrow screens.
