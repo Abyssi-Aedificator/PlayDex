@@ -9464,12 +9464,22 @@ opacity: 0.18;
     const startStr = getCalDateTime(editSessionStartDate, editSessionStartTime);
     const endStr = getCalDateTime(editSessionEndDate, editSessionEndTime);
     if (!startStr || !endStr) { toast('Fill in both times'); return; }
-    const t1 = new Date(startStr).getTime();
-    const t2 = new Date(endStr).getTime();
+    // Preserve seconds when the minute-precision fields were not changed.
+    const sameMinute = (value, original) => Math.floor(new Date(value).getTime() / 60000) === Math.floor(new Date(original).getTime() / 60000);
+    const t1 = new Date(sameMinute(startStr, s.start) ? s.start : startStr).getTime();
+    const t2 = new Date(sameMinute(endStr, s.stop) ? s.stop : endStr).getTime();
     if (!(t2 > t1)) { toast('End must be after start'); return; }
+    s.pauses = (s.pauses || []).map(p => ({ from: Math.max(t1, new Date(p.from).getTime()), to: Math.min(t2, new Date(p.to).getTime()) }))
+      .filter(p => p.to > p.from).sort((a, b) => a.from - b.from)
+      .reduce((out, p) => {
+        const last = out[out.length - 1];
+        if (last && p.from <= last.to) last.to = Math.max(last.to, p.to);
+        else out.push(p);
+        return out;
+      }, []).map(p => ({ from: new Date(p.from).toISOString(), to: new Date(p.to).toISOString() }));
     s.start = new Date(t1).toISOString();
     s.stop = new Date(t2).toISOString();
-    s.durationMs = t2 - t1;
+    s.durationMs = t2 - t1 - totalPausedMs(s, t2);
     saveSessions(sessions);
     toast('Session updated');
     document.getElementById('edit-session-modal').classList.remove('open');
