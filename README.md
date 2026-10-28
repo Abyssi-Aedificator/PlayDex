@@ -12,7 +12,7 @@ A lightweight, installable web app that tracks your game sessions, playtime by g
 - **Daily goal & quests** – daily playtime goal, daily/weekly quests, and play-streaks with earned streak freezes.
 - **Game library** – add, edit, archive, pin, and search games; see how long ago each was last played.
 - **Player profile & badges** – achievements and levels, milestones, a time-of-day heatmap, and a cumulative playtime curve.
-- **Backup & export** – JSON export/import and CSV export, plus optional Dropbox sync across devices.
+- **Backup & export** – JSON export/import and CSV export, plus optional Dropbox sync across devices with the five previous changes and rollback from Settings.
 - **Installable PWA** – works offline; install it as a standalone app on desktop or mobile.
 - **Themes & interfaces** – dark / light (follows your system) with accent-colour choices, and a choice of the Classic look or a Google Material 3 look.
 

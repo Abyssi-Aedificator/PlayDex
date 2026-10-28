@@ -3703,6 +3703,12 @@ opacity: 0.18;
     cursor: pointer;
     flex-shrink: 0;
   }
+  .dbx-history-panel { margin:16px 0; padding:14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); }
+  .dbx-history-heading,.dbx-history-row { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; }
+  .dbx-history-heading { font-size:.85rem; margin-bottom:8px; }
+  .dbx-history-heading button,.dbx-history-row button { padding:8px 10px; font-size:.75rem; }
+  .dbx-history-row { padding:10px 0; border-top:1px solid var(--border); font-size:.8rem; }
+  .dbx-history-row small { display:block; color:var(--text2); margin-top:3px; }
   .dbx-actions {
     display: flex;
     gap: 8px;
@@ -5219,6 +5225,11 @@ opacity: 0.18;
             <span class="dbx-toggle-label">Hide the sync reminder banner</span>
           </label>
         </div>
+        <div class="dbx-history-panel">
+          <div class="dbx-history-heading"><strong>Version history</strong><button class="btn-ghost" id="dbx-history-refresh" type="button">Refresh history</button></div>
+          <p class="backup-hint">The live Dropbox file keeps the five previous changes. Rollback updates the live file and this device; device settings stay unchanged.</p>
+          <div id="dbx-history-list" aria-live="polite">Refresh to load saved versions.</div>
+        </div>
         <div class="dbx-actions">
           <button class="btn btn-start" id="dbxUploadBtn" style="flex:1;padding:10px 14px;font-size:0.8rem;">Upload</button>
           <button class="btn-ghost" id="dbxDownloadBtn" style="flex:1;padding:10px 14px;font-size:0.8rem;">Download</button>
@@ -5600,6 +5611,8 @@ opacity: 0.18;
     </div>
   </div>
 </div>
+
+<div class="modal-overlay" id="dbx-rollback-modal"><div class="modal"><h3>Roll back Dropbox?</h3><p id="dbx-rollback-message" class="backup-hint"></p><p class="backup-hint">This replaces games and sessions in the live Dropbox file and on this device. Your current local history is saved as a recovery copy first. The current Dropbox version joins the five-version history.</p><div class="modal-actions"><button class="btn-ghost" id="dbx-rollback-cancel">Cancel</button><button class="btn-danger" id="dbx-rollback-confirm">Roll back</button></div></div></div>
 
 <!-- Dropbox newer-backup prompt -->
 <div class="modal-overlay" id="dbx-sync-modal">
@@ -6266,6 +6279,7 @@ opacity: 0.18;
   // --- Dropbox sync ---
   const DBX_KEY = 'playdex.dropbox';
   const DBX_PATH = '/playdex-backup.json';
+  let dbxHistoryView = null, dbxRollbackIndex = null;
   let dbx;
   try { dbx = JSON.parse(localStorage.getItem(DBX_KEY) || 'null'); } catch {}
   if (!dbx) dbx = { appKey: '', accessToken: '', refreshToken: '', expiresAt: 0, account: '', lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, hideSyncBanner: false, mock: false };
@@ -6418,6 +6432,80 @@ opacity: 0.18;
     dbxRefreshIndicators();
   }
 
+  function dbxValidateFile(data) {
+    if (!data || !Array.isArray(data.games) || !Array.isArray(data.sessions)) throw new Error('Invalid PlayDex backup');
+    normalizeGames(data.games);
+    if (data.sessions.some(s => !s || typeof s !== 'object' || typeof s.start !== 'string')) throw new Error('Invalid session history');
+    return data;
+  }
+  function dbxWithHistory(next, previous) {
+    const history = previous ? [{ savedAt: previous.exportedAt || new Date().toISOString(), games: previous.games, sessions: previous.sessions }, ...(Array.isArray(previous.history) ? previous.history : [])].slice(0,5) : [];
+    return Object.assign({}, next, { history });
+  }
+  async function dbxReadLive() {
+    const res = await fetch('https://content.dropboxapi.com/2/files/download', {
+      method:'POST', headers:{ 'Authorization':'Bearer '+dbx.accessToken, 'Dropbox-API-Arg':JSON.stringify({path:DBX_PATH}) }
+    });
+    if (!res.ok) throw new Error(res.status === 409 ? 'No live Dropbox file yet. Upload first.' : 'Could not load Dropbox history');
+    const metadata = JSON.parse(res.headers.get('Dropbox-API-Result') || '{}');
+    if (!metadata.rev) throw new Error('Missing Dropbox revision');
+    return { data:dbxValidateFile(await res.json()), rev:metadata.rev };
+  }
+  function dbxPaintHistory() {
+    const list = document.getElementById('dbx-history-list');
+    if (!dbxHistoryView) { list.textContent='Refresh to load saved versions.'; return; }
+    const history = Array.isArray(dbxHistoryView.data.history) ? dbxHistoryView.data.history.slice(0,5) : [];
+    list.innerHTML = history.length ? history.map((entry,index) => {
+      const date = new Date(entry.savedAt);
+      const label = isNaN(date.getTime()) ? 'Earlier version' : date.toLocaleString();
+      return '<div class="dbx-history-row"><span>'+escHtml(label)+'<small>'+ (Array.isArray(entry.games)?entry.games.length:0)+' games ? '+(Array.isArray(entry.sessions)?entry.sessions.length:0)+' sessions</small></span><button class="btn-ghost" type="button" data-rollback="'+index+'">Roll back</button></div>';
+    }).join('') : '<p class="backup-hint">No previous changes yet. History starts with your next changed upload.</p>';
+  }
+  async function dbxLoadHistory() {
+    if (dbxSyncOps) return;
+    if (!await dropboxRefreshIfNeeded()) { toast('Connect Dropbox first'); return; }
+    if (dbxSyncOps) return;
+    dbxSyncSpinning(true);
+    try { dbxHistoryView=await dbxReadLive(); dbxPaintHistory(); }
+    catch(error) { document.getElementById('dbx-history-list').textContent=error.message; }
+    finally { dbxSyncSpinning(false); }
+  }
+  async function dbxRollback() {
+    if (dbxSyncOps || dbxRollbackIndex === null || !dbxHistoryView) return;
+    const selected = dbxHistoryView, index=dbxRollbackIndex;
+    if (!await dropboxRefreshIfNeeded()) { toast('Reconnect Dropbox first'); return; }
+    if (dbxSyncOps) return;
+    dbxSyncSpinning(true);
+    clearTimeout(dbxSyncTimer);
+    try {
+      checkStorageFresh();
+      const current=await dbxReadLive();
+      if (current.rev !== selected.rev) throw new Error('Dropbox changed. Refresh history before rolling back.');
+      const entry=dbxValidateFile(current.data.history[index]);
+      dbxRecovery();
+      const localBefore=dbxSnapshot();
+      const payload=dbxWithHistory({app:'PlayDex',version:1,exportedAt:new Date().toISOString(),games:entry.games,sessions:entry.sessions},current.data);
+      const res=await fetch('https://content.dropboxapi.com/2/files/upload',{
+        method:'POST',headers:{'Authorization':'Bearer '+dbx.accessToken,'Content-Type':'application/octet-stream','Dropbox-API-Arg':JSON.stringify({path:DBX_PATH,mode:{'.tag':'update',update:current.rev},strict_conflict:true,mute:true})},body:JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(res.status===409?'Dropbox changed. Refresh history before rolling back.':'Rollback upload failed');
+      const metadata=await res.json();
+      if (!metadata.rev) throw new Error('Missing rollback revision');
+      checkStorageFresh();
+      if (dbxSnapshot() === localBefore) {
+        dbxApplyBackupText({text:JSON.stringify(payload),rev:metadata.rev}); dbxMarkSynced();
+        toast('Dropbox and local history rolled back');
+      } else {
+        dbx.rev=metadata.rev; dbxSave(); scheduleAutoUpload(); clearTimeout(dbxSyncTimer);
+        toast('Dropbox rolled back. New local edits were kept; download to apply the rollback here.');
+      }
+      clearTimeout(dbxSyncTimer);
+      dbxHistoryView={data:payload,rev:metadata.rev}; dbxPaintHistory();
+      document.getElementById('dbx-rollback-modal').classList.remove('open'); dbxRollbackIndex=null;
+    } catch(error) { toast(error.message); }
+    finally { dbxSyncSpinning(false); }
+  }
+
   async function dropboxUpload(auto) {
     if (dbxSyncOps) return;
     const ok = await dropboxRefreshIfNeeded();
@@ -6455,8 +6543,13 @@ opacity: 0.18;
         if (metaRes.status !== 409 || !String(error.error_summary || '').startsWith('path/not_found/')) throw new Error('Cannot check Dropbox backup');
         if (dbx.rev) { dbxConflict(); return; }
       }
+      const previous = rev ? await dbxReadLive() : null;
+      if (previous && previous.rev !== rev) { dbxConflict(); return; }
       const uploadedState = dbxSnapshot();
-      const payload = Object.assign({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString() }, JSON.parse(uploadedState));
+      if (previous && JSON.stringify({games:normalizeGames(previous.data.games),sessions:previous.data.sessions}) === uploadedState) {
+        dbx.rev=previous.rev; dbxMarkSynced(); dbxHistoryView=previous; dbxPaintHistory(); toast('Dropbox is already up to date'); return;
+      }
+      const payload = dbxWithHistory(Object.assign({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString() }, JSON.parse(uploadedState)), previous ? previous.data : null);
       const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
         method: 'POST', headers: {
           'Authorization': 'Bearer ' + dbx.accessToken, 'Content-Type': 'application/octet-stream',
@@ -6466,6 +6559,7 @@ opacity: 0.18;
       if (res.status === 409) { dbxConflict(); return; }
       if (!res.ok) throw new Error('Upload failed (' + res.status + ')');
       dbx.rev = (await res.json()).rev;
+      dbxHistoryView={data:payload,rev:dbx.rev}; dbxPaintHistory();
       dbxMarkSynced();
       dbxLastUploadedState = uploadedState;
       if (dbxSnapshot() !== uploadedState) scheduleAutoUpload();
@@ -6562,6 +6656,7 @@ opacity: 0.18;
   }
 
   function dropboxDisconnect() {
+    dbxHistoryView=null; dbxRollbackIndex=null; dbxPaintHistory();
     dbx.appKey = dbx.appKey || '';
     dbx.accessToken = ''; dbx.refreshToken = ''; dbx.expiresAt = 0; dbx.account = '';
     dbx.rev = null; dbx.dirty = false;
@@ -10207,6 +10302,18 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const game = event.target.closest('button[data-top-game]');
     if (game) openDashboard(game.dataset.topGame);
   });
+
+  document.getElementById('dbx-history-refresh').addEventListener('click',dbxLoadHistory);
+  document.getElementById('dbx-history-list').addEventListener('click',event=>{
+    const button=event.target.closest('button[data-rollback]');
+    if (!button || !dbxHistoryView || dbxSyncOps) return;
+    dbxRollbackIndex=Number(button.dataset.rollback);
+    const entry=dbxHistoryView.data.history[dbxRollbackIndex];
+    document.getElementById('dbx-rollback-message').textContent='Restore '+new Date(entry.savedAt).toLocaleString()+'?';
+    document.getElementById('dbx-rollback-modal').classList.add('open');
+  });
+  document.getElementById('dbx-rollback-cancel').addEventListener('click',()=>{dbxRollbackIndex=null; document.getElementById('dbx-rollback-modal').classList.remove('open');});
+  document.getElementById('dbx-rollback-confirm').addEventListener('click',dbxRollback);
 
   // --- Initial render ---
   backfillUnlockDates('gentle');
