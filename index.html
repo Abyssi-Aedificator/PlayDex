@@ -5598,6 +5598,24 @@ opacity: 0.18;
 (function() {
   // --- Storage ---
   const KEYS = { games: 'playdex_games', sessions: 'playdex_sessions', settings: 'playdex_settings' };
+  // Reject stale writes even before the other tab's storage event is delivered.
+  const storageBaseline = Object.fromEntries(Object.values(KEYS).map(key => [key, localStorage.getItem(key)]));
+  function checkStorageFresh() {
+    if (Object.keys(storageBaseline).some(key => localStorage.getItem(key) !== storageBaseline[key])) {
+      location.reload();
+      throw new Error('PlayDex changed in another tab; reloading before saving.');
+    }
+  }
+  function writeLocalData(key, value) {
+    checkStorageFresh();
+    const text = JSON.stringify(value);
+    localStorage.setItem(key, text);
+    storageBaseline[key] = text;
+  }
+  window.addEventListener('storage', event => {
+    if (event.storageArea === localStorage && (event.key === null || Object.values(KEYS).includes(event.key))) checkStorageFresh();
+  });
+
 
   function normalizeTags(arr) {
     if (!Array.isArray(arr)) return [];
@@ -5627,7 +5645,7 @@ opacity: 0.18;
   }
 
   function saveGames(games) {
-    localStorage.setItem(KEYS.games, JSON.stringify(games));
+    writeLocalData(KEYS.games, games);
     scheduleAutoUpload();
   }
 
@@ -5637,7 +5655,7 @@ opacity: 0.18;
   }
 
   function saveSessions(sessions) {
-    localStorage.setItem(KEYS.sessions, JSON.stringify(sessions));
+    writeLocalData(KEYS.sessions, sessions);
     scheduleAutoUpload();
   }
 
@@ -5653,7 +5671,7 @@ opacity: 0.18;
   }
 
   function saveSettings(settings) {
-    localStorage.setItem(KEYS.settings, JSON.stringify(settings));
+    writeLocalData(KEYS.settings, settings);
     scheduleAutoUpload();
   }
 
