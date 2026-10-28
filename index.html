@@ -487,11 +487,6 @@
   @container (max-width:280px) {
     .session-filter-fields { grid-template-columns:minmax(0,1fr); }
   }
-  .game-status { display:inline-block; padding:2px 8px; border-radius:999px; background:var(--accent-dim); color:var(--accent); font-size:.65rem; font-weight:600; margin-left:6px; }
-  .game-status[data-status="backlog"] { background:var(--status-backlog-bg); color:var(--status-backlog-text); }
-  .game-status[data-status="playing"] { background:var(--status-playing-bg); color:var(--status-playing-text); }
-  .game-status[data-status="completed"] { background:var(--status-completed-bg); color:var(--status-completed-text); }
-  .game-status[data-status="dropped"] { background:var(--status-dropped-bg); color:var(--status-dropped-text); }
   .dash-session:has(.session-note) { flex-wrap:wrap; }
   .dash-session .session-note { flex-basis:100%; }
 
@@ -923,6 +918,13 @@ opacity: 0.18;
   .pick-opt.on { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 700; }
 
   .pick-result { text-align: center; padding: 14px 6px 4px; }
+  #pick-modal .modal.has-game-cover {
+    background-image:linear-gradient(rgba(15,18,28,.62),rgba(15,18,28,.88)),var(--pick-cover);
+    background-size:100% 100%,100% 100%; background-position:center; background-repeat:no-repeat;
+  }
+  :root[data-theme="light"] #pick-modal .modal.has-game-cover {
+    background-image:linear-gradient(rgba(255,255,255,.76),rgba(255,255,255,.94)),var(--pick-cover);
+  }
   .pick-name { font-size: 1.35rem; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
   .pick-meta { font-size: 0.78rem; color: var(--text2); margin-top: 6px; min-height: 1.1em; }
 
@@ -1555,7 +1557,9 @@ opacity: 0.18;
     row-gap: 8px;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
+    padding: 12px 10px;
+    border-radius: var(--radius-sm);
+    column-gap: 10px;
     border-bottom: 1px solid var(--border);
   }
 
@@ -1745,6 +1749,8 @@ opacity: 0.18;
     justify-content: flex-end;
     gap: 4px;
     margin-left: auto;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .btn-icon {
@@ -1762,6 +1768,7 @@ opacity: 0.18;
 
   .btn-icon.danger:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
 
+  .game-item-actions .btn-icon { flex: 0 0 auto; display:inline-flex; align-items:center; justify-content:center; }
   .btn-icon svg { width: 16px; height: 16px; display: block; }
 
   .btn-icon.archive:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
@@ -1811,6 +1818,12 @@ opacity: 0.18;
     font-weight: 600;
     overflow-wrap: anywhere;
   }
+  .top-game-link { padding:0; border:0; background:none; color:var(--text); font:inherit; font-weight:600; text-align:left; cursor:pointer; overflow-wrap:anywhere; }
+  .top-game-link:hover { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
+  .top-game-link:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:3px; }
+  .top-share-label,.top-gap { display:block; font-size:.68rem; color:var(--text2); line-height:1.5; }
+  .top-share-track { display:block; height:3px; width:100%; max-width:160px; border-radius:99px; background:var(--accent-dim); overflow:hidden; margin:3px 0; }
+  .top-share-fill { display:block; height:100%; background:var(--accent); border-radius:inherit; }
   .top-name .top-delta {
     font-size: 0.68rem;
     font-weight: 600;
@@ -1875,6 +1888,18 @@ opacity: 0.18;
     letter-spacing: 0.5px;
     font-weight: 800;
   }
+  .top-custom { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:12px 0; }
+  .top-custom[hidden] { display:none; }
+  .top-custom .cal-trigger { min-width:0; width:100%; }
+  .dbx-toggle.top-archived-toggle { justify-content:space-between; gap:16px; padding:12px 14px; margin:14px 0; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); color:var(--text2); transition:background-color .2s cubic-bezier(0.4,0,0.2,1),border-color .2s cubic-bezier(0.4,0,0.2,1); }
+  .dbx-toggle.top-archived-toggle:has(input:checked) { border-color:var(--accent); background:var(--accent-dim); color:var(--text); }
+  .top-archived-toggle .dbx-toggle-label { font-weight:500; }
+  .top-archived-toggle input:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
+  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"] { appearance:none; -webkit-appearance:none; position:relative; width:40px; height:24px; margin:0; border:1px solid var(--border-strong); border-radius:999px; background:var(--surface3); transition:background-color .2s cubic-bezier(0.4,0,0.2,1); }
+  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"]::after { content:''; position:absolute; width:16px; height:16px; top:3px; left:3px; border-radius:50%; background:var(--text2); transition:transform .2s cubic-bezier(0.4,0,0.2,1),background-color .2s cubic-bezier(0.4,0,0.2,1); }
+  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"]:checked { background:var(--accent-dim); border-color:var(--accent); }
+  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"]:checked::after { transform:translateX(16px); background:var(--accent); }
+  @media(max-width:360px) { .top-custom { grid-template-columns:minmax(0,1fr); } }
   .top-periods {
     display: flex;
     gap: 6px;
@@ -3685,6 +3710,12 @@ opacity: 0.18;
     cursor: pointer;
     flex-shrink: 0;
   }
+  .dbx-history-panel { margin:16px 0; padding:14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); }
+  .dbx-history-heading,.dbx-history-row { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; }
+  .dbx-history-heading { font-size:.85rem; margin-bottom:8px; }
+  .dbx-history-heading button,.dbx-history-row button { padding:8px 10px; font-size:.75rem; }
+  .dbx-history-row { padding:10px 0; border-top:1px solid var(--border); font-size:.8rem; }
+  .dbx-history-row small { display:block; color:var(--text2); margin-top:3px; }
   .dbx-actions {
     display: flex;
     gap: 8px;
@@ -4690,7 +4721,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.6.2</span>
+    <span class="version-badge">1.6.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5020,7 +5051,54 @@ opacity: 0.18;
         <button class="top-period" type="button" data-period="rolling7">7 days</button>
         <button class="top-period" type="button" data-period="month">Month</button>
         <button class="top-period" type="button" data-period="all">All time</button>
+        <button class="top-period" id="top-custom-button" type="button" data-period="custom">Custom dates</button>
       </div>
+      <div class="top-custom" id="top-custom-fields" hidden>
+        <div class="session-filter-field"><label id="top-from-label">From</label>
+        <div class="cal-field" id="top-date-from" aria-labelledby="top-from-label">
+          <button aria-labelledby="top-from-label" class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+        </div><div class="session-filter-field"><label id="top-to-label">To</label>
+        <div class="cal-field" id="top-date-to" aria-labelledby="top-to-label">
+          <button aria-labelledby="top-to-label" class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <label class="dbx-toggle top-archived-toggle"><span class="dbx-toggle-label">Include archived games</span><input type="checkbox" id="top-include-archived"></label>
       <div class="top-summary" id="top-summary"></div>
       <div class="top-legend" id="top-range"></div>
       <div class="top-legend">&#8593; moved up &nbsp;&middot;&nbsp; &#8595; moved down &nbsp;&middot;&nbsp; &#8211; no change &nbsp;&middot;&nbsp; NEW = not played in the previous period. The number is the previous position.</div>
@@ -5154,6 +5232,11 @@ opacity: 0.18;
             <span class="dbx-toggle-label">Hide the sync reminder banner</span>
           </label>
         </div>
+        <div class="dbx-history-panel">
+          <div class="dbx-history-heading"><strong>Version history</strong><button class="btn-ghost" id="dbx-history-refresh" type="button">Refresh history</button></div>
+          <p class="backup-hint">The live Dropbox file keeps the five previous changes. Rollback updates the live file and this device; device settings stay unchanged.</p>
+          <div id="dbx-history-list" aria-live="polite">Refresh to load saved versions.</div>
+        </div>
         <div class="dbx-actions">
           <button class="btn btn-start" id="dbxUploadBtn" style="flex:1;padding:10px 14px;font-size:0.8rem;">Upload</button>
           <button class="btn-ghost" id="dbxDownloadBtn" style="flex:1;padding:10px 14px;font-size:0.8rem;">Download</button>
@@ -5260,7 +5343,6 @@ opacity: 0.18;
       <input type="text" id="rename-tags" placeholder="Tags, comma separated (e.g. PC, Co-op)" maxlength="180" autocomplete="off">
       <label for="rename-tags">Tags, comma separated</label>
     </div>
-    <div class="field-group"><label for="rename-status">Status</label><select id="rename-status"><option value="backlog">Backlog</option><option value="playing">Playing</option><option value="completed">Completed</option><option value="dropped">Dropped</option></select></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="rename-cancel">Cancel</button>
       <button class="btn btn-start" id="rename-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -5537,6 +5619,8 @@ opacity: 0.18;
   </div>
 </div>
 
+<div class="modal-overlay" id="dbx-rollback-modal"><div class="modal"><h3>Roll back Dropbox?</h3><p id="dbx-rollback-message" class="backup-hint"></p><p class="backup-hint">This replaces games and sessions in the live Dropbox file and on this device. Your current local history is saved as a recovery copy first. The current Dropbox version joins the five-version history.</p><div class="modal-actions"><button class="btn-ghost" id="dbx-rollback-cancel">Cancel</button><button class="btn-danger" id="dbx-rollback-confirm">Roll back</button></div></div></div>
+
 <!-- Dropbox newer-backup prompt -->
 <div class="modal-overlay" id="dbx-sync-modal">
   <div class="modal">
@@ -5580,10 +5664,10 @@ opacity: 0.18;
 <div class="modal-overlay" id="update-modal">
   <div class="modal">
     <h3>New version available</h3>
-    <p class="modal-subheader">A new version of PlayDex is ready to install. Reload to apply the latest changes.</p>
+    <p class="modal-subheader">A new version of PlayDex is ready. Choose Update now to install it, or Later to keep your current version.</p>
     <div class="modal-actions">
       <button class="btn-ghost" id="update-dismiss">Later</button>
-      <button class="btn-primary" id="update-reload">Reload now</button>
+      <button class="btn-primary" id="update-reload">Update now</button>
     </div>
   </div>
 </div>
@@ -5702,13 +5786,10 @@ opacity: 0.18;
     return out.slice(0, 8);
   }
 
-  const GAME_STATUSES = { backlog: 'Backlog', playing: 'Playing', completed: 'Completed', dropped: 'Dropped' };
-  function gameStatus(game) { return Object.hasOwn(GAME_STATUSES, game.status) ? game.status : 'backlog'; }
-  function statusBadge(game) { return '<span class="game-status" data-status="' + gameStatus(game) + '">' + GAME_STATUSES[gameStatus(game)] + '</span>'; }
 
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
-      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), status: gameStatus(g) };
+      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags) };
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -6114,24 +6195,6 @@ opacity: 0.18;
     });
   }
 
-  function applyStatusColours(theme) {
-    const source = hexToHsl(accentSourceHex(theme));
-    const light = theme === 'light';
-    // Related palettes travel with the accent; neutral accents stay neutral.
-    const variants = {
-      backlog: { shift: -18, saturation: 0.28, bg: light ? 94 : 18, text: light ? 30 : 78 },
-      playing: { shift: 0, saturation: 1, bg: light ? 88 : 27, text: light ? 24 : 94 },
-      completed: { shift: 55, saturation: 0.8, bg: light ? 91 : 22, text: light ? 26 : 86 },
-      dropped: { shift: -55, saturation: 0.55, bg: light ? 89 : 24, text: light ? 28 : 84 }
-    };
-    Object.entries(variants).forEach(([status, variant]) => {
-      const hue = (source.h + variant.shift + 360) % 360;
-      const sat = Math.min(75, source.s * variant.saturation);
-      document.documentElement.style.setProperty('--status-' + status + '-bg', hslToHex(hue, sat, variant.bg));
-      document.documentElement.style.setProperty('--status-' + status + '-text', hslToHex(hue, sat, variant.text));
-    });
-  }
-
   function applyAccent(theme) {
     const root = document.documentElement;
     const preset = settings.accent && ACCENT_PRESETS[settings.accent];
@@ -6210,7 +6273,6 @@ opacity: 0.18;
     });
     applyUI();
     applyAccent(theme);
-    applyStatusColours(theme);
     applyMaterialTokens(theme);
     updateThemeColorMeta();
   }
@@ -6224,6 +6286,7 @@ opacity: 0.18;
   // --- Dropbox sync ---
   const DBX_KEY = 'playdex.dropbox';
   const DBX_PATH = '/playdex-backup.json';
+  let dbxHistoryView = null, dbxRollbackIndex = null;
   let dbx;
   try { dbx = JSON.parse(localStorage.getItem(DBX_KEY) || 'null'); } catch {}
   if (!dbx) dbx = { appKey: '', accessToken: '', refreshToken: '', expiresAt: 0, account: '', lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, hideSyncBanner: false, mock: false };
@@ -6376,6 +6439,80 @@ opacity: 0.18;
     dbxRefreshIndicators();
   }
 
+  function dbxValidateFile(data) {
+    if (!data || !Array.isArray(data.games) || !Array.isArray(data.sessions)) throw new Error('Invalid PlayDex backup');
+    normalizeGames(data.games);
+    if (data.sessions.some(s => !s || typeof s !== 'object' || typeof s.start !== 'string')) throw new Error('Invalid session history');
+    return data;
+  }
+  function dbxWithHistory(next, previous) {
+    const history = previous ? [{ savedAt: previous.exportedAt || new Date().toISOString(), games: previous.games, sessions: previous.sessions }, ...(Array.isArray(previous.history) ? previous.history : [])].slice(0,5) : [];
+    return Object.assign({}, next, { history });
+  }
+  async function dbxReadLive() {
+    const res = await fetch('https://content.dropboxapi.com/2/files/download', {
+      method:'POST', headers:{ 'Authorization':'Bearer '+dbx.accessToken, 'Dropbox-API-Arg':JSON.stringify({path:DBX_PATH}) }
+    });
+    if (!res.ok) throw new Error(res.status === 409 ? 'No live Dropbox file yet. Upload first.' : 'Could not load Dropbox history');
+    const metadata = JSON.parse(res.headers.get('Dropbox-API-Result') || '{}');
+    if (!metadata.rev) throw new Error('Missing Dropbox revision');
+    return { data:dbxValidateFile(await res.json()), rev:metadata.rev };
+  }
+  function dbxPaintHistory() {
+    const list = document.getElementById('dbx-history-list');
+    if (!dbxHistoryView) { list.textContent='Refresh to load saved versions.'; return; }
+    const history = Array.isArray(dbxHistoryView.data.history) ? dbxHistoryView.data.history.slice(0,5) : [];
+    list.innerHTML = history.length ? history.map((entry,index) => {
+      const date = new Date(entry.savedAt);
+      const label = isNaN(date.getTime()) ? 'Earlier version' : date.toLocaleString();
+      return '<div class="dbx-history-row"><span>'+escHtml(label)+'<small>'+ (Array.isArray(entry.games)?entry.games.length:0)+' games ? '+(Array.isArray(entry.sessions)?entry.sessions.length:0)+' sessions</small></span><button class="btn-ghost" type="button" data-rollback="'+index+'">Roll back</button></div>';
+    }).join('') : '<p class="backup-hint">No previous changes yet. History starts with your next changed upload.</p>';
+  }
+  async function dbxLoadHistory() {
+    if (dbxSyncOps) return;
+    if (!await dropboxRefreshIfNeeded()) { toast('Connect Dropbox first'); return; }
+    if (dbxSyncOps) return;
+    dbxSyncSpinning(true);
+    try { dbxHistoryView=await dbxReadLive(); dbxPaintHistory(); }
+    catch(error) { document.getElementById('dbx-history-list').textContent=error.message; }
+    finally { dbxSyncSpinning(false); }
+  }
+  async function dbxRollback() {
+    if (dbxSyncOps || dbxRollbackIndex === null || !dbxHistoryView) return;
+    const selected = dbxHistoryView, index=dbxRollbackIndex;
+    if (!await dropboxRefreshIfNeeded()) { toast('Reconnect Dropbox first'); return; }
+    if (dbxSyncOps) return;
+    dbxSyncSpinning(true);
+    clearTimeout(dbxSyncTimer);
+    try {
+      checkStorageFresh();
+      const current=await dbxReadLive();
+      if (current.rev !== selected.rev) throw new Error('Dropbox changed. Refresh history before rolling back.');
+      const entry=dbxValidateFile(current.data.history[index]);
+      dbxRecovery();
+      const localBefore=dbxSnapshot();
+      const payload=dbxWithHistory({app:'PlayDex',version:1,exportedAt:new Date().toISOString(),games:entry.games,sessions:entry.sessions},current.data);
+      const res=await fetch('https://content.dropboxapi.com/2/files/upload',{
+        method:'POST',headers:{'Authorization':'Bearer '+dbx.accessToken,'Content-Type':'application/octet-stream','Dropbox-API-Arg':JSON.stringify({path:DBX_PATH,mode:{'.tag':'update',update:current.rev},strict_conflict:true,mute:true})},body:JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(res.status===409?'Dropbox changed. Refresh history before rolling back.':'Rollback upload failed');
+      const metadata=await res.json();
+      if (!metadata.rev) throw new Error('Missing rollback revision');
+      checkStorageFresh();
+      if (dbxSnapshot() === localBefore) {
+        dbxApplyBackupText({text:JSON.stringify(payload),rev:metadata.rev}); dbxMarkSynced();
+        toast('Dropbox and local history rolled back');
+      } else {
+        dbx.rev=metadata.rev; dbxSave(); scheduleAutoUpload(); clearTimeout(dbxSyncTimer);
+        toast('Dropbox rolled back. New local edits were kept; download to apply the rollback here.');
+      }
+      clearTimeout(dbxSyncTimer);
+      dbxHistoryView={data:payload,rev:metadata.rev}; dbxPaintHistory();
+      document.getElementById('dbx-rollback-modal').classList.remove('open'); dbxRollbackIndex=null;
+    } catch(error) { toast(error.message); }
+    finally { dbxSyncSpinning(false); }
+  }
+
   async function dropboxUpload(auto) {
     if (dbxSyncOps) return;
     const ok = await dropboxRefreshIfNeeded();
@@ -6413,8 +6550,13 @@ opacity: 0.18;
         if (metaRes.status !== 409 || !String(error.error_summary || '').startsWith('path/not_found/')) throw new Error('Cannot check Dropbox backup');
         if (dbx.rev) { dbxConflict(); return; }
       }
+      const previous = rev ? await dbxReadLive() : null;
+      if (previous && previous.rev !== rev) { dbxConflict(); return; }
       const uploadedState = dbxSnapshot();
-      const payload = Object.assign({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString() }, JSON.parse(uploadedState));
+      if (previous && JSON.stringify({games:normalizeGames(previous.data.games),sessions:previous.data.sessions}) === uploadedState) {
+        dbx.rev=previous.rev; dbxMarkSynced(); dbxHistoryView=previous; dbxPaintHistory(); toast('Dropbox is already up to date'); return;
+      }
+      const payload = dbxWithHistory(Object.assign({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString() }, JSON.parse(uploadedState)), previous ? previous.data : null);
       const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
         method: 'POST', headers: {
           'Authorization': 'Bearer ' + dbx.accessToken, 'Content-Type': 'application/octet-stream',
@@ -6424,6 +6566,7 @@ opacity: 0.18;
       if (res.status === 409) { dbxConflict(); return; }
       if (!res.ok) throw new Error('Upload failed (' + res.status + ')');
       dbx.rev = (await res.json()).rev;
+      dbxHistoryView={data:payload,rev:dbx.rev}; dbxPaintHistory();
       dbxMarkSynced();
       dbxLastUploadedState = uploadedState;
       if (dbxSnapshot() !== uploadedState) scheduleAutoUpload();
@@ -6520,6 +6663,7 @@ opacity: 0.18;
   }
 
   function dropboxDisconnect() {
+    dbxHistoryView=null; dbxRollbackIndex=null; dbxPaintHistory();
     dbx.appKey = dbx.appKey || '';
     dbx.accessToken = ''; dbx.refreshToken = ''; dbx.expiresAt = 0; dbx.account = '';
     dbx.rev = null; dbx.dirty = false;
@@ -6571,14 +6715,27 @@ opacity: 0.18;
   function startOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
   function endOfDay(d) { const x = new Date(d); x.setHours(23, 59, 59, 999); return x; }
 
-  const TOP_PERIODS = ['week', 'rolling7', 'month', 'all'];
+  const TOP_PERIODS = ['week', 'rolling7', 'month', 'all', 'custom'];
 
   function getTopPeriod() {
     return TOP_PERIODS.indexOf(settings.topPeriod) >= 0 ? settings.topPeriod : 'week';
   }
 
   // Start/end bounds of the selected Top period. start is null for all-time.
+  function topCustomDates() {
+    const from = settings.topFrom ?? addDays(todayStr(), -6), to = settings.topTo ?? todayStr();
+    const valid = value => /^\d{4}-\d{2}-\d{2}$/.test(value) && !isNaN(new Date(value + 'T00:00:00').getTime()) && dateKey(value + 'T00:00:00') === value;
+    return valid(from) && valid(to) && from <= to ? { from, to } : null;
+  }
+  function topIncludesGame(game) { return settings.topIncludeArchived === true || !game.archived; }
+  function topCalendarDays(start, end) {
+    return Math.round((Date.UTC(end.getFullYear(),end.getMonth(),end.getDate()) - Date.UTC(start.getFullYear(),start.getMonth(),start.getDate())) / 86400000) + 1;
+  }
   function getPeriodBounds(period, now = new Date()) {
+    if (period === 'custom') {
+      const dates = topCustomDates();
+      return dates ? { start: new Date(dates.from + 'T00:00:00'), end: new Date(dates.to + 'T23:59:59.999') } : { start:null, end:null };
+    }
     if (period === 'rolling7') {
       return { start: startOfDay(new Date(now.getTime() - 6 * 86400000)), end: endOfDay(now) };
     }
@@ -6598,6 +6755,10 @@ opacity: 0.18;
   function getPrevPeriodBounds(period, now = new Date()) {
     const cur = getPeriodBounds(period, now);
     if (!cur.start) return { start: null, end: null };
+    if (period === 'custom') {
+      const start = new Date(cur.start); start.setDate(start.getDate() - topCalendarDays(cur.start, cur.end));
+      return { start, end: endOfDay(new Date(cur.start.getTime() - 1)) };
+    }
     if (period === 'month') {
       const y = cur.start.getFullYear(), m = cur.start.getMonth();
       return { start: new Date(y, m - 1, 1, 0, 0, 0, 0), end: new Date(y, m, 0, 23, 59, 59, 999) };
@@ -6609,6 +6770,7 @@ opacity: 0.18;
   }
 
   function periodRangeText(period, cur, prev) {
+    if (period === 'custom') return fmtDate(cur.start) + ' \u2013 ' + fmtDate(cur.end) + ' \u00b7 compared with ' + fmtDate(prev.start) + ' \u2013 ' + fmtDate(prev.end) + '.';
     if (period === 'all') return 'All time.';
     if (period === 'rolling7') {
       return 'Last 7 days (' + fmtDayMonth(cur.start) + ' \u2013 ' + fmtDayMonth(cur.end) + ') \u00b7 compared with the previous 7 days.';
@@ -6645,7 +6807,7 @@ opacity: 0.18;
         const t = new Date(s.start).getTime();
         if (t >= wb.start.getTime() && t <= wb.end.getTime()) totals[s.gameId] = (totals[s.gameId] || 0) + (s.durationMs || 0);
       });
-      const list = games.filter(g => !g.archived && totals[g.id] > 0)
+      const list = games.filter(g => topIncludesGame(g) && totals[g.id] > 0)
         .sort((a, b) => (totals[b.id] - totals[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
       if (!list.length) break;
       const weekChamp = list[0].id;
@@ -6660,7 +6822,14 @@ opacity: 0.18;
   // Buckets the selected period is split into for the per-row sparkline
   function topPeriodBuckets(period, cur) {
     const buckets = [];
-    if (period === 'week' || period === 'rolling7') {
+    if (period === 'custom') {
+      const days = topCalendarDays(cur.start, cur.end), step = Math.max(1, Math.ceil(days / 12));
+      for (let i=0; i<days; i+=step) {
+        const start = new Date(cur.start); start.setDate(start.getDate()+i);
+        const end = new Date(cur.start); end.setDate(end.getDate()+Math.min(days-1,i+step-1));
+        buckets.push({ start, end:endOfDay(end) });
+      }
+    } else if (period === 'week' || period === 'rolling7') {
       for (let i = 0; i < 7; i++) {
         const d = new Date(cur.start);
         d.setDate(d.getDate() + i);
@@ -6699,6 +6868,13 @@ opacity: 0.18;
     return html + '</span>';
   }
 
+  function topRankDetails(playtime, total, ahead, rank) {
+    const percent = total > 0 ? playtime / total * 100 : 0;
+    const share = percent > 0 && percent < 0.1 ? '<0.1' : percent.toFixed(1).replace(/\.0$/, '');
+    const gap = ahead === null ? '' : ahead === playtime ? 'Tied with #' + (rank - 1) : Math.ceil((ahead - playtime) / 60000) + ' min behind #' + (rank - 1);
+    return { percent, share, gap };
+  }
+
   // --- Top tab: games ranked by total playtime in the selected period ---
   function renderTop() {
     const container = document.getElementById('top-list');
@@ -6707,11 +6883,20 @@ opacity: 0.18;
     const period = getTopPeriod();
     document.querySelectorAll('#top-periods .top-period').forEach(b => b.classList.toggle('active', b.dataset.period === period));
 
+    document.getElementById('top-custom-fields').hidden = period !== 'custom';
+    document.getElementById('top-include-archived').checked = settings.topIncludeArchived === true;
+    if (period === 'custom' && !topCustomDates()) {
+      document.getElementById('top-range').textContent = 'Choose valid From and To dates, with To on or after From.';
+      document.getElementById('top-summary').innerHTML = '';
+      document.getElementById('top-fellout').innerHTML = '';
+      container.innerHTML = '';
+      return;
+    }
     const now = new Date();
     const cur = getPeriodBounds(period, now);
     const prev = getPrevPeriodBounds(period, now);
     const hasTrend = !!prev.start;
-    const champ = championStreak(now);
+    const champ = period === 'custom' ? { championId:null, streak:0 } : championStreak(now);
 
     const rangeEl = document.getElementById('top-range');
     if (rangeEl) rangeEl.textContent = periodRangeText(period, cur, prev);
@@ -6734,12 +6919,12 @@ opacity: 0.18;
     const byPlaytime = (a, b) => (thisMs[b.id] - thisMs[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
 
     // Current ranking: active games with playtime in the period
-    const ranked = games.filter(g => !g.archived && thisMs[g.id] > 0).sort(byPlaytime);
+    const ranked = games.filter(g => topIncludesGame(g) && thisMs[g.id] > 0).sort(byPlaytime);
 
     // Previous-period positions (active games with playtime there), keyed by id
     const prevRank = {};
     if (hasTrend) {
-      games.filter(g => !g.archived && prevMs[g.id] > 0)
+      games.filter(g => topIncludesGame(g) && prevMs[g.id] > 0)
         .sort((a, b) => (prevMs[b.id] - prevMs[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
         .forEach((g, i) => { prevRank[g.id] = i + 1; });
     }
@@ -6765,7 +6950,7 @@ opacity: 0.18;
     // Period summary: total playtime, change vs the previous period, session count
     const summaryEl = document.getElementById('top-summary');
     if (summaryEl) {
-      const active = games.filter(g => !g.archived);
+      const active = games.filter(topIncludesGame);
       const activeIds = {};
       active.forEach(g => { activeIds[g.id] = 1; });
       const totalMs = active.reduce((a, g) => a + thisMs[g.id], 0);
@@ -6783,13 +6968,13 @@ opacity: 0.18;
       if (!hasTrend) {
         felloutEl.innerHTML = '';
       } else {
-        const dropped = games.filter(g => !g.archived && thisMs[g.id] === 0 && prevMs[g.id] > 0)
+        const dropped = games.filter(g => topIncludesGame(g) && thisMs[g.id] === 0 && prevMs[g.id] > 0)
           .sort((a, b) => prevRank[a.id] - prevRank[b.id]);
         felloutEl.innerHTML = dropped.length
           ? '<div class="top-fellout-title">Fell out</div>' + dropped.map(g =>
               '<div class="top-row fellout">' +
                 '<span class="top-rank">' + prevRank[g.id] + '</span>' +
-                '<span class="top-name"><span class="top-name-text">' + escHtml(g.name) + '</span></span>' +
+                '<span class="top-name"><button type="button" class="top-game-link" data-top-game="' + escHtml(g.id) + '">' + escHtml(g.name) + '</button></span>' +
                 '<span class="top-time">' + fmtDurationShort(prevMs[g.id]) + '</span>' +
                 '<span class="top-trend out" title="Not played in this period">OUT</span>' +
               '</div>').join('')
@@ -6802,6 +6987,7 @@ opacity: 0.18;
       return;
     }
 
+    const rankedTotal = ranked.reduce((sum, g) => sum + thisMs[g.id], 0);
     container.innerHTML = ranked.map((g, i) => {
       const pos = i + 1;
       let trend = '';
@@ -6819,10 +7005,14 @@ opacity: 0.18;
       const streakHtml = (champ.championId === g.id && champ.streak >= 2)
         ? '<span class="top-streak" title="' + champ.streak + ' weeks in a row at #1">\uD83C\uDFC6 ' + champ.streak + 'w</span>'
         : '';
+      const details = topRankDetails(thisMs[g.id], rankedTotal, i > 0 ? thisMs[ranked[i - 1].id] : null, pos);
       const sparkHtml = sparkBarsHtml(bucketMs[g.id]);
       return '<div class="top-row">' +
         rankHtml +
-        '<span class="top-name"><span class="top-name-text">' + escHtml(g.name) + streakHtml + '</span>' +
+        '<span class="top-name"><span class="top-name-text"><button type="button" class="top-game-link" data-top-game="' + escHtml(g.id) + '">' + escHtml(g.name) + '</button>' + streakHtml + '</span>' +
+          '<span class="top-share-label">' + escHtml(details.share) + '% of playtime</span>' +
+          '<span class="top-share-track" aria-hidden="true"><span class="top-share-fill" style="width:' + details.percent + '%"></span></span>' +
+          (details.gap ? '<span class="top-gap">' + details.gap + '</span>' : '') +
           (hasTrend ? topDeltaHtml(thisMs[g.id], prevMs[g.id], false) : '') +
         '</span>' +
         '<span class="top-time">' + fmtDurationShort(thisMs[g.id]) + '</span>' +
@@ -6969,6 +7159,11 @@ opacity: 0.18;
     const startBtn = document.getElementById('pick-start');
     const againBtn = document.getElementById('pick-again');
     const g = choosePick();
+    const dialog = document.querySelector('#pick-modal .modal');
+    const image = g && g.image;
+    dialog.classList.toggle('has-game-cover', !!image);
+    if (image) dialog.style.setProperty('--pick-cover', 'url(' + JSON.stringify(image) + ')');
+    else dialog.style.removeProperty('--pick-cover');
     if (!g) {
       pickLastId = null;
       nameEl.textContent = 'No games yet';
@@ -8856,7 +9051,7 @@ opacity: 0.18;
         const running = activeSession && activeSession.gameId === g.id;
         return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info">' +
-            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + statusBadge(g) + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             tagsHtml(g) +
             gameMeta(count, e, staleIds.has(g.id)) +
           '</div>' +
@@ -8879,7 +9074,7 @@ opacity: 0.18;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info">' +
-            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + statusBadge(g) + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             tagsHtml(g) +
             gameMeta(count, e) +
           '</div>' +
@@ -9112,7 +9307,7 @@ opacity: 0.18;
       toast('Game already exists');
       return;
     }
-    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false, tags: [], status: 'backlog' });
+    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false, tags: [] });
     saveGames(games);
     toast('Added: ' + name);
     render();
@@ -9169,6 +9364,13 @@ opacity: 0.18;
   filterDateField.value = filterDate;
   const filterDateEndField = createCalField('filter-date-end', v => { filterDateEnd = v; renderSessionsTab(false); });
   filterDateEndField.value = filterDateEnd;
+  const topFromField = createCalField('top-date-from', value => { settings.topFrom = value; saveSettings(settings); renderTop(); });
+  const topToField = createCalField('top-date-to', value => { settings.topTo = value; saveSettings(settings); renderTop(); });
+  topFromField.value = settings.topFrom ?? addDays(todayStr(), -6);
+  topToField.value = settings.topTo ?? todayStr();
+  document.getElementById('top-include-archived').addEventListener('change', event => {
+    settings.topIncludeArchived = event.target.checked; saveSettings(settings); renderTop();
+  });
   document.getElementById('session-game-filter').addEventListener('change', e => { sessionGameFilter = e.target.value; renderSessionsTab(false); });
   document.getElementById('session-filters-clear').addEventListener('click', () => {
     sessionGameFilter = ''; filterDate = ''; filterDateEnd = '';
@@ -9195,7 +9397,6 @@ opacity: 0.18;
     pendingRenameGameId = id;
     document.getElementById('rename-input').value = game.name;
     document.getElementById('rename-tags').value = (game.tags || []).join(', ');
-    document.getElementById('rename-status').value = gameStatus(game);
     paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
     const urlField = document.getElementById('cover-url');
     urlField.value = (game.image && !/^data:image\//.test(game.image)) ? game.image : '';
@@ -9213,7 +9414,6 @@ opacity: 0.18;
     const game = games.find(g => g.id === pendingRenameGameId);
     if (game) {
       game.name = name;
-      game.status = document.getElementById('rename-status').value;
       game.tags = normalizeTags(document.getElementById('rename-tags').value.split(','));
       saveGames(games);
       sessions.forEach(s => { if (s.gameId === game.id) s.gameName = name; });
@@ -9341,7 +9541,10 @@ opacity: 0.18;
     function renderGrid() {
       titleEl.textContent = CAL_MONTHS[viewMonth] + ' ' + viewYear;
       gridEl.innerHTML = '';
-      const startDow = new Date(viewYear, viewMonth, 1).getDay();
+      const mondayFirst = weekStartsOnMonday();
+      const weekdays = mondayFirst ? ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      el.querySelector('.cal-weekdays').innerHTML = weekdays.map(day => '<span title="' + day + '">' + day.charAt(0) + '</span>').join('');
+      const startDow = (new Date(viewYear, viewMonth, 1).getDay() + (mondayFirst ? 6 : 0)) % 7;
       const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
       const todayStr = calFmtDate(new Date());
       for (let i = 0; i < 42; i++) {
@@ -10110,6 +10313,23 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if (copy) triggerDownload('playdex-before-dropbox-sync.json', new Blob([copy], { type: 'application/json' }));
   });
 
+  document.getElementById('tab-top').addEventListener('click', event => {
+    const game = event.target.closest('button[data-top-game]');
+    if (game) openDashboard(game.dataset.topGame);
+  });
+
+  document.getElementById('dbx-history-refresh').addEventListener('click',dbxLoadHistory);
+  document.getElementById('dbx-history-list').addEventListener('click',event=>{
+    const button=event.target.closest('button[data-rollback]');
+    if (!button || !dbxHistoryView || dbxSyncOps) return;
+    dbxRollbackIndex=Number(button.dataset.rollback);
+    const entry=dbxHistoryView.data.history[dbxRollbackIndex];
+    document.getElementById('dbx-rollback-message').textContent='Restore '+new Date(entry.savedAt).toLocaleString()+'?';
+    document.getElementById('dbx-rollback-modal').classList.add('open');
+  });
+  document.getElementById('dbx-rollback-cancel').addEventListener('click',()=>{dbxRollbackIndex=null; document.getElementById('dbx-rollback-modal').classList.remove('open');});
+  document.getElementById('dbx-rollback-confirm').addEventListener('click',dbxRollback);
+
   // --- Initial render ---
   backfillUnlockDates('gentle');
   applyTheme();
@@ -10151,34 +10371,66 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     deferredInstallPrompt = null;
   });
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(err => {
-        console.warn('Service worker registration failed:', err);
-      });
-    });
-
-    // --- New version notification ---
-    const APP_VERSION = '1.6.2';
-    const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
-    let wasControlled = !!navigator.serviceWorker.controller;
+    const APP_VERSION = '1.6.3';
+    let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
-
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      // controllerchange fires when a new worker takes over after skipWaiting().
-      // Only notify if an update actually happened (there was a prior controller)
-      // and the user hasn't already dismissed this version.
-      if (wasControlled && !localStorage.getItem(dismissedKey)) {
-        updateModal().classList.add('open');
-      }
-      wasControlled = true;
+    function askWorker(worker, message) {
+      return new Promise((resolve,reject) => {
+        const channel=new MessageChannel();
+        const timer=setTimeout(()=>{channel.port1.close();reject(new Error('Update check timed out. Please try again.'));},15000);
+        channel.port1.onmessage=event=>{
+          clearTimeout(timer);channel.port1.close();
+          event.data.error ? reject(new Error(event.data.error)) : resolve(event.data);
+        };
+        worker.postMessage(message,[channel.port2]);
+      });
+    }
+    async function offerUpdate() {
+      if (!updateRegistration) return;
+      const worker=updateRegistration.waiting || updateRegistration.active;
+      if (!worker) return;
+      try {
+        const info=await askWorker(worker,{type:'PLAYDEX_UPDATE_INFO'});
+        if (!info.pending) return;
+        if (!offeredUpdate || offeredUpdate.cache !== info.cache) updateDismissed=false;
+        offeredUpdate={worker,cache:info.cache};
+        if (!updateDismissed) updateModal().classList.add('open');
+      } catch(error) { console.warn('Update check:',error.message); }
+    }
+    window.addEventListener('load',async()=>{
+      try {
+        updateRegistration=await navigator.serviceWorker.register('sw.js',{updateViaCache:'none'});
+        const watch=worker=>{
+          if (!worker) return;
+          worker.addEventListener('statechange',()=>{if(worker.state==='installed' || worker.state==='activated') offerUpdate();});
+        };
+        updateRegistration.addEventListener('updatefound',()=>watch(updateRegistration.installing));
+        watch(updateRegistration.installing);
+        await offerUpdate();
+        updateRegistration.update().catch(()=>{});
+      } catch(error) { console.warn('Service worker registration failed:',error); }
     });
-
-    document.getElementById('update-dismiss').addEventListener('click', () => {
-      localStorage.setItem(dismissedKey, '1');
-      updateModal().classList.remove('open');
+    navigator.serviceWorker.addEventListener('controllerchange',()=>offerUpdate());
+    // Reopening an installed app may reuse the same page instead of reloading.
+    document.addEventListener('visibilitychange',()=>{
+      if (document.visibilityState==='visible') {updateDismissed=false;offerUpdate();if(updateRegistration)updateRegistration.update().catch(()=>{});}
     });
-    document.getElementById('update-reload').addEventListener('click', () => {
-      location.reload();
+    document.getElementById('update-dismiss').addEventListener('click',()=>{
+      updateDismissed=true;updateModal().classList.remove('open');
+    });
+    document.getElementById('update-reload').addEventListener('click',async()=>{
+      if (!offeredUpdate) return;
+      const button=document.getElementById('update-reload');button.disabled=true;
+      try {
+        const {worker,cache}=offeredUpdate;
+        await askWorker(worker,{type:'PLAYDEX_APPROVE_UPDATE',cache});
+        if(worker.state !== 'activated') await new Promise((resolve,reject)=>{
+          const timer=setTimeout(()=>reject(new Error('Update is taking longer than expected. Reopen the app.')),15000);
+          const check=()=>{if(worker.state==='activated'){clearTimeout(timer);worker.removeEventListener('statechange',check);resolve();}};
+          worker.addEventListener('statechange',check);check();
+        });
+        location.reload();
+      } catch(error) {toast(error.message);button.disabled=false;}
     });
     document.getElementById('target-reached-ok').addEventListener('click', () => {
       document.getElementById('target-reached-modal').classList.remove('open');
