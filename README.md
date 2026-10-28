@@ -10,7 +10,7 @@ A lightweight, installable web app that tracks your game sessions, playtime by g
 - **Session log** – review, edit, sync-flag, and delete sessions; add optional notes; the running session shows in the tab title.
 - **Playtime stats** – last 7 / last 30 days charts and a this-week review compared with last week.
 - **Daily goal & quests** – daily playtime goal, daily/weekly quests, and play-streaks with earned streak freezes.
-- **Game library** – add, edit, archive, pin, and search games; see how long ago each was last played.
+- **Game library** – add, edit, archive, pin, and search games; track Backlog, Playing, Completed, or Dropped status; see how long ago each was last played.
 - **Player profile & badges** – achievements and levels, milestones, a time-of-day heatmap, and a cumulative playtime curve.
 - **Backup & export** – JSON export/import and CSV export, plus optional Dropbox sync across devices.
 - **Installable PWA** – works offline; install it as a standalone app on desktop or mobile.

@@ -460,6 +460,11 @@
 
   .session-note { color:var(--text2); font-size:.8rem; white-space:pre-wrap; overflow-wrap:anywhere; margin-top:5px; }
   .session-note-input { width:100%; min-height:76px; resize:vertical; padding:11px 14px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font:inherit; font-size:.85rem; }
+  .game-status { display:inline-block; padding:2px 8px; border-radius:999px; background:var(--accent-dim); color:var(--accent); font-size:.65rem; font-weight:600; margin-left:6px; }
+  .game-status[data-status="backlog"] { background:var(--status-backlog-bg); color:var(--status-backlog-text); }
+  .game-status[data-status="playing"] { background:var(--status-playing-bg); color:var(--status-playing-text); }
+  .game-status[data-status="completed"] { background:var(--status-completed-bg); color:var(--status-completed-text); }
+  .game-status[data-status="dropped"] { background:var(--status-dropped-bg); color:var(--status-dropped-text); }
   .dash-session:has(.session-note) { flex-wrap:wrap; }
   .dash-session .session-note { flex-basis:100%; }
 
@@ -5205,6 +5210,7 @@ opacity: 0.18;
       <input type="text" id="rename-tags" placeholder="Tags, comma separated (e.g. PC, Co-op)" maxlength="180" autocomplete="off">
       <label for="rename-tags">Tags, comma separated</label>
     </div>
+    <div class="field-group"><label for="rename-status">Status</label><select id="rename-status"><option value="backlog">Backlog</option><option value="playing">Playing</option><option value="completed">Completed</option><option value="dropped">Dropped</option></select></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="rename-cancel">Cancel</button>
       <button class="btn btn-start" id="rename-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -5646,9 +5652,13 @@ opacity: 0.18;
     return out.slice(0, 8);
   }
 
+  const GAME_STATUSES = { backlog: 'Backlog', playing: 'Playing', completed: 'Completed', dropped: 'Dropped' };
+  function gameStatus(game) { return Object.hasOwn(GAME_STATUSES, game.status) ? game.status : 'backlog'; }
+  function statusBadge(game) { return '<span class="game-status" data-status="' + gameStatus(game) + '">' + GAME_STATUSES[gameStatus(game)] + '</span>'; }
+
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
-      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags) };
+      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), status: gameStatus(g) };
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -6052,6 +6062,24 @@ opacity: 0.18;
     });
   }
 
+  function applyStatusColours(theme) {
+    const source = hexToHsl(accentSourceHex(theme));
+    const light = theme === 'light';
+    // Related palettes travel with the accent; neutral accents stay neutral.
+    const variants = {
+      backlog: { shift: -18, saturation: 0.28, bg: light ? 94 : 18, text: light ? 30 : 78 },
+      playing: { shift: 0, saturation: 1, bg: light ? 88 : 27, text: light ? 24 : 94 },
+      completed: { shift: 55, saturation: 0.8, bg: light ? 91 : 22, text: light ? 26 : 86 },
+      dropped: { shift: -55, saturation: 0.55, bg: light ? 89 : 24, text: light ? 28 : 84 }
+    };
+    Object.entries(variants).forEach(([status, variant]) => {
+      const hue = (source.h + variant.shift + 360) % 360;
+      const sat = Math.min(75, source.s * variant.saturation);
+      document.documentElement.style.setProperty('--status-' + status + '-bg', hslToHex(hue, sat, variant.bg));
+      document.documentElement.style.setProperty('--status-' + status + '-text', hslToHex(hue, sat, variant.text));
+    });
+  }
+
   function applyAccent(theme) {
     const root = document.documentElement;
     const preset = settings.accent && ACCENT_PRESETS[settings.accent];
@@ -6130,6 +6158,7 @@ opacity: 0.18;
     });
     applyUI();
     applyAccent(theme);
+    applyStatusColours(theme);
     applyMaterialTokens(theme);
     updateThemeColorMeta();
   }
@@ -8773,7 +8802,7 @@ opacity: 0.18;
         const running = activeSession && activeSession.gameId === g.id;
         return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info">' +
-            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + statusBadge(g) + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             tagsHtml(g) +
             gameMeta(count, e, staleIds.has(g.id)) +
           '</div>' +
@@ -8796,7 +8825,7 @@ opacity: 0.18;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info">' +
-            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + statusBadge(g) + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             tagsHtml(g) +
             gameMeta(count, e) +
           '</div>' +
@@ -9029,7 +9058,7 @@ opacity: 0.18;
       toast('Game already exists');
       return;
     }
-    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false, tags: [] });
+    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false, tags: [], status: 'backlog' });
     saveGames(games);
     toast('Added: ' + name);
     render();
@@ -9102,6 +9131,7 @@ opacity: 0.18;
     pendingRenameGameId = id;
     document.getElementById('rename-input').value = game.name;
     document.getElementById('rename-tags').value = (game.tags || []).join(', ');
+    document.getElementById('rename-status').value = gameStatus(game);
     paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
     const urlField = document.getElementById('cover-url');
     urlField.value = (game.image && !/^data:image\//.test(game.image)) ? game.image : '';
@@ -9119,6 +9149,7 @@ opacity: 0.18;
     const game = games.find(g => g.id === pendingRenameGameId);
     if (game) {
       game.name = name;
+      game.status = document.getElementById('rename-status').value;
       game.tags = normalizeTags(document.getElementById('rename-tags').value.split(','));
       saveGames(games);
       sessions.forEach(s => { if (s.gameId === game.id) s.gameName = name; });

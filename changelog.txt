@@ -3,7 +3,9 @@ PlayDex - Changelog
 
 Version 1.6.2
 -------------------
+- Game statuses now use distinct shades derived from your Theme Colour, with light and dark variants in both interfaces.
 - Added optional session notes in Add/Edit Session, shown in history and game dashboards and included in CSV exports.
+- Games now have Backlog, Playing, Completed, and Dropped statuses, editable independently of archiving.
 - The bottom navigation stays in place when switching between tabs with and without a page scrollbar.
 - Open tabs refresh when another tab changes stored data, and stale saves are blocked to protect newer history.
 - Editing sessions preserves paused time and unchanged seconds; pause records are trimmed to the edited session times.
