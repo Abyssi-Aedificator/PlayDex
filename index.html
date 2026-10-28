@@ -5657,10 +5657,10 @@ opacity: 0.18;
 <div class="modal-overlay" id="update-modal">
   <div class="modal">
     <h3>New version available</h3>
-    <p class="modal-subheader">A new version of PlayDex is ready to install. Reload to apply the latest changes.</p>
+    <p class="modal-subheader">A new version of PlayDex is ready. Choose Update now to install it, or Later to keep your current version.</p>
     <div class="modal-actions">
       <button class="btn-ghost" id="update-dismiss">Later</button>
-      <button class="btn-primary" id="update-reload">Reload now</button>
+      <button class="btn-primary" id="update-reload">Update now</button>
     </div>
   </div>
 </div>
@@ -10356,34 +10356,66 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     deferredInstallPrompt = null;
   });
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(err => {
-        console.warn('Service worker registration failed:', err);
-      });
-    });
-
-    // --- New version notification ---
     const APP_VERSION = '1.6.2';
-    const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
-    let wasControlled = !!navigator.serviceWorker.controller;
+    let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
-
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      // controllerchange fires when a new worker takes over after skipWaiting().
-      // Only notify if an update actually happened (there was a prior controller)
-      // and the user hasn't already dismissed this version.
-      if (wasControlled && !localStorage.getItem(dismissedKey)) {
-        updateModal().classList.add('open');
-      }
-      wasControlled = true;
+    function askWorker(worker, message) {
+      return new Promise((resolve,reject) => {
+        const channel=new MessageChannel();
+        const timer=setTimeout(()=>{channel.port1.close();reject(new Error('Update check timed out. Please try again.'));},15000);
+        channel.port1.onmessage=event=>{
+          clearTimeout(timer);channel.port1.close();
+          event.data.error ? reject(new Error(event.data.error)) : resolve(event.data);
+        };
+        worker.postMessage(message,[channel.port2]);
+      });
+    }
+    async function offerUpdate() {
+      if (!updateRegistration) return;
+      const worker=updateRegistration.waiting || updateRegistration.active;
+      if (!worker) return;
+      try {
+        const info=await askWorker(worker,{type:'PLAYDEX_UPDATE_INFO'});
+        if (!info.pending) return;
+        if (!offeredUpdate || offeredUpdate.cache !== info.cache) updateDismissed=false;
+        offeredUpdate={worker,cache:info.cache};
+        if (!updateDismissed) updateModal().classList.add('open');
+      } catch(error) { console.warn('Update check:',error.message); }
+    }
+    window.addEventListener('load',async()=>{
+      try {
+        updateRegistration=await navigator.serviceWorker.register('sw.js',{updateViaCache:'none'});
+        const watch=worker=>{
+          if (!worker) return;
+          worker.addEventListener('statechange',()=>{if(worker.state==='installed' || worker.state==='activated') offerUpdate();});
+        };
+        updateRegistration.addEventListener('updatefound',()=>watch(updateRegistration.installing));
+        watch(updateRegistration.installing);
+        await offerUpdate();
+        updateRegistration.update().catch(()=>{});
+      } catch(error) { console.warn('Service worker registration failed:',error); }
     });
-
-    document.getElementById('update-dismiss').addEventListener('click', () => {
-      localStorage.setItem(dismissedKey, '1');
-      updateModal().classList.remove('open');
+    navigator.serviceWorker.addEventListener('controllerchange',()=>offerUpdate());
+    // Reopening an installed app may reuse the same page instead of reloading.
+    document.addEventListener('visibilitychange',()=>{
+      if (document.visibilityState==='visible') {updateDismissed=false;offerUpdate();if(updateRegistration)updateRegistration.update().catch(()=>{});}
     });
-    document.getElementById('update-reload').addEventListener('click', () => {
-      location.reload();
+    document.getElementById('update-dismiss').addEventListener('click',()=>{
+      updateDismissed=true;updateModal().classList.remove('open');
+    });
+    document.getElementById('update-reload').addEventListener('click',async()=>{
+      if (!offeredUpdate) return;
+      const button=document.getElementById('update-reload');button.disabled=true;
+      try {
+        const {worker,cache}=offeredUpdate;
+        await askWorker(worker,{type:'PLAYDEX_APPROVE_UPDATE',cache});
+        if(worker.state !== 'activated') await new Promise((resolve,reject)=>{
+          const timer=setTimeout(()=>reject(new Error('Update is taking longer than expected. Reopen the app.')),15000);
+          const check=()=>{if(worker.state==='activated'){clearTimeout(timer);worker.removeEventListener('statechange',check);resolve();}};
+          worker.addEventListener('statechange',check);check();
+        });
+        location.reload();
+      } catch(error) {toast(error.message);button.disabled=false;}
     });
     document.getElementById('target-reached-ok').addEventListener('click', () => {
       document.getElementById('target-reached-modal').classList.remove('open');

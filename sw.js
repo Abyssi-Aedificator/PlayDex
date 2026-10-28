@@ -1,70 +1,64 @@
 /* PlayDex service worker */
 const SW_VERSION = '1.6.2';
-const CACHE_NAME = 'playdex-v75';
-const APP_SHELL = [
-  './',
-  './index.html',
-  './manifest.webmanifest',
-  './icon-192.png',
-  './icon-512.png',
-  './apple-touch-icon.png'
-];
+const CACHE_NAME = 'playdex-v76';
+const UPDATE_CACHE = 'playdex-update-control';
+const APPROVED_KEY = new URL('./__approved-version__', self.registration.scope).href;
+const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
+async function approvedCache() {
+  const control = await caches.open(UPDATE_CACHE);
+  const saved = await control.match(APPROVED_KEY);
+  if (saved) return saved.text();
+  // Migrate installations that predate confirmation-based updates.
+  const previous = (await caches.keys()).filter(key => /^playdex-v\d+$/.test(key) && key !== CACHE_NAME)
+    .sort((a,b) => Number(b.slice(9)) - Number(a.slice(9)))[0];
+  const name = previous || CACHE_NAME;
+  await control.put(APPROVED_KEY, new Response(name));
+  return name;
+}
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
-  );
+  event.waitUntil((async () => {
+    await approvedCache();
+    const cache = await caches.open(CACHE_NAME);
+    await cache.addAll(APP_SHELL);
+    // No automatic skipWaiting: approval is sent by the Update now button.
+  })());
 });
-
 self.addEventListener('activate', event => {
-  // Only clean up PlayDex's own caches. Deliberately do NOT touch other caches
-  // or call clients.claim(): this worker is path-scoped to /PlayDex/, and
-  // claiming the whole origin would let it take over sibling apps (e.g. MedsADay)
-  // on the same GitHub Pages origin.
-  const ownPrefix = 'playdex-';
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(
-        keys.filter(key => key.startsWith(ownPrefix) && key !== CACHE_NAME)
-            .map(key => caches.delete(key))
-      ))
-  );
+  event.waitUntil((async () => {
+    const approved = await approvedCache();
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => /^playdex-v\d+$/.test(key) && key !== CACHE_NAME && key !== approved).map(key => caches.delete(key)));
+    // Never claim clients or touch sibling apps' caches.
+  })());
 });
-
+self.addEventListener('message', event => {
+  if (!event.data || !event.ports[0]) return;
+  const port = event.ports[0];
+  event.waitUntil((async () => {
+    try {
+      if (event.data.type === 'PLAYDEX_UPDATE_INFO') {
+        port.postMessage({ version:SW_VERSION, cache:CACHE_NAME, pending:(await approvedCache()) !== CACHE_NAME });
+      } else if (event.data.type === 'PLAYDEX_APPROVE_UPDATE' && event.data.cache === CACHE_NAME) {
+        const cache = await caches.open(CACHE_NAME);
+        if (!await cache.match('./index.html')) throw new Error('Update download is incomplete. Try again online.');
+        await (await caches.open(UPDATE_CACHE)).put(APPROVED_KEY,new Response(CACHE_NAME));
+        await self.skipWaiting();
+        port.postMessage({ok:true});
+      }
+    } catch(error) { port.postMessage({error:error.message}); }
+  })());
+});
 self.addEventListener('fetch', event => {
-  const { request } = event;
-  const url = new URL(request.url);
-
-  // Only handle same-origin GET requests (never intercept Dropbox API calls).
-  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
-
-  // For navigations (page loads): network-first with cache fallback.
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then(res => {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
-          return res;
-        })
-        .catch(() => caches.match('./index.html'))
-    );
-    return;
-  }
-
-  // For static assets: cache-first, then network, and cache the response.
-  event.respondWith(
-    caches.match(request).then(cached => {
-      const fetched = fetch(request).then(res => {
-        if (res && res.ok) {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-        }
-        return res;
-      }).catch(() => cached);
-      return cached || fetched;
-    })
-  );
+  const request=event.request, url=new URL(request.url), scope=new URL(self.registration.scope);
+  if (request.method !== 'GET' || url.origin !== scope.origin || !url.pathname.startsWith(scope.pathname)) return;
+  event.respondWith((async () => {
+    const cache = await caches.open(await approvedCache());
+    // Keep the approved app shell stable even when a newer worker activates
+    // naturally after all tabs close. Approval changes the persistent pointer.
+    const cached = await cache.match(request.mode === 'navigate' ? './index.html' : request);
+    if (cached) return cached;
+    if (request.mode === 'navigate') return new Response('PlayDex is unavailable offline. Reconnect to recover the app.',{status:503,headers:{'Content-Type':'text/plain'}});
+    return fetch(request);
+  })());
 });
