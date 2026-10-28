@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.6.2
 -------------------
+- Removed game statuses from the library and Edit Game dialog.
 - The To date filter now uses the same calendar sizing and positioning as From.
 - Reorganized session filters with aligned labeled fields, a separate Add session button, and responsive filter actions for desktop and mobile.
 - Game statuses now use distinct shades derived from your Theme Colour, with light and dark variants in both interfaces.
