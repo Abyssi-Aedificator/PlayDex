@@ -1,9 +1,10 @@
 PlayDex - Changelog
 ====================
 
-Version 1.6.2
+Version 1.6.3
 -------------------
 - Fixed question marks appearing instead of date separators in the Top custom-range description.
+- Calendar pickers, including Top custom dates, now follow Week starts on for weekday headers and date placement.
 - Suggested-game artwork stretches to fill the entire dialog background without empty bands.
 - Suggested-game backgrounds now show the full artwork without cropping, with a lighter overlay for better visibility.
 - What should I play now uses the suggested game's cover as its dialog background, with a readable theme-aware overlay and a plain fallback for games without covers.
@@ -16,6 +17,9 @@ Version 1.6.2
 - The Top tab now shows each game's share of playtime with a bar and the time gap to the next rank; ties are labeled.
 - Click a game in the Top ranking or Fell out section to open its dashboard.
 - Removed game statuses from the library and Edit Game dialog.
+
+Version 1.6.2
+-------------------
 - The To date filter now uses the same calendar sizing and positioning as From.
 - Reorganized session filters with aligned labeled fields, a separate Add session button, and responsive filter actions for desktop and mobile.
 - Game statuses now use distinct shades derived from your Theme Colour, with light and dark variants in both interfaces.

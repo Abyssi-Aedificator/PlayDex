@@ -4721,7 +4721,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.6.2</span>
+    <span class="version-badge">1.6.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -9541,7 +9541,10 @@ opacity: 0.18;
     function renderGrid() {
       titleEl.textContent = CAL_MONTHS[viewMonth] + ' ' + viewYear;
       gridEl.innerHTML = '';
-      const startDow = new Date(viewYear, viewMonth, 1).getDay();
+      const mondayFirst = weekStartsOnMonday();
+      const weekdays = mondayFirst ? ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      el.querySelector('.cal-weekdays').innerHTML = weekdays.map(day => '<span title="' + day + '">' + day.charAt(0) + '</span>').join('');
+      const startDow = (new Date(viewYear, viewMonth, 1).getDay() + (mondayFirst ? 6 : 0)) % 7;
       const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
       const todayStr = calFmtDate(new Date());
       for (let i = 0; i < 42; i++) {
@@ -10368,7 +10371,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     deferredInstallPrompt = null;
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.6.2';
+    const APP_VERSION = '1.6.3';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
