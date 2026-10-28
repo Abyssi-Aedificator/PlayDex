@@ -5099,6 +5099,7 @@ opacity: 0.18;
         <button class="btn-ghost" id="btn-import" style="flex:1;padding:10px 14px;font-size:0.8rem;">Import</button>
       </div>
       <button class="btn-ghost" id="btn-export-csv" style="width:100%;margin-top:8px;padding:10px 14px;font-size:0.8rem;">Export Sessions as CSV</button>
+      <button class="btn-ghost" id="dbx-recovery-export" style="width:100%;margin-top:8px;display:none;">Export history from before last Dropbox download</button>
       <input type="file" id="import-file" accept=".json,application/json" style="display:none">
       <div class="backup-hint">Data is stored locally in your browser. Export regularly to back it up or move it to another device.</div>
     </div>
@@ -5455,7 +5456,7 @@ opacity: 0.18;
 <div class="modal-overlay" id="dbx-confirm-modal">
   <div class="modal">
     <h3>Download from Dropbox?</h3>
-    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;">It will replace all current games, sessions, and settings on this device.</p>
+    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;">This replaces the games and sessions on this device. Settings stay on this device. A recovery copy of your current history will be saved before replacement.</p>
     <div class="modal-actions">
       <button class="btn-ghost" id="dbx-confirm-cancel">Cancel</button>
       <button class="btn-danger" id="dbx-confirm-download" style="padding:8px 16px;font-size:0.85rem;">Download</button>
@@ -6115,8 +6116,18 @@ opacity: 0.18;
   const syncSettings = () => { const s = Object.assign({}, settings); delete s.accent; return s; };
   const dbxSnapshot = () => JSON.stringify({ games, sessions });
   let dbxSyncTimer = null, dbxSkipAutoUpload = false, dbxLastUploadedState = '';
-  let dbxDirty = false, dbxBannerDismissed = false;
+  let dbxDirty = !!dbx.dirty, dbxBannerDismissed = false;
   let dbxSyncOps = 0, dbxPendingDownload = null;
+  const DBX_RECOVERY_KEY = 'playdex.dropbox.recovery';
+  function dbxRecovery() {
+    // Abort replacement if the recovery copy cannot be saved.
+    localStorage.setItem(DBX_RECOVERY_KEY, JSON.stringify({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString(), games, sessions, settings }));
+    document.getElementById('dbx-recovery-export').style.display = '';
+  }
+  function dbxConflict() {
+    clearTimeout(dbxSyncTimer);
+    toast('Dropbox has changes that are not on this device. Download to review them; export your local history first if you want to keep both.');
+  }
 
   const isDbxDirty = () => !!dbx.accessToken && dbxDirty;
 
@@ -6242,6 +6253,7 @@ opacity: 0.18;
     dbx.lastSyncAt = Date.now();
     dbx.dismissedRemoteAt = 0;
     dbxDirty = false;
+    dbx.dirty = false;
     dbxBannerDismissed = false;
     dbxSave();
     updateDropboxUI();
@@ -6249,50 +6261,94 @@ opacity: 0.18;
   }
 
   async function dropboxUpload(auto) {
+    if (dbxSyncOps) return;
     const ok = await dropboxRefreshIfNeeded();
-    if (!ok) { toast('\u26A0 Dropbox session expired \u2014 reconnect'); return; }
-    const payload = { app: 'PlayDex', version: 1, exportedAt: new Date().toISOString(), games, sessions };
+    if (!ok) { toast('Dropbox session expired — reconnect'); return; }
+    if (dbxSyncOps) return;
     dbxSyncSpinning(true);
     try {
+      const metaRes = await fetch('https://api.dropboxapi.com/2/files/get_metadata', {
+        method: 'POST', headers: { 'Authorization': 'Bearer ' + dbx.accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: DBX_PATH })
+      });
+      let rev = null;
+      if (metaRes.ok) {
+        rev = (await metaRes.json()).rev;
+        if (!rev) throw new Error('Missing Dropbox revision');
+        if (!dbx.rev) {
+          // Upgrade existing connections without replacing local history. The
+          // downloaded revision, not the earlier metadata, is the upload base.
+          const remoteRes = await fetch('https://content.dropboxapi.com/2/files/download', {
+            method: 'POST', headers: { 'Authorization': 'Bearer ' + dbx.accessToken, 'Dropbox-API-Arg': JSON.stringify({ path: DBX_PATH }) }
+          });
+          if (!remoteRes.ok) throw new Error('Cannot verify existing Dropbox backup');
+          const remote = await remoteRes.json();
+          const remoteMeta = JSON.parse(remoteRes.headers.get('Dropbox-API-Result') || '{}');
+          if (!remoteMeta.rev || !Array.isArray(remote.games) || !Array.isArray(remote.sessions) ||
+              JSON.stringify(normalizeGames(remote.games)) !== JSON.stringify(games) ||
+              JSON.stringify(remote.sessions) !== JSON.stringify(sessions)) { dbxConflict(); return; }
+          rev = remoteMeta.rev;
+          dbx.rev = rev;
+          dbxSave();
+        }
+        if (rev !== dbx.rev) { dbxConflict(); return; }
+      } else {
+        const error = await metaRes.json();
+        if (metaRes.status !== 409 || !String(error.error_summary || '').startsWith('path/not_found/')) throw new Error('Cannot check Dropbox backup');
+        if (dbx.rev) { dbxConflict(); return; }
+      }
+      const uploadedState = dbxSnapshot();
+      const payload = Object.assign({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString() }, JSON.parse(uploadedState));
       const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
         method: 'POST', headers: {
           'Authorization': 'Bearer ' + dbx.accessToken, 'Content-Type': 'application/octet-stream',
-          'Dropbox-API-Arg': JSON.stringify({ path: DBX_PATH, mode: 'overwrite', mute: true })
+          'Dropbox-API-Arg': JSON.stringify({ path: DBX_PATH, mode: rev ? { '.tag': 'update', update: rev } : 'add', autorename: false, strict_conflict: true, mute: true })
         }, body: JSON.stringify(payload, null, 2)
       });
-      if (!res.ok) throw new Error('upload failed (' + res.status + ')');
+      if (res.status === 409) { dbxConflict(); return; }
+      if (!res.ok) throw new Error('Upload failed (' + res.status + ')');
+      dbx.rev = (await res.json()).rev;
       dbxMarkSynced();
-      dbxLastUploadedState = dbxSnapshot();
+      dbxLastUploadedState = uploadedState;
+      if (dbxSnapshot() !== uploadedState) scheduleAutoUpload();
       toast('Synced to Dropbox');
-    } catch (err) { toast('\u26A0 ' + err.message); }
+    } catch (err) { toast('⚠ ' + err.message); }
     finally { dbxSyncSpinning(false); }
   }
 
-  function dbxApplyBackupText(text) {
+  function dbxApplyBackupText(backup) {
+    const { text, rev } = backup;
     const parsed = JSON.parse(text);
     if (!parsed || !Array.isArray(parsed.games) || !Array.isArray(parsed.sessions)) {
       throw new Error('not a PlayDex backup');
     }
-    games = normalizeGames(parsed.games);
-    sessions = parsed.sessions;
-    // Never overwrite device-local settings from Dropbox sync/backups pulled via sync
-    // (manual full exports are handled by the explicit import action below)
-    saveGames(games);
-    saveSessions(sessions);
-    backfillUnlockDates('gentle');
-    activeSession = sessions.find(s => s.stop === null) || null;
-    applyTheme();
-    render();
+    dbxRecovery();
+    clearTimeout(dbxSyncTimer);
     dbxSkipAutoUpload = true;
-    try { dbxLastUploadedState = dbxSnapshot(); } finally { dbxSkipAutoUpload = false; }
+    try {
+      games = normalizeGames(parsed.games);
+      sessions = parsed.sessions;
+      // Never overwrite device-local settings from Dropbox sync/backups pulled via sync
+      // (manual full exports are handled by the explicit import action below)
+      saveGames(games);
+      saveSessions(sessions);
+      backfillUnlockDates('gentle');
+      activeSession = sessions.find(s => s.stop === null) || null;
+      applyTheme();
+      render();
+      dbxLastUploadedState = dbxSnapshot();
+      dbx.rev = rev;
+    } finally { dbxSkipAutoUpload = false; }
     dbxDirty = false;
     dbxBannerDismissed = false;
     dbxRefreshIndicators();
   }
 
   async function dropboxDownload(skipConfirm) {
+    if (dbxSyncOps) return;
     const ok = await dropboxRefreshIfNeeded();
     if (!ok) { toast('\u26A0 Dropbox session expired \u2014 reconnect'); return; }
+    if (dbxSyncOps) return;
     dbxSyncSpinning(true);
     try {
       const res = await fetch('https://content.dropboxapi.com/2/files/download', {
@@ -6304,14 +6360,17 @@ opacity: 0.18;
       if (res.status === 409) { toast('No backup in Dropbox yet \u2014 upload one first'); return; }
       if (!res.ok) throw new Error('download failed (' + res.status + ')');
       const text = await res.text();
-      if (skipConfirm) {
+      const metadata = JSON.parse(res.headers.get('Dropbox-API-Result') || '{}');
+      if (!metadata.rev) throw new Error('Missing Dropbox revision');
+      const backup = { text, rev: metadata.rev };
+      if (skipConfirm && !dbxDirty && !activeSession && (dbx.rev || (!games.length && !sessions.length))) {
         try {
-          dbxApplyBackupText(text);
+          dbxApplyBackupText(backup);
           dbxMarkSynced();
           toast('Synced from Dropbox');
-        } catch (err) { toast('\u26A0 Dropbox file isn\u2019t a PlayDex backup'); }
+        } catch (err) { toast('Download could not be applied: ' + err.message); }
       } else {
-        dbxPendingDownload = text;
+        dbxPendingDownload = backup;
         document.getElementById('dbx-confirm-modal').classList.add('open');
       }
     } catch (err) { toast('\u26A0 ' + err.message); }
@@ -6331,7 +6390,7 @@ opacity: 0.18;
       const j = await res.json();
       const remoteAt = Date.parse(j.server_modified || '');
       if (!remoteAt) return;
-      if (remoteAt > dbx.lastSyncAt + 5000 && remoteAt > (dbx.dismissedRemoteAt || 0)) {
+      if (j.rev !== dbx.rev && remoteAt > (dbx.dismissedRemoteAt || 0)) {
         dbx._remoteAt = remoteAt;
         dbxSave();
         if (dbx.autoSync) {
@@ -6347,9 +6406,11 @@ opacity: 0.18;
   function dropboxDisconnect() {
     dbx.appKey = dbx.appKey || '';
     dbx.accessToken = ''; dbx.refreshToken = ''; dbx.expiresAt = 0; dbx.account = '';
+    dbx.rev = null; dbx.dirty = false;
     dbx.lastSync = ''; dbx.lastSyncAt = 0; dbx.dismissedRemoteAt = 0; dbx.autoSync = false; dbx.autoUpload = false;
     dbx.hideSyncBanner = false;
     dbxDirty = false;
+    dbx.dirty = false;
     dbxBannerDismissed = false;
     dbxSave();
     updateDropboxUI();
@@ -6360,6 +6421,8 @@ opacity: 0.18;
     if (!dbx.accessToken) return;
     if (dbxSkipAutoUpload) return;
     dbxDirty = true;
+    dbx.dirty = true;
+    dbxSave();
     dbxRefreshIndicators();
     if (!dbx.autoUpload) return;
     clearTimeout(dbxSyncTimer);
@@ -9872,14 +9935,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   });
   document.getElementById('dbx-confirm-download').addEventListener('click', () => {
     document.getElementById('dbx-confirm-modal').classList.remove('open');
-    const text = dbxPendingDownload;
+    const backup = dbxPendingDownload;
     dbxPendingDownload = null;
-    if (text) {
+    if (backup) {
       try {
-        dbxApplyBackupText(text);
+        dbxApplyBackupText(backup);
         dbxMarkSynced();
         toast('Synced from Dropbox');
-      } catch (err) { toast('\u26A0 Dropbox file isn\u2019t a PlayDex backup'); }
+      } catch (err) { toast('Download could not be applied: ' + err.message); }
     }
   });
 
@@ -9890,6 +9953,13 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('dbx-sync-now').addEventListener('click', async () => {
     document.getElementById('dbx-sync-modal').classList.remove('open');
     try { await dropboxDownload(true); } catch {}
+  });
+
+  const recoveryExport = document.getElementById('dbx-recovery-export');
+  recoveryExport.style.display = localStorage.getItem(DBX_RECOVERY_KEY) ? '' : 'none';
+  recoveryExport.addEventListener('click', () => {
+    const copy = localStorage.getItem(DBX_RECOVERY_KEY);
+    if (copy) triggerDownload('playdex-before-dropbox-sync.json', new Blob([copy], { type: 'application/json' }));
   });
 
   // --- Initial render ---

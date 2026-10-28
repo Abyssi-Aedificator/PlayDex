@@ -3,6 +3,8 @@ PlayDex - Changelog
 
 Version 1.6.2
 -------------------
+- Existing Dropbox connections can establish their sync revision without replacing matching local history.
+- Dropbox sync now detects conflicting backups, protects pending local changes from automatic replacement, and saves an exportable recovery copy before downloading history.
 - Moved This Week Review above Last 7 Days in the Stats tab.
 
 Version 1.6.1
