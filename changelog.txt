@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.6.2
 -------------------
+- The bottom navigation stays in place when switching between tabs with and without a page scrollbar.
 - Open tabs refresh when another tab changes stored data, and stale saves are blocked to protect newer history.
 - Editing sessions preserves paused time and unchanged seconds; pause records are trimmed to the edited session times.
 - Existing Dropbox connections can establish their sync revision without replacing matching local history.
