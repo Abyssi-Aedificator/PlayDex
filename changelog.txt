@@ -4,6 +4,7 @@ PlayDex - Changelog
 Version 1.6.2
 -------------------
 - Fixed question marks appearing instead of date separators in the Top custom-range description.
+- Game rows now keep action buttons inset within their highlighted background, including Delete, and wrap safely on narrow screens.
 - Include archived games now uses an accent-themed switch and highlighted setting row, matching Classic and Material 3.
 - Top now supports custom From/To dates with the same calendar controls as Sessions and comparison against the preceding equal-length date range.
 - Top can include archived games in rankings, totals, shares, trends, and historical comparisons.
