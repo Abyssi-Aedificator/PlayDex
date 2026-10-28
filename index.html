@@ -1806,6 +1806,12 @@ opacity: 0.18;
     font-weight: 600;
     overflow-wrap: anywhere;
   }
+  .top-game-link { padding:0; border:0; background:none; color:var(--text); font:inherit; font-weight:600; text-align:left; cursor:pointer; overflow-wrap:anywhere; }
+  .top-game-link:hover { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
+  .top-game-link:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:3px; }
+  .top-share-label,.top-gap { display:block; font-size:.68rem; color:var(--text2); line-height:1.5; }
+  .top-share-track { display:block; height:3px; width:100%; max-width:160px; border-radius:99px; background:var(--accent-dim); overflow:hidden; margin:3px 0; }
+  .top-share-fill { display:block; height:100%; background:var(--accent); border-radius:inherit; }
   .top-name .top-delta {
     font-size: 0.68rem;
     font-weight: 600;
@@ -6671,6 +6677,13 @@ opacity: 0.18;
     return html + '</span>';
   }
 
+  function topRankDetails(playtime, total, ahead, rank) {
+    const percent = total > 0 ? playtime / total * 100 : 0;
+    const share = percent > 0 && percent < 0.1 ? '<0.1' : percent.toFixed(1).replace(/\.0$/, '');
+    const gap = ahead === null ? '' : ahead === playtime ? 'Tied with #' + (rank - 1) : Math.ceil((ahead - playtime) / 60000) + ' min behind #' + (rank - 1);
+    return { percent, share, gap };
+  }
+
   // --- Top tab: games ranked by total playtime in the selected period ---
   function renderTop() {
     const container = document.getElementById('top-list');
@@ -6761,7 +6774,7 @@ opacity: 0.18;
           ? '<div class="top-fellout-title">Fell out</div>' + dropped.map(g =>
               '<div class="top-row fellout">' +
                 '<span class="top-rank">' + prevRank[g.id] + '</span>' +
-                '<span class="top-name"><span class="top-name-text">' + escHtml(g.name) + '</span></span>' +
+                '<span class="top-name"><button type="button" class="top-game-link" data-top-game="' + escHtml(g.id) + '">' + escHtml(g.name) + '</button></span>' +
                 '<span class="top-time">' + fmtDurationShort(prevMs[g.id]) + '</span>' +
                 '<span class="top-trend out" title="Not played in this period">OUT</span>' +
               '</div>').join('')
@@ -6774,6 +6787,7 @@ opacity: 0.18;
       return;
     }
 
+    const rankedTotal = ranked.reduce((sum, g) => sum + thisMs[g.id], 0);
     container.innerHTML = ranked.map((g, i) => {
       const pos = i + 1;
       let trend = '';
@@ -6791,10 +6805,14 @@ opacity: 0.18;
       const streakHtml = (champ.championId === g.id && champ.streak >= 2)
         ? '<span class="top-streak" title="' + champ.streak + ' weeks in a row at #1">\uD83C\uDFC6 ' + champ.streak + 'w</span>'
         : '';
+      const details = topRankDetails(thisMs[g.id], rankedTotal, i > 0 ? thisMs[ranked[i - 1].id] : null, pos);
       const sparkHtml = sparkBarsHtml(bucketMs[g.id]);
       return '<div class="top-row">' +
         rankHtml +
-        '<span class="top-name"><span class="top-name-text">' + escHtml(g.name) + streakHtml + '</span>' +
+        '<span class="top-name"><span class="top-name-text"><button type="button" class="top-game-link" data-top-game="' + escHtml(g.id) + '">' + escHtml(g.name) + '</button>' + streakHtml + '</span>' +
+          '<span class="top-share-label">' + escHtml(details.share) + '% of playtime</span>' +
+          '<span class="top-share-track" aria-hidden="true"><span class="top-share-fill" style="width:' + details.percent + '%"></span></span>' +
+          (details.gap ? '<span class="top-gap">' + details.gap + '</span>' : '') +
           (hasTrend ? topDeltaHtml(thisMs[g.id], prevMs[g.id], false) : '') +
         '</span>' +
         '<span class="top-time">' + fmtDurationShort(thisMs[g.id]) + '</span>' +
@@ -10078,6 +10096,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   recoveryExport.addEventListener('click', () => {
     const copy = localStorage.getItem(DBX_RECOVERY_KEY);
     if (copy) triggerDownload('playdex-before-dropbox-sync.json', new Blob([copy], { type: 'application/json' }));
+  });
+
+  document.getElementById('tab-top').addEventListener('click', event => {
+    const game = event.target.closest('button[data-top-game]');
+    if (game) openDashboard(game.dataset.topGame);
   });
 
   // --- Initial render ---

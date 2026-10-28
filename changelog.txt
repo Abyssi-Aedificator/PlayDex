@@ -3,6 +3,8 @@ PlayDex - Changelog
 
 Version 1.6.2
 -------------------
+- The Top tab now shows each game's share of playtime with a bar and the time gap to the next rank; ties are labeled.
+- Click a game in the Top ranking or Fell out section to open its dashboard.
 - Removed game statuses from the library and Edit Game dialog.
 - The To date filter now uses the same calendar sizing and positioning as From.
 - Reorganized session filters with aligned labeled fields, a separate Add session button, and responsive filter actions for desktop and mobile.
