@@ -1,6 +1,21 @@
 PlayDex - Changelog
 ====================
 
+Version 1.6.2
+-------------------
+- The To date filter now uses the same calendar sizing and positioning as From.
+- Reorganized session filters with aligned labeled fields, a separate Add session button, and responsive filter actions for desktop and mobile.
+- Game statuses now use distinct shades derived from your Theme Colour, with light and dark variants in both interfaces.
+- Added optional session notes in Add/Edit Session, shown in history and game dashboards and included in CSV exports.
+- Sessions can be filtered by game and inclusive date range alongside sync status, with matching totals, Clear filters, and filtered CSV export.
+- Games now have Backlog, Playing, Completed, and Dropped statuses, editable independently of archiving.
+- The bottom navigation stays in place when switching between tabs with and without a page scrollbar.
+- Open tabs refresh when another tab changes stored data, and stale saves are blocked to protect newer history.
+- Editing sessions preserves paused time and unchanged seconds; pause records are trimmed to the edited session times.
+- Existing Dropbox connections can establish their sync revision without replacing matching local history.
+- Dropbox sync now detects conflicting backups, protects pending local changes from automatic replacement, and saves an exportable recovery copy before downloading history.
+- Moved This Week Review above Last 7 Days in the Stats tab.
+
 Version 1.6.1
 -------------------
 - Added a "Daily goal streak" stat showing consecutive days hitting your daily goal.

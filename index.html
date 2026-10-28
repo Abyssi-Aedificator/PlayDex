@@ -81,6 +81,14 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  /* Keep viewport-fixed navigation steady as page content gains a scrollbar.
+     Older browsers reserve the space with an always-present scrollbar. */
+  html { overflow-y: scroll; scrollbar-gutter: stable; }
+  @supports (scrollbar-gutter: stable) {
+    html { overflow-y: auto; }
+  }
+
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg);
@@ -448,6 +456,44 @@
     margin: 0 auto;
     width: 100%;
   }
+
+
+  .session-note { color:var(--text2); font-size:.8rem; white-space:pre-wrap; overflow-wrap:anywhere; margin-top:5px; }
+  .session-note-input { width:100%; min-height:76px; resize:vertical; padding:11px 14px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font:inherit; font-size:.85rem; }
+  .session-filter-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+  .session-filter-heading .card-header { margin:0; }
+  .session-filter-heading #btn-add-session { padding:9px 13px; font-size:.8rem; white-space:nowrap; }
+  .session-filters { container-type:inline-size; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+  .session-filter-fields { display:grid; grid-template-columns:minmax(0,1.3fr) repeat(2,minmax(0,1fr)); gap:12px; align-items:end; }
+  .session-filter-field { min-width:0; }
+  .session-filter-field > label { display:block; color:var(--text2); font-size:.72rem; font-weight:600; margin-bottom:7px; }
+  .session-filter-field select, .session-filter-field .cal-trigger { width:100%; min-width:0; min-height:44px; padding:10px 12px; font-size:.82rem; border-radius:10px; }
+  .session-filter-footer { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; }
+  .session-filter-tools { display:flex; gap:8px; margin-left:auto; }
+  .session-filter-tools .btn-ghost { padding:8px 10px; font-size:.75rem; white-space:nowrap; }
+  .session-filter-footer .sync-seg button { min-height:36px; padding:8px 12px; }
+  #sessions-summary { flex-wrap:wrap; justify-content:space-between; padding-bottom:12px; }
+  @container (max-width:560px) {
+    .session-filter-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .session-filter-game { grid-column:1 / -1; }
+    .session-filter-footer { gap:12px; }
+  }
+  @container (max-width:390px) {
+    .session-filter-footer { flex-direction:column; align-items:stretch; }
+    .session-filter-footer .sync-seg button { flex:1; }
+    .session-filter-tools { margin-left:0; justify-content:space-between; }
+    .session-filter-tools .btn-ghost { flex:1; min-height:38px; }
+  }
+  @container (max-width:280px) {
+    .session-filter-fields { grid-template-columns:minmax(0,1fr); }
+  }
+  .game-status { display:inline-block; padding:2px 8px; border-radius:999px; background:var(--accent-dim); color:var(--accent); font-size:.65rem; font-weight:600; margin-left:6px; }
+  .game-status[data-status="backlog"] { background:var(--status-backlog-bg); color:var(--status-backlog-text); }
+  .game-status[data-status="playing"] { background:var(--status-playing-bg); color:var(--status-playing-text); }
+  .game-status[data-status="completed"] { background:var(--status-completed-bg); color:var(--status-completed-text); }
+  .game-status[data-status="dropped"] { background:var(--status-dropped-bg); color:var(--status-dropped-text); }
+  .dash-session:has(.session-note) { flex-wrap:wrap; }
+  .dash-session .session-note { flex-basis:100%; }
 
   /* Tabs */
   .tab-bar {
@@ -4186,6 +4232,7 @@ opacity: 0.18;
   :root[data-ui="material"] .m3-field:focus-within > label,
   :root[data-ui="material"] .field-group:has(input:not(:placeholder-shown)) > label,
   :root[data-ui="material"] .m3-field:has(input:not(:placeholder-shown)) > label,
+  :root[data-ui="material"] .field-group:has(textarea) > label,
   :root[data-ui="material"] .field-group:has(select) > label,
   :root[data-ui="material"] .field-group:has(.cal-label:not(.placeholder)) > label {
     transform: translateY(-24px) scale(0.78);
@@ -4643,7 +4690,7 @@ opacity: 0.18;
 <header>
   <div class="app-title">
     <h1>PLAYDEX</h1>
-    <span class="version-badge">1.6.1</span>
+    <span class="version-badge">1.6.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -4731,10 +4778,13 @@ opacity: 0.18;
   <!-- SESSIONS TAB -->
   <div id="tab-sessions" class="tab-panel">
     <div class="card">
-      <div class="filter-bar">
-        <label for="filter-date">Date:</label>
-        <div class="cal-field" id="filter-date">
-          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+      <div class="session-filter-heading"><div class="card-header">Sessions</div><button class="btn-ghost btn-accent" id="btn-add-session" type="button">&#43; Add session</button></div>
+      <div class="session-filters">
+        <div class="session-filter-fields">
+          <div class="session-filter-field session-filter-game"><label for="session-game-filter">Game</label><select id="session-game-filter"><option value="">All games</option></select></div>
+          <div class="session-filter-field"><label id="filter-from-label">From</label>
+        <div class="cal-field" id="filter-date" aria-labelledby="filter-from-label">
+          <button aria-labelledby="filter-from-label" class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
             <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
             <span class="cal-label placeholder">yyyy-mm-dd</span>
             <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
@@ -4753,13 +4803,33 @@ opacity: 0.18;
             </div>
           </div>
         </div>
-        <div class="filter-actions">
-          <div class="sync-seg" id="sync-filter">
-            <button type="button" data-sync="all" class="active">All</button>
-            <button type="button" data-sync="synced">Synced</button>
-            <button type="button" data-sync="unsynced">Unsynced</button>
           </div>
-          <button class="btn-clear-date" id="btn-add-session" style="margin-left:auto;">&#43; Add</button>
+          <div class="session-filter-field"><label id="filter-to-label">To</label>
+        <div class="cal-field" id="filter-date-end" aria-labelledby="filter-to-label">
+          <button aria-labelledby="filter-to-label" class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+          </div>
+        </div>
+        <div class="session-filter-footer">
+          <div class="sync-seg" id="sync-filter" role="group" aria-label="Session sync status"><button type="button" data-sync="all" class="active">All</button><button type="button" data-sync="synced">Synced</button><button type="button" data-sync="unsynced">Unsynced</button></div>
+          <div class="session-filter-tools"><button class="btn-ghost" id="session-filters-clear" type="button">Clear filters</button><button class="btn-ghost" id="session-export-filtered" type="button" title="Export matching sessions as CSV">Export CSV</button></div>
         </div>
       </div>
       <div class="list-summary" id="sessions-summary" style="display:none;"></div>
@@ -4774,16 +4844,6 @@ opacity: 0.18;
   <!-- STATS TAB -->
   <div id="tab-stats" class="tab-panel">
     <div class="card">
-      <div class="card-header">Last 7 Days</div>
-      <div class="stat-grid">
-        <div class="stat-box"><div class="stat-value" id="stat-week-total">0:00:00</div><div class="stat-label">This Week</div></div>
-        <div class="stat-box"><div class="stat-value" id="stat-most-played">-</div><div class="stat-label">Most Played</div></div>
-        <div class="stat-box"><div class="stat-value" id="stat-avg-session">0:00</div><div class="stat-label">Avg Session</div></div>
-        <div class="stat-box"><div class="stat-value" id="stat-session-count">0</div><div class="stat-label">Total Sessions</div></div>
-      </div>
-      <div class="bar-chart" id="week-chart"></div>
-    </div>
-    <div class="card">
       <div class="card-header">This Week Review</div>
       <div class="stat-grid">
         <div class="stat-box"><div class="stat-value" id="wr-week-total">0:00:00</div><div class="stat-label">Total Time</div></div>
@@ -4793,6 +4853,16 @@ opacity: 0.18;
         <div class="stat-box"><div class="stat-value" id="wr-best-day">-</div><div class="stat-label">Best Day</div></div>
         <div class="stat-box"><div class="stat-value" id="wr-streak">0</div><div class="stat-label">Streak</div></div>
       </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Last 7 Days</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-value" id="stat-week-total">0:00:00</div><div class="stat-label">This Week</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-most-played">-</div><div class="stat-label">Most Played</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-avg-session">0:00</div><div class="stat-label">Avg Session</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-session-count">0</div><div class="stat-label">Total Sessions</div></div>
+      </div>
+      <div class="bar-chart" id="week-chart"></div>
     </div>
     <div class="card">
       <div class="card-header">Last 30 Days</div>
@@ -5099,6 +5169,7 @@ opacity: 0.18;
         <button class="btn-ghost" id="btn-import" style="flex:1;padding:10px 14px;font-size:0.8rem;">Import</button>
       </div>
       <button class="btn-ghost" id="btn-export-csv" style="width:100%;margin-top:8px;padding:10px 14px;font-size:0.8rem;">Export Sessions as CSV</button>
+      <button class="btn-ghost" id="dbx-recovery-export" style="width:100%;margin-top:8px;display:none;">Export history from before last Dropbox download</button>
       <input type="file" id="import-file" accept=".json,application/json" style="display:none">
       <div class="backup-hint">Data is stored locally in your browser. Export regularly to back it up or move it to another device.</div>
     </div>
@@ -5189,6 +5260,7 @@ opacity: 0.18;
       <input type="text" id="rename-tags" placeholder="Tags, comma separated (e.g. PC, Co-op)" maxlength="180" autocomplete="off">
       <label for="rename-tags">Tags, comma separated</label>
     </div>
+    <div class="field-group"><label for="rename-status">Status</label><select id="rename-status"><option value="backlog">Backlog</option><option value="playing">Playing</option><option value="completed">Completed</option><option value="dropped">Dropped</option></select></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="rename-cancel">Cancel</button>
       <button class="btn btn-start" id="rename-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -5311,6 +5383,7 @@ opacity: 0.18;
         </div>
       </div>
     </div>
+    <div class="field-group"><label for="add-session-note">Notes (optional)</label><textarea class="session-note-input" id="add-session-note" maxlength="1000" placeholder="What did you play or accomplish?"></textarea></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="add-session-cancel">Cancel</button>
       <button class="btn btn-start" id="add-session-save" style="padding:8px 16px;font-size:0.85rem;">Add</button>
@@ -5416,6 +5489,7 @@ opacity: 0.18;
         </div>
       </div>
     </div>
+    <div class="field-group"><label for="edit-session-note">Notes (optional)</label><textarea class="session-note-input" id="edit-session-note" maxlength="1000" placeholder="What did you play or accomplish?"></textarea></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="edit-session-cancel">Cancel</button>
       <button class="btn btn-start" id="edit-session-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -5455,7 +5529,7 @@ opacity: 0.18;
 <div class="modal-overlay" id="dbx-confirm-modal">
   <div class="modal">
     <h3>Download from Dropbox?</h3>
-    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;">It will replace all current games, sessions, and settings on this device.</p>
+    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;">This replaces the games and sessions on this device. Settings stay on this device. A recovery copy of your current history will be saved before replacement.</p>
     <div class="modal-actions">
       <button class="btn-ghost" id="dbx-confirm-cancel">Cancel</button>
       <button class="btn-danger" id="dbx-confirm-download" style="padding:8px 16px;font-size:0.85rem;">Download</button>
@@ -5597,6 +5671,24 @@ opacity: 0.18;
 (function() {
   // --- Storage ---
   const KEYS = { games: 'playdex_games', sessions: 'playdex_sessions', settings: 'playdex_settings' };
+  // Reject stale writes even before the other tab's storage event is delivered.
+  const storageBaseline = Object.fromEntries(Object.values(KEYS).map(key => [key, localStorage.getItem(key)]));
+  function checkStorageFresh() {
+    if (Object.keys(storageBaseline).some(key => localStorage.getItem(key) !== storageBaseline[key])) {
+      location.reload();
+      throw new Error('PlayDex changed in another tab; reloading before saving.');
+    }
+  }
+  function writeLocalData(key, value) {
+    checkStorageFresh();
+    const text = JSON.stringify(value);
+    localStorage.setItem(key, text);
+    storageBaseline[key] = text;
+  }
+  window.addEventListener('storage', event => {
+    if (event.storageArea === localStorage && (event.key === null || Object.values(KEYS).includes(event.key))) checkStorageFresh();
+  });
+
 
   function normalizeTags(arr) {
     if (!Array.isArray(arr)) return [];
@@ -5610,9 +5702,13 @@ opacity: 0.18;
     return out.slice(0, 8);
   }
 
+  const GAME_STATUSES = { backlog: 'Backlog', playing: 'Playing', completed: 'Completed', dropped: 'Dropped' };
+  function gameStatus(game) { return Object.hasOwn(GAME_STATUSES, game.status) ? game.status : 'backlog'; }
+  function statusBadge(game) { return '<span class="game-status" data-status="' + gameStatus(game) + '">' + GAME_STATUSES[gameStatus(game)] + '</span>'; }
+
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
-      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags) };
+      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), status: gameStatus(g) };
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -5626,7 +5722,7 @@ opacity: 0.18;
   }
 
   function saveGames(games) {
-    localStorage.setItem(KEYS.games, JSON.stringify(games));
+    writeLocalData(KEYS.games, games);
     scheduleAutoUpload();
   }
 
@@ -5636,7 +5732,7 @@ opacity: 0.18;
   }
 
   function saveSessions(sessions) {
-    localStorage.setItem(KEYS.sessions, JSON.stringify(sessions));
+    writeLocalData(KEYS.sessions, sessions);
     scheduleAutoUpload();
   }
 
@@ -5652,7 +5748,7 @@ opacity: 0.18;
   }
 
   function saveSettings(settings) {
-    localStorage.setItem(KEYS.settings, JSON.stringify(settings));
+    writeLocalData(KEYS.settings, settings);
     scheduleAutoUpload();
   }
 
@@ -5676,6 +5772,8 @@ opacity: 0.18;
   let lastStreak = null;
   let currentTab = 'today';
   let filterDate = todayStr();
+  let filterDateEnd = filterDate;
+  let sessionGameFilter = '';
   let syncFilter = 'all';
   let gamesSearch = '';
   let gamesTagFilter = [];
@@ -6016,6 +6114,24 @@ opacity: 0.18;
     });
   }
 
+  function applyStatusColours(theme) {
+    const source = hexToHsl(accentSourceHex(theme));
+    const light = theme === 'light';
+    // Related palettes travel with the accent; neutral accents stay neutral.
+    const variants = {
+      backlog: { shift: -18, saturation: 0.28, bg: light ? 94 : 18, text: light ? 30 : 78 },
+      playing: { shift: 0, saturation: 1, bg: light ? 88 : 27, text: light ? 24 : 94 },
+      completed: { shift: 55, saturation: 0.8, bg: light ? 91 : 22, text: light ? 26 : 86 },
+      dropped: { shift: -55, saturation: 0.55, bg: light ? 89 : 24, text: light ? 28 : 84 }
+    };
+    Object.entries(variants).forEach(([status, variant]) => {
+      const hue = (source.h + variant.shift + 360) % 360;
+      const sat = Math.min(75, source.s * variant.saturation);
+      document.documentElement.style.setProperty('--status-' + status + '-bg', hslToHex(hue, sat, variant.bg));
+      document.documentElement.style.setProperty('--status-' + status + '-text', hslToHex(hue, sat, variant.text));
+    });
+  }
+
   function applyAccent(theme) {
     const root = document.documentElement;
     const preset = settings.accent && ACCENT_PRESETS[settings.accent];
@@ -6094,6 +6210,7 @@ opacity: 0.18;
     });
     applyUI();
     applyAccent(theme);
+    applyStatusColours(theme);
     applyMaterialTokens(theme);
     updateThemeColorMeta();
   }
@@ -6115,8 +6232,18 @@ opacity: 0.18;
   const syncSettings = () => { const s = Object.assign({}, settings); delete s.accent; return s; };
   const dbxSnapshot = () => JSON.stringify({ games, sessions });
   let dbxSyncTimer = null, dbxSkipAutoUpload = false, dbxLastUploadedState = '';
-  let dbxDirty = false, dbxBannerDismissed = false;
+  let dbxDirty = !!dbx.dirty, dbxBannerDismissed = false;
   let dbxSyncOps = 0, dbxPendingDownload = null;
+  const DBX_RECOVERY_KEY = 'playdex.dropbox.recovery';
+  function dbxRecovery() {
+    // Abort replacement if the recovery copy cannot be saved.
+    localStorage.setItem(DBX_RECOVERY_KEY, JSON.stringify({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString(), games, sessions, settings }));
+    document.getElementById('dbx-recovery-export').style.display = '';
+  }
+  function dbxConflict() {
+    clearTimeout(dbxSyncTimer);
+    toast('Dropbox has changes that are not on this device. Download to review them; export your local history first if you want to keep both.');
+  }
 
   const isDbxDirty = () => !!dbx.accessToken && dbxDirty;
 
@@ -6242,6 +6369,7 @@ opacity: 0.18;
     dbx.lastSyncAt = Date.now();
     dbx.dismissedRemoteAt = 0;
     dbxDirty = false;
+    dbx.dirty = false;
     dbxBannerDismissed = false;
     dbxSave();
     updateDropboxUI();
@@ -6249,50 +6377,94 @@ opacity: 0.18;
   }
 
   async function dropboxUpload(auto) {
+    if (dbxSyncOps) return;
     const ok = await dropboxRefreshIfNeeded();
-    if (!ok) { toast('\u26A0 Dropbox session expired \u2014 reconnect'); return; }
-    const payload = { app: 'PlayDex', version: 1, exportedAt: new Date().toISOString(), games, sessions };
+    if (!ok) { toast('Dropbox session expired — reconnect'); return; }
+    if (dbxSyncOps) return;
     dbxSyncSpinning(true);
     try {
+      const metaRes = await fetch('https://api.dropboxapi.com/2/files/get_metadata', {
+        method: 'POST', headers: { 'Authorization': 'Bearer ' + dbx.accessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: DBX_PATH })
+      });
+      let rev = null;
+      if (metaRes.ok) {
+        rev = (await metaRes.json()).rev;
+        if (!rev) throw new Error('Missing Dropbox revision');
+        if (!dbx.rev) {
+          // Upgrade existing connections without replacing local history. The
+          // downloaded revision, not the earlier metadata, is the upload base.
+          const remoteRes = await fetch('https://content.dropboxapi.com/2/files/download', {
+            method: 'POST', headers: { 'Authorization': 'Bearer ' + dbx.accessToken, 'Dropbox-API-Arg': JSON.stringify({ path: DBX_PATH }) }
+          });
+          if (!remoteRes.ok) throw new Error('Cannot verify existing Dropbox backup');
+          const remote = await remoteRes.json();
+          const remoteMeta = JSON.parse(remoteRes.headers.get('Dropbox-API-Result') || '{}');
+          if (!remoteMeta.rev || !Array.isArray(remote.games) || !Array.isArray(remote.sessions) ||
+              JSON.stringify(normalizeGames(remote.games)) !== JSON.stringify(games) ||
+              JSON.stringify(remote.sessions) !== JSON.stringify(sessions)) { dbxConflict(); return; }
+          rev = remoteMeta.rev;
+          dbx.rev = rev;
+          dbxSave();
+        }
+        if (rev !== dbx.rev) { dbxConflict(); return; }
+      } else {
+        const error = await metaRes.json();
+        if (metaRes.status !== 409 || !String(error.error_summary || '').startsWith('path/not_found/')) throw new Error('Cannot check Dropbox backup');
+        if (dbx.rev) { dbxConflict(); return; }
+      }
+      const uploadedState = dbxSnapshot();
+      const payload = Object.assign({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString() }, JSON.parse(uploadedState));
       const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
         method: 'POST', headers: {
           'Authorization': 'Bearer ' + dbx.accessToken, 'Content-Type': 'application/octet-stream',
-          'Dropbox-API-Arg': JSON.stringify({ path: DBX_PATH, mode: 'overwrite', mute: true })
+          'Dropbox-API-Arg': JSON.stringify({ path: DBX_PATH, mode: rev ? { '.tag': 'update', update: rev } : 'add', autorename: false, strict_conflict: true, mute: true })
         }, body: JSON.stringify(payload, null, 2)
       });
-      if (!res.ok) throw new Error('upload failed (' + res.status + ')');
+      if (res.status === 409) { dbxConflict(); return; }
+      if (!res.ok) throw new Error('Upload failed (' + res.status + ')');
+      dbx.rev = (await res.json()).rev;
       dbxMarkSynced();
-      dbxLastUploadedState = dbxSnapshot();
+      dbxLastUploadedState = uploadedState;
+      if (dbxSnapshot() !== uploadedState) scheduleAutoUpload();
       toast('Synced to Dropbox');
-    } catch (err) { toast('\u26A0 ' + err.message); }
+    } catch (err) { toast('⚠ ' + err.message); }
     finally { dbxSyncSpinning(false); }
   }
 
-  function dbxApplyBackupText(text) {
+  function dbxApplyBackupText(backup) {
+    const { text, rev } = backup;
     const parsed = JSON.parse(text);
     if (!parsed || !Array.isArray(parsed.games) || !Array.isArray(parsed.sessions)) {
       throw new Error('not a PlayDex backup');
     }
-    games = normalizeGames(parsed.games);
-    sessions = parsed.sessions;
-    // Never overwrite device-local settings from Dropbox sync/backups pulled via sync
-    // (manual full exports are handled by the explicit import action below)
-    saveGames(games);
-    saveSessions(sessions);
-    backfillUnlockDates('gentle');
-    activeSession = sessions.find(s => s.stop === null) || null;
-    applyTheme();
-    render();
+    dbxRecovery();
+    clearTimeout(dbxSyncTimer);
     dbxSkipAutoUpload = true;
-    try { dbxLastUploadedState = dbxSnapshot(); } finally { dbxSkipAutoUpload = false; }
+    try {
+      games = normalizeGames(parsed.games);
+      sessions = parsed.sessions;
+      // Never overwrite device-local settings from Dropbox sync/backups pulled via sync
+      // (manual full exports are handled by the explicit import action below)
+      saveGames(games);
+      saveSessions(sessions);
+      backfillUnlockDates('gentle');
+      activeSession = sessions.find(s => s.stop === null) || null;
+      applyTheme();
+      render();
+      dbxLastUploadedState = dbxSnapshot();
+      dbx.rev = rev;
+    } finally { dbxSkipAutoUpload = false; }
     dbxDirty = false;
     dbxBannerDismissed = false;
     dbxRefreshIndicators();
   }
 
   async function dropboxDownload(skipConfirm) {
+    if (dbxSyncOps) return;
     const ok = await dropboxRefreshIfNeeded();
     if (!ok) { toast('\u26A0 Dropbox session expired \u2014 reconnect'); return; }
+    if (dbxSyncOps) return;
     dbxSyncSpinning(true);
     try {
       const res = await fetch('https://content.dropboxapi.com/2/files/download', {
@@ -6304,14 +6476,17 @@ opacity: 0.18;
       if (res.status === 409) { toast('No backup in Dropbox yet \u2014 upload one first'); return; }
       if (!res.ok) throw new Error('download failed (' + res.status + ')');
       const text = await res.text();
-      if (skipConfirm) {
+      const metadata = JSON.parse(res.headers.get('Dropbox-API-Result') || '{}');
+      if (!metadata.rev) throw new Error('Missing Dropbox revision');
+      const backup = { text, rev: metadata.rev };
+      if (skipConfirm && !dbxDirty && !activeSession && (dbx.rev || (!games.length && !sessions.length))) {
         try {
-          dbxApplyBackupText(text);
+          dbxApplyBackupText(backup);
           dbxMarkSynced();
           toast('Synced from Dropbox');
-        } catch (err) { toast('\u26A0 Dropbox file isn\u2019t a PlayDex backup'); }
+        } catch (err) { toast('Download could not be applied: ' + err.message); }
       } else {
-        dbxPendingDownload = text;
+        dbxPendingDownload = backup;
         document.getElementById('dbx-confirm-modal').classList.add('open');
       }
     } catch (err) { toast('\u26A0 ' + err.message); }
@@ -6331,7 +6506,7 @@ opacity: 0.18;
       const j = await res.json();
       const remoteAt = Date.parse(j.server_modified || '');
       if (!remoteAt) return;
-      if (remoteAt > dbx.lastSyncAt + 5000 && remoteAt > (dbx.dismissedRemoteAt || 0)) {
+      if (j.rev !== dbx.rev && remoteAt > (dbx.dismissedRemoteAt || 0)) {
         dbx._remoteAt = remoteAt;
         dbxSave();
         if (dbx.autoSync) {
@@ -6347,9 +6522,11 @@ opacity: 0.18;
   function dropboxDisconnect() {
     dbx.appKey = dbx.appKey || '';
     dbx.accessToken = ''; dbx.refreshToken = ''; dbx.expiresAt = 0; dbx.account = '';
+    dbx.rev = null; dbx.dirty = false;
     dbx.lastSync = ''; dbx.lastSyncAt = 0; dbx.dismissedRemoteAt = 0; dbx.autoSync = false; dbx.autoUpload = false;
     dbx.hideSyncBanner = false;
     dbxDirty = false;
+    dbx.dirty = false;
     dbxBannerDismissed = false;
     dbxSave();
     updateDropboxUI();
@@ -6360,6 +6537,8 @@ opacity: 0.18;
     if (!dbx.accessToken) return;
     if (dbxSkipAutoUpload) return;
     dbxDirty = true;
+    dbx.dirty = true;
+    dbxSave();
     dbxRefreshIndicators();
     if (!dbx.autoUpload) return;
     clearTimeout(dbxSyncTimer);
@@ -7185,8 +7364,7 @@ opacity: 0.18;
     }
   }
 
-  function renderSessionsTab(animate = true) {
-    const container = document.getElementById('sessions-list');
+  function filteredSessions() {
     let filtered = sessions.filter(s => s.stop !== null);
 
     if (syncFilter === 'unsynced') {
@@ -7195,20 +7373,27 @@ opacity: 0.18;
       filtered = filtered.filter(s => s.synced);
     }
 
-    const showDate = syncFilter === 'all';
-    if (showDate && filterDate) {
-      filtered = filtered.filter(s => dateKey(s.start) === filterDate);
-    }
+    if (sessionGameFilter) filtered = filtered.filter(s => s.gameId === sessionGameFilter);
+    if (filterDate) filtered = filtered.filter(s => dateKey(s.start) >= filterDate);
+    if (filterDateEnd) filtered = filtered.filter(s => dateKey(s.start) <= filterDateEnd);
+    return filtered.sort((a,b) => new Date(b.start) - new Date(a.start));
+  }
 
-    filtered.sort((a,b) => new Date(b.start) - new Date(a.start));
-
+  function renderSessionsTab(animate = true) {
+    const container = document.getElementById('sessions-list');
+    const gameSelect = document.getElementById('session-game-filter');
+    if (sessionGameFilter && !games.some(g => g.id === sessionGameFilter)) sessionGameFilter = '';
+    gameSelect.innerHTML = '<option value="">All games</option>' + games.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(g=>'<option value="'+escHtml(g.id)+'">'+escHtml(g.name)+(g.archived ? ' (archived)' : '')+'</option>').join('');
+    gameSelect.value = sessionGameFilter;
+    const filtered = filteredSessions();
+    const showDate = false;
     const summaryEl = document.getElementById('sessions-summary');
-    if (syncFilter !== 'all') {
+    {
       const totalMs = filtered.reduce((acc, s) => acc + (s.durationMs || 0), 0);
       const plural = filtered.length !== 1 ? 's' : '';
-      const label = syncFilter === 'unsynced' ? 'unsynced' : 'synced';
+      const label = syncFilter === 'all' ? '' : syncFilter + ' ';
       summaryEl.innerHTML =
-        '<span>' + filtered.length + ' ' + label + ' session' + plural + ' &middot; ' + fmtDuration(totalMs) + '</span>' +
+        '<span>' + filtered.length + ' ' + label + 'session' + plural + ' &middot; ' + fmtDuration(totalMs) + '</span>' +
         (syncFilter === 'unsynced' && filtered.length ? '<button id="mark-all-synced">Mark all synced</button>' : '');
       const markBtn = document.getElementById('mark-all-synced');
       if (markBtn) {
@@ -7226,13 +7411,7 @@ opacity: 0.18;
         });
       }
       summaryEl.style.display = '';
-    } else {
-      summaryEl.innerHTML = '';
-      summaryEl.style.display = 'none';
     }
-    document.getElementById('filter-date').style.display = showDate ? '' : 'none';
-    const dateLabel = document.querySelector('label[for="filter-date"]');
-    if (dateLabel) dateLabel.style.display = showDate ? '' : 'none';
 
     const dayTotals = {};
     sessions.forEach(s => {
@@ -7243,9 +7422,11 @@ opacity: 0.18;
 
     if (filtered.length === 0) {
       let msg;
-      if (syncFilter === 'unsynced') msg = 'No unsynced sessions &mdash; everything is synced.';
+      if (filterDate && filterDateEnd && filterDate > filterDateEnd) msg = 'Choose an end date on or after the start date.';
+      else if (sessionGameFilter || filterDate || filterDateEnd) msg = 'No sessions match these filters.';
+      else if (syncFilter === 'unsynced') msg = 'No unsynced sessions &mdash; everything is synced.';
       else if (syncFilter === 'synced') msg = 'No synced sessions yet.';
-      else if (showDate && filterDate) msg = 'No sessions on this date.';
+      else if (filterDate || filterDateEnd || sessionGameFilter) msg = 'No sessions match these filters.';
       else msg = 'No completed sessions yet.';
       container.innerHTML =
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>' +
@@ -7257,6 +7438,7 @@ opacity: 0.18;
         return '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
+            (s.note ? '<div class="session-note">' + escHtml(s.note) + '</div>' : '') +
             '<div class="session-times">' + (showDate ? '' : fmtDateShort(s.start) + ' \u00b7 ') + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
           (showDate && filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : !showDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + dateKey(s.start)] || 0) + ')</span>' : '') +
@@ -8674,7 +8856,7 @@ opacity: 0.18;
         const running = activeSession && activeSession.gameId === g.id;
         return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info">' +
-            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + statusBadge(g) + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             tagsHtml(g) +
             gameMeta(count, e, staleIds.has(g.id)) +
           '</div>' +
@@ -8697,7 +8879,7 @@ opacity: 0.18;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info">' +
-            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + statusBadge(g) + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             tagsHtml(g) +
             gameMeta(count, e) +
           '</div>' +
@@ -8861,6 +9043,7 @@ opacity: 0.18;
           '<li class="dash-session">' +
             '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + '</span>' +
             '<span class="dash-session-dur">' + fmtDuration(s.durationMs) + '</span>' +
+            (s.note ? '<div class="session-note">' + escHtml(s.note) + '</div>' : '') +
           '</li>'
         ).join('') + '</ul>';
     } else {
@@ -8929,7 +9112,7 @@ opacity: 0.18;
       toast('Game already exists');
       return;
     }
-    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false, tags: [] });
+    games.push({ id: uid(), name: name, archived: false, image: null, pinned: false, tags: [], status: 'backlog' });
     saveGames(games);
     toast('Added: ' + name);
     render();
@@ -8981,9 +9164,19 @@ opacity: 0.18;
   // --- Filter date ---
   const filterDateField = createCalField('filter-date', v => {
     filterDate = v;
-    render();
+    renderSessionsTab(false);
   });
   filterDateField.value = filterDate;
+  const filterDateEndField = createCalField('filter-date-end', v => { filterDateEnd = v; renderSessionsTab(false); });
+  filterDateEndField.value = filterDateEnd;
+  document.getElementById('session-game-filter').addEventListener('change', e => { sessionGameFilter = e.target.value; renderSessionsTab(false); });
+  document.getElementById('session-filters-clear').addEventListener('click', () => {
+    sessionGameFilter = ''; filterDate = ''; filterDateEnd = '';
+    filterDateField.value = ''; filterDateEndField.value = '';
+    syncFilter = 'all';
+    document.querySelectorAll('#sync-filter button').forEach(b => b.classList.toggle('active', b.dataset.sync === 'all'));
+    renderSessionsTab(false);
+  });
 
   // --- Session sync filter ---
   document.querySelectorAll('#sync-filter button').forEach(btn => {
@@ -9002,6 +9195,7 @@ opacity: 0.18;
     pendingRenameGameId = id;
     document.getElementById('rename-input').value = game.name;
     document.getElementById('rename-tags').value = (game.tags || []).join(', ');
+    document.getElementById('rename-status').value = gameStatus(game);
     paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
     const urlField = document.getElementById('cover-url');
     urlField.value = (game.image && !/^data:image\//.test(game.image)) ? game.image : '';
@@ -9019,6 +9213,7 @@ opacity: 0.18;
     const game = games.find(g => g.id === pendingRenameGameId);
     if (game) {
       game.name = name;
+      game.status = document.getElementById('rename-status').value;
       game.tags = normalizeTags(document.getElementById('rename-tags').value.split(','));
       saveGames(games);
       sessions.forEach(s => { if (s.gameId === game.id) s.gameName = name; });
@@ -9329,6 +9524,7 @@ opacity: 0.18;
     const now = new Date();
     setCalDateTime(addSessionStartDate, addSessionStartTime, new Date(now.getTime() - 3600000));
     setCalDateTime(addSessionEndDate, addSessionEndTime, now);
+    document.getElementById('add-session-note').value = '';
     document.getElementById('add-session-modal').classList.add('open');
   }
 
@@ -9356,6 +9552,7 @@ opacity: 0.18;
       start: new Date(t1).toISOString(),
       stop: new Date(t2).toISOString(),
       durationMs: t2 - t1,
+      note: document.getElementById('add-session-note').value.trim().slice(0,1000),
       synced: false
     };
     sessions.push(session);
@@ -9368,6 +9565,7 @@ opacity: 0.18;
   // --- Edit session modal ---
   function openEditSessionModal(s) {
     editSessionId = s.id;
+    document.getElementById('edit-session-note').value = s.note || '';
     setCalDateTime(editSessionStartDate, editSessionStartTime, s.start);
     setCalDateTime(editSessionEndDate, editSessionEndTime, s.stop);
     document.getElementById('edit-session-modal').classList.add('open');
@@ -9383,12 +9581,23 @@ opacity: 0.18;
     const startStr = getCalDateTime(editSessionStartDate, editSessionStartTime);
     const endStr = getCalDateTime(editSessionEndDate, editSessionEndTime);
     if (!startStr || !endStr) { toast('Fill in both times'); return; }
-    const t1 = new Date(startStr).getTime();
-    const t2 = new Date(endStr).getTime();
+    // Preserve seconds when the minute-precision fields were not changed.
+    const sameMinute = (value, original) => Math.floor(new Date(value).getTime() / 60000) === Math.floor(new Date(original).getTime() / 60000);
+    const t1 = new Date(sameMinute(startStr, s.start) ? s.start : startStr).getTime();
+    const t2 = new Date(sameMinute(endStr, s.stop) ? s.stop : endStr).getTime();
     if (!(t2 > t1)) { toast('End must be after start'); return; }
+    s.pauses = (s.pauses || []).map(p => ({ from: Math.max(t1, new Date(p.from).getTime()), to: Math.min(t2, new Date(p.to).getTime()) }))
+      .filter(p => p.to > p.from).sort((a, b) => a.from - b.from)
+      .reduce((out, p) => {
+        const last = out[out.length - 1];
+        if (last && p.from <= last.to) last.to = Math.max(last.to, p.to);
+        else out.push(p);
+        return out;
+      }, []).map(p => ({ from: new Date(p.from).toISOString(), to: new Date(p.to).toISOString() }));
     s.start = new Date(t1).toISOString();
     s.stop = new Date(t2).toISOString();
-    s.durationMs = t2 - t1;
+    s.durationMs = t2 - t1 - totalPausedMs(s, t2);
+    s.note = document.getElementById('edit-session-note').value.trim().slice(0,1000);
     saveSessions(sessions);
     toast('Session updated');
     document.getElementById('edit-session-modal').classList.remove('open');
@@ -9443,11 +9652,10 @@ opacity: 0.18;
     toast('Backup exported');
   });
 
-  document.getElementById('btn-export-csv').addEventListener('click', () => {
-    const rows = sessions.filter(s => s.stop !== null).sort((a, b) => new Date(b.start) - new Date(a.start));
+  function exportSessionsCsv(rows) {
     const esc = v => '"' + String(v).split('"').join('""') + '"';
     const csv = '\uFEFF' + [
-      ['Date', 'Start', 'End', 'Game', 'Duration', 'Minutes', 'Synced'],
+      ['Date', 'Start', 'End', 'Game', 'Duration', 'Minutes', 'Synced', 'Notes'],
       ...rows.map(s => [
         fmtDate(s.start),
         fmtTime(s.start),
@@ -9455,12 +9663,15 @@ opacity: 0.18;
         s.gameName,
         fmtDuration(s.durationMs),
         Math.round((s.durationMs || 0) / 60000),
-        s.synced ? 'yes' : 'no'
+        s.synced ? 'yes' : 'no',
+        s.note || ''
       ])
     ].map(r => r.map(esc).join(',')).join('\r\n');
     triggerDownload('playdex-sessions-' + todayStr() + '.csv', new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     toast('CSV exported');
-  });
+  }
+  document.getElementById('btn-export-csv').addEventListener('click', () => exportSessionsCsv(sessions.filter(s=>s.stop !== null).sort((a,b)=>new Date(b.start)-new Date(a.start))));
+  document.getElementById('session-export-filtered').addEventListener('click', () => exportSessionsCsv(filteredSessions()));
 
   document.getElementById('btn-import').addEventListener('click', () => {
     document.getElementById('import-file').click();
@@ -9872,14 +10083,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   });
   document.getElementById('dbx-confirm-download').addEventListener('click', () => {
     document.getElementById('dbx-confirm-modal').classList.remove('open');
-    const text = dbxPendingDownload;
+    const backup = dbxPendingDownload;
     dbxPendingDownload = null;
-    if (text) {
+    if (backup) {
       try {
-        dbxApplyBackupText(text);
+        dbxApplyBackupText(backup);
         dbxMarkSynced();
         toast('Synced from Dropbox');
-      } catch (err) { toast('\u26A0 Dropbox file isn\u2019t a PlayDex backup'); }
+      } catch (err) { toast('Download could not be applied: ' + err.message); }
     }
   });
 
@@ -9890,6 +10101,13 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('dbx-sync-now').addEventListener('click', async () => {
     document.getElementById('dbx-sync-modal').classList.remove('open');
     try { await dropboxDownload(true); } catch {}
+  });
+
+  const recoveryExport = document.getElementById('dbx-recovery-export');
+  recoveryExport.style.display = localStorage.getItem(DBX_RECOVERY_KEY) ? '' : 'none';
+  recoveryExport.addEventListener('click', () => {
+    const copy = localStorage.getItem(DBX_RECOVERY_KEY);
+    if (copy) triggerDownload('playdex-before-dropbox-sync.json', new Blob([copy], { type: 'application/json' }));
   });
 
   // --- Initial render ---
@@ -9940,7 +10158,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
 
     // --- New version notification ---
-    const APP_VERSION = '1.6.1';
+    const APP_VERSION = '1.6.2';
     const dismissedKey = 'playdex_update_dismissed_' + APP_VERSION;
     let wasControlled = !!navigator.serviceWorker.controller;
     const updateModal = () => document.getElementById('update-modal');
