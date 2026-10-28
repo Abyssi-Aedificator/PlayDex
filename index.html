@@ -1876,6 +1876,18 @@ opacity: 0.18;
     letter-spacing: 0.5px;
     font-weight: 800;
   }
+  .top-custom { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:12px 0; }
+  .top-custom[hidden] { display:none; }
+  .top-custom .cal-trigger { min-width:0; width:100%; }
+  .dbx-toggle.top-archived-toggle { justify-content:space-between; gap:16px; padding:12px 14px; margin:14px 0; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); color:var(--text2); transition:background-color .2s cubic-bezier(0.4,0,0.2,1),border-color .2s cubic-bezier(0.4,0,0.2,1); }
+  .dbx-toggle.top-archived-toggle:has(input:checked) { border-color:var(--accent); background:var(--accent-dim); color:var(--text); }
+  .top-archived-toggle .dbx-toggle-label { font-weight:500; }
+  .top-archived-toggle input:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
+  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"] { appearance:none; -webkit-appearance:none; position:relative; width:40px; height:24px; margin:0; border:1px solid var(--border-strong); border-radius:999px; background:var(--surface3); transition:background-color .2s cubic-bezier(0.4,0,0.2,1); }
+  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"]::after { content:''; position:absolute; width:16px; height:16px; top:3px; left:3px; border-radius:50%; background:var(--text2); transition:transform .2s cubic-bezier(0.4,0,0.2,1),background-color .2s cubic-bezier(0.4,0,0.2,1); }
+  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"]:checked { background:var(--accent-dim); border-color:var(--accent); }
+  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"]:checked::after { transform:translateX(16px); background:var(--accent); }
+  @media(max-width:360px) { .top-custom { grid-template-columns:minmax(0,1fr); } }
   .top-periods {
     display: flex;
     gap: 6px;
@@ -5021,7 +5033,54 @@ opacity: 0.18;
         <button class="top-period" type="button" data-period="rolling7">7 days</button>
         <button class="top-period" type="button" data-period="month">Month</button>
         <button class="top-period" type="button" data-period="all">All time</button>
+        <button class="top-period" id="top-custom-button" type="button" data-period="custom">Custom dates</button>
       </div>
+      <div class="top-custom" id="top-custom-fields" hidden>
+        <div class="session-filter-field"><label id="top-from-label">From</label>
+        <div class="cal-field" id="top-date-from" aria-labelledby="top-from-label">
+          <button aria-labelledby="top-from-label" class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+        </div><div class="session-filter-field"><label id="top-to-label">To</label>
+        <div class="cal-field" id="top-date-to" aria-labelledby="top-to-label">
+          <button aria-labelledby="top-to-label" class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <label class="dbx-toggle top-archived-toggle"><span class="dbx-toggle-label">Include archived games</span><input type="checkbox" id="top-include-archived"></label>
       <div class="top-summary" id="top-summary"></div>
       <div class="top-legend" id="top-range"></div>
       <div class="top-legend">&#8593; moved up &nbsp;&middot;&nbsp; &#8595; moved down &nbsp;&middot;&nbsp; &#8211; no change &nbsp;&middot;&nbsp; NEW = not played in the previous period. The number is the previous position.</div>
@@ -6549,14 +6608,27 @@ opacity: 0.18;
   function startOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
   function endOfDay(d) { const x = new Date(d); x.setHours(23, 59, 59, 999); return x; }
 
-  const TOP_PERIODS = ['week', 'rolling7', 'month', 'all'];
+  const TOP_PERIODS = ['week', 'rolling7', 'month', 'all', 'custom'];
 
   function getTopPeriod() {
     return TOP_PERIODS.indexOf(settings.topPeriod) >= 0 ? settings.topPeriod : 'week';
   }
 
   // Start/end bounds of the selected Top period. start is null for all-time.
+  function topCustomDates() {
+    const from = settings.topFrom ?? addDays(todayStr(), -6), to = settings.topTo ?? todayStr();
+    const valid = value => /^\d{4}-\d{2}-\d{2}$/.test(value) && !isNaN(new Date(value + 'T00:00:00').getTime()) && dateKey(value + 'T00:00:00') === value;
+    return valid(from) && valid(to) && from <= to ? { from, to } : null;
+  }
+  function topIncludesGame(game) { return settings.topIncludeArchived === true || !game.archived; }
+  function topCalendarDays(start, end) {
+    return Math.round((Date.UTC(end.getFullYear(),end.getMonth(),end.getDate()) - Date.UTC(start.getFullYear(),start.getMonth(),start.getDate())) / 86400000) + 1;
+  }
   function getPeriodBounds(period, now = new Date()) {
+    if (period === 'custom') {
+      const dates = topCustomDates();
+      return dates ? { start: new Date(dates.from + 'T00:00:00'), end: new Date(dates.to + 'T23:59:59.999') } : { start:null, end:null };
+    }
     if (period === 'rolling7') {
       return { start: startOfDay(new Date(now.getTime() - 6 * 86400000)), end: endOfDay(now) };
     }
@@ -6576,6 +6648,10 @@ opacity: 0.18;
   function getPrevPeriodBounds(period, now = new Date()) {
     const cur = getPeriodBounds(period, now);
     if (!cur.start) return { start: null, end: null };
+    if (period === 'custom') {
+      const start = new Date(cur.start); start.setDate(start.getDate() - topCalendarDays(cur.start, cur.end));
+      return { start, end: endOfDay(new Date(cur.start.getTime() - 1)) };
+    }
     if (period === 'month') {
       const y = cur.start.getFullYear(), m = cur.start.getMonth();
       return { start: new Date(y, m - 1, 1, 0, 0, 0, 0), end: new Date(y, m, 0, 23, 59, 59, 999) };
@@ -6587,6 +6663,7 @@ opacity: 0.18;
   }
 
   function periodRangeText(period, cur, prev) {
+    if (period === 'custom') return fmtDate(cur.start) + ' \u2013 ' + fmtDate(cur.end) + ' \u00b7 compared with ' + fmtDate(prev.start) + ' \u2013 ' + fmtDate(prev.end) + '.';
     if (period === 'all') return 'All time.';
     if (period === 'rolling7') {
       return 'Last 7 days (' + fmtDayMonth(cur.start) + ' \u2013 ' + fmtDayMonth(cur.end) + ') \u00b7 compared with the previous 7 days.';
@@ -6623,7 +6700,7 @@ opacity: 0.18;
         const t = new Date(s.start).getTime();
         if (t >= wb.start.getTime() && t <= wb.end.getTime()) totals[s.gameId] = (totals[s.gameId] || 0) + (s.durationMs || 0);
       });
-      const list = games.filter(g => !g.archived && totals[g.id] > 0)
+      const list = games.filter(g => topIncludesGame(g) && totals[g.id] > 0)
         .sort((a, b) => (totals[b.id] - totals[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
       if (!list.length) break;
       const weekChamp = list[0].id;
@@ -6638,7 +6715,14 @@ opacity: 0.18;
   // Buckets the selected period is split into for the per-row sparkline
   function topPeriodBuckets(period, cur) {
     const buckets = [];
-    if (period === 'week' || period === 'rolling7') {
+    if (period === 'custom') {
+      const days = topCalendarDays(cur.start, cur.end), step = Math.max(1, Math.ceil(days / 12));
+      for (let i=0; i<days; i+=step) {
+        const start = new Date(cur.start); start.setDate(start.getDate()+i);
+        const end = new Date(cur.start); end.setDate(end.getDate()+Math.min(days-1,i+step-1));
+        buckets.push({ start, end:endOfDay(end) });
+      }
+    } else if (period === 'week' || period === 'rolling7') {
       for (let i = 0; i < 7; i++) {
         const d = new Date(cur.start);
         d.setDate(d.getDate() + i);
@@ -6692,11 +6776,20 @@ opacity: 0.18;
     const period = getTopPeriod();
     document.querySelectorAll('#top-periods .top-period').forEach(b => b.classList.toggle('active', b.dataset.period === period));
 
+    document.getElementById('top-custom-fields').hidden = period !== 'custom';
+    document.getElementById('top-include-archived').checked = settings.topIncludeArchived === true;
+    if (period === 'custom' && !topCustomDates()) {
+      document.getElementById('top-range').textContent = 'Choose valid From and To dates, with To on or after From.';
+      document.getElementById('top-summary').innerHTML = '';
+      document.getElementById('top-fellout').innerHTML = '';
+      container.innerHTML = '';
+      return;
+    }
     const now = new Date();
     const cur = getPeriodBounds(period, now);
     const prev = getPrevPeriodBounds(period, now);
     const hasTrend = !!prev.start;
-    const champ = championStreak(now);
+    const champ = period === 'custom' ? { championId:null, streak:0 } : championStreak(now);
 
     const rangeEl = document.getElementById('top-range');
     if (rangeEl) rangeEl.textContent = periodRangeText(period, cur, prev);
@@ -6719,12 +6812,12 @@ opacity: 0.18;
     const byPlaytime = (a, b) => (thisMs[b.id] - thisMs[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
 
     // Current ranking: active games with playtime in the period
-    const ranked = games.filter(g => !g.archived && thisMs[g.id] > 0).sort(byPlaytime);
+    const ranked = games.filter(g => topIncludesGame(g) && thisMs[g.id] > 0).sort(byPlaytime);
 
     // Previous-period positions (active games with playtime there), keyed by id
     const prevRank = {};
     if (hasTrend) {
-      games.filter(g => !g.archived && prevMs[g.id] > 0)
+      games.filter(g => topIncludesGame(g) && prevMs[g.id] > 0)
         .sort((a, b) => (prevMs[b.id] - prevMs[a.id]) || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
         .forEach((g, i) => { prevRank[g.id] = i + 1; });
     }
@@ -6750,7 +6843,7 @@ opacity: 0.18;
     // Period summary: total playtime, change vs the previous period, session count
     const summaryEl = document.getElementById('top-summary');
     if (summaryEl) {
-      const active = games.filter(g => !g.archived);
+      const active = games.filter(topIncludesGame);
       const activeIds = {};
       active.forEach(g => { activeIds[g.id] = 1; });
       const totalMs = active.reduce((a, g) => a + thisMs[g.id], 0);
@@ -6768,7 +6861,7 @@ opacity: 0.18;
       if (!hasTrend) {
         felloutEl.innerHTML = '';
       } else {
-        const dropped = games.filter(g => !g.archived && thisMs[g.id] === 0 && prevMs[g.id] > 0)
+        const dropped = games.filter(g => topIncludesGame(g) && thisMs[g.id] === 0 && prevMs[g.id] > 0)
           .sort((a, b) => prevRank[a.id] - prevRank[b.id]);
         felloutEl.innerHTML = dropped.length
           ? '<div class="top-fellout-title">Fell out</div>' + dropped.map(g =>
@@ -9159,6 +9252,13 @@ opacity: 0.18;
   filterDateField.value = filterDate;
   const filterDateEndField = createCalField('filter-date-end', v => { filterDateEnd = v; renderSessionsTab(false); });
   filterDateEndField.value = filterDateEnd;
+  const topFromField = createCalField('top-date-from', value => { settings.topFrom = value; saveSettings(settings); renderTop(); });
+  const topToField = createCalField('top-date-to', value => { settings.topTo = value; saveSettings(settings); renderTop(); });
+  topFromField.value = settings.topFrom ?? addDays(todayStr(), -6);
+  topToField.value = settings.topTo ?? todayStr();
+  document.getElementById('top-include-archived').addEventListener('change', event => {
+    settings.topIncludeArchived = event.target.checked; saveSettings(settings); renderTop();
+  });
   document.getElementById('session-game-filter').addEventListener('change', e => { sessionGameFilter = e.target.value; renderSessionsTab(false); });
   document.getElementById('session-filters-clear').addEventListener('click', () => {
     sessionGameFilter = ''; filterDate = ''; filterDateEnd = '';

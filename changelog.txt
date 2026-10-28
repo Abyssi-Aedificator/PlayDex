@@ -3,6 +3,10 @@ PlayDex - Changelog
 
 Version 1.6.2
 -------------------
+- Fixed question marks appearing instead of date separators in the Top custom-range description.
+- Include archived games now uses an accent-themed switch and highlighted setting row, matching Classic and Material 3.
+- Top now supports custom From/To dates with the same calendar controls as Sessions and comparison against the preceding equal-length date range.
+- Top can include archived games in rankings, totals, shares, trends, and historical comparisons.
 - The Top tab now shows each game's share of playtime with a bar and the time gap to the next rank; ties are labeled.
 - Click a game in the Top ranking or Fell out section to open its dashboard.
 - Removed game statuses from the library and Edit Game dialog.
