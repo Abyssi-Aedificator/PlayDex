@@ -460,6 +460,33 @@
 
   .session-note { color:var(--text2); font-size:.8rem; white-space:pre-wrap; overflow-wrap:anywhere; margin-top:5px; }
   .session-note-input { width:100%; min-height:76px; resize:vertical; padding:11px 14px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font:inherit; font-size:.85rem; }
+  .session-filter-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+  .session-filter-heading .card-header { margin:0; }
+  .session-filter-heading #btn-add-session { padding:9px 13px; font-size:.8rem; white-space:nowrap; }
+  .session-filters { container-type:inline-size; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+  .session-filter-fields { display:grid; grid-template-columns:minmax(0,1.3fr) repeat(2,minmax(0,1fr)); gap:12px; align-items:end; }
+  .session-filter-field { min-width:0; }
+  .session-filter-field > label { display:block; color:var(--text2); font-size:.72rem; font-weight:600; margin-bottom:7px; }
+  .session-filter-field select, .session-filter-field .cal-trigger { width:100%; min-width:0; min-height:44px; padding:10px 12px; font-size:.82rem; border-radius:10px; }
+  .session-filter-footer { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; }
+  .session-filter-tools { display:flex; gap:8px; margin-left:auto; }
+  .session-filter-tools .btn-ghost { padding:8px 10px; font-size:.75rem; white-space:nowrap; }
+  .session-filter-footer .sync-seg button { min-height:36px; padding:8px 12px; }
+  #sessions-summary { flex-wrap:wrap; justify-content:space-between; padding-bottom:12px; }
+  @container (max-width:560px) {
+    .session-filter-fields { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .session-filter-game { grid-column:1 / -1; }
+    .session-filter-footer { gap:12px; }
+  }
+  @container (max-width:390px) {
+    .session-filter-footer { flex-direction:column; align-items:stretch; }
+    .session-filter-footer .sync-seg button { flex:1; }
+    .session-filter-tools { margin-left:0; justify-content:space-between; }
+    .session-filter-tools .btn-ghost { flex:1; min-height:38px; }
+  }
+  @container (max-width:280px) {
+    .session-filter-fields { grid-template-columns:minmax(0,1fr); }
+  }
   .game-status { display:inline-block; padding:2px 8px; border-radius:999px; background:var(--accent-dim); color:var(--accent); font-size:.65rem; font-weight:600; margin-left:6px; }
   .game-status[data-status="backlog"] { background:var(--status-backlog-bg); color:var(--status-backlog-text); }
   .game-status[data-status="playing"] { background:var(--status-playing-bg); color:var(--status-playing-text); }
@@ -4751,10 +4778,13 @@ opacity: 0.18;
   <!-- SESSIONS TAB -->
   <div id="tab-sessions" class="tab-panel">
     <div class="card">
-      <div class="filter-bar">
-        <label for="filter-date">Date:</label>
-        <div class="cal-field" id="filter-date">
-          <button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+      <div class="session-filter-heading"><div class="card-header">Sessions</div><button class="btn-ghost btn-accent" id="btn-add-session" type="button">&#43; Add session</button></div>
+      <div class="session-filters">
+        <div class="session-filter-fields">
+          <div class="session-filter-field session-filter-game"><label for="session-game-filter">Game</label><select id="session-game-filter"><option value="">All games</option></select></div>
+          <div class="session-filter-field"><label id="filter-from-label">From</label>
+        <div class="cal-field" id="filter-date" aria-labelledby="filter-from-label">
+          <button aria-labelledby="filter-from-label" class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
             <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
             <span class="cal-label placeholder">yyyy-mm-dd</span>
             <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
@@ -4773,13 +4803,33 @@ opacity: 0.18;
             </div>
           </div>
         </div>
-        <div class="filter-actions">
-          <div class="sync-seg" id="sync-filter">
-            <button type="button" data-sync="all" class="active">All</button>
-            <button type="button" data-sync="synced">Synced</button>
-            <button type="button" data-sync="unsynced">Unsynced</button>
           </div>
-          <button class="btn-clear-date" id="btn-add-session" style="margin-left:auto;">&#43; Add</button>
+          <div class="session-filter-field"><label id="filter-to-label">To</label>
+        <div class="cal-field" id="filter-date-end" aria-labelledby="filter-to-label">
+          <button aria-labelledby="filter-to-label" class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="cal-label placeholder">yyyy-mm-dd</span>
+            <span class="cal-chevron"><svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1 L6 6 L11 1"/></svg></span>
+          </button>
+          <div class="cal-popover">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="-1" title="Previous month">&lsaquo;</button>
+              <span class="cal-title"></span>
+              <button class="cal-nav" type="button" data-dir="1" title="Next month">&rsaquo;</button>
+            </div>
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-grid"></div>
+            <div class="cal-foot">
+              <button class="cal-action" type="button" data-action="today">Today</button>
+              <button class="cal-action" type="button" data-action="clear">Clear</button>
+            </div>
+          </div>
+        </div>
+          </div>
+        </div>
+        <div class="session-filter-footer">
+          <div class="sync-seg" id="sync-filter" role="group" aria-label="Session sync status"><button type="button" data-sync="all" class="active">All</button><button type="button" data-sync="synced">Synced</button><button type="button" data-sync="unsynced">Unsynced</button></div>
+          <div class="session-filter-tools"><button class="btn-ghost" id="session-filters-clear" type="button">Clear filters</button><button class="btn-ghost" id="session-export-filtered" type="button" title="Export matching sessions as CSV">Export CSV</button></div>
         </div>
       </div>
       <div class="list-summary" id="sessions-summary" style="display:none;"></div>
@@ -5722,6 +5772,8 @@ opacity: 0.18;
   let lastStreak = null;
   let currentTab = 'today';
   let filterDate = todayStr();
+  let filterDateEnd = filterDate;
+  let sessionGameFilter = '';
   let syncFilter = 'all';
   let gamesSearch = '';
   let gamesTagFilter = [];
@@ -7312,8 +7364,7 @@ opacity: 0.18;
     }
   }
 
-  function renderSessionsTab(animate = true) {
-    const container = document.getElementById('sessions-list');
+  function filteredSessions() {
     let filtered = sessions.filter(s => s.stop !== null);
 
     if (syncFilter === 'unsynced') {
@@ -7322,20 +7373,27 @@ opacity: 0.18;
       filtered = filtered.filter(s => s.synced);
     }
 
-    const showDate = syncFilter === 'all';
-    if (showDate && filterDate) {
-      filtered = filtered.filter(s => dateKey(s.start) === filterDate);
-    }
+    if (sessionGameFilter) filtered = filtered.filter(s => s.gameId === sessionGameFilter);
+    if (filterDate) filtered = filtered.filter(s => dateKey(s.start) >= filterDate);
+    if (filterDateEnd) filtered = filtered.filter(s => dateKey(s.start) <= filterDateEnd);
+    return filtered.sort((a,b) => new Date(b.start) - new Date(a.start));
+  }
 
-    filtered.sort((a,b) => new Date(b.start) - new Date(a.start));
-
+  function renderSessionsTab(animate = true) {
+    const container = document.getElementById('sessions-list');
+    const gameSelect = document.getElementById('session-game-filter');
+    if (sessionGameFilter && !games.some(g => g.id === sessionGameFilter)) sessionGameFilter = '';
+    gameSelect.innerHTML = '<option value="">All games</option>' + games.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(g=>'<option value="'+escHtml(g.id)+'">'+escHtml(g.name)+(g.archived ? ' (archived)' : '')+'</option>').join('');
+    gameSelect.value = sessionGameFilter;
+    const filtered = filteredSessions();
+    const showDate = false;
     const summaryEl = document.getElementById('sessions-summary');
-    if (syncFilter !== 'all') {
+    {
       const totalMs = filtered.reduce((acc, s) => acc + (s.durationMs || 0), 0);
       const plural = filtered.length !== 1 ? 's' : '';
-      const label = syncFilter === 'unsynced' ? 'unsynced' : 'synced';
+      const label = syncFilter === 'all' ? '' : syncFilter + ' ';
       summaryEl.innerHTML =
-        '<span>' + filtered.length + ' ' + label + ' session' + plural + ' &middot; ' + fmtDuration(totalMs) + '</span>' +
+        '<span>' + filtered.length + ' ' + label + 'session' + plural + ' &middot; ' + fmtDuration(totalMs) + '</span>' +
         (syncFilter === 'unsynced' && filtered.length ? '<button id="mark-all-synced">Mark all synced</button>' : '');
       const markBtn = document.getElementById('mark-all-synced');
       if (markBtn) {
@@ -7353,13 +7411,7 @@ opacity: 0.18;
         });
       }
       summaryEl.style.display = '';
-    } else {
-      summaryEl.innerHTML = '';
-      summaryEl.style.display = 'none';
     }
-    document.getElementById('filter-date').style.display = showDate ? '' : 'none';
-    const dateLabel = document.querySelector('label[for="filter-date"]');
-    if (dateLabel) dateLabel.style.display = showDate ? '' : 'none';
 
     const dayTotals = {};
     sessions.forEach(s => {
@@ -7370,9 +7422,11 @@ opacity: 0.18;
 
     if (filtered.length === 0) {
       let msg;
-      if (syncFilter === 'unsynced') msg = 'No unsynced sessions &mdash; everything is synced.';
+      if (filterDate && filterDateEnd && filterDate > filterDateEnd) msg = 'Choose an end date on or after the start date.';
+      else if (sessionGameFilter || filterDate || filterDateEnd) msg = 'No sessions match these filters.';
+      else if (syncFilter === 'unsynced') msg = 'No unsynced sessions &mdash; everything is synced.';
       else if (syncFilter === 'synced') msg = 'No synced sessions yet.';
-      else if (showDate && filterDate) msg = 'No sessions on this date.';
+      else if (filterDate || filterDateEnd || sessionGameFilter) msg = 'No sessions match these filters.';
       else msg = 'No completed sessions yet.';
       container.innerHTML =
         '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>' +
@@ -9110,9 +9164,19 @@ opacity: 0.18;
   // --- Filter date ---
   const filterDateField = createCalField('filter-date', v => {
     filterDate = v;
-    render();
+    renderSessionsTab(false);
   });
   filterDateField.value = filterDate;
+  const filterDateEndField = createCalField('filter-date-end', v => { filterDateEnd = v; renderSessionsTab(false); });
+  filterDateEndField.value = filterDateEnd;
+  document.getElementById('session-game-filter').addEventListener('change', e => { sessionGameFilter = e.target.value; renderSessionsTab(false); });
+  document.getElementById('session-filters-clear').addEventListener('click', () => {
+    sessionGameFilter = ''; filterDate = ''; filterDateEnd = '';
+    filterDateField.value = ''; filterDateEndField.value = '';
+    syncFilter = 'all';
+    document.querySelectorAll('#sync-filter button').forEach(b => b.classList.toggle('active', b.dataset.sync === 'all'));
+    renderSessionsTab(false);
+  });
 
   // --- Session sync filter ---
   document.querySelectorAll('#sync-filter button').forEach(btn => {
@@ -9607,6 +9671,7 @@ opacity: 0.18;
     toast('CSV exported');
   }
   document.getElementById('btn-export-csv').addEventListener('click', () => exportSessionsCsv(sessions.filter(s=>s.stop !== null).sort((a,b)=>new Date(b.start)-new Date(a.start))));
+  document.getElementById('session-export-filtered').addEventListener('click', () => exportSessionsCsv(filteredSessions()));
 
   document.getElementById('btn-import').addEventListener('click', () => {
     document.getElementById('import-file').click();
