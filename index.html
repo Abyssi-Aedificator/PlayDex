@@ -457,6 +457,12 @@
     width: 100%;
   }
 
+
+  .session-note { color:var(--text2); font-size:.8rem; white-space:pre-wrap; overflow-wrap:anywhere; margin-top:5px; }
+  .session-note-input { width:100%; min-height:76px; resize:vertical; padding:11px 14px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font:inherit; font-size:.85rem; }
+  .dash-session:has(.session-note) { flex-wrap:wrap; }
+  .dash-session .session-note { flex-basis:100%; }
+
   /* Tabs */
   .tab-bar {
     position: fixed;
@@ -4194,6 +4200,7 @@ opacity: 0.18;
   :root[data-ui="material"] .m3-field:focus-within > label,
   :root[data-ui="material"] .field-group:has(input:not(:placeholder-shown)) > label,
   :root[data-ui="material"] .m3-field:has(input:not(:placeholder-shown)) > label,
+  :root[data-ui="material"] .field-group:has(textarea) > label,
   :root[data-ui="material"] .field-group:has(select) > label,
   :root[data-ui="material"] .field-group:has(.cal-label:not(.placeholder)) > label {
     transform: translateY(-24px) scale(0.78);
@@ -5320,6 +5327,7 @@ opacity: 0.18;
         </div>
       </div>
     </div>
+    <div class="field-group"><label for="add-session-note">Notes (optional)</label><textarea class="session-note-input" id="add-session-note" maxlength="1000" placeholder="What did you play or accomplish?"></textarea></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="add-session-cancel">Cancel</button>
       <button class="btn btn-start" id="add-session-save" style="padding:8px 16px;font-size:0.85rem;">Add</button>
@@ -5425,6 +5433,7 @@ opacity: 0.18;
         </div>
       </div>
     </div>
+    <div class="field-group"><label for="edit-session-note">Notes (optional)</label><textarea class="session-note-input" id="edit-session-note" maxlength="1000" placeholder="What did you play or accomplish?"></textarea></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="edit-session-cancel">Cancel</button>
       <button class="btn btn-start" id="edit-session-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -7346,6 +7355,7 @@ opacity: 0.18;
         return '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
+            (s.note ? '<div class="session-note">' + escHtml(s.note) + '</div>' : '') +
             '<div class="session-times">' + (showDate ? '' : fmtDateShort(s.start) + ' \u00b7 ') + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
           (showDate && filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : !showDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + dateKey(s.start)] || 0) + ')</span>' : '') +
@@ -8950,6 +8960,7 @@ opacity: 0.18;
           '<li class="dash-session">' +
             '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + '</span>' +
             '<span class="dash-session-dur">' + fmtDuration(s.durationMs) + '</span>' +
+            (s.note ? '<div class="session-note">' + escHtml(s.note) + '</div>' : '') +
           '</li>'
         ).join('') + '</ul>';
     } else {
@@ -9418,6 +9429,7 @@ opacity: 0.18;
     const now = new Date();
     setCalDateTime(addSessionStartDate, addSessionStartTime, new Date(now.getTime() - 3600000));
     setCalDateTime(addSessionEndDate, addSessionEndTime, now);
+    document.getElementById('add-session-note').value = '';
     document.getElementById('add-session-modal').classList.add('open');
   }
 
@@ -9445,6 +9457,7 @@ opacity: 0.18;
       start: new Date(t1).toISOString(),
       stop: new Date(t2).toISOString(),
       durationMs: t2 - t1,
+      note: document.getElementById('add-session-note').value.trim().slice(0,1000),
       synced: false
     };
     sessions.push(session);
@@ -9457,6 +9470,7 @@ opacity: 0.18;
   // --- Edit session modal ---
   function openEditSessionModal(s) {
     editSessionId = s.id;
+    document.getElementById('edit-session-note').value = s.note || '';
     setCalDateTime(editSessionStartDate, editSessionStartTime, s.start);
     setCalDateTime(editSessionEndDate, editSessionEndTime, s.stop);
     document.getElementById('edit-session-modal').classList.add('open');
@@ -9488,6 +9502,7 @@ opacity: 0.18;
     s.start = new Date(t1).toISOString();
     s.stop = new Date(t2).toISOString();
     s.durationMs = t2 - t1 - totalPausedMs(s, t2);
+    s.note = document.getElementById('edit-session-note').value.trim().slice(0,1000);
     saveSessions(sessions);
     toast('Session updated');
     document.getElementById('edit-session-modal').classList.remove('open');
@@ -9542,11 +9557,10 @@ opacity: 0.18;
     toast('Backup exported');
   });
 
-  document.getElementById('btn-export-csv').addEventListener('click', () => {
-    const rows = sessions.filter(s => s.stop !== null).sort((a, b) => new Date(b.start) - new Date(a.start));
+  function exportSessionsCsv(rows) {
     const esc = v => '"' + String(v).split('"').join('""') + '"';
     const csv = '\uFEFF' + [
-      ['Date', 'Start', 'End', 'Game', 'Duration', 'Minutes', 'Synced'],
+      ['Date', 'Start', 'End', 'Game', 'Duration', 'Minutes', 'Synced', 'Notes'],
       ...rows.map(s => [
         fmtDate(s.start),
         fmtTime(s.start),
@@ -9554,12 +9568,14 @@ opacity: 0.18;
         s.gameName,
         fmtDuration(s.durationMs),
         Math.round((s.durationMs || 0) / 60000),
-        s.synced ? 'yes' : 'no'
+        s.synced ? 'yes' : 'no',
+        s.note || ''
       ])
     ].map(r => r.map(esc).join(',')).join('\r\n');
     triggerDownload('playdex-sessions-' + todayStr() + '.csv', new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     toast('CSV exported');
-  });
+  }
+  document.getElementById('btn-export-csv').addEventListener('click', () => exportSessionsCsv(sessions.filter(s=>s.stop !== null).sort((a,b)=>new Date(b.start)-new Date(a.start))));
 
   document.getElementById('btn-import').addEventListener('click', () => {
     document.getElementById('import-file').click();
