@@ -8,7 +8,7 @@ A lightweight, installable web app that tracks your game sessions, playtime by g
 
 - **Track sessions** – start/stop with live elapsed time, pause/resume, and an optional time target (notifies when reached).
 - **Session log** – review, edit, sync-flag, and delete sessions; add optional notes, filter by game and date range, and export matching sessions; overlap warnings help catch conflicting times; the running session shows in the tab title.
-- **Playtime stats** – last 7 / last 30 days charts, a this-week review, and side-by-side game comparisons.
+- **Playtime stats** – last 7 / last 30 days charts, a this-week review, side-by-side game comparisons, and monthly/yearly gaming recaps.
 - **Daily goal & quests** – daily playtime goal, daily/weekly quests, and play-streaks with earned streak freezes.
 - **Game library** – add, edit, archive, pin, and search games; see how long ago each was last played.
 - **Player profile & badges** – achievements and levels, milestones, a time-of-day heatmap, and a cumulative playtime curve.

@@ -502,6 +502,8 @@
   .comparison-table thead th { color:var(--accent); }
   .recap-note { color:var(--text2); font-size:.75rem; line-height:1.5; margin:10px 0; }
   .recap-ranking,.overlap-list { list-style:none; padding:0; margin:12px 0; }
+  .recap-ranking li { display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-top:1px solid var(--border); font-size:.8rem; }
+  .recap-ranking li span:first-child { overflow-wrap:anywhere; min-width:0; }
   #overlap-modal { z-index:260; }
   .overlap-list { max-height:240px; overflow:auto; }
   .overlap-list li { padding:9px 0; border-bottom:1px solid var(--border); font-size:.8rem; overflow-wrap:anywhere; }
@@ -4923,6 +4925,11 @@ opacity: 0.18;
       <div class="insight-selects"><div><label for="compare-game-a">First game</label><select id="compare-game-a"></select></div><div><label for="compare-game-b">Second game</label><select id="compare-game-b"></select></div></div>
       <div id="comparison-result" aria-live="polite"></div>
     </div>
+    <div class="card" id="recap-card">
+      <div class="card-header">Your gaming recap</div>
+      <div class="insight-selects"><div><label for="recap-mode">Recap</label><select id="recap-mode"><option value="month">Monthly</option><option value="year">Yearly</option></select></div><div><label for="recap-period">Period</label><select id="recap-period"></select></div></div>
+      <div id="recap-result" aria-live="polite"></div>
+    </div>
   </div>
 
   <!-- BADGES TAB -->
@@ -7806,8 +7813,42 @@ opacity: 0.18;
     const rows=[['Total playtime',fmtDuration(ma.total),fmtDuration(mb.total)],['Sessions',ma.count,mb.count],['Average session',fmtDurationShort(ma.average),fmtDurationShort(mb.average)],['Last 30 days',fmtDurationShort(ma.recent),fmtDurationShort(mb.recent)],['Days played (30d)',ma.days,mb.days],['Last played',ma.last?fmtDateShort(new Date(ma.last).toISOString()):'Never',mb.last?fmtDateShort(new Date(mb.last).toISOString()):'Never']];
     result.innerHTML='<table class="comparison-table"><thead><tr><th scope="col">Metric</th><th scope="col">'+escHtml(first.name)+'</th><th scope="col">'+escHtml(second.name)+'</th></tr></thead><tbody>'+rows.map(r=>'<tr><th scope="row">'+r[0]+'</th><td>'+escHtml(String(r[1]))+'</td><td>'+escHtml(String(r[2]))+'</td></tr>').join('')+'</tbody></table>';
   }
+  function recapBounds(mode,key) {
+    const parts=key.split('-').map(Number),year=parts[0],month=mode==='year'?0:parts[1]-1;
+    return {start:new Date(year,month,1),end:mode==='year'?new Date(year+1,0,1):new Date(year,month+1,1),previous:mode==='year'?new Date(year-1,0,1):new Date(year,month-1,1)};
+  }
+  function recapMetrics(mode,key,now=new Date()) {
+    const bounds=recapBounds(mode,key),completed=sessions.filter(s=>s.stop!==null);
+    const list=completed.filter(s=>new Date(s.start)>=bounds.start && new Date(s.start)<bounds.end && new Date(s.start)<=now);
+    const first={},byGame={},byDay={};
+    completed.forEach(s=>{const t=new Date(s.start).getTime();if(Number.isFinite(t))first[s.gameId]=Math.min(first[s.gameId]??Infinity,t);});
+    list.forEach(s=>{byGame[s.gameId]=(byGame[s.gameId]||0)+(s.durationMs||0);const day=dateKey(s.start);byDay[day]=(byDay[day]||0)+(s.durationMs||0);});
+    const total=list.reduce((sum,s)=>sum+(s.durationMs||0),0);
+    const previous=completed.filter(s=>new Date(s.start)>=bounds.previous && new Date(s.start)<bounds.start).reduce((sum,s)=>sum+(s.durationMs||0),0);
+    const top=Object.entries(byGame).sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0]));
+    const busiest=Object.entries(byDay).sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0]))[0];
+    const tried=Object.keys(byGame).filter(id=>first[id]>=bounds.start.getTime() && first[id]<bounds.end.getTime()).length;
+    return {total,previous,count:list.length,tried,top,busiest,days:Object.keys(byDay).length,current:now>=bounds.start && now<bounds.end};
+  }
+  function renderGamingRecap() {
+    const modeEl=document.getElementById('recap-mode'),periodEl=document.getElementById('recap-period'),result=document.getElementById('recap-result');
+    const mode=modeEl.value==='year'?'year':'month',now=new Date(),current=mode==='year'?String(now.getFullYear()):todayStr().slice(0,7);
+    const keys=new Set([current]);
+    for(let i=0;i<(mode==='year'?5:12);i++){const d=mode==='year'?new Date(now.getFullYear()-i,0,1):new Date(now.getFullYear(),now.getMonth()-i,1);keys.add(mode==='year'?String(d.getFullYear()):calFmtDate(d).slice(0,7));}
+    sessions.filter(s=>s.stop!==null && new Date(s.start)<=now).forEach(s=>keys.add(mode==='year'?dateKey(s.start).slice(0,4):dateKey(s.start).slice(0,7)));
+    const selected=periodEl.value;
+    periodEl.innerHTML=[...keys].sort().reverse().map(key=>'<option value="'+escHtml(key)+'">'+(mode==='year'?key:new Date(key+'-01T00:00:00').toLocaleDateString(undefined,{month:'long',year:'numeric'}))+'</option>').join('');
+    periodEl.value=keys.has(selected)?selected:current;
+    const m=recapMetrics(mode,periodEl.value);
+    if(!m.count){result.innerHTML='<p class="recap-note">No completed sessions in this period. Choose another month or year.</p>';return;}
+    const stat=(label,value)=>'<div class="stat-box"><div class="stat-value">'+escHtml(String(value))+'</div><div class="stat-label">'+label+'</div></div>';
+    const delta=m.total-m.previous,change=m.previous?((delta>=0?'+':'')+Math.round(delta/m.previous*100)+'%'):(m.total?'No earlier playtime':'No change');
+    result.innerHTML='<div class="stat-grid">'+stat('Total playtime',fmtDurationShort(m.total))+stat('Sessions',m.count)+stat('Games tried for the first time',m.tried)+stat('Days played',m.days)+'</div><p class="recap-note">'+(m.current?'So far this period; compared with the full previous '+(mode==='year'?'year':'month')+'. ':'Compared with the previous '+(mode==='year'?'year':'month')+'. ')+escHtml(change)+' playtime.</p><div class="modal-subheader">Most played</div><ol class="recap-ranking">'+m.top.slice(0,3).map(([id,ms],i)=>{const game=games.find(g=>g.id===id),sample=sessions.find(s=>s.gameId===id);return '<li><span>'+(i+1)+'. '+escHtml(game?.name||sample?.gameName||'Unknown game')+'</span><span>'+fmtDurationShort(ms)+'</span></li>';}).join('')+'</ol><p class="recap-note">Busiest day: '+escHtml(fmtDateShort(m.busiest[0]+'T00:00:00'))+' ('+fmtDurationShort(m.busiest[1])+').</p>';
+  }
+
   function renderStatsTab() {
     renderGameComparison();
+    renderGamingRecap();
     const completed = sessions.filter(s => s.stop !== null);
 
     // Last 30 days playtime chart
@@ -10415,6 +10456,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     settings.compareGameB=document.getElementById('compare-game-b').value;
     saveSettings(settings);renderGameComparison();
   }));
+  document.getElementById('recap-mode').addEventListener('change',()=>{document.getElementById('recap-period').value='';renderGamingRecap();});
+  document.getElementById('recap-period').addEventListener('change',renderGamingRecap);
+
   // --- Initial render ---
   backfillUnlockDates('gentle');
   applyTheme();
