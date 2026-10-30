@@ -1799,6 +1799,36 @@ opacity: 0.18;
   .btn-icon.play:hover { border-color: var(--accent); background: var(--accent-dim); }
   .btn-icon.play.on { border-color: var(--accent); background: var(--accent-dim); }
 
+  .top-insight-column { min-width:0; }
+  .top-insight-note { font-size:.76rem; color:var(--text2); line-height:1.6; margin:0; }
+  .top-insight-list { list-style:none; padding:0; margin:0; }
+  .top-insight-list li { padding:10px 0; border-bottom:1px solid var(--border); }
+  .top-insight-list li:last-child { border-bottom:0; padding-bottom:0; }
+  .top-insight-list small { display:block; color:var(--text2); font-size:.7rem; margin-top:4px; }
+  .top-insight-list .top-game-link { font-size:.82rem; }
+  .top-podium-item { display:flex; gap:10px; align-items:center; min-width:0; }
+  .top-podium-cover { width:52px; height:52px; flex:0 0 52px; border-radius:var(--radius-sm); object-fit:cover; object-position:center; background:var(--accent-dim); }
+  .top-podium-fallback { display:grid; place-items:center; color:var(--accent); font-weight:700; }
+  .top-podium-details { min-width:0; }
+  .top-split-track { display:flex; width:100%; height:14px; border-radius:99px; overflow:hidden; background:var(--surface2); margin:12px 0; }
+  .top-split-track span { display:block; height:100%; background:var(--accent); }
+  .top-split-legend { list-style:none; padding:0; margin:0; }
+  .top-split-legend li { display:flex; align-items:center; gap:8px; margin:10px 0; color:var(--text2); font-size:.73rem; }
+  .top-split-legend i { width:9px; height:9px; border-radius:3px; background:var(--accent); flex-shrink:0; }
+  .top-split-legend span { flex:1; overflow-wrap:anywhere; }
+  @media(min-width:768px) {
+    .app-content:has(#tab-top.active) { max-width:1400px; }
+    #tab-top.active { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; align-items:start; }
+    #tab-top .top-main { grid-column:1 / -1; margin-bottom:0; min-width:0; }
+    .top-insight-column { display:flex; flex-direction:column; gap:20px; }
+    .top-insight-column > .card { margin-bottom:0; }
+  }
+  @media(min-width:1200px) {
+    #tab-top.active { grid-template-columns:minmax(220px,1fr) minmax(0,2fr) minmax(220px,1fr); }
+    #tab-top .top-main { grid-column:2; grid-row:1; }
+    .top-insights-left { grid-column:1; grid-row:1; }
+    .top-insights-right { grid-column:3; grid-row:1; }
+  }
   /* Top tab */
   .top-legend {
     font-size: 0.72rem;
@@ -3797,9 +3827,9 @@ opacity: 0.18;
     .app-content:has(#tab-games.active) {
       max-width: 760px;
     }
-    /* Top tab: a little more width on desktop so the header/legend don't wrap as much */
+    /* Top ranking and its insight columns share the Profile width. */
     .app-content:has(#tab-top.active) {
-      max-width: 800px;
+      max-width: 1400px;
     }
     .profile-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5065,7 +5095,7 @@ opacity: 0.18;
 
   <!-- Top tab -->
   <div id="tab-top" class="tab-panel">
-    <div class="card">
+    <div class="card top-main">
       <div class="card-header">Top - Most played</div>
       <div class="top-periods" id="top-periods">
         <button class="top-period" type="button" data-period="week">This week</button>
@@ -5125,6 +5155,15 @@ opacity: 0.18;
       <div class="top-legend">&#8593; moved up &nbsp;&middot;&nbsp; &#8595; moved down &nbsp;&middot;&nbsp; &#8211; no change &nbsp;&middot;&nbsp; NEW = not played in the previous period. The number is the previous position.</div>
       <div id="top-list"></div>
       <div id="top-fellout"></div>
+    </div>
+    <div class="top-insight-column top-insights-left">
+      <section class="card"><div class="card-header">Biggest movers</div><div id="top-movers" aria-live="polite"></div></section>
+      <section class="card"><div class="card-header">Most consistent games</div><div id="top-consistent" aria-live="polite"></div></section>
+    </div>
+    <div class="top-insight-column top-insights-right">
+      <section class="card"><div class="card-header">Your podium</div><div id="top-podium" aria-live="polite"></div></section>
+      <section class="card"><div class="card-header">New discoveries</div><div id="top-discoveries" aria-live="polite"></div></section>
+      <section class="card"><div class="card-header">How you split your time</div><div id="top-time-split" aria-live="polite"></div></section>
     </div>
   </div>
 
@@ -6901,6 +6940,54 @@ opacity: 0.18;
   }
 
   // --- Top tab: games ranked by total playtime in the selected period ---
+  function buildTopInsights(period,cur,prev,gameList=games,history=sessions) {
+    const allowed=gameList.filter(topIncludesGame), ids=new Set(allowed.map(g=>g.id));
+    const total={},previous={},days={},count={},first={};
+    allowed.forEach(g=>{total[g.id]=0;previous[g.id]=0;days[g.id]=new Set();count[g.id]=0;});
+    history.forEach(session=>{
+      if(session.stop===null || !ids.has(session.gameId))return;
+      const time=new Date(session.start).getTime();
+      if(!Number.isFinite(time))return;
+      const id=session.gameId,ms=session.durationMs||0;
+      first[id]=Math.min(first[id]??Infinity,time);
+      if(period==='all' || (time>=cur.start.getTime() && time<=cur.end.getTime())) {
+        total[id]+=ms;count[id]++;days[id].add(dateKey(session.start));
+      }
+      if(prev.start && time>=prev.start.getTime() && time<=prev.end.getTime())previous[id]+=ms;
+    });
+    const sortTime=(a,b)=>total[b.id]-total[a.id] || a.name.localeCompare(b.name);
+    const ranked=allowed.filter(g=>total[g.id]>0).sort(sortTime);
+    const movers=prev.start?ranked.filter(g=>total[g.id]>previous[g.id]).sort((a,b)=>(total[b.id]-previous[b.id])-(total[a.id]-previous[a.id]) || sortTime(a,b)).slice(0,3):[];
+    const consistent=allowed.filter(g=>count[g.id]>0).sort((a,b)=>days[b.id].size-days[a.id].size || sortTime(a,b)).slice(0,5);
+    const discoveries=allowed.filter(g=>count[g.id]>0 && (period==='all' || (first[g.id]>=cur.start.getTime() && first[g.id]<=cur.end.getTime())))
+      .sort((a,b)=>first[b.id]-first[a.id] || sortTime(a,b));
+    const sum=ranked.reduce((n,g)=>n+total[g.id],0);
+    const split=ranked.length?[{label:ranked[0].name,ms:total[ranked[0].id]},{label:'Next two games',ms:ranked.slice(1,3).reduce((n,g)=>n+total[g.id],0)},{label:'Other games',ms:ranked.slice(3).reduce((n,g)=>n+total[g.id],0)}].filter(x=>x.ms>0):[];
+    return {ranked,movers,consistent,discoveries,total,previous,days,count,first,sum,split};
+  }
+  function clearTopInsights(message) {
+    ['top-movers','top-consistent','top-podium','top-discoveries','top-time-split'].forEach(id=>{
+      document.getElementById(id).innerHTML='<p class="top-insight-note">'+escHtml(message)+'</p>';
+    });
+  }
+  function renderTopInsights(period,cur,prev) {
+    const data=buildTopInsights(period,cur,prev);
+    const link=game=>'<button type="button" class="top-game-link" data-top-game="'+escHtml(game.id)+'">'+escHtml(game.name)+'</button>';
+    const list=(items,body,empty)=>items.length?'<ul class="top-insight-list">'+items.map(body).join('')+'</ul>':'<p class="top-insight-note">'+empty+'</p>';
+    document.getElementById('top-movers').innerHTML=list(data.movers,g=>'<li>'+link(g)+'<small>+'+fmtDurationShort(data.total[g.id]-data.previous[g.id])+' vs previous period'+(data.previous[g.id]===0?' &middot; New this period':'')+'</small></li>',prev.start?'No games gained playtime compared with the previous period.':'Choose a dated period to see changes against the previous period.');
+    document.getElementById('top-consistent').innerHTML=list(data.consistent,g=>'<li>'+link(g)+'<small>'+data.days[g.id].size+' day'+(data.days[g.id].size===1?'':'s')+' played &middot; '+fmtDurationShort(data.total[g.id])+'</small></li>','No completed sessions in this period.');
+    document.getElementById('top-podium').innerHTML=list(data.ranked.slice(0,3),(g)=>{
+      const rank=data.ranked.indexOf(g)+1;
+      const medal=['&#129351;','&#129352;','&#129353;'][rank-1];
+      const cover=g.image?'<img class="top-podium-cover" src="'+escHtml(g.image)+'" alt="" loading="lazy">':'<span class="top-podium-cover top-podium-fallback" aria-hidden="true">'+escHtml(g.name.slice(0,1).toUpperCase())+'</span>';
+      return '<li class="top-podium-item">'+cover+'<div class="top-podium-details">'+link(g)+'<small>'+medal+' #'+rank+' &middot; '+fmtDurationShort(data.total[g.id])+'</small></div></li>';
+    },'Play a game to build your podium.');
+    const discoveryNote=data.discoveries.length>5?'<p class="top-insight-note">Showing the five most recent of '+data.discoveries.length+' discoveries.</p>':period==='all'?'<p class="top-insight-note">Your most recently discovered games across all history.</p>':'';
+    document.getElementById('top-discoveries').innerHTML=discoveryNote+list(data.discoveries.slice(0,5),g=>'<li>'+link(g)+'<small>First played '+escHtml(fmtDateShort(new Date(data.first[g.id]).toISOString()))+' &middot; '+data.count[g.id]+' session'+(data.count[g.id]===1?'':'s')+' &middot; '+fmtDurationShort(data.total[g.id])+'</small></li>','No games were played for the first time in this period.');
+    const pct=ms=>{const p=ms/data.sum*100;return p<0.1?'&lt;0.1':p.toFixed(1).replace(/\.0$/,'');};
+    document.getElementById('top-time-split').innerHTML=data.sum?'<div class="top-split-track" aria-hidden="true">'+data.split.map((part,i)=>'<span style="width:'+(part.ms/data.sum*100)+'%;opacity:'+([1,.65,.35][i])+'"></span>').join('')+'</div><ul class="top-split-legend">'+data.split.map((part,i)=>'<li><i aria-hidden="true" style="opacity:'+([1,.65,.35][i])+'"></i><span>'+escHtml(part.label)+'</span><strong>'+pct(part.ms)+'%</strong></li>').join('')+'</ul>':'<p class="top-insight-note">No playtime in this period.</p>';
+  }
+
   function renderTop() {
     const container = document.getElementById('top-list');
     if (!container) return;
@@ -6911,6 +6998,7 @@ opacity: 0.18;
     document.getElementById('top-custom-fields').hidden = period !== 'custom';
     document.getElementById('top-include-archived').checked = settings.topIncludeArchived === true;
     if (period === 'custom' && !topCustomDates()) {
+      clearTopInsights('Choose a valid custom date range to see insights.');
       document.getElementById('top-range').textContent = 'Choose valid From and To dates, with To on or after From.';
       document.getElementById('top-summary').innerHTML = '';
       document.getElementById('top-fellout').innerHTML = '';
@@ -6921,6 +7009,7 @@ opacity: 0.18;
     const cur = getPeriodBounds(period, now);
     const prev = getPrevPeriodBounds(period, now);
     const hasTrend = !!prev.start;
+    renderTopInsights(period,cur,prev);
     const champ = period === 'custom' ? { championId:null, streak:0 } : championStreak(now);
 
     const rangeEl = document.getElementById('top-range');

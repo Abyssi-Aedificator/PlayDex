@@ -3,6 +3,9 @@ PlayDex - Changelog
 
 Version 1.6.3
 -------------------
+- Podium covers now zoom proportionally to fill their square thumbnails without empty bars.
+- Top now includes Biggest movers, a cover-art podium, Most consistent games, New discoveries, and a playtime distribution chart, following the selected period and archived-games filter.
+- Top insight cards flank the ranking on wide desktops and stack below it on smaller screens.
 - Reordered desktop tabs to Today, Stats, Top, Games, Badges, Profile, Settings; mobile retains Sessions after Today.
 - Stats cards flow independently in two desktop columns, removing empty spaces below shorter cards.
 - Stats stays available as its own tab on desktop; Today keeps two equal columns with the same maximum width as Profile.
