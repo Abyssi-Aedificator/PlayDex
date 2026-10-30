@@ -1,9 +1,9 @@
 /* PlayDex service worker */
 const SW_VERSION = '1.6.3';
-const CACHE_NAME = 'playdex-v81';
+const CACHE_NAME = 'playdex-v82';
 const UPDATE_CACHE = 'playdex-update-control';
 const APPROVED_KEY = new URL('./__approved-version__', self.registration.scope).href;
-const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './icon-maskable-512.png'];
 
 async function approvedCache() {
   const control = await caches.open(UPDATE_CACHE);

@@ -3,6 +3,8 @@ PlayDex - Changelog
 
 Version 1.6.3
 -------------------
+- The header now uses the P icon as the first letter of PlayDex, with LAYDEX aligned beside it.
+- The default Theme Colour is now the Orange to Red preset, matching the selected orange swatch; saved colour choices are preserved.
 - Fixed question marks appearing instead of date separators in the Top custom-range description.
 - Calendar pickers, including Top custom dates, now follow Week starts on for weekday headers and date placement.
 - Suggested-game artwork stretches to fill the entire dialog background without empty bands.

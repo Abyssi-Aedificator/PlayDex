@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>PlayDex</title>
 <meta name="description" content="PlayDex keeps track of your game sessions, playtime by game, and daily goals. Sync your data to Dropbox and keep it across devices.">
-<meta name="theme-color" content="#0b0d14">
+<meta name="theme-color" content="#fb923c">
 <meta name="color-scheme" content="dark light">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   :root {
-    --accent-violet: #8b5cf6;
+    --accent-violet: #fb923c;
     --accent-cyan: #22d3ee;
     --green: #34d399;
     --red: #f87171;
@@ -38,9 +38,9 @@
     --text: #e7ecf4;
     --text2: #98a2b8;
     --text3: #5c6577;
-    --accent: #a78bfa;
-    --accent-gradient: #a78bfa;
-    --accent-dim: rgba(139, 92, 246, 0.14);
+    --accent: #fb923c;
+    --accent-gradient: #fb923c;
+    --accent-dim: rgba(251, 146, 60, 0.14);
     --green-dim: rgba(52, 211, 153, 0.12);
     --red-dim: rgba(248, 113, 113, 0.14);
     --yellow-dim: rgba(251, 191, 36, 0.12);
@@ -64,9 +64,9 @@
     --text: #0f172a;
     --text2: #475569;
     --text3: #94a3b8;
-    --accent: #7c3aed;
-    --accent-gradient: #7c3aed;
-    --accent-dim: rgba(124, 58, 237, 0.1);
+    --accent: #fb923c;
+    --accent-gradient: #fb923c;
+    --accent-dim: rgba(251, 146, 60, 0.1);
     --green-dim: rgba(16, 185, 129, 0.12);
     --red-dim: rgba(239, 68, 68, 0.12);
     --yellow-dim: rgba(217, 119, 6, 0.12);
@@ -378,6 +378,8 @@
     background-clip: text;
   }
 
+  .app-brand-icon { display:block; width:32px; height:32px; object-fit:contain; flex-shrink:0; }
+  .app-brand-icon + h1 { margin-left:-10px; }
   .app-title {
     display: flex;
     align-items: center;
@@ -3649,7 +3651,7 @@ opacity: 0.18;
   }
   .accent-swatch[data-accent=""] {
     background-image: none;
-    background-color: #9333ea;
+    background-color: #fb923c;
   }
   /* Grey needs a different value per theme to stay readable, so preview it
      with the same colours applyAccent() actually uses for the current theme. */
@@ -4638,14 +4640,14 @@ opacity: 0.18;
     document.documentElement.setAttribute('data-ui', material ? 'material' : 'classic');
 
     // Resolve the chosen accent exactly as applyAccent() will.
-    var p = s.accent && PRESETS[s.accent];
+    var p = (s.accent && PRESETS[s.accent]) || PRESETS.sunset;
     var light = t === 'light';
     var c1 = null, c2 = null;
     if (p) {
       c1 = (light && p[2]) ? p[2] : p[0];
       c2 = (light && p[3]) ? p[3] : p[1];
     } else if (material) {
-      c1 = c2 = light ? '#7c3aed' : '#a78bfa';
+      c1 = PRESETS.sunset[0]; c2 = PRESETS.sunset[1];
     }
     // No preset and Classic: the stylesheet defaults already are the right
     // colour, so leave everything alone (matches applyAccent()'s cleanup path).
@@ -4720,7 +4722,8 @@ opacity: 0.18;
 
 <header>
   <div class="app-title">
-    <h1>PLAYDEX</h1>
+    <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
+    <h1 aria-label="PlayDex">LAYDEX</h1>
     <span class="version-badge">1.6.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
@@ -6103,9 +6106,9 @@ opacity: 0.18;
 
   // The untoned source colour for the theme: the chosen accent, or the default.
   function accentSourceHex(theme) {
-    const preset = settings.accent && ACCENT_PRESETS[settings.accent];
+    const preset = (settings.accent && ACCENT_PRESETS[settings.accent]) || ACCENT_PRESETS.sunset;
     if (preset) return (theme === 'light' && preset.lightC1) ? preset.lightC1 : preset.c1;
-    return theme === 'light' ? '#7c3aed' : '#a78bfa';
+    return ACCENT_PRESETS.sunset.c1;
   }
 
   function m3Roles(theme) {
@@ -6197,7 +6200,7 @@ opacity: 0.18;
 
   function applyAccent(theme) {
     const root = document.documentElement;
-    const preset = settings.accent && ACCENT_PRESETS[settings.accent];
+    const preset = (settings.accent && ACCENT_PRESETS[settings.accent]) || ACCENT_PRESETS.sunset;
     const material = settings.uiStyle === 'material';
     if (preset || material) {
       let c1 = preset ? ((theme === 'light' && preset.lightC1) ? preset.lightC1 : preset.c1) : accentSourceHex(theme);
