@@ -491,6 +491,11 @@
   }
   .dash-session:has(.session-note) { flex-wrap:wrap; }
   .dash-session .session-note { flex-basis:100%; }
+  .recap-ranking,.overlap-list { list-style:none; padding:0; margin:12px 0; }
+  #overlap-modal { z-index:260; }
+  .overlap-list { max-height:240px; overflow:auto; }
+  .overlap-list li { padding:9px 0; border-bottom:1px solid var(--border); font-size:.8rem; overflow-wrap:anywhere; }
+  .overlap-list small { display:block; color:var(--text2); margin-top:4px; }
 
   /* Tabs */
   .tab-bar {
@@ -5353,6 +5358,8 @@ opacity: 0.18;
   </div>
 </div>
 
+
+
 <!-- Delete game confirm modal -->
 <div class="modal-overlay" id="delete-modal">
   <div class="modal">
@@ -5728,6 +5735,8 @@ opacity: 0.18;
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="overlap-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="overlap-title"><h3 id="overlap-title">Overlapping session</h3><p class="backup-hint">These times overlap existing sessions. Cancel to adjust the times, or keep both if the overlap is intentional.</p><ul class="overlap-list" id="overlap-list"></ul><div class="modal-actions"><button class="btn-ghost" id="overlap-cancel">Cancel</button><button class="btn-primary" id="overlap-keep">Keep both</button></div></div></div>
 
 <script>
 /* Boot splash: stays up for a random 1-3s per launch, then fades out.
@@ -7734,6 +7743,31 @@ opacity: 0.18;
     }
   }
 
+  function findSessionOverlaps(start, end, excludeId = null, now = Date.now()) {
+    return sessions.filter(session => session.id !== excludeId && new Date(session.start).getTime() < end &&
+      (session.stop === null ? Math.max(now,new Date(session.start).getTime()) : new Date(session.stop).getTime()) > start);
+  }
+  let overlapPending = false;
+  async function confirmSessionOverlap(start, end, excludeId = null) {
+    if (overlapPending) return false;
+    const conflicts=findSessionOverlaps(start,end,excludeId);
+    if (!conflicts.length) return true;
+    overlapPending=true;
+    const snapshot=JSON.stringify(sessions), modal=document.getElementById('overlap-modal'), restoreFocus=document.activeElement;
+    document.getElementById('overlap-list').innerHTML=conflicts.map(session=>'<li>'+escHtml(session.gameName || 'Game')+'<small>'+escHtml(fmtDateShort(session.start)+' '+fmtTime(session.start)+' - '+(session.stop===null?'Running now':fmtDateShort(session.stop)+' '+fmtTime(session.stop)))+'</small></li>').join('');
+    const accepted=await new Promise(resolve=>{
+      const cancel=document.getElementById('overlap-cancel'),keep=document.getElementById('overlap-keep');
+      const observer=new MutationObserver(()=>{if(!modal.classList.contains('open'))finish(false);});
+      let done=false;
+      function finish(value){if(done)return;done=true;observer.disconnect();cancel.removeEventListener('click',no);keep.removeEventListener('click',yes);modal.classList.remove('open');if(restoreFocus && restoreFocus.focus)restoreFocus.focus();resolve(value);}
+      const no=()=>finish(false),yes=()=>finish(true);
+      cancel.addEventListener('click',no);keep.addEventListener('click',yes);
+      modal.classList.add('open');observer.observe(modal,{attributes:true,attributeFilter:['class']});cancel.focus();
+    });
+    overlapPending=false;
+    if (accepted && JSON.stringify(sessions)!==snapshot) {toast('History changed. Review the times and save again.');return false;}
+    return accepted;
+  }
   function renderStatsTab() {
     const completed = sessions.filter(s => s.stop !== null);
 
@@ -9741,7 +9775,7 @@ opacity: 0.18;
     document.getElementById('add-session-modal').classList.remove('open');
   });
 
-  document.getElementById('add-session-save').addEventListener('click', () => {
+  document.getElementById('add-session-save').addEventListener('click', async () => {
     const gameId = document.getElementById('add-session-game').value;
     const startStr = getCalDateTime(addSessionStartDate, addSessionStartTime);
     const endStr = getCalDateTime(addSessionEndDate, addSessionEndTime);
@@ -9751,6 +9785,8 @@ opacity: 0.18;
     if (!(t2 > t1)) { toast('End must be after start'); return; }
     const game = games.find(g => g.id === gameId);
     if (!game) return;
+    if (!await confirmSessionOverlap(t1,t2)) return;
+    checkStorageFresh();
     const session = {
       id: uid(),
       gameId: game.id,
@@ -9781,7 +9817,7 @@ opacity: 0.18;
     document.getElementById('edit-session-modal').classList.remove('open');
   });
 
-  document.getElementById('edit-session-save').addEventListener('click', () => {
+  document.getElementById('edit-session-save').addEventListener('click', async () => {
     const s = sessions.find(x => x.id === editSessionId);
     if (!s) { document.getElementById('edit-session-modal').classList.remove('open'); return; }
     const startStr = getCalDateTime(editSessionStartDate, editSessionStartTime);
@@ -9792,6 +9828,8 @@ opacity: 0.18;
     const t1 = new Date(sameMinute(startStr, s.start) ? s.start : startStr).getTime();
     const t2 = new Date(sameMinute(endStr, s.stop) ? s.stop : endStr).getTime();
     if (!(t2 > t1)) { toast('End must be after start'); return; }
+    if (!await confirmSessionOverlap(t1,t2,s.id)) return;
+    checkStorageFresh();
     s.pauses = (s.pauses || []).map(p => ({ from: Math.max(t1, new Date(p.from).getTime()), to: Math.min(t2, new Date(p.to).getTime()) }))
       .filter(p => p.to > p.from).sort((a, b) => a.from - b.from)
       .reduce((out, p) => {
