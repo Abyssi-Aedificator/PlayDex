@@ -1,6 +1,25 @@
 PlayDex - Changelog
 ====================
 
+Version 1.6.4
+-------------------
+- Removed the decorative dot beside the splash-screen loading label.
+- Material 3 now has its own tonal splash screen with a rounded icon container, Material typography and progress motion; Classic keeps its current design.
+- The splash screen stays visible for a random 2-5 seconds on each launch.
+- Redesigned the Classic loading screen with the orange P wordmark, a theme-matched launch card, and subtle progress motion that respects reduced motion.
+- Podium covers now zoom proportionally to fill their square thumbnails without empty bars.
+- Top now includes Biggest movers, a cover-art podium, Most consistent games, New discoveries, and a playtime distribution chart, following the selected period and archived-games filter.
+- Top insight cards flank the ranking on wide desktops and stack below it on smaller screens.
+- Reordered desktop tabs to Today, Stats, Top, Games, Badges, Profile, Settings; mobile retains Sessions after Today.
+- Stats cards flow independently in two desktop columns, removing empty spaces below shorter cards.
+- Stats stays available as its own tab on desktop; Today keeps two equal columns with the same maximum width as Profile.
+- The header now uses the P icon as the first letter of PlayDex, with LAYDEX aligned beside it.
+- Adding or editing an overlapping session now warns before saving, with Cancel and Keep both choices.
+- Stats now compares two games side by side, including total time, session count, average length, recent activity, and last played.
+- Stats now offers monthly and yearly recaps with top games, first-time games, busiest day, and comparison with the previous period.
+- Replaced the app icon with the orange folded P across browser tabs, installed app icons, the header, and the loading screen.
+- The default Theme Colour is now the Orange to Red preset, matching the selected orange swatch; saved colour choices are preserved.
+
 Version 1.6.3
 -------------------
 - Fixed question marks appearing instead of date separators in the Top custom-range description.

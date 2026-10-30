@@ -1,0 +1,7 @@
+PlayDex - Low Priority
+======================
+
+Platform tracking
+- Record an optional platform per session (PC, PlayStation, Xbox, Switch, or custom).
+- Show playtime by platform without duplicating games in the library.
+- Preserve the platform in JSON/Dropbox backups and CSV exports; old sessions remain valid.
