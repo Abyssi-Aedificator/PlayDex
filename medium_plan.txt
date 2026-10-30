@@ -1,0 +1,7 @@
+PlayDex - Medium Priority
+=========================
+
+Session splitting
+- Split a completed session at a chosen time; optionally assign the second part to another game.
+- Divide paused intervals correctly, preserve notes and total active duration, and offer Undo.
+- Validate the split lies strictly inside the original session; preserve backup/export compatibility.
