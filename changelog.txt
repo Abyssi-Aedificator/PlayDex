@@ -5,6 +5,7 @@ Version 1.6.3
 -------------------
 - The header now uses the P icon as the first letter of PlayDex, with LAYDEX aligned beside it.
 - Adding or editing an overlapping session now warns before saving, with Cancel and Keep both choices.
+- Stats now compares two games side by side, including total time, session count, average length, recent activity, and last played.
 - The default Theme Colour is now the Orange to Red preset, matching the selected orange swatch; saved colour choices are preserved.
 - Fixed question marks appearing instead of date separators in the Top custom-range description.
 - Calendar pickers, including Top custom dates, now follow Week starts on for weekday headers and date placement.

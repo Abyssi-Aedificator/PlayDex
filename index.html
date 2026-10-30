@@ -491,11 +491,22 @@
   }
   .dash-session:has(.session-note) { flex-wrap:wrap; }
   .dash-session .session-note { flex-basis:100%; }
+
+  .insight-selects { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+  .insight-selects > div { min-width:0; }
+  .insight-selects label { display:block; color:var(--text2); font-size:.75rem; margin-bottom:6px; }
+  .insight-selects select { width:100%; min-width:0; }
+  .comparison-table { width:100%; table-layout:fixed; border-collapse:collapse; font-size:.78rem; }
+  .comparison-table th,.comparison-table td { padding:10px 5px; border-bottom:1px solid var(--border); text-align:right; overflow-wrap:anywhere; }
+  .comparison-table th:first-child { text-align:left; color:var(--text2); font-weight:500; }
+  .comparison-table thead th { color:var(--accent); }
+  .recap-note { color:var(--text2); font-size:.75rem; line-height:1.5; margin:10px 0; }
   .recap-ranking,.overlap-list { list-style:none; padding:0; margin:12px 0; }
   #overlap-modal { z-index:260; }
   .overlap-list { max-height:240px; overflow:auto; }
   .overlap-list li { padding:9px 0; border-bottom:1px solid var(--border); font-size:.8rem; overflow-wrap:anywhere; }
   .overlap-list small { display:block; color:var(--text2); margin-top:4px; }
+  @media(max-width:360px) { .insight-selects { grid-template-columns:minmax(0,1fr); } }
 
   /* Tabs */
   .tab-bar {
@@ -4907,6 +4918,11 @@ opacity: 0.18;
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
     </div>
+    <div class="card" id="comparison-card">
+      <div class="card-header">Compare games</div>
+      <div class="insight-selects"><div><label for="compare-game-a">First game</label><select id="compare-game-a"></select></div><div><label for="compare-game-b">Second game</label><select id="compare-game-b"></select></div></div>
+      <div id="comparison-result" aria-live="polite"></div>
+    </div>
   </div>
 
   <!-- BADGES TAB -->
@@ -7768,7 +7784,30 @@ opacity: 0.18;
     if (accepted && JSON.stringify(sessions)!==snapshot) {toast('History changed. Review the times and save again.');return false;}
     return accepted;
   }
+  function comparisonMetrics(gameId, now = new Date()) {
+    const list=sessions.filter(s=>s.gameId===gameId && s.stop!==null);
+    const total=list.reduce((sum,s)=>sum+(s.durationMs||0),0);
+    const cutoff=new Date(now);cutoff.setDate(cutoff.getDate()-29);cutoff.setHours(0,0,0,0);
+    const recent=list.filter(s=>new Date(s.start)>=cutoff && new Date(s.start)<=now);
+    const last=list.reduce((latest,s)=>Math.max(latest,new Date(s.start).getTime()||0),0);
+    return {total,count:list.length,average:list.length?total/list.length:0,recent:recent.reduce((sum,s)=>sum+(s.durationMs||0),0),days:new Set(recent.map(s=>dateKey(s.start))).size,last};
+  }
+  function renderGameComparison() {
+    const a=document.getElementById('compare-game-a'),b=document.getElementById('compare-game-b'),result=document.getElementById('comparison-result');
+    const sorted=games.slice().sort((a,b)=>a.name.localeCompare(b.name));
+    const options=sorted.map(g=>'<option value="'+escHtml(g.id)+'">'+escHtml(g.name)+(g.archived?' (archived)':'')+'</option>').join('');
+    const previousA=a.value || settings.compareGameA,previousB=b.value || settings.compareGameB;
+    a.innerHTML=options;b.innerHTML=options;
+    a.value=sorted.some(g=>g.id===previousA)?previousA:(sorted[0]?.id||'');
+    b.value=sorted.some(g=>g.id===previousB && g.id!==a.value)?previousB:(sorted.find(g=>g.id!==a.value)?.id||'');
+    a.disabled=b.disabled=sorted.length<2;
+    if(sorted.length<2){result.innerHTML='<p class="recap-note">Add at least two games to compare their history.</p>';return;}
+    const first=games.find(g=>g.id===a.value),second=games.find(g=>g.id===b.value),ma=comparisonMetrics(first.id),mb=comparisonMetrics(second.id);
+    const rows=[['Total playtime',fmtDuration(ma.total),fmtDuration(mb.total)],['Sessions',ma.count,mb.count],['Average session',fmtDurationShort(ma.average),fmtDurationShort(mb.average)],['Last 30 days',fmtDurationShort(ma.recent),fmtDurationShort(mb.recent)],['Days played (30d)',ma.days,mb.days],['Last played',ma.last?fmtDateShort(new Date(ma.last).toISOString()):'Never',mb.last?fmtDateShort(new Date(mb.last).toISOString()):'Never']];
+    result.innerHTML='<table class="comparison-table"><thead><tr><th scope="col">Metric</th><th scope="col">'+escHtml(first.name)+'</th><th scope="col">'+escHtml(second.name)+'</th></tr></thead><tbody>'+rows.map(r=>'<tr><th scope="row">'+r[0]+'</th><td>'+escHtml(String(r[1]))+'</td><td>'+escHtml(String(r[2]))+'</td></tr>').join('')+'</tbody></table>';
+  }
   function renderStatsTab() {
+    renderGameComparison();
     const completed = sessions.filter(s => s.stop !== null);
 
     // Last 30 days playtime chart
@@ -10371,6 +10410,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('dbx-rollback-cancel').addEventListener('click',()=>{dbxRollbackIndex=null; document.getElementById('dbx-rollback-modal').classList.remove('open');});
   document.getElementById('dbx-rollback-confirm').addEventListener('click',dbxRollback);
 
+  ['compare-game-a','compare-game-b'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{
+    settings.compareGameA=document.getElementById('compare-game-a').value;
+    settings.compareGameB=document.getElementById('compare-game-b').value;
+    saveSettings(settings);renderGameComparison();
+  }));
   // --- Initial render ---
   backfillUnlockDates('gentle');
   applyTheme();
