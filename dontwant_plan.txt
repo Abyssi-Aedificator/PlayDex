@@ -1,0 +1,10 @@
+PlayDex - Rejected Ideas
+========================
+
+Ideas listed here are not wanted for this project. Do not propose or implement them unless the user explicitly changes their decision.
+
+Session enjoyment rating
+- Optional 1-5 session ratings and enjoyment comparisons alongside playtime.
+
+Session notes
+- Optional session notes and the Continue where I left off note previews beside start actions.

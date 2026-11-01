@@ -12,7 +12,10 @@ Single-file PWA game-session tracker. No build, lint, test, or typecheck tooling
 | `manifest.webmanifest` | PWA install manifest, identity locked to `/PlayDex/` |
 | `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` | App icons |
 | `README.md` | User-facing docs |
+| `dontwant_plan.txt` | Ideas explicitly rejected for this project |
 | `AGENTS.md` | Repo conventions (this file) |
+
+Before proposing or implementing features, consult `dontwant_plan.txt`. Do not propose or implement its rejected ideas unless the user explicitly changes their decision.
 
 ## Commands
 
