@@ -1,70 +1,49 @@
 PlayDex - Changelog
 ====================
 
-Version 1.6.5
+Version 1.7.0
 -------------------
-- Total Playtime Today shows only total time and session count.
-- Today's Goal sits below weekly rotation, the daily total sits above desktop Sessions, and What should I play sits below Platform.
-- Games have a default platform, sessions retain their platform, Today filters games by platform, and Stats and CSV show platform data.
-- Settings loads Dropbox version history on entry and after a running sync finishes.
-- Today offers a weekly rotation of up to five games, optional playtime targets, progress, and target completion indicators; completed games return next week.
-- What should I play suggests games for 15, 30, or 60 minutes using recent typical session lengths.
-
-Version 1.6.4
--------------------
-- Removed the decorative dot beside the splash-screen loading label.
-- Material 3 now has its own tonal splash screen with a rounded icon container, Material typography and progress motion; Classic keeps its current design.
-- The splash screen stays visible for a random 2-5 seconds on each launch.
-- Redesigned the Classic loading screen with the orange P wordmark, a theme-matched launch card, and subtle progress motion that respects reduced motion.
-- Podium covers now zoom proportionally to fill their square thumbnails without empty bars.
-- Top now includes Biggest movers, a cover-art podium, Most consistent games, New discoveries, and a playtime distribution chart, following the selected period and archived-games filter.
-- Top insight cards flank the ranking on wide desktops and stack below it on smaller screens.
-- Reordered desktop tabs to Today, Stats, Top, Games, Badges, Profile, Settings; mobile retains Sessions after Today.
-- Stats cards flow independently in two desktop columns, removing empty spaces below shorter cards.
-- Stats stays available as its own tab on desktop; Today keeps two equal columns with the same maximum width as Profile.
-- The header now uses the P icon as the first letter of PlayDex, with LAYDEX aligned beside it.
-- Adding or editing an overlapping session now warns before saving, with Cancel and Keep both choices.
-- Stats now compares two games side by side, including total time, session count, average length, recent activity, and last played.
-- Stats now offers monthly and yearly recaps with top games, first-time games, busiest day, and comparison with the previous period.
-- Replaced the app icon with the orange folded P across browser tabs, installed app icons, the header, and the loading screen.
-- The default Theme Colour is now the Orange to Red preset, matching the selected orange swatch; saved colour choices are preserved.
-
-Version 1.6.3
--------------------
-- Fixed question marks appearing instead of date separators in the Top custom-range description.
-- Calendar pickers, including Top custom dates, now follow Week starts on for weekday headers and date placement.
-- Suggested-game artwork stretches to fill the entire dialog background without empty bands.
-- Suggested-game backgrounds now show the full artwork without cropping, with a lighter overlay for better visibility.
-- What should I play now uses the suggested game's cover as its dialog background, with a readable theme-aware overlay and a plain fallback for games without covers.
-- App updates now wait for Update now confirmation; choosing Later keeps the approved version and offers the pending update again when the app reopens.
-- Dropbox keeps a live file plus its five previous changes, with dated version history and confirmed rollback in Settings; rollback preserves the previous live version and a local recovery copy.
-- Game rows now keep action buttons inset within their highlighted background, including Delete, and wrap safely on narrow screens.
-- Include archived games now uses an accent-themed switch and highlighted setting row, matching Classic and Material 3.
-- Top now supports custom From/To dates with the same calendar controls as Sessions and comparison against the preceding equal-length date range.
-- Top can include archived games in rankings, totals, shares, trends, and historical comparisons.
-- The Top tab now shows each game's share of playtime with a bar and the time gap to the next rank; ties are labeled.
-- Click a game in the Top ranking or Fell out section to open its dashboard.
-- Removed game statuses from the library and Edit Game dialog.
-
-Version 1.6.2
--------------------
-- The To date filter now uses the same calendar sizing and positioning as From.
-- Reorganized session filters with aligned labeled fields, a separate Add session button, and responsive filter actions for desktop and mobile.
-- Game statuses now use distinct shades derived from your Theme Colour, with light and dark variants in both interfaces.
-- Added optional session notes in Add/Edit Session, shown in history and game dashboards and included in CSV exports.
-- Sessions can be filtered by game and inclusive date range alongside sync status, with matching totals, Clear filters, and filtered CSV export.
-- Games now have Backlog, Playing, Completed, and Dropped statuses, editable independently of archiving.
-- The bottom navigation stays in place when switching between tabs with and without a page scrollbar.
-- Open tabs refresh when another tab changes stored data, and stale saves are blocked to protect newer history.
-- Editing sessions preserves paused time and unchanged seconds; pause records are trimmed to the edited session times.
+- Added a Daily goal streak stat showing consecutive days hitting your daily goal.
+- Settings offers Sunday or Monday as the first day of the week; calendar pickers, week-based charts, streaks, and resets follow the setting.
+- Moved This Week Review above Last 7 Days in Stats.
+- Dropbox sync detects conflicting backups, protects pending local changes from automatic replacement, and saves an exportable recovery copy before downloading history.
 - Existing Dropbox connections can establish their sync revision without replacing matching local history.
-- Dropbox sync now detects conflicting backups, protects pending local changes from automatic replacement, and saves an exportable recovery copy before downloading history.
-- Moved This Week Review above Last 7 Days in the Stats tab.
-
-Version 1.6.1
--------------------
-- Added a "Daily goal streak" stat showing consecutive days hitting your daily goal.
-- Added option to choose week start day (Sunday or Monday) in Settings; week-based charts, streaks and resets follow the setting.
+- Editing sessions preserves paused time and unchanged seconds; pause records are trimmed to the edited session times.
+- Open tabs refresh when another tab changes stored data, and stale saves are blocked to protect newer history.
+- The bottom navigation stays in place when switching between tabs with and without a page scrollbar.
+- Sessions can be filtered by game, inclusive date range, and sync status, with matching totals, Clear filters, and filtered CSV export.
+- Session filters have aligned labeled fields, a separate Add session button, responsive actions, and matching From and To calendars.
+- Removed game statuses from the library and Edit Game dialog.
+- Top shows each game's share of playtime and the time gap to the next rank, labels ties, and opens game dashboards from ranking and Fell out entries.
+- Top supports custom From/To dates using the Sessions calendar controls, with comparison against the preceding equal-length date range.
+- Top can include archived games in rankings, totals, shares, trends, and historical comparisons through a theme-matched switch.
+- Game action buttons stay inside their highlighted row and wrap safely on narrow screens.
+- Dropbox keeps a live file and its five previous changes, with dated version history and confirmed rollback in Settings; rollback preserves the previous live version and a local recovery copy.
+- App updates wait for Update now confirmation; Later keeps the approved version and offers the pending update again when the app reopens.
+- What should I play uses the suggested game's artwork as the dialog background, stretched to fill it, with a readable theme-aware overlay and a fallback for games without covers.
+- Fixed question marks appearing instead of date separators in the Top custom-range description.
+- Replaced app icons with the orange folded P across browser tabs, installed apps, the header, and the loading screen; the header uses the icon as the first letter of PlayDex.
+- The default Theme Colour is Orange to Red; saved colour choices are preserved.
+- Adding or editing an overlapping session warns before saving, with Cancel and Keep both choices.
+- Stats compares two games by total playtime, session count, average length, recent activity, and last played.
+- Stats offers monthly and yearly recaps with top games, first-time games, busiest day, and comparison with the previous period.
+- Stats stays available as its own desktop tab, with cards flowing independently in two columns; Today uses two equal columns with the same maximum width as Profile.
+- Desktop tabs are ordered Today, Stats, Top, Games, Badges, Profile, Settings; mobile retains Sessions after Today.
+- Top includes Biggest movers, a cover-art podium, Most consistent games, New discoveries, and a playtime distribution chart, following the selected period and archived-games filter.
+- Top insight cards flank the ranking on wide desktops and stack below it on smaller screens; podium covers fill square thumbnails without empty bars.
+- Classic has a theme-matched splash screen with the orange P wordmark and subtle progress motion; Material 3 has its own tonal design, rounded icon container, typography, and progress motion.
+- The splash screen stays visible for a random 2-5 seconds, respects reduced motion, and has no decorative dot beside the loading label.
+- What should I play suggests games for 15, 30, or 60 minutes using typical lengths from recent completed sessions, alongside Random and Least played modes.
+- Settings automatically loads Dropbox version history whenever the tab opens, including after a running sync finishes.
+- Sessions can record PC, PlayStation, Xbox, or Nintendo; Stats shows playtime by platform, and CSV and backups preserve the choice.
+- Edit Game has a platform selector beside Remove cover to set the default for future sessions; Today's full-width Platform selector filters the active game list, with All platforms showing every active game.
+- Today has a device-local weekly rotation of up to five games, with one-tap start, optional weekly playtime targets, and progress from completed sessions following Week starts on.
+- Games disappear from the rotation after reaching their weekly target and return next week with their selection and target preserved; Choose games identifies reached targets and updates progress when targets are edited.
+- The weekly rotation editor is 540px wide on larger screens, with room for game names, progress, and target inputs.
+- Today's Goal sits below This week's rotation and above Start a Game; Total Playtime Today sits above Sessions on desktop and shows only total time and session count.
+- What should I play sits directly below the Platform selector in Start a Game.
+- Removed session notes from Add/Edit Session, history, and CSV exports, along with latest-note previews beside start actions.
+- Removed the platform playtime breakdown from individual game dashboards.
 
 Version 1.6.0
 -------------------

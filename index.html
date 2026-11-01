@@ -327,8 +327,6 @@
   }
 
 
-  .session-note { color:var(--text2); font-size:.8rem; white-space:pre-wrap; overflow-wrap:anywhere; margin-top:5px; }
-  .session-note-input { width:100%; min-height:76px; resize:vertical; padding:11px 14px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font:inherit; font-size:.85rem; }
   .session-platform { display:inline-block; margin-left:6px; color:var(--text2); font-size:.72rem; font-weight:600; }
   .dash-cover-actions select.game-platform-select { flex:1; width:auto; min-width:150px; padding:6px 32px 6px 10px; font-size:.75rem; }
   .platform-summary-row { display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-top:1px solid var(--border); font-size:.82rem; }
@@ -360,8 +358,6 @@
   @container (max-width:280px) {
     .session-filter-fields { grid-template-columns:minmax(0,1fr); }
   }
-  .dash-session:has(.session-note) { flex-wrap:wrap; }
-  .dash-session .session-note { flex-basis:100%; }
 
   .insight-selects { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:16px; }
   .insight-selects > div { min-width:0; }
@@ -4664,7 +4660,7 @@ opacity: 0.18;
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.6.4</span>
+    <span class="version-badge">1.7.0</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5443,7 +5439,6 @@ opacity: 0.18;
         </div>
       </div>
     </div>
-    <div class="field-group"><label for="add-session-note">Notes (optional)</label><textarea class="session-note-input" id="add-session-note" maxlength="1000" placeholder="What did you play or accomplish?"></textarea></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="add-session-cancel">Cancel</button>
       <button class="btn btn-start" id="add-session-save" style="padding:8px 16px;font-size:0.85rem;">Add</button>
@@ -5550,7 +5545,6 @@ opacity: 0.18;
         </div>
       </div>
     </div>
-    <div class="field-group"><label for="edit-session-note">Notes (optional)</label><textarea class="session-note-input" id="edit-session-note" maxlength="1000" placeholder="What did you play or accomplish?"></textarea></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="edit-session-cancel">Cancel</button>
       <button class="btn btn-start" id="edit-session-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -7811,7 +7805,6 @@ opacity: 0.18;
         return '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.platform ? ' <span class="session-platform">' + escHtml(normalizePlatform(s.platform)) + '</span>' : '') + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
-            (s.note ? '<div class="session-note">' + escHtml(s.note) + '</div>' : '') +
             '<div class="session-times">' + (showDate ? '' : fmtDateShort(s.start) + ' \u00b7 ') + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
           (showDate && filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : !showDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + dateKey(s.start)] || 0) + ')</span>' : '') +
@@ -9499,7 +9492,6 @@ opacity: 0.18;
           '<li class="dash-session">' +
             '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + (s.platform ? ' \u00b7 ' + escHtml(normalizePlatform(s.platform)) : '') + '</span>' +
             '<span class="dash-session-dur">' + fmtDuration(s.durationMs) + '</span>' +
-            (s.note ? '<div class="session-note">' + escHtml(s.note) + '</div>' : '') +
           '</li>'
         ).join('') + '</ul>';
     } else {
@@ -9990,7 +9982,6 @@ opacity: 0.18;
     const now = new Date();
     setCalDateTime(addSessionStartDate, addSessionStartTime, new Date(now.getTime() - 3600000));
     setCalDateTime(addSessionEndDate, addSessionEndTime, now);
-    document.getElementById('add-session-note').value = '';
     addSessionPlatformField.value = normalizePlatform(activeGames.find(g => g.id === sel.value)?.platform);
     document.getElementById('add-session-modal').classList.add('open');
   }
@@ -10025,7 +10016,6 @@ opacity: 0.18;
       start: new Date(t1).toISOString(),
       stop: new Date(t2).toISOString(),
       durationMs: t2 - t1,
-      note: document.getElementById('add-session-note').value.trim().slice(0,1000),
       synced: false
     };
     sessions.push(session);
@@ -10038,7 +10028,6 @@ opacity: 0.18;
   // --- Edit session modal ---
   function openEditSessionModal(s) {
     editSessionId = s.id;
-    document.getElementById('edit-session-note').value = s.note || '';
     editSessionPlatformField.value = s.platform || '';
     setCalDateTime(editSessionStartDate, editSessionStartTime, s.start);
     setCalDateTime(editSessionEndDate, editSessionEndTime, s.stop);
@@ -10073,7 +10062,6 @@ opacity: 0.18;
     s.start = new Date(t1).toISOString();
     s.stop = new Date(t2).toISOString();
     s.durationMs = t2 - t1 - totalPausedMs(s, t2);
-    s.note = document.getElementById('edit-session-note').value.trim().slice(0,1000);
     s.platform = editSessionPlatformField.value;
     saveSessions(sessions);
     toast('Session updated');
@@ -10132,7 +10120,7 @@ opacity: 0.18;
   function exportSessionsCsv(rows) {
     const esc = v => '"' + String(v).split('"').join('""') + '"';
     const csv = '\uFEFF' + [
-      ['Date', 'Start', 'End', 'Game', 'Platform', 'Duration', 'Minutes', 'Synced', 'Notes'],
+      ['Date', 'Start', 'End', 'Game', 'Platform', 'Duration', 'Minutes', 'Synced'],
       ...rows.map(s => [
         fmtDate(s.start),
         fmtTime(s.start),
@@ -10142,7 +10130,6 @@ opacity: 0.18;
         fmtDuration(s.durationMs),
         Math.round((s.durationMs || 0) / 60000),
         s.synced ? 'yes' : 'no',
-        s.note || ''
       ])
     ].map(r => r.map(esc).join(',')).join('\r\n');
     triggerDownload('playdex-sessions-' + todayStr() + '.csv', new Blob([csv], { type: 'text/csv;charset=utf-8' }));
@@ -10683,7 +10670,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     deferredInstallPrompt = null;
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.6.4';
+    const APP_VERSION = '1.7.0';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
