@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.6.5
 -------------------
+- Total Playtime Today shows only total time and session count.
 - Today's Goal sits below weekly rotation, the daily total sits above desktop Sessions, and What should I play sits below Platform.
 - Games have a default platform, sessions retain their platform, Today filters games by platform, and Stats and CSV show platform data.
 - Settings loads Dropbox version history on entry and after a running sync finishes.

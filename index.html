@@ -4714,7 +4714,6 @@ opacity: 0.18;
       <div class="card-header">Total Playtime Today</div>
       <div class="big-time" id="today-total">0:00:00</div>
       <div class="big-time-label" id="today-sessions-count">0 sessions</div>
-      <ul class="breakdown-list" id="today-breakdown"></ul>
     </div>
 
 
@@ -7671,13 +7670,7 @@ opacity: 0.18;
 
     // Today totals
     const todaySessions = sessions.filter(s => s.stop !== null && isToday(s.start));
-    let totalMs = 0;
-    const byGame = {};
-    todaySessions.forEach(s => {
-      totalMs += s.durationMs || 0;
-      if (!byGame[s.gameName]) byGame[s.gameName] = 0;
-      byGame[s.gameName] += s.durationMs || 0;
-    });
+    const totalMs = todaySessions.reduce((sum, session) => sum + (session.durationMs || 0), 0);
 
     const ttEl = document.getElementById('today-total');
     ttEl.textContent = fmtDuration(totalMs);
@@ -7685,12 +7678,6 @@ opacity: 0.18;
     void ttEl.offsetWidth;
     ttEl.classList.add('tick');
     document.getElementById('today-sessions-count').textContent = todaySessions.length + ' session' + (todaySessions.length !== 1 ? 's' : '');
-
-    const bl = document.getElementById('today-breakdown');
-    const sorted = Object.entries(byGame).sort((a,b) => b[1] - a[1]);
-    bl.innerHTML = sorted.map(([name, ms], i) =>
-      '<li class="breakdown-item fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms"><span class="breakdown-game">' + escHtml(name) + '</span><span class="breakdown-time">' + fmtDuration(ms) + '</span></li>'
-    ).join('');
 
     // Start game buttons, most recently used first (never-played games last)
     const container = document.getElementById('start-game-buttons');
