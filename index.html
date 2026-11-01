@@ -4709,11 +4709,16 @@ opacity: 0.18;
       <div class="live-chase" id="live-chase" style="display:none"></div>
     </div>
 
+    <div id="today-summary-cards">
     <div class="card">
       <div class="card-header">Total Playtime Today</div>
       <div class="big-time" id="today-total">0:00:00</div>
       <div class="big-time-label" id="today-sessions-count">0 sessions</div>
       <ul class="breakdown-list" id="today-breakdown"></ul>
+    </div>
+
+
+
     </div>
 
     <div class="card" id="weekly-rotation-card">
@@ -4748,11 +4753,12 @@ opacity: 0.18;
         <input class="target-custom" id="target-custom" type="number" min="1" max="1440" inputmode="numeric" placeholder="Custom min">
       </div>
       <div class="field-group"><label for="start-platform">Platform</label><select id="start-platform"></select></div>
+      <button class="btn-ghost btn-accent" id="pick-game-btn-today" type="button" style="width:100%;margin:0 0 10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
       <div class="game-buttons" id="start-game-buttons">
         <div class="no-games-hint">No games yet. Add one in the Games tab.</div>
       </div>
-      <button class="btn-ghost btn-accent" id="pick-game-btn-today" type="button" style="width:100%;margin-top:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
     </div>
+
   </div>
 
   <!-- SESSIONS TAB -->
@@ -7067,6 +7073,16 @@ opacity: 0.18;
       '</div>';
     }).join('');
   }
+
+  // Keep the daily total above Sessions on desktop and on Today on mobile.
+  const todayDesktopLayout = window.matchMedia('(min-width: 768px)');
+  function layoutTodayCards() {
+    const summary = document.getElementById('today-summary-cards');
+    if (todayDesktopLayout.matches) document.getElementById('tab-sessions').prepend(summary);
+    else document.getElementById('weekly-rotation-card').before(summary);
+  }
+  todayDesktopLayout.addEventListener('change', layoutTodayCards);
+  layoutTodayCards();
 
   // --- Tab switching ---
   function goTab(name) {
