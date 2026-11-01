@@ -6260,6 +6260,7 @@ opacity: 0.18;
   const DBX_KEY = 'playdex.dropbox';
   const DBX_PATH = '/playdex-backup.json';
   let dbxHistoryView = null, dbxRollbackIndex = null;
+  let dbxHistoryLoading = false, dbxHistoryPending = false;
   let dbx;
   try { dbx = JSON.parse(localStorage.getItem(DBX_KEY) || 'null'); } catch {}
   if (!dbx) dbx = { appKey: '', accessToken: '', refreshToken: '', expiresAt: 0, account: '', lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, hideSyncBanner: false, mock: false };
@@ -6298,6 +6299,10 @@ opacity: 0.18;
     dbxSyncOps += on ? 1 : -1;
     const syncing = dbxSyncOps > 0;
     document.querySelectorAll('#dbxUploadBtn, #dbxDownloadBtn, #sync-btn').forEach(b => b.classList.toggle('syncing', syncing));
+    if (!syncing && dbxHistoryPending && currentTab === 'settings') {
+      dbxHistoryPending = false;
+      queueMicrotask(() => { if (currentTab === 'settings') void dbxLoadHistory(); });
+    }
   }
 
   function b64url(buf) {
@@ -6442,13 +6447,21 @@ opacity: 0.18;
     }).join('') : '<p class="backup-hint">No previous changes yet. History starts with your next changed upload.</p>';
   }
   async function dbxLoadHistory() {
-    if (dbxSyncOps) return;
-    if (!await dropboxRefreshIfNeeded()) { toast('Connect Dropbox first'); return; }
-    if (dbxSyncOps) return;
-    dbxSyncSpinning(true);
-    try { dbxHistoryView=await dbxReadLive(); dbxPaintHistory(); }
-    catch(error) { document.getElementById('dbx-history-list').textContent=error.message; }
-    finally { dbxSyncSpinning(false); }
+    if (dbxHistoryLoading) return;
+    if (dbxSyncOps) { dbxHistoryPending = true; return; }
+    const list = document.getElementById('dbx-history-list');
+    list.textContent = 'Loading version history...';
+    dbxHistoryLoading = true;
+    try {
+      if (!await dropboxRefreshIfNeeded()) throw new Error('Dropbox connection expired. Reconnect to load history.');
+      if (dbxSyncOps) { dbxHistoryPending = true; return; }
+      dbxSyncSpinning(true);
+      try { dbxHistoryView = await dbxReadLive(); dbxPaintHistory(); }
+      finally { dbxSyncSpinning(false); }
+    } catch(error) {
+      dbxHistoryView = null;
+      list.textContent = error.message;
+    } finally { dbxHistoryLoading = false; }
   }
   async function dbxRollback() {
     if (dbxSyncOps || dbxRollbackIndex === null || !dbxHistoryView) return;
@@ -7054,6 +7067,7 @@ opacity: 0.18;
     const fab = document.getElementById('m3-fab-log');
     if (fab) fab.classList.toggle('show', name === 'today');
     render();
+    if (name === 'settings' && (dbx.accessToken || dbx.refreshToken)) void dbxLoadHistory();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   document.querySelectorAll('.tab-btn').forEach(btn => {
