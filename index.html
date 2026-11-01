@@ -781,6 +781,10 @@ opacity: 0.18;
   .target-opt:hover { border-color: var(--accent); color: var(--accent); }
   .target-opt.on { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 700; }
 
+  .pick-time-label { text-align:center; color:var(--text2); font-size:.75rem; margin:16px 0 8px; }
+  .pick-time { flex-wrap:wrap; }
+  .pick-time-help { font-size:.68rem; line-height:1.5; color:var(--text2); text-align:center; margin:8px 0; }
+
   /* What should I play? picker */
   .pick-mode {
     display: flex;
@@ -5632,6 +5636,11 @@ opacity: 0.18;
       <button class="pick-opt on" type="button" data-pickmode="random">Random</button>
       <button class="pick-opt" type="button" data-pickmode="least">Least played</button>
     </div>
+    <div class="pick-time-label">How much time do you have?</div>
+    <div class="pick-mode pick-time" id="pick-time" role="group" aria-label="Available playtime">
+      <button class="pick-opt" type="button" data-minutes="0">Any time</button><button class="pick-opt" type="button" data-minutes="15">15 min</button><button class="pick-opt" type="button" data-minutes="30">30 min</button><button class="pick-opt" type="button" data-minutes="60">60 min</button>
+    </div>
+    <p class="pick-time-help">Estimates use your recent completed sessions. Actual playtime may vary.</p>
     <div class="pick-result">
       <div class="pick-name" id="pick-name">&mdash;</div>
       <div class="pick-meta" id="pick-meta"></div>
@@ -7112,8 +7121,20 @@ opacity: 0.18;
   }
 
   // Candidate pool: all active games, or only the least-played ones in 'least' mode
+  function availablePickMinutes() {
+    const minutes=Number(settings.pickAvailableMinutes);
+    return [15,30,60].includes(minutes)?minutes:0;
+  }
+  function typicalSessionMs(gameId) {
+    const recent=sessions.filter(s=>s.gameId===gameId && s.stop!==null && Number.isFinite(s.durationMs) && s.durationMs>0)
+      .sort((a,b)=>new Date(b.start)-new Date(a.start)).slice(0,20).map(s=>s.durationMs).sort((a,b)=>a-b);
+    if(!recent.length)return null;
+    const middle=Math.floor(recent.length/2);
+    return recent.length%2?recent[middle]:(recent[middle-1]+recent[middle])/2;
+  }
   function pickPool() {
-    const list = games.filter(g => !g.archived);
+    const minutes=availablePickMinutes();
+    const list=games.filter(g=>!g.archived && (!minutes || (typicalSessionMs(g.id)!==null && typicalSessionMs(g.id)<=minutes*60000)));
     if (pickMode === 'least' && list.length) {
       let min = Infinity;
       list.forEach(g => { const c = pickCount(g); if (c < min) min = c; });
@@ -7133,6 +7154,11 @@ opacity: 0.18;
   }
 
   function renderPick() {
+    const available=availablePickMinutes();
+    document.querySelectorAll('#pick-time .pick-opt').forEach(button=>{
+      const selected=Number(button.dataset.minutes)===available;
+      button.classList.toggle('on',selected);button.setAttribute('aria-pressed',String(selected));
+    });
     document.querySelectorAll('#pick-mode .pick-opt').forEach(b => b.classList.toggle('on', b.dataset.pickmode === pickMode));
     const nameEl = document.getElementById('pick-name');
     const metaEl = document.getElementById('pick-meta');
@@ -7146,8 +7172,9 @@ opacity: 0.18;
     else dialog.style.removeProperty('--pick-cover');
     if (!g) {
       pickLastId = null;
-      nameEl.textContent = 'No games yet';
-      metaEl.textContent = 'Add one on the Games tab first.';
+      const hasGames=games.some(game=>!game.archived);
+      nameEl.textContent = hasGames ? 'No matching games' : 'No games yet';
+      metaEl.textContent = hasGames ? 'Try more time or Any time. Games without session history are only shown with Any time.' : 'Add one on the Games tab first.';
       startBtn.style.display = 'none';
       againBtn.style.display = 'none';
       return;
@@ -7157,6 +7184,8 @@ opacity: 0.18;
     const n = pickCount(g);
     const last = pickLastPlayed(g);
     metaEl.textContent = n + ' session' + (n !== 1 ? 's' : '') + (last ? ' · last played ' + timeAgo(last) : ' · never played');
+    const typical=typicalSessionMs(g.id);
+    if(typical!==null)metaEl.textContent += ' | Typical session: about '+Math.max(1,Math.round(typical/60000))+' min';
     startBtn.style.display = activeSession ? 'none' : '';
     againBtn.style.display = '';
   }
@@ -7177,6 +7206,9 @@ opacity: 0.18;
     const el = document.getElementById(id);
     if (el) el.addEventListener('click', openPick);
   });
+  document.querySelectorAll('#pick-time .pick-opt').forEach(button=>button.addEventListener('click',()=>{
+    settings.pickAvailableMinutes=Number(button.dataset.minutes);saveSettings(settings);renderPick();
+  }));
   document.getElementById('pick-again').addEventListener('click', renderPick);
   document.getElementById('pick-close').addEventListener('click', () => document.getElementById('pick-modal').classList.remove('open'));
   document.getElementById('pick-start').addEventListener('click', pickStart);

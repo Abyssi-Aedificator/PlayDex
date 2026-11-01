@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.6.5
+-------------------
+- What should I play suggests games for 15, 30, or 60 minutes using recent typical session lengths.
+
 Version 1.6.4
 -------------------
 - Removed the decorative dot beside the splash-screen loading label.
