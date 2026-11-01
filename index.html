@@ -784,6 +784,34 @@ opacity: 0.18;
   .pick-time-label { text-align:center; color:var(--text2); font-size:.75rem; margin:16px 0 8px; }
   .pick-time { flex-wrap:wrap; }
   .pick-time-help { font-size:.68rem; line-height:1.5; color:var(--text2); text-align:center; margin:8px 0; }
+  .rotation-heading { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px; }
+  .rotation-heading .card-header { margin:0; }
+  .rotation-heading button { padding:7px 10px; font-size:.75rem; }
+  .rotation-summary { color:var(--text2); font-size:.76rem; line-height:1.6; margin:0 0 10px; }
+  .rotation-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 0; border-top:1px solid var(--border); }
+  .rotation-game { min-width:0; }
+  .rotation-game strong { display:block; font-size:.85rem; overflow-wrap:anywhere; }
+  .rotation-game small { display:block; color:var(--text2); font-size:.72rem; margin-top:4px; }
+  .rotation-game small.played { color:var(--accent); }
+  .rotation-row button { padding:8px 12px; font-size:.76rem; flex-shrink:0; }
+  .rotation-choices { max-height:45dvh; overflow:auto; margin:12px 0; }
+  .rotation-choice { display:flex; gap:10px; align-items:center; padding:11px 0; border-bottom:1px solid var(--border); cursor:pointer; font-size:.85rem; }
+  .rotation-choice input { width:18px; height:18px; accent-color:var(--accent); flex-shrink:0; }
+  .rotation-choice span { overflow-wrap:anywhere; }
+  .rotation-choice > label { display:flex; align-items:center; gap:10px; flex:1; min-width:0; cursor:pointer; }
+  .rotation-choice .rotation-target-label { flex:0 0 100px; display:block; color:var(--text2); font-size:.7rem; }
+  .rotation-choice input.rotation-target { width:100%; height:auto; margin-top:4px; padding:8px; font-size:.8rem; }
+  .rotation-target:disabled { opacity:.4; }
+  .rotation-game { flex:1; }
+  .rotation-game .progress-track { margin-top:7px; height:5px; }
+  .rotation-target-status { display:block; margin-top:5px; color:var(--text2); font-size:.7rem; line-height:1.5; }
+  .rotation-target-status.reached { color:var(--accent); font-weight:600; }
+  #rotation-modal .modal { max-width:540px; }
+  #rotation-choices { padding-right:8px; }
+  @media(min-width:600px) {
+    .rotation-choice { gap:20px; }
+    .rotation-choice .rotation-target-label { flex-basis:140px; }
+  }
 
   /* What should I play? picker */
   .pick-mode {
@@ -4683,6 +4711,10 @@ opacity: 0.18;
       <ul class="breakdown-list" id="today-breakdown"></ul>
     </div>
 
+    <div class="card" id="weekly-rotation-card">
+      <div class="rotation-heading"><div class="card-header">This week's rotation</div><button class="btn-ghost" id="rotation-manage" type="button">Choose games</button></div>
+      <p class="rotation-summary" id="rotation-summary"></p><div id="rotation-list"></div>
+    </div>
     <div class="card">
       <div class="card-header">Today&rsquo;s Goal</div>
       <div class="goal-header">
@@ -5627,6 +5659,8 @@ opacity: 0.18;
     </div>
   </div>
 </div>
+
+<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose up to five games to focus on. Set optional weekly targets in minutes. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
 
 <!-- What should I play? picker -->
 <div class="modal-overlay" id="pick-modal">
@@ -7441,7 +7475,62 @@ opacity: 0.18;
     setTimeout(cleanup, 350);
   }
 
+  function rotationGameIds() {
+    const selected=Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[];
+    const available=new Set(games.filter(g=>!g.archived).map(g=>g.id));
+    return [...new Set(selected)].filter(id=>available.has(id)).slice(0,5);
+  }
+  function rotationWeekProgress(ids,now=new Date()) {
+    const bounds=getWeekBounds(now),result={};ids.forEach(id=>result[id]={count:0,ms:0});
+    sessions.forEach(session=>{
+      const start=new Date(session.start);
+      if(result[session.gameId] && session.stop!==null && session.durationMs>0 && start>=bounds.start && start<=bounds.end && start<=now){result[session.gameId].count++;result[session.gameId].ms+=session.durationMs;}
+    });
+    return {bounds,games:result,played:ids.filter(id=>result[id].count>0).length};
+  }
+  function rotationTargetMinutes(id) {
+    const value=Number(settings.weeklyRotationTargets?.[id]);
+    return Number.isInteger(value) && value>0 && value<=10080 ? value : 0;
+  }
+  function renderWeeklyRotation() {
+    const ids=rotationGameIds(),progress=rotationWeekProgress(ids);
+    const remaining=ids.filter(id=>!rotationTargetMinutes(id) || progress.games[id].ms<rotationTargetMinutes(id)*60000);
+    const reached=ids.length-remaining.length;
+    document.getElementById('rotation-summary').textContent=ids.length?progress.played+' of '+ids.length+' played this week'+(reached?' | '+reached+' target'+(reached===1?'':'s')+' reached':'')+' | '+fmtDayMonth(progress.bounds.start)+' - '+fmtDayMonth(progress.bounds.end):'Choose a few games for this week. Play one completed session to check a game off.';
+    const list=document.getElementById('rotation-list');
+    list.innerHTML=ids.length && !remaining.length ? '<p class="backup-hint">All weekly targets reached! Your games return next week.</p>' : remaining.map(id=>{
+      const game=games.find(g=>g.id===id),entry=progress.games[id],running=activeSession && activeSession.gameId===id;
+      const target=rotationTargetMinutes(id),pct=target?Math.min(100,Math.floor(entry.ms/(target*60000)*100)):0;
+      const targetHtml=target?'<small>'+fmtDurationShort(entry.ms)+' / '+fmtDurationShort(target*60000)+(pct===100?' &middot; Target reached':' &middot; '+pct+'%')+'</small><div class="progress-track" role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'';
+      return '<div class="rotation-row"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong><small class="'+(entry.count?'played':'')+'">'+(entry.count?'&#10003; Played this week &middot; '+fmtDurationShort(entry.ms):'Not played yet this week')+'</small>'+targetHtml+'</div><button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'"'+(activeSession?' disabled':'')+'>'+(running?'Playing':'Start')+'</button></div>';
+    }).join('');
+  }
+  function rotationSelectionCount() {
+    const count=document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked').length;
+    document.getElementById('rotation-selection-count').textContent=count+' of 5 selected';
+    updateRotationTargetStatuses();
+  }
+  function updateRotationTargetStatuses() {
+    const rows=[...document.querySelectorAll('#rotation-choices .rotation-choice')];
+    const progress=rotationWeekProgress(rows.map(row=>row.querySelector('input[type="checkbox"]').value));
+    rows.forEach(row=>{
+      const checkbox=row.querySelector('input[type="checkbox"]'),input=row.querySelector('.rotation-target'),status=row.querySelector('.rotation-target-status');
+      const target=Number(input.value),played=progress.games[checkbox.value].ms;
+      const valid=checkbox.checked && Number.isInteger(target) && target>0 && target<=10080;
+      const reached=valid && played>=target*60000;
+      status.classList.toggle('reached',reached);
+      status.textContent=valid?(reached?'\u2713 Target reached \u00b7 ':'')+fmtDurationShort(played)+' / '+fmtDurationShort(target*60000)+(reached?'':' this week'):'';
+    });
+  }
+  function openRotationEditor() {
+    const ids=new Set(rotationGameIds()),active=games.filter(g=>!g.archived).sort((a,b)=>a.name.localeCompare(b.name));
+    if(!active.length){toast('Add a game first');return;}
+    document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (min)<input class="rotation-target" type="number" min="1" max="10080" step="1" placeholder="Optional" value="'+(rotationTargetMinutes(g.id)||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label></div>').join('');
+    rotationSelectionCount();document.getElementById('rotation-modal').classList.add('open');
+  }
+
   function renderTodayTab() {
+    renderWeeklyRotation();
     const wasActive = lastHadActiveSession;
     const isActive = !!activeSession;
     const animating = cardAnimating;
@@ -10160,6 +10249,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       refreshQuestCountdown();
       if (todayStr() !== lastQuestDay) {
         lastQuestDay = todayStr();
+        renderWeeklyRotation();
         renderAchievementsTab();
       }
     }
@@ -10435,6 +10525,34 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }));
   document.getElementById('recap-mode').addEventListener('change',()=>{document.getElementById('recap-period').value='';renderGamingRecap();});
   document.getElementById('recap-period').addEventListener('change',renderGamingRecap);
+
+  document.getElementById('rotation-manage').addEventListener('click',openRotationEditor);
+  document.getElementById('rotation-choices').addEventListener('input',updateRotationTargetStatuses);
+  document.getElementById('rotation-choices').addEventListener('change',event=>{
+    if(event.target.type==='checkbox') {
+      if(event.target.checked && document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked').length>5){event.target.checked=false;toast('Choose up to five games');}
+      event.target.closest('.rotation-choice').querySelector('.rotation-target').disabled=!event.target.checked;
+    }
+    rotationSelectionCount();
+  });
+  document.getElementById('rotation-cancel').addEventListener('click',()=>document.getElementById('rotation-modal').classList.remove('open'));
+  document.getElementById('rotation-save').addEventListener('click',()=>{
+    const chosen=Array.from(document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')).filter(input=>games.some(g=>g.id===input.value && !g.archived)).slice(0,5);
+    const targets={};
+    for(const checkbox of chosen) {
+      const input=checkbox.closest('.rotation-choice').querySelector('.rotation-target');
+      if(input.value==='') continue;
+      if(!input.checkValidity()) { input.reportValidity(); return; }
+      targets[checkbox.value]=Number(input.value);
+    }
+    settings.weeklyRotation=chosen.map(input=>input.value);
+    settings.weeklyRotationTargets=targets;
+    saveSettings(settings);renderWeeklyRotation();document.getElementById('rotation-modal').classList.remove('open');toast('Weekly rotation saved');
+  });
+  document.getElementById('rotation-list').addEventListener('click',event=>{
+    const button=event.target.closest('button[data-rotation-start]');
+    if(button)startGame(button.dataset.rotationStart);
+  });
 
   // --- Initial render ---
   backfillUnlockDates('gentle');
