@@ -329,6 +329,10 @@
 
   .session-note { color:var(--text2); font-size:.8rem; white-space:pre-wrap; overflow-wrap:anywhere; margin-top:5px; }
   .session-note-input { width:100%; min-height:76px; resize:vertical; padding:11px 14px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font:inherit; font-size:.85rem; }
+  .session-platform { display:inline-block; margin-left:6px; color:var(--text2); font-size:.72rem; font-weight:600; }
+  .dash-cover-actions select.game-platform-select { flex:1; width:auto; min-width:150px; padding:6px 32px 6px 10px; font-size:.75rem; }
+  .platform-summary-row { display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-top:1px solid var(--border); font-size:.82rem; }
+  .platform-summary-row span:first-child { min-width:0; overflow-wrap:anywhere; }
   .session-filter-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
   .session-filter-heading .card-header { margin:0; }
   .session-filter-heading #btn-add-session { padding:9px 13px; font-size:.8rem; white-space:nowrap; }
@@ -4681,6 +4685,7 @@ opacity: 0.18;
     <div id="active-session-card" class="card active-session" style="display:none">
       <div class="live-label"><span class="live-dot"></span> <span id="live-text">LIVE</span></div>
       <div class="game-name" id="active-game-name"></div>
+      <div class="session-platform" id="active-platform" style="display:none;margin:0 0 8px;"></div>
       <div class="active-session-clock">
         <div class="clock-side side-start">
           <span class="clock-label">Start Time</span>
@@ -4742,6 +4747,7 @@ opacity: 0.18;
         </div>
         <input class="target-custom" id="target-custom" type="number" min="1" max="1440" inputmode="numeric" placeholder="Custom min">
       </div>
+      <div class="field-group"><label for="start-platform">Platform</label><select id="start-platform"></select></div>
       <div class="game-buttons" id="start-game-buttons">
         <div class="no-games-hint">No games yet. Add one in the Games tab.</div>
       </div>
@@ -4842,6 +4848,7 @@ opacity: 0.18;
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
     </div>
+    <div class="card" id="platform-stats-card"><div class="card-header">Playtime by Platform</div><div id="platform-stats"></div></div>
     <div class="card" id="comparison-card">
       <div class="card-header">Compare games</div>
       <div class="insight-selects"><div><label for="compare-game-a">First game</label><select id="compare-game-a"></select></div><div><label for="compare-game-b">Second game</label><select id="compare-game-b"></select></div></div>
@@ -5296,6 +5303,7 @@ opacity: 0.18;
       <input type="text" id="cover-url" class="cover-url" placeholder="https://image url" autocomplete="off" maxlength="500">
       <button class="btn-ghost" id="cover-url-btn" style="padding:6px 10px;font-size:0.75rem;">Set URL</button>
       <button class="btn-ghost btn-danger" id="cover-remove-btn" style="padding:6px 10px;font-size:0.75rem;">Remove</button>
+      <select id="rename-platform" class="game-platform-select" aria-label="Default platform" title="Default platform for new sessions"></select>
     </div>
     <div class="m3-field">
       <input type="text" id="rename-input" maxlength="50">
@@ -5335,6 +5343,7 @@ opacity: 0.18;
       <label for="add-session-game">Game</label>
       <select id="add-session-game"></select>
     </div>
+    <div class="field-group"><label for="add-session-platform">Platform (optional)</label><select id="add-session-platform"></select></div>
     <div class="field-group">
       <label for="add-session-time">Start</label>
       <div class="field-date-grid">
@@ -5441,6 +5450,7 @@ opacity: 0.18;
 <div class="modal-overlay" id="edit-session-modal">
   <div class="modal">
     <h3>Edit Session</h3>
+    <div class="field-group"><label for="edit-session-platform">Platform (optional)</label><select id="edit-session-platform"></select></div>
     <div class="field-group">
       <label for="edit-session-time">Start</label>
       <div class="field-date-grid">
@@ -5762,7 +5772,7 @@ opacity: 0.18;
 
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
-      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags) };
+      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform) };
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -7118,6 +7128,49 @@ opacity: 0.18;
   });
 
   // --- Start game ---
+  const PLATFORM_CHOICES = ['PC', 'PlayStation', 'Xbox', 'Nintendo'];
+  function normalizePlatform(value) {
+    const platform = typeof value === 'string' ? value.trim().slice(0, 40) : '';
+    return platform === 'Switch' ? 'Nintendo' : platform;
+  }
+  function setupPlatformField(id) {
+    const select = document.getElementById(id);
+    select.innerHTML = '<option value="">Unspecified</option>' + PLATFORM_CHOICES.map(name =>
+      '<option value="' + name + '">' + name + '</option>').join('');
+    return {
+      get value() { return normalizePlatform(select.value); },
+      set value(value) {
+        const platform = normalizePlatform(value);
+        select.querySelector('option[data-legacy]')?.remove();
+        if (platform && !PLATFORM_CHOICES.includes(platform)) {
+          const saved = document.createElement('option');
+          saved.value = platform;
+          saved.textContent = platform + ' (saved)';
+          saved.dataset.legacy = 'true';
+          select.append(saved);
+        }
+        select.value = platform;
+      }
+    };
+  }
+  const startPlatformField = setupPlatformField('start-platform');
+  document.getElementById('start-platform').options[0].textContent = 'All platforms';
+  document.getElementById('start-platform').addEventListener('change', () => renderTodayTab());
+  const addSessionPlatformField = setupPlatformField('add-session-platform');
+  const editSessionPlatformField = setupPlatformField('edit-session-platform');
+  const gamePlatformField = setupPlatformField('rename-platform');
+  function platformTotals(rows) {
+    const totals = new Map();
+    rows.filter(s => s.stop !== null).forEach(s => {
+      const name = normalizePlatform(s.platform) || 'Unspecified';
+      totals.set(name, (totals.get(name) || 0) + (s.durationMs || 0));
+    });
+    return [...totals].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  }
+  function platformRowsHtml(rows) {
+    const totals = platformTotals(rows);
+    return totals.length ? totals.map(([name, ms]) => '<div class="platform-summary-row"><span>' + escHtml(name) + '</span><strong>' + fmtDurationShort(ms) + '</strong></div>').join('') : '<p class="backup-hint">No completed sessions yet.</p>';
+  }
   function startGame(gameId) {
     if (activeSession) { toast('Stop the current session first'); return; }
     const game = games.find(g => g.id === gameId);
@@ -7126,6 +7179,7 @@ opacity: 0.18;
       id: uid(),
       gameId: game.id,
       gameName: game.name,
+      platform: normalizePlatform(game.platform),
       start: new Date().toISOString(),
       stop: null,
       durationMs: null,
@@ -7554,6 +7608,9 @@ opacity: 0.18;
 
     if (isActive) {
       document.getElementById('active-game-name').textContent = activeSession.gameName;
+      const activePlatform = document.getElementById('active-platform');
+      activePlatform.textContent = normalizePlatform(activeSession.platform);
+      activePlatform.style.display = activePlatform.textContent ? '' : 'none';
       document.getElementById('active-start').textContent = fmtTime(activeSession.start);
       document.getElementById('target-progress').style.display = activeSession.targetMs ? '' : 'none';
       updateLiveCardPauseState();
@@ -7621,7 +7678,8 @@ opacity: 0.18;
 
     // Start game buttons, most recently used first (never-played games last)
     const container = document.getElementById('start-game-buttons');
-    const activeGames = games.filter(g => !g.archived);
+    const platformFilter = startPlatformField.value;
+    const activeGames = games.filter(g => !g.archived && (!platformFilter || normalizePlatform(g.platform) === platformFilter));
     const lastUsed = new Map();
     sessions.forEach(s => {
       const t = new Date(s.start).getTime();
@@ -7634,7 +7692,9 @@ opacity: 0.18;
       return lb - la;
     });
     if (activeGames.length === 0) {
-      container.innerHTML = '<div class="no-games-hint">No games yet. Add one below.</div>';
+      container.innerHTML = platformFilter
+        ? '<div class="no-games-hint">No games on this platform. Set a game\'s platform in Edit Game, or choose All platforms.</div>'
+        : '<div class="no-games-hint">No games yet. Add one in the Games tab.</div>';
     } else {
       container.innerHTML = sortedGames.map((g, i) =>
         '<button class="btn btn-start-game fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms" data-game-id="' + g.id + '">' +
@@ -7747,7 +7807,7 @@ opacity: 0.18;
         const pauseTag = pi.count > 0 ? '<span class="session-pause-info" title="Paused">&#9208; ' + pi.count + (pi.totalMs > 0 ? ' \u00b7 ' + fmtDurationShort(pi.totalMs) : '') + '</span>' : '';
         return '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
-            '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
+            '<div class="session-game">' + escHtml(s.gameName) + (s.platform ? ' <span class="session-platform">' + escHtml(normalizePlatform(s.platform)) + '</span>' : '') + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
             (s.note ? '<div class="session-note">' + escHtml(s.note) + '</div>' : '') +
             '<div class="session-times">' + (showDate ? '' : fmtDateShort(s.start) + ' \u00b7 ') + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
@@ -7930,6 +7990,7 @@ opacity: 0.18;
     renderGameComparison();
     renderGamingRecap();
     const completed = sessions.filter(s => s.stop !== null);
+    document.getElementById('platform-stats').innerHTML = platformRowsHtml(completed);
 
     // Last 30 days playtime chart
     const monthDays = [];
@@ -9433,7 +9494,7 @@ opacity: 0.18;
       html += '<div class="modal-subheader">Last 5 sessions</div><ul class="dash-sessions">' +
         recent.map(s =>
           '<li class="dash-session">' +
-            '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + '</span>' +
+            '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + (s.platform ? ' \u00b7 ' + escHtml(normalizePlatform(s.platform)) : '') + '</span>' +
             '<span class="dash-session-dur">' + fmtDuration(s.durationMs) + '</span>' +
             (s.note ? '<div class="session-note">' + escHtml(s.note) + '</div>' : '') +
           '</li>'
@@ -9594,6 +9655,7 @@ opacity: 0.18;
     pendingRenameGameId = id;
     document.getElementById('rename-input').value = game.name;
     document.getElementById('rename-tags').value = (game.tags || []).join(', ');
+    gamePlatformField.value = game.platform || '';
     paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
     const urlField = document.getElementById('cover-url');
     urlField.value = (game.image && !/^data:image\//.test(game.image)) ? game.image : '';
@@ -9612,6 +9674,7 @@ opacity: 0.18;
     if (game) {
       game.name = name;
       game.tags = normalizeTags(document.getElementById('rename-tags').value.split(','));
+      game.platform = gamePlatformField.value;
       saveGames(games);
       sessions.forEach(s => { if (s.gameId === game.id) s.gameName = name; });
       saveSessions(sessions);
@@ -9925,10 +9988,14 @@ opacity: 0.18;
     setCalDateTime(addSessionStartDate, addSessionStartTime, new Date(now.getTime() - 3600000));
     setCalDateTime(addSessionEndDate, addSessionEndTime, now);
     document.getElementById('add-session-note').value = '';
+    addSessionPlatformField.value = normalizePlatform(activeGames.find(g => g.id === sel.value)?.platform);
     document.getElementById('add-session-modal').classList.add('open');
   }
 
   document.getElementById('btn-add-session').addEventListener('click', openAddSessionModal);
+  document.getElementById('add-session-game').addEventListener('change', event => {
+    addSessionPlatformField.value = normalizePlatform(games.find(g => g.id === event.target.value)?.platform);
+  });
   document.getElementById('m3-fab-log').addEventListener('click', openAddSessionModal);
 
   document.getElementById('add-session-cancel').addEventListener('click', () => {
@@ -9951,6 +10018,7 @@ opacity: 0.18;
       id: uid(),
       gameId: game.id,
       gameName: game.name,
+      platform: addSessionPlatformField.value,
       start: new Date(t1).toISOString(),
       stop: new Date(t2).toISOString(),
       durationMs: t2 - t1,
@@ -9968,6 +10036,7 @@ opacity: 0.18;
   function openEditSessionModal(s) {
     editSessionId = s.id;
     document.getElementById('edit-session-note').value = s.note || '';
+    editSessionPlatformField.value = s.platform || '';
     setCalDateTime(editSessionStartDate, editSessionStartTime, s.start);
     setCalDateTime(editSessionEndDate, editSessionEndTime, s.stop);
     document.getElementById('edit-session-modal').classList.add('open');
@@ -10002,6 +10071,7 @@ opacity: 0.18;
     s.stop = new Date(t2).toISOString();
     s.durationMs = t2 - t1 - totalPausedMs(s, t2);
     s.note = document.getElementById('edit-session-note').value.trim().slice(0,1000);
+    s.platform = editSessionPlatformField.value;
     saveSessions(sessions);
     toast('Session updated');
     document.getElementById('edit-session-modal').classList.remove('open');
@@ -10059,12 +10129,13 @@ opacity: 0.18;
   function exportSessionsCsv(rows) {
     const esc = v => '"' + String(v).split('"').join('""') + '"';
     const csv = '\uFEFF' + [
-      ['Date', 'Start', 'End', 'Game', 'Duration', 'Minutes', 'Synced', 'Notes'],
+      ['Date', 'Start', 'End', 'Game', 'Platform', 'Duration', 'Minutes', 'Synced', 'Notes'],
       ...rows.map(s => [
         fmtDate(s.start),
         fmtTime(s.start),
         s.stop ? fmtTime(s.stop) : '',
         s.gameName,
+        normalizePlatform(s.platform),
         fmtDuration(s.durationMs),
         Math.round((s.durationMs || 0) / 60000),
         s.synced ? 'yes' : 'no',

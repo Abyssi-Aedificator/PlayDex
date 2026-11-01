@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.6.5
 -------------------
+- Games have a default platform, sessions retain their platform, Today filters games by platform, and Stats and CSV show platform data.
 - Settings loads Dropbox version history on entry and after a running sync finishes.
 - Today offers a weekly rotation of up to five games, optional playtime targets, progress, and target completion indicators; completed games return next week.
 - What should I play suggests games for 15, 30, or 60 minutes using recent typical session lengths.
