@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.7.1
 -------------------
+- Settings groups Appearance, Session tracking, Dropbox, and Data with navigation and separated maintenance actions.
 - Top offers an expandable ranking guide and clearer movement badges.
 - Sessions are grouped by date with filtered daily totals and simpler individual rows.
 - Game library rows show square cover thumbnails with themed placeholders and platform badges.

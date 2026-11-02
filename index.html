@@ -3792,6 +3792,14 @@ opacity: 0.18;
   .top-trend { border-radius:6px; padding:4px 6px; background:var(--surface2); }
   .top-trend.up { background:var(--green-dim); }
   .top-trend.down { background:var(--red-dim); }
+  .settings-nav { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+  .settings-nav button { flex:1; min-height:36px; }
+  .settings-section { scroll-margin-top:88px; margin-bottom:28px; }
+  .settings-section > h2 { font-size:1.05rem; font-weight:700; color:var(--text); margin:0 0 12px; }
+  .settings-maintenance-card { border-color:var(--red); }
+  .settings-maintenance-card > .card-header { color:var(--red); }
+  .settings-maintenance-card button { width:100%; margin-bottom:10px; }
+  .settings-risk-actions { border-top:1px solid var(--border); margin-top:18px; padding-top:14px; }
   @media(max-width:899px) {
     .games-filter-heading > span { display:none; }
     #games-filter-toggle { display:block; width:100%; text-align:left; padding:9px 12px; }
@@ -3803,6 +3811,7 @@ opacity: 0.18;
     .session-info { flex-basis:100%; }
     .session-duration { margin-left:0; margin-right:auto; }
     .session-edit,.session-sync,.session-delete { margin-left:0; }
+    .settings-nav button { flex:1 1 40%; }
   }
 
   /* ==========================================================================
@@ -10746,6 +10755,40 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     renderGamesTab();
   });
 
+  function organizeSettings() {
+    const panel=document.getElementById('tab-settings');
+    const cards=[...panel.children].filter(element=>element.classList.contains('card'));
+    const find=title=>cards.find(card=>card.querySelector('.card-header')?.textContent.trim()===title);
+    const appearance=find('Appearance'),live=find('Live session'),library=find('Game list'),dropbox=find('Dropbox Sync'),backup=find('Backup'),maintenance=find('Achievements'),shortcuts=find('Keyboard shortcuts');
+    const sections=[['appearance','Appearance',[appearance]],['tracking','Session tracking',[live,library,shortcuts]],['dropbox','Dropbox',[dropbox]],['data','Data',[backup,maintenance]]];
+    const nav=document.createElement('nav');nav.className='settings-nav';nav.setAttribute('aria-label','Settings sections');
+    panel.prepend(nav);
+    sections.forEach(([id,title,items])=>{
+      const section=document.createElement('section');section.className='settings-section';section.id='settings-'+id;
+      const heading=document.createElement('h2');heading.textContent=title;section.append(heading);
+      items.filter(Boolean).forEach(card=>section.append(card));panel.append(section);
+      const button=document.createElement('button');button.type='button';button.className='btn-ghost';button.textContent=title;
+      button.addEventListener('click',()=>section.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}));nav.append(button);
+    });
+    // Move calendar preferences next to the tracking settings.
+    const calendar=[...appearance.querySelectorAll('.card-header')].find(element=>element.textContent.trim()==='Calendar');
+    if(calendar) {
+      const controls=calendar.nextElementSibling;
+      const card=document.createElement('div');card.className='card';card.append(calendar,controls);
+      document.getElementById('settings-tracking').insertBefore(card,live);
+      calendar.style.marginTop='0';
+    }
+    appearance.querySelector('.card-header').textContent='Theme & interface';
+    live.querySelector('.card-header').textContent='Live sessions';
+    backup.querySelector('.card-header').textContent='Backups & exports';
+    maintenance.classList.add('settings-maintenance-card');maintenance.querySelector('.card-header').textContent='Data maintenance';
+    const importButton=document.getElementById('btn-import');importButton.textContent='Import a backup';importButton.classList.add('btn-danger');
+    const importHint=document.createElement('p');importHint.className='backup-hint';importHint.textContent='Importing replaces your local game library and session history after confirmation.';
+    maintenance.insertBefore(importHint,maintenance.children[1]);maintenance.insertBefore(importButton,importHint.nextSibling);
+    const risk=document.createElement('div');risk.className='settings-risk-actions';
+    risk.append(document.getElementById('dbxDisconnectBtn'));document.getElementById('dbx-connected').append(risk);
+  }
+  organizeSettings();
 
   // --- Initial render ---
   backfillUnlockDates('gentle');
