@@ -3,14 +3,21 @@ PlayDex - Changelog
 
 Version 1.7.1
 -------------------
-- Daily goals and weekly rotation targets accept hours and decimals while preserving existing durations.
-- Weekly rotation uses seven times the daily goal as its budget, shows available time with a bar, and explains over-budget saves.
-- Settings groups Appearance, Session tracking, Dropbox, and Data with navigation and separated maintenance actions.
-- Top offers an expandable ranking guide and clearer movement badges.
-- Sessions are grouped by date with filtered daily totals and simpler individual rows.
+- Saving a daily goal is blocked if its weekly budget cannot cover saved rotation targets, with a message showing the minimum required daily goal.
+- Today's Goal is entered in hours, with decimal support and existing daily goal durations preserved.
+- Saving an over-budget rotation displays how much time to remove and the maximum allowed total, keeping the editor open for corrections.
+- Weekly rotation targets are entered in hours, including decimals, while preserving existing target durations.
+- Weekly rotation and its editor show a progress bar for the unallocated weekly time, updating as targets change.
+- Today's Goal calculates a weekly goal of seven times the daily goal; weekly rotation shows planned and available time and limits combined targets to that budget.
 - Game library rows show square cover thumbnails with themed placeholders and platform badges.
-- Archived games without a cover offer Edit until a cover is added.
-- Games has platform, missing-platform, archive, pinned, and tag filters with a count, removable chips, mobile collapse, and Clear filters.
+- Sessions are grouped by date with daily totals for the current filters and simpler individual rows.
+- Games filters collapse on smaller screens, show an active-filter count, and provide removable filter chips above results.
+- Top replaces its permanent ranking legend with an expandable guide and clearer movement badges.
+- Settings groups controls under Appearance, Session tracking, Dropbox, and Data, with section navigation and visually separated data-maintenance actions.
+- Widened the Games filter panel for easier use on larger screens.
+- Archived games without a cover offer an Edit action; the action disappears after a cover is added.
+- Games has a right-side filter panel for platform, missing platform, active or archived games, pinned games, and tags, with a result count and Clear filters; it stacks above the list on smaller screens.
+- Games has a No platform selected filter with a count, combining with search and tags to find games missing a console or PC assignment.
 - Added spacing between the game name and tags fields in the Classic Edit Game dialog.
 
 Version 1.7.0
