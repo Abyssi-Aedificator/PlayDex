@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.7.2
+-------------------
+- Daily playtime goals accept whole hours only; budget warnings recommend a whole-hour minimum.
+
 Version 1.7.1
 -------------------
 - Saving a daily goal is blocked if its weekly budget cannot cover saved rotation targets, with a message showing the minimum required daily goal.

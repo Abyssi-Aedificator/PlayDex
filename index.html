@@ -5640,10 +5640,10 @@ opacity: 0.18;
 <div class="modal-overlay" id="goal-modal">
   <div class="modal">
     <h3>Daily Playtime Goal</h3>
-    <p style="font-size:0.8rem;color:var(--text2);margin-bottom:12px;">Use decimals for partial hours (0.5 = 30 minutes). Set 0 to disable the goal.</p>
+    <p style="font-size:0.8rem;color:var(--text2);margin-bottom:12px;">Enter whole hours only. Set 0 to disable the goal.</p>
     <div class="field-group">
       <label for="goal-hours">Hours per day</label>
-      <input type="number" id="goal-hours" min="0" max="24" step="any">
+      <input type="number" id="goal-hours" min="0" max="24" step="1">
     </div>
     <p id="goal-budget-error" class="backup-hint" style="color:var(--red);" role="alert" hidden></p>
     <div class="modal-actions">
@@ -10220,7 +10220,7 @@ opacity: 0.18;
 
   // --- Goal modal ---
   document.getElementById('btn-goal-edit').addEventListener('click', () => {
-    document.getElementById('goal-hours').value = Math.round((settings.dailyGoalMinutes || 0)/60*10000)/10000;
+    document.getElementById('goal-hours').value = Math.ceil((settings.dailyGoalMinutes || 0)/60);
     document.getElementById('goal-budget-error').hidden = true;
     document.getElementById('goal-modal').classList.add('open');
   });
@@ -10237,7 +10237,7 @@ opacity: 0.18;
     const weekly = v*7;
     if (planned > weekly) {
       const error = document.getElementById('goal-budget-error');
-      const minimumHours = Math.ceil(Math.ceil(planned/7)/60*100)/100;
+      const minimumHours = Math.ceil(planned/(7*60));
       error.textContent = 'Your rotation plans '+fmtDurationShort(planned*60000)+', but this goal provides '+fmtDurationShort(weekly*60000)+'/week. '+(minimumHours<=24?'Set at least '+minimumHours+' hours per day or reduce your rotation targets.':'Reduce your rotation targets before saving a daily goal.');
       error.hidden = false;
       return;
