@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.7.1
 -------------------
+- Sessions are grouped by date with filtered daily totals and simpler individual rows.
 - Game library rows show square cover thumbnails with themed placeholders and platform badges.
 - Archived games without a cover offer Edit until a cover is added.
 - Games has platform, missing-platform, archive, pinned, and tag filters with a count, removable chips, mobile collapse, and Clear filters.

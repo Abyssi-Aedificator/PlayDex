@@ -3774,6 +3774,9 @@ opacity: 0.18;
   .library-game-cover { width:52px; height:52px; flex:0 0 52px; position:relative; display:grid; place-items:center; background:var(--accent-dim); border:1px solid var(--border); border-radius:12px; overflow:hidden; color:var(--accent); font-size:1.4rem; }
   .library-game-cover img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; }
   .game-platform-badge { display:inline-block; margin-top:5px; border:1px solid var(--border); padding:2px 7px; border-radius:6px; color:var(--text2); font-size:.68rem; font-weight:600; }
+  .session-day-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px; margin:18px 0 2px; background:var(--surface2); border-radius:10px; color:var(--text2); font-size:.78rem; }
+  .session-day-heading strong { color:var(--text); font-weight:600; }
+  .session-day-heading span { font-variant-numeric:tabular-nums; color:var(--accent); }
   .games-filter-chips { display:flex; flex-wrap:wrap; gap:7px; margin:4px 0 12px; }
   .games-filter-chips:empty { display:none; }
   .games-filter-chips button { min-height:32px; max-width:100%; overflow-wrap:anywhere; text-align:left; }
@@ -3789,6 +3792,10 @@ opacity: 0.18;
     .games-filter-panel { padding:12px; }
   }
   @media(max-width:500px) {
+    .session-item { flex-wrap:wrap; gap:8px; }
+    .session-info { flex-basis:100%; }
+    .session-duration { margin-left:0; margin-right:auto; }
+    .session-edit,.session-sync,.session-delete { margin-left:0; }
   }
 
   /* ==========================================================================
@@ -7833,10 +7840,9 @@ opacity: 0.18;
     }
 
     const dayTotals = {};
-    sessions.forEach(s => {
-      if (s.stop === null) return;
-      const key = s.gameId + '|' + dateKey(s.start);
-      dayTotals[key] = (dayTotals[key] || 0) + (s.durationMs || 0);
+    filtered.forEach(session=>{
+      const key=dateKey(session.start);
+      dayTotals[key]=(dayTotals[key]||0)+(session.durationMs||0);
     });
 
     if (filtered.length === 0) {
@@ -7854,12 +7860,13 @@ opacity: 0.18;
       container.innerHTML = filtered.map((s, i) => {
         const pi = sessionPauseInfo(s);
         const pauseTag = pi.count > 0 ? '<span class="session-pause-info" title="Paused">&#9208; ' + pi.count + (pi.totalMs > 0 ? ' \u00b7 ' + fmtDurationShort(pi.totalMs) : '') + '</span>' : '';
-        return '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
+        const day=dateKey(s.start);
+        const heading=i===0 || dateKey(filtered[i-1].start)!==day ? '<div class="session-day-heading"><strong>'+escHtml(fmtDate(s.start))+'</strong><span>'+fmtDuration(dayTotals[day])+'</span></div>' : '';
+        return heading + '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.platform ? ' <span class="session-platform">' + escHtml(normalizePlatform(s.platform)) + '</span>' : '') + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
-            '<div class="session-times">' + (showDate ? '' : fmtDateShort(s.start) + ' \u00b7 ') + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
+            '<div class="session-times">' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
-          (showDate && filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : !showDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + dateKey(s.start)] || 0) + ')</span>' : '') +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + pauseTag + '</span>' +
           '<button class="session-edit" data-id="' + s.id + '" title="Edit session">Edit</button>' +
           '<button class="session-sync' + (s.synced ? ' on' : '') + '" data-id="' + s.id + '" title="Mark as sync">Sync</button>' +
