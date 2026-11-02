@@ -788,6 +788,14 @@ opacity: 0.18;
   .rotation-heading .card-header { margin:0; }
   .rotation-heading button { padding:7px 10px; font-size:.75rem; }
   .rotation-summary { color:var(--text2); font-size:.76rem; line-height:1.6; margin:0 0 10px; }
+  .rotation-summary.over-budget { color:var(--red); }
+  .rotation-budget-meter-panel { margin:0 0 16px; }
+  .rotation-budget-meter-panel[hidden] { display:none; }
+  .rotation-budget-meter-label { display:flex; justify-content:space-between; gap:12px; font-size:.7rem; color:var(--text2); margin-bottom:6px; }
+  .rotation-budget-meter-label strong { color:var(--accent); font-weight:600; }
+  .rotation-budget-meter { height:8px; border:1px solid var(--border); border-radius:999px; background:var(--surface2); overflow:hidden; }
+  .rotation-budget-meter.over-budget { border-color:var(--red); }
+  .rotation-budget-meter-fill { height:100%; border-radius:inherit; background:var(--accent); }
   .rotation-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 0; border-top:1px solid var(--border); }
   .rotation-game { min-width:0; }
   .rotation-game strong { display:block; font-size:.85rem; overflow-wrap:anywhere; }
@@ -2174,6 +2182,8 @@ opacity: 0.18;
 
   .goal-text { font-size: 0.85rem; color: var(--text2); }
   .goal-text strong { color: var(--text); }
+  .goal-week-budget { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:14px; padding-top:12px; border-top:1px solid var(--border); color:var(--text2); font-size:.8rem; }
+  .goal-week-budget strong { color:var(--text); font-variant-numeric:tabular-nums; }
 
   .progress-track {
     background: var(--surface2);
@@ -4776,7 +4786,7 @@ opacity: 0.18;
 
     <div class="card" id="weekly-rotation-card">
       <div class="rotation-heading"><div class="card-header">This week's rotation</div><button class="btn-ghost" id="rotation-manage" type="button">Choose games</button></div>
-      <p class="rotation-summary" id="rotation-summary"></p><div id="rotation-list"></div>
+      <p class="rotation-summary" id="rotation-summary"></p><p class="rotation-summary" id="rotation-budget"></p><div class="rotation-budget-meter-panel" id="rotation-budget-meter" hidden></div><div id="rotation-list"></div>
     </div>
     <div class="card">
       <div class="card-header">Today&rsquo;s Goal</div>
@@ -4791,6 +4801,7 @@ opacity: 0.18;
         <span class="streak-pill off" id="streak-pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.6 3.5-1.5 5-3 7-1.8 2.4-2 4.2-2 6a5 5 0 0 0 10 0c0-1.8-.7-3.2-1.5-4.5.5 1 .7 2 .5 3a3 3 0 0 1-3 3c-.6 0-1.2-.3-1.5-.8 1.5.3 3-1 3-3 .1-2.5.1-4.3-.3-5.7C12.8 8.6 12.4 5.5 12 2z"/></svg> 0-day streak</span>
         <span class="goal-text" id="goal-percent"></span>
       </div>
+      <div class="goal-week-budget"><span>Weekly goal (7 days)</span><strong id="goal-week-budget">0:00:00</strong></div>
     </div>
 
     <div class="card" id="start-game-card">
@@ -5741,7 +5752,7 @@ opacity: 0.18;
   </div>
 </div>
 
-<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose up to five games to focus on. Set optional weekly targets in minutes. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
+<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose up to five games to focus on. Set optional weekly targets in minutes. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
 
 <!-- What should I play? picker -->
 <div class="modal-overlay" id="pick-modal">
@@ -7544,6 +7555,8 @@ opacity: 0.18;
   function renderGoal() {
     const goalMin = settings.dailyGoalMinutes || 0;
     const todayTotal = todaySessionsMs();
+    const weeklyBudget = weeklyRotationBudgetMinutes();
+    document.getElementById('goal-week-budget').textContent = weeklyBudget ? fmtDurationShort(weeklyBudget*60000) : 'Not set';
     const goalText = document.getElementById('goal-text');
     const track = document.getElementById('goal-track');
     const fill = document.getElementById('goal-fill');
@@ -7640,6 +7653,27 @@ opacity: 0.18;
     });
     return {bounds,games:result,played:ids.filter(id=>result[id].count>0).length};
   }
+  function weeklyRotationBudgetMinutes() {
+    const daily=Number(settings.dailyGoalMinutes);
+    return Number.isFinite(daily) && daily>0 ? Math.min(10080,Math.floor(daily*7)) : 0;
+  }
+  function rotationBudgetText(planned) {
+    const budget=weeklyRotationBudgetMinutes();
+    if(!budget) return 'Set a daily goal to define your weekly rotation budget.';
+    const remaining=budget-planned;
+    return 'Weekly budget: '+fmtDurationShort(budget*60000)+' | Planned: '+fmtDurationShort(planned*60000)+' | '+(remaining<0?'Over budget: ':'Available: ')+fmtDurationShort(Math.abs(remaining)*60000);
+  }
+  function renderRotationBudgetMeter(id,planned) {
+    const panel=document.getElementById(id+'-meter'),budget=weeklyRotationBudgetMinutes();
+    panel.hidden=!budget;
+    if(!budget) { panel.innerHTML=''; return; }
+    const remaining=Math.max(0,budget-planned),pct=Math.max(0,Math.min(100,Math.round(remaining/budget*100)));
+    panel.innerHTML='<div class="rotation-budget-meter-label"><span>Available time</span><strong>'+(planned>budget?'Over budget':pct+'% available')+'</strong></div><div class="rotation-budget-meter'+(planned>budget?' over-budget':'')+'" role="progressbar" aria-label="Weekly time still available" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" aria-valuetext="'+escHtml(fmtDurationShort(remaining*60000)+' available of '+fmtDurationShort(budget*60000))+'"><div class="rotation-budget-meter-fill" style="width:'+pct+'%"></div></div>';
+  }
+  function rotationHoursToMinutes(value) {
+    const hours=Number(value);
+    return Number.isFinite(hours) && hours>0 ? Math.round(hours*60) : 0;
+  }
   function rotationTargetMinutes(id) {
     const value=Number(settings.weeklyRotationTargets?.[id]);
     return Number.isInteger(value) && value>0 && value<=10080 ? value : 0;
@@ -7649,6 +7683,11 @@ opacity: 0.18;
     const remaining=ids.filter(id=>!rotationTargetMinutes(id) || progress.games[id].ms<rotationTargetMinutes(id)*60000);
     const reached=ids.length-remaining.length;
     document.getElementById('rotation-summary').textContent=ids.length?progress.played+' of '+ids.length+' played this week'+(reached?' | '+reached+' target'+(reached===1?'':'s')+' reached':'')+' | '+fmtDayMonth(progress.bounds.start)+' - '+fmtDayMonth(progress.bounds.end):'Choose a few games for this week. Play one completed session to check a game off.';
+    const planned=ids.reduce((sum,id)=>sum+rotationTargetMinutes(id),0);
+    const budgetEl=document.getElementById('rotation-budget');
+    budgetEl.textContent=rotationBudgetText(planned);
+    renderRotationBudgetMeter('rotation-budget',planned);
+    budgetEl.classList.toggle('over-budget',!!weeklyRotationBudgetMinutes() && planned>weeklyRotationBudgetMinutes());
     const list=document.getElementById('rotation-list');
     list.innerHTML=ids.length && !remaining.length ? '<p class="backup-hint">All weekly targets reached! Your games return next week.</p>' : remaining.map(id=>{
       const game=games.find(g=>g.id===id),entry=progress.games[id],running=activeSession && activeSession.gameId===id;
@@ -7660,6 +7699,17 @@ opacity: 0.18;
   function rotationSelectionCount() {
     const count=document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked').length;
     document.getElementById('rotation-selection-count').textContent=count+' of 5 selected';
+    const planned=[...document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')].reduce((sum,checkbox)=>{
+      const value=Number(checkbox.closest('.rotation-choice').querySelector('.rotation-target').value);
+      return sum+(Number.isFinite(value) && value>0?value:0);
+    },0);
+    const budget=weeklyRotationBudgetMinutes(),over=!!budget && planned>budget;
+    const budgetEl=document.getElementById('rotation-editor-budget');
+    renderRotationBudgetMeter('rotation-editor-budget',planned);
+    budgetEl.textContent=rotationBudgetText(planned);budgetEl.classList.toggle('over-budget',over);
+    const error=document.getElementById('rotation-budget-error');
+    error.hidden=true;error.textContent='';
+
     updateRotationTargetStatuses();
   }
   function updateRotationTargetStatuses() {
@@ -10423,6 +10473,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         lastQuestDay = todayStr();
         renderWeeklyRotation();
         renderAchievementsTab();
+        renderGoal();
       }
     }
     if (activeSession) {
@@ -10699,7 +10750,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('recap-period').addEventListener('change',renderGamingRecap);
 
   document.getElementById('rotation-manage').addEventListener('click',openRotationEditor);
-  document.getElementById('rotation-choices').addEventListener('input',updateRotationTargetStatuses);
+  document.getElementById('rotation-choices').addEventListener('input',rotationSelectionCount);
   document.getElementById('rotation-choices').addEventListener('change',event=>{
     if(event.target.type==='checkbox') {
       if(event.target.checked && document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked').length>5){event.target.checked=false;toast('Choose up to five games');}
@@ -10716,6 +10767,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(input.value==='') continue;
       if(!input.checkValidity()) { input.reportValidity(); return; }
       targets[checkbox.value]=Number(input.value);
+    }
+    const budget=weeklyRotationBudgetMinutes(),planned=Object.values(targets).reduce((sum,value)=>sum+value,0);
+    if(budget && planned>budget) {
+      const error=document.getElementById('rotation-budget-error');
+      error.textContent='Over budget by '+fmtDurationShort((planned-budget)*60000)+'. Reduce your targets to '+fmtDurationShort(budget*60000)+' total before saving.';
+      error.hidden=false;
+      error.scrollIntoView({block:'nearest'});
+      return;
     }
     settings.weeklyRotation=chosen.map(input=>input.value);
     settings.weeklyRotationTargets=targets;
