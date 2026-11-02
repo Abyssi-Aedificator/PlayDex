@@ -5754,7 +5754,7 @@ opacity: 0.18;
   </div>
 </div>
 
-<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose up to five games to focus on. Set optional weekly targets in whole hours. Leave a target blank to keep it unset. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
+<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose any number of games to focus on. Set optional weekly targets in whole hours. Leave a target blank to keep it unset. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
 
 <!-- What should I play? picker -->
 <div class="modal-overlay" id="pick-modal">
@@ -7645,7 +7645,7 @@ opacity: 0.18;
   function rotationGameIds() {
     const selected=Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[];
     const available=new Set(games.filter(g=>!g.archived).map(g=>g.id));
-    return [...new Set(selected)].filter(id=>available.has(id)).slice(0,5);
+    return [...new Set(selected)].filter(id=>available.has(id));
   }
   function rotationWeekProgress(ids,now=new Date()) {
     const bounds=getWeekBounds(now),result={};ids.forEach(id=>result[id]={count:0,ms:0});
@@ -7700,7 +7700,7 @@ opacity: 0.18;
   }
   function rotationSelectionCount() {
     const count=document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked').length;
-    document.getElementById('rotation-selection-count').textContent=count+' of 5 selected';
+    document.getElementById('rotation-selection-count').textContent=count+' game'+(count===1?'':'s')+' selected';
     const planned=[...document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')].reduce((sum,checkbox)=>{
       const value=rotationHoursToMinutes(checkbox.closest('.rotation-choice').querySelector('.rotation-target').value);
       return sum+(Number.isFinite(value) && value>0?value:0);
@@ -10769,14 +10769,13 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('rotation-choices').addEventListener('input',rotationSelectionCount);
   document.getElementById('rotation-choices').addEventListener('change',event=>{
     if(event.target.type==='checkbox') {
-      if(event.target.checked && document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked').length>5){event.target.checked=false;toast('Choose up to five games');}
       event.target.closest('.rotation-choice').querySelector('.rotation-target').disabled=!event.target.checked;
     }
     rotationSelectionCount();
   });
   document.getElementById('rotation-cancel').addEventListener('click',()=>document.getElementById('rotation-modal').classList.remove('open'));
   document.getElementById('rotation-save').addEventListener('click',()=>{
-    const chosen=Array.from(document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')).filter(input=>games.some(g=>g.id===input.value && !g.archived)).slice(0,5);
+    const chosen=Array.from(document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')).filter(input=>games.some(g=>g.id===input.value && !g.archived));
     const targets={};
     for(const checkbox of chosen) {
       const input=checkbox.closest('.rotation-choice').querySelector('.rotation-target');
