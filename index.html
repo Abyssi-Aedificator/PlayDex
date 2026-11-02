@@ -3769,6 +3769,11 @@ opacity: 0.18;
   }
 
   /* Library, history, and Settings presentation. */
+  .game-item-info.library-game-info { display:flex; gap:12px; align-items:center; }
+  .library-game-copy { flex:1; min-width:0; }
+  .library-game-cover { width:52px; height:52px; flex:0 0 52px; position:relative; display:grid; place-items:center; background:var(--accent-dim); border:1px solid var(--border); border-radius:12px; overflow:hidden; color:var(--accent); font-size:1.4rem; }
+  .library-game-cover img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; }
+  .game-platform-badge { display:inline-block; margin-top:5px; border:1px solid var(--border); padding:2px 7px; border-radius:6px; color:var(--text2); font-size:.68rem; font-weight:600; }
   .games-filter-chips { display:flex; flex-wrap:wrap; gap:7px; margin:4px 0 12px; }
   .games-filter-chips:empty { display:none; }
   .games-filter-chips button { min-height:32px; max-width:100%; overflow-wrap:anywhere; text-align:left; }
@@ -9258,6 +9263,9 @@ opacity: 0.18;
     }
   }
 
+  function gameCoverHtml(game) {
+    return '<span class="library-game-cover">'+(game.image?'<img src="'+escHtml(game.image)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<span aria-hidden="true">&#127918;</span></span>';
+  }
   function renderGamesTab() {
     const container = document.getElementById('games-list');
     const nameSort = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
@@ -9360,11 +9368,12 @@ opacity: 0.18;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         const running = activeSession && activeSession.gameId === g.id;
         return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
-          '<div class="game-item-info">' +
+          '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' +
             tagsHtml(g) +
             gameMeta(count, e, staleIds.has(g.id)) +
-          '</div>' +
+          '</div></div>' +
           '<div class="game-item-actions">' +
             '<button class="btn-icon play' + (running ? ' on' : '') + '" data-action="start" data-id="' + g.id + '" title="' + (running ? 'Playing now' : 'Start session') + '">' + iconSvg('play') + '</button>' +
             '<button class="btn-icon pin' + (g.pinned ? ' on' : '') + '" data-action="pin" data-id="' + g.id + '" title="' + (g.pinned ? 'Unpin' : 'Pin to top') + '">' + iconSvg('pin') + '</button>' +
@@ -9383,11 +9392,12 @@ opacity: 0.18;
         const count = sessions.filter(s => s.gameId === g.id).length;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
-          '<div class="game-item-info">' +
+          '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' +
             tagsHtml(g) +
             gameMeta(count, e) +
-          '</div>' +
+          '</div></div>' +
           '<div class="game-item-actions">' +
             '<button class="btn-icon pin' + (g.pinned ? ' on' : '') + '" data-action="pin" data-id="' + g.id + '" title="' + (g.pinned ? 'Unpin' : 'Pin to top') + '">' + iconSvg('pin') + '</button>' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
