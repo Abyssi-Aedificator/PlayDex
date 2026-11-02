@@ -3785,6 +3785,13 @@ opacity: 0.18;
   .games-filter-heading::before { display:none; }
   #games-filter-toggle { display:none; }
   #games-filter-body { margin-top:16px; }
+  .ranking-help { color:var(--text2); font-size:.76rem; margin:8px 0 14px; }
+  .ranking-help summary { cursor:pointer; list-style:none; color:var(--accent); display:inline-block; padding:6px 0; }
+  .ranking-help summary::-webkit-details-marker { display:none; }
+  .ranking-help p { padding:12px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; line-height:1.65; margin:5px 0; }
+  .top-trend { border-radius:6px; padding:4px 6px; background:var(--surface2); }
+  .top-trend.up { background:var(--green-dim); }
+  .top-trend.down { background:var(--red-dim); }
   @media(max-width:899px) {
     .games-filter-heading > span { display:none; }
     #games-filter-toggle { display:block; width:100%; text-align:left; padding:9px 12px; }
@@ -5118,7 +5125,7 @@ opacity: 0.18;
       <label class="dbx-toggle top-archived-toggle"><span class="dbx-toggle-label">Include archived games</span><input type="checkbox" id="top-include-archived"></label>
       <div class="top-summary" id="top-summary"></div>
       <div class="top-legend" id="top-range"></div>
-      <div class="top-legend">&#8593; moved up &nbsp;&middot;&nbsp; &#8595; moved down &nbsp;&middot;&nbsp; &#8211; no change &nbsp;&middot;&nbsp; NEW = not played in the previous period. The number is the previous position.</div>
+      <details class="ranking-help"><summary aria-label="Explain ranking movement">&#9432; Ranking guide</summary><p>&#8593; Moved up &middot; &#8595; Moved down &middot; &#8211; No change. NEW means the game was not played in the previous period. The small number shows its previous position.</p></details>
       <div id="top-list"></div>
       <div id="top-fellout"></div>
     </div>

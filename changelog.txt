@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.7.1
 -------------------
+- Top offers an expandable ranking guide and clearer movement badges.
 - Sessions are grouped by date with filtered daily totals and simpler individual rows.
 - Game library rows show square cover thumbnails with themed placeholders and platform badges.
 - Archived games without a cover offer Edit until a cover is added.
