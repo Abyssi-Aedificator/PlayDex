@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.7.2
 -------------------
+- Weekly rotation targets accept whole hours only; existing partial targets round up in the editor and change only when saved.
 - Daily playtime goals accept whole hours only; budget warnings recommend a whole-hour minimum.
 
 Version 1.7.1

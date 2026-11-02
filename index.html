@@ -5754,7 +5754,7 @@ opacity: 0.18;
   </div>
 </div>
 
-<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose up to five games to focus on. Set optional weekly targets in hours (for example, 0.5 for 30 minutes). Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
+<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose up to five games to focus on. Set optional weekly targets in whole hours. Leave a target blank to keep it unset. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
 
 <!-- What should I play? picker -->
 <div class="modal-overlay" id="pick-modal">
@@ -7674,7 +7674,7 @@ opacity: 0.18;
   }
   function rotationHoursToMinutes(value) {
     const hours=Number(value);
-    return Number.isFinite(hours) && hours>0 ? Math.round(hours*60) : 0;
+    return Number.isInteger(hours) && hours>0 && hours<=168 ? hours*60 : 0;
   }
   function rotationTargetMinutes(id) {
     const value=Number(settings.weeklyRotationTargets?.[id]);
@@ -7729,7 +7729,7 @@ opacity: 0.18;
   function openRotationEditor() {
     const ids=new Set(rotationGameIds()),active=games.filter(g=>!g.archived).sort((a,b)=>a.name.localeCompare(b.name));
     if(!active.length){toast('Add a game first');return;}
-    document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (hours)<input class="rotation-target" type="number" min="0.01" max="168" step="any" placeholder="Optional" value="'+(Math.round(rotationTargetMinutes(g.id)/60*10000)/10000||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label></div>').join('');
+    document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (hours)<input class="rotation-target" type="number" min="1" max="168" step="1" placeholder="Optional" value="'+(Math.ceil(rotationTargetMinutes(g.id)/60)||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label></div>').join('');
     rotationSelectionCount();document.getElementById('rotation-modal').classList.add('open');
   }
 
