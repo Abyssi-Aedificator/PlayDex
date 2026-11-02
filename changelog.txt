@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.7.1
 -------------------
+- Archived games without a cover offer Edit until a cover is added.
 - Games has platform, missing-platform, archive, pinned, and tag filters with a count, removable chips, mobile collapse, and Clear filters.
 - Added spacing between the game name and tags fields in the Classic Edit Game dialog.
 
