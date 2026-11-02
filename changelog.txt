@@ -3,9 +3,10 @@ PlayDex - Changelog
 
 Version 1.7.2
 -------------------
-- Weekly rotation allows any number of games within the weekly time budget.
+- Games you haven't played in a while excludes weekly rotation games and no longer has a dismiss button.
+- Weekly rotation allows any number of games, with combined targets still limited by the weekly time budget.
 - Weekly rotation targets accept whole hours only; existing partial targets round up in the editor and change only when saved.
-- Daily playtime goals accept whole hours only; budget warnings recommend a whole-hour minimum.
+- Daily playtime goals accept whole hours only; budget warnings recommend the minimum whole-hour goal needed for the rotation.
 
 Version 1.7.1
 -------------------

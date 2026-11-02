@@ -4729,7 +4729,7 @@ opacity: 0.18;
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.7.1</span>
+    <span class="version-badge">1.7.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -4743,7 +4743,6 @@ opacity: 0.18;
     <div class="card stale-prompt" id="stale-prompt" style="display:none">
       <div class="stale-prompt-head">
         <span class="stale-prompt-title">Games you haven&rsquo;t played in a while</span>
-        <button class="btn-icon" id="stale-prompt-close" title="Dismiss for today" aria-label="Dismiss for today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <div id="stale-prompt-list"></div>
     </div>
@@ -5885,8 +5884,8 @@ opacity: 0.18;
   }
 
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, stalePromptDismissed: null, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' }; }
+    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' }; }
   }
 
   function mergeFullClear(a, b) {
@@ -7838,8 +7837,9 @@ opacity: 0.18;
     // Stale-game play-again prompt (optional, once per day)
     const spEl = document.getElementById('stale-prompt');
     if (spEl) {
-      const stale = staleGameEntries();
-      const show = settings.stalePrompt && !activeSession && stale.length > 0 && settings.stalePromptDismissed !== todayStr();
+      const rotationIds = new Set(rotationGameIds());
+      const stale = staleGameEntries().filter(entry => !rotationIds.has(entry.game.id));
+      const show = settings.stalePrompt && !activeSession && stale.length > 0;
       if (show) {
         const spList = document.getElementById('stale-prompt-list');
         spList.innerHTML = stale.slice(0, 3).map(x => {
@@ -10686,11 +10686,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     saveSettings(settings);
     renderTodayTab();
   });
-  document.getElementById('stale-prompt-close').addEventListener('click', () => {
-    settings.stalePromptDismissed = todayStr();
-    saveSettings(settings);
-    document.getElementById('stale-prompt').style.display = 'none';
-  });
+
 
   document.getElementById('sync-btn').addEventListener('click', () => {
     if (!dbx.accessToken) return;
@@ -10793,7 +10789,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
     settings.weeklyRotation=chosen.map(input=>input.value);
     settings.weeklyRotationTargets=targets;
-    saveSettings(settings);renderWeeklyRotation();document.getElementById('rotation-modal').classList.remove('open');toast('Weekly rotation saved');
+    saveSettings(settings);renderTodayTab();document.getElementById('rotation-modal').classList.remove('open');toast('Weekly rotation saved');
   });
   document.getElementById('rotation-list').addEventListener('click',event=>{
     const button=event.target.closest('button[data-rotation-start]');
@@ -10905,7 +10901,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     deferredInstallPrompt = null;
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.7.1';
+    const APP_VERSION = '1.7.2';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
