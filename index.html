@@ -788,6 +788,14 @@ opacity: 0.18;
   .rotation-heading .card-header { margin:0; }
   .rotation-heading button { padding:7px 10px; font-size:.75rem; }
   .rotation-summary { color:var(--text2); font-size:.76rem; line-height:1.6; margin:0 0 10px; }
+  .rotation-summary.over-budget { color:var(--red); }
+  .rotation-budget-meter-panel { margin:0 0 16px; }
+  .rotation-budget-meter-panel[hidden] { display:none; }
+  .rotation-budget-meter-label { display:flex; justify-content:space-between; gap:12px; font-size:.7rem; color:var(--text2); margin-bottom:6px; }
+  .rotation-budget-meter-label strong { color:var(--accent); font-weight:600; }
+  .rotation-budget-meter { height:8px; border:1px solid var(--border); border-radius:999px; background:var(--surface2); overflow:hidden; }
+  .rotation-budget-meter.over-budget { border-color:var(--red); }
+  .rotation-budget-meter-fill { height:100%; border-radius:inherit; background:var(--accent); }
   .rotation-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 0; border-top:1px solid var(--border); }
   .rotation-game { min-width:0; }
   .rotation-game strong { display:block; font-size:.85rem; overflow-wrap:anywhere; }
@@ -1584,6 +1592,17 @@ opacity: 0.18;
     margin: 0 0 12px;
   }
   .game-tag-filters:empty { display: none; }
+  .games-layout { display:flex; flex-direction:column; gap:16px; }
+  .games-layout > .card { margin-bottom:0; min-width:0; }
+  .games-filter-panel { order:-1; }
+  .games-filter-panel #games-clear-filters { width:100%; }
+  .games-filter-label { font-size:.75rem; font-weight:600; color:var(--text2); margin:16px 0 8px; }
+  .games-pinned-filter { display:flex; align-items:center; gap:8px; font-size:.8rem; color:var(--text2); cursor:pointer; }
+  .games-pinned-filter input { width:18px; height:18px; accent-color:var(--accent); }
+  @media(min-width:900px) {
+    .games-layout { display:grid; grid-template-columns:minmax(0,1fr) 280px; gap:20px; align-items:start; }
+    .games-filter-panel { order:0; }
+  }
 
   .game-tag-filter {
     font-family: inherit;
@@ -2144,6 +2163,7 @@ opacity: 0.18;
 
   /* Input row helper */
   .field-group { margin-bottom: 12px; }
+  :root:not([data-ui="material"]) #rename-input { margin-bottom:12px; }
   .field-group label {
     display: block;
     font-size: 0.75rem;
@@ -2162,6 +2182,8 @@ opacity: 0.18;
 
   .goal-text { font-size: 0.85rem; color: var(--text2); }
   .goal-text strong { color: var(--text); }
+  .goal-week-budget { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:14px; padding-top:12px; border-top:1px solid var(--border); color:var(--text2); font-size:.8rem; }
+  .goal-week-budget strong { color:var(--text); font-variant-numeric:tabular-nums; }
 
   .progress-track {
     background: var(--surface2);
@@ -3724,7 +3746,7 @@ opacity: 0.18;
     }
     /* Games tab: Manage Games gets a little more width on desktop */
     .app-content:has(#tab-games.active) {
-      max-width: 760px;
+      max-width: 1100px;
     }
     /* Top ranking and its insight columns share the Profile width. */
     .app-content:has(#tab-top.active) {
@@ -3754,6 +3776,53 @@ opacity: 0.18;
     .cum-card { grid-row: 8; }
     .milestones-card { grid-row: 9; }
     .streak-cell { border-radius: 3px; }
+  }
+
+
+  /* Library, history, and Settings presentation. */
+  .game-item-info.library-game-info { display:flex; gap:12px; align-items:center; }
+  .library-game-copy { flex:1; min-width:0; }
+  .library-game-cover { width:52px; height:52px; flex:0 0 52px; position:relative; display:grid; place-items:center; background:var(--accent-dim); border:1px solid var(--border); border-radius:12px; overflow:hidden; color:var(--accent); font-size:1.4rem; }
+  .library-game-cover img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; }
+  .game-platform-badge { display:inline-block; margin-top:5px; border:1px solid var(--border); padding:2px 7px; border-radius:6px; color:var(--text2); font-size:.68rem; font-weight:600; }
+  .session-day-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px; margin:18px 0 2px; background:var(--surface2); border-radius:10px; color:var(--text2); font-size:.78rem; }
+  .session-day-heading strong { color:var(--text); font-weight:600; }
+  .session-day-heading span { font-variant-numeric:tabular-nums; color:var(--accent); }
+  .games-filter-chips { display:flex; flex-wrap:wrap; gap:7px; margin:4px 0 12px; }
+  .games-filter-chips:empty { display:none; }
+  .games-filter-chips button { min-height:32px; max-width:100%; overflow-wrap:anywhere; text-align:left; }
+  .games-filter-chips button span { margin-left:7px; }
+  .games-filter-heading { justify-content:space-between; margin-bottom:0; }
+  .games-filter-heading::before { display:none; }
+  #games-filter-toggle { display:none; }
+  #games-filter-body { margin-top:16px; }
+  .ranking-help { color:var(--text2); font-size:.76rem; margin:8px 0 14px; }
+  .ranking-help summary { cursor:pointer; list-style:none; color:var(--accent); display:inline-block; padding:6px 0; }
+  .ranking-help summary::-webkit-details-marker { display:none; }
+  .ranking-help p { padding:12px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; line-height:1.65; margin:5px 0; }
+  .top-trend { border-radius:6px; padding:4px 6px; background:var(--surface2); }
+  .top-trend.up { background:var(--green-dim); }
+  .top-trend.down { background:var(--red-dim); }
+  .settings-nav { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+  .settings-nav button { flex:1; min-height:36px; }
+  .settings-section { scroll-margin-top:88px; margin-bottom:28px; }
+  .settings-section > h2 { font-size:1.05rem; font-weight:700; color:var(--text); margin:0 0 12px; }
+  .settings-maintenance-card { border-color:var(--red); }
+  .settings-maintenance-card > .card-header { color:var(--red); }
+  .settings-maintenance-card button { width:100%; margin-bottom:10px; }
+  .settings-risk-actions { border-top:1px solid var(--border); margin-top:18px; padding-top:14px; }
+  @media(max-width:899px) {
+    .games-filter-heading > span { display:none; }
+    #games-filter-toggle { display:block; width:100%; text-align:left; padding:9px 12px; }
+    .games-filter-panel.filters-collapsed #games-filter-body { display:none; }
+    .games-filter-panel { padding:12px; }
+  }
+  @media(max-width:500px) {
+    .session-item { flex-wrap:wrap; gap:8px; }
+    .session-info { flex-basis:100%; }
+    .session-duration { margin-left:0; margin-right:auto; }
+    .session-edit,.session-sync,.session-delete { margin-left:0; }
+    .settings-nav button { flex:1 1 40%; }
   }
 
   /* ==========================================================================
@@ -4660,7 +4729,7 @@ opacity: 0.18;
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.7.0</span>
+    <span class="version-badge">1.7.1</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -4718,7 +4787,7 @@ opacity: 0.18;
 
     <div class="card" id="weekly-rotation-card">
       <div class="rotation-heading"><div class="card-header">This week's rotation</div><button class="btn-ghost" id="rotation-manage" type="button">Choose games</button></div>
-      <p class="rotation-summary" id="rotation-summary"></p><div id="rotation-list"></div>
+      <p class="rotation-summary" id="rotation-summary"></p><p class="rotation-summary" id="rotation-budget"></p><div class="rotation-budget-meter-panel" id="rotation-budget-meter" hidden></div><div id="rotation-list"></div>
     </div>
     <div class="card">
       <div class="card-header">Today&rsquo;s Goal</div>
@@ -4733,6 +4802,7 @@ opacity: 0.18;
         <span class="streak-pill off" id="streak-pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.6 3.5-1.5 5-3 7-1.8 2.4-2 4.2-2 6a5 5 0 0 0 10 0c0-1.8-.7-3.2-1.5-4.5.5 1 .7 2 .5 3a3 3 0 0 1-3 3c-.6 0-1.2-.3-1.5-.8 1.5.3 3-1 3-3 .1-2.5.1-4.3-.3-5.7C12.8 8.6 12.4 5.5 12 2z"/></svg> 0-day streak</span>
         <span class="goal-text" id="goal-percent"></span>
       </div>
+      <div class="goal-week-budget"><span>Weekly goal (7 days)</span><strong id="goal-week-budget">0:00:00</strong></div>
     </div>
 
     <div class="card" id="start-game-card">
@@ -4990,7 +5060,8 @@ opacity: 0.18;
 
   <!-- GAMES TAB -->
   <div id="tab-games" class="tab-panel">
-    <div class="card">
+    <div class="games-layout">
+    <div class="card games-library">
       <div class="card-header">Manage Games</div>
       <div class="add-game-form" style="margin-bottom:14px;">
         <input type="text" id="add-game-input" placeholder="Game name..." maxlength="50">
@@ -4998,8 +5069,21 @@ opacity: 0.18;
       </div>
       <button class="btn-ghost btn-accent" id="pick-game-btn" type="button" style="width:100%;margin:0 0 10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>What should I play?</button>
       <input type="text" id="game-search-input" placeholder="Search games..." maxlength="50" autocomplete="off" style="margin:0 0 10px;">
-      <div class="game-tag-filters" id="game-tag-filters"></div>
+      <div class="games-filter-chips" id="games-filter-chips" aria-label="Applied game filters"></div>
       <div id="games-list"></div>
+    </div>
+    <aside class="card games-filter-panel filters-collapsed" aria-label="Game filters">
+      <div class="card-header games-filter-heading"><span>Filters</span><button class="btn-ghost" id="games-filter-toggle" type="button" aria-controls="games-filter-body" aria-expanded="false">Filters</button></div>
+      <div id="games-filter-body">
+      <div class="field-group"><label for="games-platform-filter">Platform</label><select id="games-platform-filter"></select></div>
+      <div class="field-group"><label for="games-archive-filter">Library</label><select id="games-archive-filter"><option value="all">All games</option><option value="active">Active games</option><option value="archived">Archived games</option></select></div>
+      <label class="games-pinned-filter"><input type="checkbox" id="games-pinned-only">Pinned games only</label>
+      <div class="games-filter-label">Tags</div>
+      <div class="game-tag-filters" id="game-tag-filters"></div>
+      <p class="backup-hint" id="games-filter-count" aria-live="polite"></p>
+      <button class="btn-ghost" id="games-clear-filters" type="button">Clear filters</button>
+      </div>
+    </aside>
     </div>
   </div>
 
@@ -5062,7 +5146,7 @@ opacity: 0.18;
       <label class="dbx-toggle top-archived-toggle"><span class="dbx-toggle-label">Include archived games</span><input type="checkbox" id="top-include-archived"></label>
       <div class="top-summary" id="top-summary"></div>
       <div class="top-legend" id="top-range"></div>
-      <div class="top-legend">&#8593; moved up &nbsp;&middot;&nbsp; &#8595; moved down &nbsp;&middot;&nbsp; &#8211; no change &nbsp;&middot;&nbsp; NEW = not played in the previous period. The number is the previous position.</div>
+      <details class="ranking-help"><summary aria-label="Explain ranking movement">&#9432; Ranking guide</summary><p>&#8593; Moved up &middot; &#8595; Moved down &middot; &#8211; No change. NEW means the game was not played in the previous period. The small number shows its previous position.</p></details>
       <div id="top-list"></div>
       <div id="top-fellout"></div>
     </div>
@@ -5556,11 +5640,12 @@ opacity: 0.18;
 <div class="modal-overlay" id="goal-modal">
   <div class="modal">
     <h3>Daily Playtime Goal</h3>
-    <p style="font-size:0.8rem;color:var(--text2);margin-bottom:12px;">Set 0 to disable the goal.</p>
+    <p style="font-size:0.8rem;color:var(--text2);margin-bottom:12px;">Use decimals for partial hours (0.5 = 30 minutes). Set 0 to disable the goal.</p>
     <div class="field-group">
-      <label for="goal-minutes">Minutes per day</label>
-      <input type="number" id="goal-minutes" min="0" max="1440" step="5">
+      <label for="goal-hours">Hours per day</label>
+      <input type="number" id="goal-hours" min="0" max="24" step="any">
     </div>
+    <p id="goal-budget-error" class="backup-hint" style="color:var(--red);" role="alert" hidden></p>
     <div class="modal-actions">
       <button class="btn-ghost" id="goal-cancel">Cancel</button>
       <button class="btn btn-start" id="goal-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -5669,7 +5754,7 @@ opacity: 0.18;
   </div>
 </div>
 
-<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose up to five games to focus on. Set optional weekly targets in minutes. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
+<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose up to five games to focus on. Set optional weekly targets in hours (for example, 0.5 for 30 minutes). Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
 
 <!-- What should I play? picker -->
 <div class="modal-overlay" id="pick-modal">
@@ -5840,6 +5925,9 @@ opacity: 0.18;
   let syncFilter = 'all';
   let gamesSearch = '';
   let gamesTagFilter = [];
+  let gamesPlatformFilter = '';
+  let gamesArchiveFilter = 'all';
+  let gamesPinnedOnly = false;
   let pendingTargetMin = 0;
   let targetToastShown = false;
   let pendingDeleteGameId = null;
@@ -7469,6 +7557,8 @@ opacity: 0.18;
   function renderGoal() {
     const goalMin = settings.dailyGoalMinutes || 0;
     const todayTotal = todaySessionsMs();
+    const weeklyBudget = weeklyRotationBudgetMinutes();
+    document.getElementById('goal-week-budget').textContent = weeklyBudget ? fmtDurationShort(weeklyBudget*60000) : 'Not set';
     const goalText = document.getElementById('goal-text');
     const track = document.getElementById('goal-track');
     const fill = document.getElementById('goal-fill');
@@ -7565,6 +7655,27 @@ opacity: 0.18;
     });
     return {bounds,games:result,played:ids.filter(id=>result[id].count>0).length};
   }
+  function weeklyRotationBudgetMinutes() {
+    const daily=Number(settings.dailyGoalMinutes);
+    return Number.isFinite(daily) && daily>0 ? Math.min(10080,Math.floor(daily*7)) : 0;
+  }
+  function rotationBudgetText(planned) {
+    const budget=weeklyRotationBudgetMinutes();
+    if(!budget) return 'Set a daily goal to define your weekly rotation budget.';
+    const remaining=budget-planned;
+    return 'Weekly budget: '+fmtDurationShort(budget*60000)+' | Planned: '+fmtDurationShort(planned*60000)+' | '+(remaining<0?'Over budget: ':'Available: ')+fmtDurationShort(Math.abs(remaining)*60000);
+  }
+  function renderRotationBudgetMeter(id,planned) {
+    const panel=document.getElementById(id+'-meter'),budget=weeklyRotationBudgetMinutes();
+    panel.hidden=!budget;
+    if(!budget) { panel.innerHTML=''; return; }
+    const remaining=Math.max(0,budget-planned),pct=Math.max(0,Math.min(100,Math.round(remaining/budget*100)));
+    panel.innerHTML='<div class="rotation-budget-meter-label"><span>Available time</span><strong>'+(planned>budget?'Over budget':pct+'% available')+'</strong></div><div class="rotation-budget-meter'+(planned>budget?' over-budget':'')+'" role="progressbar" aria-label="Weekly time still available" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" aria-valuetext="'+escHtml(fmtDurationShort(remaining*60000)+' available of '+fmtDurationShort(budget*60000))+'"><div class="rotation-budget-meter-fill" style="width:'+pct+'%"></div></div>';
+  }
+  function rotationHoursToMinutes(value) {
+    const hours=Number(value);
+    return Number.isFinite(hours) && hours>0 ? Math.round(hours*60) : 0;
+  }
   function rotationTargetMinutes(id) {
     const value=Number(settings.weeklyRotationTargets?.[id]);
     return Number.isInteger(value) && value>0 && value<=10080 ? value : 0;
@@ -7574,6 +7685,11 @@ opacity: 0.18;
     const remaining=ids.filter(id=>!rotationTargetMinutes(id) || progress.games[id].ms<rotationTargetMinutes(id)*60000);
     const reached=ids.length-remaining.length;
     document.getElementById('rotation-summary').textContent=ids.length?progress.played+' of '+ids.length+' played this week'+(reached?' | '+reached+' target'+(reached===1?'':'s')+' reached':'')+' | '+fmtDayMonth(progress.bounds.start)+' - '+fmtDayMonth(progress.bounds.end):'Choose a few games for this week. Play one completed session to check a game off.';
+    const planned=ids.reduce((sum,id)=>sum+rotationTargetMinutes(id),0);
+    const budgetEl=document.getElementById('rotation-budget');
+    budgetEl.textContent=rotationBudgetText(planned);
+    renderRotationBudgetMeter('rotation-budget',planned);
+    budgetEl.classList.toggle('over-budget',!!weeklyRotationBudgetMinutes() && planned>weeklyRotationBudgetMinutes());
     const list=document.getElementById('rotation-list');
     list.innerHTML=ids.length && !remaining.length ? '<p class="backup-hint">All weekly targets reached! Your games return next week.</p>' : remaining.map(id=>{
       const game=games.find(g=>g.id===id),entry=progress.games[id],running=activeSession && activeSession.gameId===id;
@@ -7585,6 +7701,17 @@ opacity: 0.18;
   function rotationSelectionCount() {
     const count=document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked').length;
     document.getElementById('rotation-selection-count').textContent=count+' of 5 selected';
+    const planned=[...document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')].reduce((sum,checkbox)=>{
+      const value=rotationHoursToMinutes(checkbox.closest('.rotation-choice').querySelector('.rotation-target').value);
+      return sum+(Number.isFinite(value) && value>0?value:0);
+    },0);
+    const budget=weeklyRotationBudgetMinutes(),over=!!budget && planned>budget;
+    const budgetEl=document.getElementById('rotation-editor-budget');
+    renderRotationBudgetMeter('rotation-editor-budget',planned);
+    budgetEl.textContent=rotationBudgetText(planned);budgetEl.classList.toggle('over-budget',over);
+    const error=document.getElementById('rotation-budget-error');
+    error.hidden=true;error.textContent='';
+
     updateRotationTargetStatuses();
   }
   function updateRotationTargetStatuses() {
@@ -7592,7 +7719,7 @@ opacity: 0.18;
     const progress=rotationWeekProgress(rows.map(row=>row.querySelector('input[type="checkbox"]').value));
     rows.forEach(row=>{
       const checkbox=row.querySelector('input[type="checkbox"]'),input=row.querySelector('.rotation-target'),status=row.querySelector('.rotation-target-status');
-      const target=Number(input.value),played=progress.games[checkbox.value].ms;
+      const target=rotationHoursToMinutes(input.value),played=progress.games[checkbox.value].ms;
       const valid=checkbox.checked && Number.isInteger(target) && target>0 && target<=10080;
       const reached=valid && played>=target*60000;
       status.classList.toggle('reached',reached);
@@ -7602,7 +7729,7 @@ opacity: 0.18;
   function openRotationEditor() {
     const ids=new Set(rotationGameIds()),active=games.filter(g=>!g.archived).sort((a,b)=>a.name.localeCompare(b.name));
     if(!active.length){toast('Add a game first');return;}
-    document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (min)<input class="rotation-target" type="number" min="1" max="10080" step="1" placeholder="Optional" value="'+(rotationTargetMinutes(g.id)||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label></div>').join('');
+    document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (hours)<input class="rotation-target" type="number" min="0.01" max="168" step="any" placeholder="Optional" value="'+(Math.round(rotationTargetMinutes(g.id)/60*10000)/10000||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label></div>').join('');
     rotationSelectionCount();document.getElementById('rotation-modal').classList.add('open');
   }
 
@@ -7781,10 +7908,9 @@ opacity: 0.18;
     }
 
     const dayTotals = {};
-    sessions.forEach(s => {
-      if (s.stop === null) return;
-      const key = s.gameId + '|' + dateKey(s.start);
-      dayTotals[key] = (dayTotals[key] || 0) + (s.durationMs || 0);
+    filtered.forEach(session=>{
+      const key=dateKey(session.start);
+      dayTotals[key]=(dayTotals[key]||0)+(session.durationMs||0);
     });
 
     if (filtered.length === 0) {
@@ -7802,12 +7928,13 @@ opacity: 0.18;
       container.innerHTML = filtered.map((s, i) => {
         const pi = sessionPauseInfo(s);
         const pauseTag = pi.count > 0 ? '<span class="session-pause-info" title="Paused">&#9208; ' + pi.count + (pi.totalMs > 0 ? ' \u00b7 ' + fmtDurationShort(pi.totalMs) : '') + '</span>' : '';
-        return '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
+        const day=dateKey(s.start);
+        const heading=i===0 || dateKey(filtered[i-1].start)!==day ? '<div class="session-day-heading"><strong>'+escHtml(fmtDate(s.start))+'</strong><span>'+fmtDuration(dayTotals[day])+'</span></div>' : '';
+        return heading + '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.platform ? ' <span class="session-platform">' + escHtml(normalizePlatform(s.platform)) + '</span>' : '') + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
-            '<div class="session-times">' + (showDate ? '' : fmtDateShort(s.start) + ' \u00b7 ') + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
+            '<div class="session-times">' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
           '</div>' +
-          (showDate && filterDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + filterDate] || 0) + ')</span>' : !showDate ? '<span class="session-day-total">(' + fmtDuration(dayTotals[s.gameId + '|' + dateKey(s.start)] || 0) + ')</span>' : '') +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + pauseTag + '</span>' +
           '<button class="session-edit" data-id="' + s.id + '" title="Edit session">Edit</button>' +
           '<button class="session-sync' + (s.synced ? ' on' : '') + '" data-id="' + s.id + '" title="Mark as sync">Sync</button>' +
@@ -9211,6 +9338,9 @@ opacity: 0.18;
     }
   }
 
+  function gameCoverHtml(game) {
+    return '<span class="library-game-cover">'+(game.image?'<img src="'+escHtml(game.image)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<span aria-hidden="true">&#127918;</span></span>';
+  }
   function renderGamesTab() {
     const container = document.getElementById('games-list');
     const nameSort = (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
@@ -9224,9 +9354,17 @@ opacity: 0.18;
     }));
     allTags.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
     gamesTagFilter = gamesTagFilter.filter(sel => allTags.some(t => t.toLowerCase() === sel.toLowerCase()));
+    renderGameFilterChips();
     const tagMatch = g => !gamesTagFilter.length || (g.tags || []).some(t => gamesTagFilter.some(sel => sel.toLowerCase() === t.toLowerCase()));
     const textMatch = g => !q || g.name.toLowerCase().includes(q) || (g.tags || []).some(t => t.toLowerCase().includes(q));
-    const matches = g => textMatch(g) && tagMatch(g);
+    const platformMatch = g => !gamesPlatformFilter || (gamesPlatformFilter==='missing' ? !normalizePlatform(g.platform) : normalizePlatform(g.platform)===gamesPlatformFilter);
+    const matches = g => textMatch(g) && tagMatch(g) && platformMatch(g) && (gamesArchiveFilter==='all' || (gamesArchiveFilter==='archived' ? g.archived : !g.archived)) && (!gamesPinnedOnly || g.pinned);
+    const platformFilter=document.getElementById('games-platform-filter');
+    const platforms=[...new Set([...PLATFORM_CHOICES,...games.map(g=>normalizePlatform(g.platform)).filter(Boolean)])];
+    platformFilter.innerHTML='<option value="">All platforms</option><option value="missing">No platform selected ('+games.filter(g=>!normalizePlatform(g.platform)).length+')</option>'+platforms.map(name=>'<option value="'+escHtml(name)+'">'+escHtml(name)+'</option>').join('');
+    platformFilter.value=gamesPlatformFilter;
+    document.getElementById('games-archive-filter').value=gamesArchiveFilter;
+    document.getElementById('games-pinned-only').checked=gamesPinnedOnly;
 
     const filterBox = document.getElementById('game-tag-filters');
     if (filterBox) {
@@ -9249,6 +9387,7 @@ opacity: 0.18;
     }
 
     const filtered = games.filter(matches);
+    document.getElementById('games-filter-count').textContent=filtered.length+' of '+games.length+' games';
     const active = filtered.filter(g => !g.archived).sort(pinnedFirst);
     const archived = filtered.filter(g => g.archived).sort(pinnedFirst);
 
@@ -9296,7 +9435,7 @@ opacity: 0.18;
     let html = '';
     const staleIds = new Set(staleGameEntries().map(x => x.game.id));
 
-    if (active.length === 0) {
+    if (active.length === 0 && gamesArchiveFilter !== 'archived') {
       html += '<div class="empty-state"><span class="empty-icon">' + iconSvg('emptyActive') + '</span>No active games.<br><span style="font-size:0.75rem;color:var(--text3)">Add a game or restore an archived one below.</span></div>';
     } else {
       html += active.map((g, i) => {
@@ -9304,11 +9443,12 @@ opacity: 0.18;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         const running = activeSession && activeSession.gameId === g.id;
         return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
-          '<div class="game-item-info">' +
+          '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' +
             tagsHtml(g) +
             gameMeta(count, e, staleIds.has(g.id)) +
-          '</div>' +
+          '</div></div>' +
           '<div class="game-item-actions">' +
             '<button class="btn-icon play' + (running ? ' on' : '') + '" data-action="start" data-id="' + g.id + '" title="' + (running ? 'Playing now' : 'Start session') + '">' + iconSvg('play') + '</button>' +
             '<button class="btn-icon pin' + (g.pinned ? ' on' : '') + '" data-action="pin" data-id="' + g.id + '" title="' + (g.pinned ? 'Unpin' : 'Pin to top') + '">' + iconSvg('pin') + '</button>' +
@@ -9327,15 +9467,17 @@ opacity: 0.18;
         const count = sessions.filter(s => s.gameId === g.id).length;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
-          '<div class="game-item-info">' +
+          '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' +
             tagsHtml(g) +
             gameMeta(count, e) +
-          '</div>' +
+          '</div></div>' +
           '<div class="game-item-actions">' +
             '<button class="btn-icon pin' + (g.pinned ? ' on' : '') + '" data-action="pin" data-id="' + g.id + '" title="' + (g.pinned ? 'Unpin' : 'Pin to top') + '">' + iconSvg('pin') + '</button>' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
             '<button class="btn-icon restore" data-action="restore" data-id="' + g.id + '" title="Restore">' + iconSvg('restore') + '</button>' +
+            (!g.image ? '<button class="btn-icon" data-action="rename" data-id="' + g.id + '" title="Edit game to add a cover">' + iconSvg('rename') + '</button>' : '') +
             '<button class="btn-icon danger" data-action="delete" data-id="' + g.id + '" title="Delete">' + iconSvg('delete') + '</button>' +
           '</div>' +
         '</div>';
@@ -9584,6 +9726,13 @@ opacity: 0.18;
   document.getElementById('game-search-input').addEventListener('input', e => {
     gamesSearch = e.target.value;
     renderGamesTab();
+  });
+  document.getElementById('games-platform-filter').addEventListener('change',event=>{gamesPlatformFilter=event.target.value;renderGamesTab();});
+  document.getElementById('games-archive-filter').addEventListener('change',event=>{gamesArchiveFilter=event.target.value;renderGamesTab();});
+  document.getElementById('games-pinned-only').addEventListener('change',event=>{gamesPinnedOnly=event.target.checked;renderGamesTab();});
+  document.getElementById('games-clear-filters').addEventListener('click',()=>{
+    gamesPlatformFilter='';gamesArchiveFilter='all';gamesPinnedOnly=false;gamesTagFilter=[];gamesSearch='';
+    document.getElementById('game-search-input').value='';renderGamesTab();
   });
 
   // --- Stop button ---
@@ -10071,7 +10220,8 @@ opacity: 0.18;
 
   // --- Goal modal ---
   document.getElementById('btn-goal-edit').addEventListener('click', () => {
-    document.getElementById('goal-minutes').value = settings.dailyGoalMinutes || 0;
+    document.getElementById('goal-hours').value = Math.round((settings.dailyGoalMinutes || 0)/60*10000)/10000;
+    document.getElementById('goal-budget-error').hidden = true;
     document.getElementById('goal-modal').classList.add('open');
   });
 
@@ -10080,15 +10230,28 @@ opacity: 0.18;
   });
 
   document.getElementById('goal-save').addEventListener('click', () => {
-    const v = Math.max(0, Math.floor(Number(document.getElementById('goal-minutes').value) || 0));
+    const input = document.getElementById('goal-hours');
+    if (!input.checkValidity()) { input.reportValidity(); return; }
+    const v = Math.round((Number(input.value) || 0)*60);
+    const planned = rotationGameIds().reduce((sum,id) => sum+rotationTargetMinutes(id),0);
+    const weekly = v*7;
+    if (planned > weekly) {
+      const error = document.getElementById('goal-budget-error');
+      const minimumHours = Math.ceil(Math.ceil(planned/7)/60*100)/100;
+      error.textContent = 'Your rotation plans '+fmtDurationShort(planned*60000)+', but this goal provides '+fmtDurationShort(weekly*60000)+'/week. '+(minimumHours<=24?'Set at least '+minimumHours+' hours per day or reduce your rotation targets.':'Reduce your rotation targets before saving a daily goal.');
+      error.hidden = false;
+      return;
+    }
+
     settings.dailyGoalMinutes = v;
     saveSettings(settings);
-    toast(v > 0 ? 'Goal set to ' + v + ' min/day' : 'Goal disabled');
+    toast(v > 0 ? 'Goal set to ' + fmtDurationShort(v*60000) + '/day' : 'Goal disabled');
     document.getElementById('goal-modal').classList.remove('open');
     render();
   });
 
-  document.getElementById('goal-minutes').addEventListener('keydown', e => {
+  document.getElementById('goal-hours').addEventListener('input', () => { document.getElementById('goal-budget-error').hidden = true; });
+  document.getElementById('goal-hours').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('goal-save').click();
   });
 
@@ -10326,6 +10489,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         lastQuestDay = todayStr();
         renderWeeklyRotation();
         renderAchievementsTab();
+        renderGoal();
       }
     }
     if (activeSession) {
@@ -10602,7 +10766,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('recap-period').addEventListener('change',renderGamingRecap);
 
   document.getElementById('rotation-manage').addEventListener('click',openRotationEditor);
-  document.getElementById('rotation-choices').addEventListener('input',updateRotationTargetStatuses);
+  document.getElementById('rotation-choices').addEventListener('input',rotationSelectionCount);
   document.getElementById('rotation-choices').addEventListener('change',event=>{
     if(event.target.type==='checkbox') {
       if(event.target.checked && document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked').length>5){event.target.checked=false;toast('Choose up to five games');}
@@ -10618,7 +10782,15 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const input=checkbox.closest('.rotation-choice').querySelector('.rotation-target');
       if(input.value==='') continue;
       if(!input.checkValidity()) { input.reportValidity(); return; }
-      targets[checkbox.value]=Number(input.value);
+      targets[checkbox.value]=rotationHoursToMinutes(input.value);
+    }
+    const budget=weeklyRotationBudgetMinutes(),planned=Object.values(targets).reduce((sum,value)=>sum+value,0);
+    if(budget && planned>budget) {
+      const error=document.getElementById('rotation-budget-error');
+      error.textContent='Over budget by '+fmtDurationShort((planned-budget)*60000)+'. Reduce your targets to '+fmtDurationShort(budget*60000)+' total before saving.';
+      error.hidden=false;
+      error.scrollIntoView({block:'nearest'});
+      return;
     }
     settings.weeklyRotation=chosen.map(input=>input.value);
     settings.weeklyRotationTargets=targets;
@@ -10628,6 +10800,70 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const button=event.target.closest('button[data-rotation-start]');
     if(button)startGame(button.dataset.rotationStart);
   });
+
+  function renderGameFilterChips() {
+    const items=[];
+    if(gamesSearch.trim()) items.push(['search','Search: '+gamesSearch]);
+    if(gamesPlatformFilter) items.push(['platform',gamesPlatformFilter==='missing'?'No platform selected':gamesPlatformFilter]);
+    if(gamesArchiveFilter!=='all') items.push(['archive',gamesArchiveFilter==='active'?'Active games':'Archived games']);
+    if(gamesPinnedOnly) items.push(['pinned','Pinned only']);
+    gamesTagFilter.forEach(tag=>items.push(['tag',tag]));
+    document.getElementById('games-filter-chips').innerHTML=items.map(([kind,label])=>'<button class="game-tag-filter on" type="button" data-filter-kind="'+kind+'" data-filter-value="'+escHtml(label)+'" aria-label="Remove '+escHtml(label)+' filter">'+escHtml(label)+' <span aria-hidden="true">&#215;</span></button>').join('');
+    document.getElementById('games-filter-toggle').textContent='Filters'+(items.length?' \u00b7 '+items.length+' active':'');
+  }
+  const gamesFilterMedia=window.matchMedia('(min-width:900px)');
+  function updateGameFilterExpanded() {
+    document.getElementById('games-filter-toggle').setAttribute('aria-expanded',String(gamesFilterMedia.matches || !document.querySelector('.games-filter-panel').classList.contains('filters-collapsed')));
+  }
+  document.getElementById('games-filter-toggle').addEventListener('click',()=>{
+    document.querySelector('.games-filter-panel').classList.toggle('filters-collapsed');updateGameFilterExpanded();
+  });
+  gamesFilterMedia.addEventListener('change',updateGameFilterExpanded);updateGameFilterExpanded();
+  document.getElementById('games-filter-chips').addEventListener('click',event=>{
+    const button=event.target.closest('button[data-filter-kind]');if(!button)return;
+    const kind=button.dataset.filterKind;
+    if(kind==='search'){gamesSearch='';document.getElementById('game-search-input').value='';}
+    if(kind==='platform')gamesPlatformFilter='';
+    if(kind==='archive')gamesArchiveFilter='all';
+    if(kind==='pinned')gamesPinnedOnly=false;
+    if(kind==='tag')gamesTagFilter=gamesTagFilter.filter(tag=>tag!==button.dataset.filterValue);
+    renderGamesTab();
+  });
+
+  function organizeSettings() {
+    const panel=document.getElementById('tab-settings');
+    const cards=[...panel.children].filter(element=>element.classList.contains('card'));
+    const find=title=>cards.find(card=>card.querySelector('.card-header')?.textContent.trim()===title);
+    const appearance=find('Appearance'),live=find('Live session'),library=find('Game list'),dropbox=find('Dropbox Sync'),backup=find('Backup'),maintenance=find('Achievements'),shortcuts=find('Keyboard shortcuts');
+    const sections=[['appearance','Appearance',[appearance]],['tracking','Session tracking',[live,library,shortcuts]],['dropbox','Dropbox',[dropbox]],['data','Data',[backup,maintenance]]];
+    const nav=document.createElement('nav');nav.className='settings-nav';nav.setAttribute('aria-label','Settings sections');
+    panel.prepend(nav);
+    sections.forEach(([id,title,items])=>{
+      const section=document.createElement('section');section.className='settings-section';section.id='settings-'+id;
+      const heading=document.createElement('h2');heading.textContent=title;section.append(heading);
+      items.filter(Boolean).forEach(card=>section.append(card));panel.append(section);
+      const button=document.createElement('button');button.type='button';button.className='btn-ghost';button.textContent=title;
+      button.addEventListener('click',()=>section.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}));nav.append(button);
+    });
+    // Move calendar preferences next to the tracking settings.
+    const calendar=[...appearance.querySelectorAll('.card-header')].find(element=>element.textContent.trim()==='Calendar');
+    if(calendar) {
+      const controls=calendar.nextElementSibling;
+      const card=document.createElement('div');card.className='card';card.append(calendar,controls);
+      document.getElementById('settings-tracking').insertBefore(card,live);
+      calendar.style.marginTop='0';
+    }
+    appearance.querySelector('.card-header').textContent='Theme & interface';
+    live.querySelector('.card-header').textContent='Live sessions';
+    backup.querySelector('.card-header').textContent='Backups & exports';
+    maintenance.classList.add('settings-maintenance-card');maintenance.querySelector('.card-header').textContent='Data maintenance';
+    const importButton=document.getElementById('btn-import');importButton.textContent='Import a backup';importButton.classList.add('btn-danger');
+    const importHint=document.createElement('p');importHint.className='backup-hint';importHint.textContent='Importing replaces your local game library and session history after confirmation.';
+    maintenance.insertBefore(importHint,maintenance.children[1]);maintenance.insertBefore(importButton,importHint.nextSibling);
+    const risk=document.createElement('div');risk.className='settings-risk-actions';
+    risk.append(document.getElementById('dbxDisconnectBtn'));document.getElementById('dbx-connected').append(risk);
+  }
+  organizeSettings();
 
   // --- Initial render ---
   backfillUnlockDates('gentle');
@@ -10670,7 +10906,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     deferredInstallPrompt = null;
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.7.0';
+    const APP_VERSION = '1.7.1';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
