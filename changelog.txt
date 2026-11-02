@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.7.1
+-------------------
+- Added spacing between the game name and tags fields in the Classic Edit Game dialog.
+
 Version 1.7.0
 -------------------
 - Added a Daily goal streak stat showing consecutive days hitting your daily goal.
