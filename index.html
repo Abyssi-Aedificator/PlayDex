@@ -5639,10 +5639,10 @@ opacity: 0.18;
 <div class="modal-overlay" id="goal-modal">
   <div class="modal">
     <h3>Daily Playtime Goal</h3>
-    <p style="font-size:0.8rem;color:var(--text2);margin-bottom:12px;">Set 0 to disable the goal.</p>
+    <p style="font-size:0.8rem;color:var(--text2);margin-bottom:12px;">Use decimals for partial hours (0.5 = 30 minutes). Set 0 to disable the goal.</p>
     <div class="field-group">
-      <label for="goal-minutes">Minutes per day</label>
-      <input type="number" id="goal-minutes" min="0" max="1440" step="5">
+      <label for="goal-hours">Hours per day</label>
+      <input type="number" id="goal-hours" min="0" max="24" step="any">
     </div>
     <div class="modal-actions">
       <button class="btn-ghost" id="goal-cancel">Cancel</button>
@@ -5752,7 +5752,7 @@ opacity: 0.18;
   </div>
 </div>
 
-<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose up to five games to focus on. Set optional weekly targets in minutes. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
+<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose up to five games to focus on. Set optional weekly targets in hours (for example, 0.5 for 30 minutes). Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
 
 <!-- What should I play? picker -->
 <div class="modal-overlay" id="pick-modal">
@@ -7700,7 +7700,7 @@ opacity: 0.18;
     const count=document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked').length;
     document.getElementById('rotation-selection-count').textContent=count+' of 5 selected';
     const planned=[...document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')].reduce((sum,checkbox)=>{
-      const value=Number(checkbox.closest('.rotation-choice').querySelector('.rotation-target').value);
+      const value=rotationHoursToMinutes(checkbox.closest('.rotation-choice').querySelector('.rotation-target').value);
       return sum+(Number.isFinite(value) && value>0?value:0);
     },0);
     const budget=weeklyRotationBudgetMinutes(),over=!!budget && planned>budget;
@@ -7717,7 +7717,7 @@ opacity: 0.18;
     const progress=rotationWeekProgress(rows.map(row=>row.querySelector('input[type="checkbox"]').value));
     rows.forEach(row=>{
       const checkbox=row.querySelector('input[type="checkbox"]'),input=row.querySelector('.rotation-target'),status=row.querySelector('.rotation-target-status');
-      const target=Number(input.value),played=progress.games[checkbox.value].ms;
+      const target=rotationHoursToMinutes(input.value),played=progress.games[checkbox.value].ms;
       const valid=checkbox.checked && Number.isInteger(target) && target>0 && target<=10080;
       const reached=valid && played>=target*60000;
       status.classList.toggle('reached',reached);
@@ -7727,7 +7727,7 @@ opacity: 0.18;
   function openRotationEditor() {
     const ids=new Set(rotationGameIds()),active=games.filter(g=>!g.archived).sort((a,b)=>a.name.localeCompare(b.name));
     if(!active.length){toast('Add a game first');return;}
-    document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (min)<input class="rotation-target" type="number" min="1" max="10080" step="1" placeholder="Optional" value="'+(rotationTargetMinutes(g.id)||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label></div>').join('');
+    document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (hours)<input class="rotation-target" type="number" min="0.01" max="168" step="any" placeholder="Optional" value="'+(Math.round(rotationTargetMinutes(g.id)/60*10000)/10000||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label></div>').join('');
     rotationSelectionCount();document.getElementById('rotation-modal').classList.add('open');
   }
 
@@ -10218,7 +10218,7 @@ opacity: 0.18;
 
   // --- Goal modal ---
   document.getElementById('btn-goal-edit').addEventListener('click', () => {
-    document.getElementById('goal-minutes').value = settings.dailyGoalMinutes || 0;
+    document.getElementById('goal-hours').value = Math.round((settings.dailyGoalMinutes || 0)/60*10000)/10000;
     document.getElementById('goal-modal').classList.add('open');
   });
 
@@ -10227,15 +10227,17 @@ opacity: 0.18;
   });
 
   document.getElementById('goal-save').addEventListener('click', () => {
-    const v = Math.max(0, Math.floor(Number(document.getElementById('goal-minutes').value) || 0));
+    const input = document.getElementById('goal-hours');
+    if (!input.checkValidity()) { input.reportValidity(); return; }
+    const v = Math.round((Number(input.value) || 0)*60);
     settings.dailyGoalMinutes = v;
     saveSettings(settings);
-    toast(v > 0 ? 'Goal set to ' + v + ' min/day' : 'Goal disabled');
+    toast(v > 0 ? 'Goal set to ' + fmtDurationShort(v*60000) + '/day' : 'Goal disabled');
     document.getElementById('goal-modal').classList.remove('open');
     render();
   });
 
-  document.getElementById('goal-minutes').addEventListener('keydown', e => {
+  document.getElementById('goal-hours').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('goal-save').click();
   });
 
@@ -10766,7 +10768,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const input=checkbox.closest('.rotation-choice').querySelector('.rotation-target');
       if(input.value==='') continue;
       if(!input.checkValidity()) { input.reportValidity(); return; }
-      targets[checkbox.value]=Number(input.value);
+      targets[checkbox.value]=rotationHoursToMinutes(input.value);
     }
     const budget=weeklyRotationBudgetMinutes(),planned=Object.values(targets).reduce((sum,value)=>sum+value,0);
     if(budget && planned>budget) {

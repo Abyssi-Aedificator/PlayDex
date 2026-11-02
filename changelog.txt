@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.7.1
 -------------------
+- Daily goals and weekly rotation targets accept hours and decimals while preserving existing durations.
 - Weekly rotation uses seven times the daily goal as its budget, shows available time with a bar, and explains over-budget saves.
 - Settings groups Appearance, Session tracking, Dropbox, and Data with navigation and separated maintenance actions.
 - Top offers an expandable ranking guide and clearer movement badges.
