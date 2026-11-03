@@ -10217,16 +10217,22 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     game.archived = true;
     saveGames(games);
     render();
-    toast('Archived: ' + game.name, 'Undo', () => {
-      game.archived = false;
-      saveGames(games);
-      render();
-    }, 6000);
+    toast('Archived: ' + game.name, 'Undo', () => restoreGame(id), 6000);
   }
 
   function restoreGame(id) {
     const game = games.find(g => g.id === id);
-    if (!game) return;
+    if (!game || !game.archived) return;
+    if (archivedRotationIds().includes(id)) {
+      const budget=weeklyRotationBudgetMinutes(),target=rotationTargetMinutes(id);
+      const progress=rotationWeekProgress([id]);
+      const spent=Math.min(target,Math.floor(progress.games[id].ms/60000));
+      const planned=rotationCommittedMinutes()+target-spent;
+      if (budget && planned>budget) {
+        toast('Restoring this game would exceed the weekly budget by '+fmtDurationMinutes((planned-budget)*60000)+'. Reduce rotation targets or increase your daily goal first.',null,null,8000);
+        return;
+      }
+    }
     game.archived = false;
     saveGames(games);
     toast('Restored: ' + game.name);
