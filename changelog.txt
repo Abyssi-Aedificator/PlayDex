@@ -5,6 +5,7 @@ Version 1.7.6
 -------------------
 - Invalid backup records are rejected before replacing local data during manual import, Dropbox download, or rollback.
 - Restoring or undoing the archive of a rotation game is blocked with an explanation when its restored target would exceed the weekly budget.
+- Material dialogs keep keyboard focus inside the topmost dialog, including milestone editors opened over a game dashboard.
 - Classic uses clearer card headings, a theme-coloured selected-tab background, and consistently sized secondary actions with separated Delete buttons.
 - Classic goal, rotation, and milestone progress bars share rounded styling and values above the bars; archived games keep readable artwork and use an Archived label instead of crossed-out names.
 
