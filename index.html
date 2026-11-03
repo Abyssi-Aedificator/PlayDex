@@ -9737,7 +9737,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
             '<button class="btn-icon pin' + (g.pinned ? ' on' : '') + '" data-action="pin" data-id="' + g.id + '" title="' + (g.pinned ? 'Unpin' : 'Pin to top') + '">' + iconSvg('pin') + '</button>' +
             '<button class="btn-icon" data-action="view" data-id="' + g.id + '" title="Dashboard">' + iconSvg('view') + '</button>' +
             '<button class="btn-icon restore" data-action="restore" data-id="' + g.id + '" title="Restore">' + iconSvg('restore') + '</button>' +
-            (!g.image ? '<button class="btn-icon" data-action="rename" data-id="' + g.id + '" title="Edit game to add a cover">' + iconSvg('rename') + '</button>' : '') +
+            (!g.image || !normalizePlatform(g.platform) ? '<button class="btn-icon" data-action="rename" data-id="' + g.id + '" title="Edit game to add a cover or platform">' + iconSvg('rename') + '</button>' : '') +
             '<button class="btn-icon danger" data-action="delete" data-id="' + g.id + '" title="Delete">' + iconSvg('delete') + '</button>' +
           '</div>' +
         '</div>';
