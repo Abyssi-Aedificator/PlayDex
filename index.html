@@ -4958,7 +4958,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.7.4</span>
+    <span class="version-badge">1.7.5</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -7481,11 +7481,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       pausedAt: null,
       targetMs: pendingTargetMin * 60000 || 0
     };
-    pendingTargetMin = 0;
     targetToastShown = false;
     sessions.push(session);
     activeSession = session;
     saveSessions(sessions);
+    pendingTargetMin = 0;
+    document.querySelectorAll('.target-opt').forEach(button => button.classList.toggle('on', button.dataset.target === '0'));
+    document.getElementById('target-custom').value = '';
     toast('Started: ' + game.name);
     render();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -11410,7 +11412,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     deferredInstallPrompt = null;
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.7.4';
+    const APP_VERSION = '1.7.5';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
