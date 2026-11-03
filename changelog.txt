@@ -1,6 +1,23 @@
 PlayDex - Changelog
 ====================
 
+Version 1.7.3
+-------------------
+- Game dashboards use a wider two-column layout on larger screens, with milestones beside stats and history.
+- Added personal game milestones with named checkpoints, editable completion dates, and actions to complete, reopen, edit, or delete them from each game dashboard.
+- Weekly rotation and daily goal progress use whole-minute precision and refresh as live playtime reaches each minute; the main session timer retains seconds.
+- Weekly rotation is hidden while a running or paused session belongs to a game outside the rotation, and returns when the session stops.
+- Weekly rotation time uses a compact, consistent text style for played and target durations, matching the surrounding interface.
+- Stale-game reminders replace rotation exclusions with the next available non-rotation games, including never-played games, to show up to three suggestions.
+- Rotation progress removes the duplicated played-status line and emphasizes elapsed time, target duration, and a distinct percentage badge.
+- During an active session, weekly rotation hides its budget and overview and updates target progress live for the current game, excluding paused time.
+- During running or paused sessions, weekly rotation shows only the current rotation game and hides Start and Playing actions; the normal list returns after stopping.
+- Material mode now uses HCT-generated light and dark palettes, bundled Roboto Flex typography, Material Symbols, and expressive tonal surfaces.
+- Material navigation keeps every destination, uses two rows below 600px, and positions content, the FAB, and snackbars around the actual navigation height.
+- Material mode has accessible themed select menus, date-picker dialogs, and dial or keyboard time entry with confirmation and cancellation.
+- Material buttons, chips, checkboxes, settings, lists, charts, and dialogs share consistent sizing, focus states, hierarchy, and reduced-motion support.
+- Material game filters open as a bottom sheet on compact screens; the bundled font is cached for offline use.
+
 Version 1.7.2
 -------------------
 - Games you haven't played in a while excludes weekly rotation games and no longer has a dismiss button.

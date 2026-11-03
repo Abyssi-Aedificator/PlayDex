@@ -4572,7 +4572,224 @@ opacity: 0.18;
       transition-duration: 0.01ms !important;
     }
   }
+
+  @font-face { font-family:PlayDexRobotoFlex; src:url('assets/material/RobotoFlex.ttf') format('truetype'); font-weight:100 1000; font-display:swap; }
+  :root[data-ui="material"] {
+    --md-font:PlayDexRobotoFlex,Roboto,Arial,sans-serif;
+    --mx-nav-height:80px; --mx-space:8px;
+    --mx-fast:180ms; --mx-medium:320ms;
+    --mx-spring:linear(0,0.12,0.39,0.70,0.94,1.05,1.04,1.01,1);
+    --radius-lg:24px; --radius:16px; --radius-sm:12px;
+  }
+  :root[data-ui="material"] body { background:var(--md-background); color:var(--md-on-surface); font:400 14px/1.45 var(--md-font); }
+  :root[data-ui="material"] header { min-height:72px; background:var(--md-surface-container); border:0; box-shadow:none; backdrop-filter:none; gap:16px; padding:12px 24px; }
+  :root[data-ui="material"] header h1 { font-family:var(--md-font); font-variation-settings:'wght' 600; }
+  :root[data-ui="material"] .version-badge { background:var(--md-secondary-container); color:var(--md-on-secondary-container); border:0; font:500 11px/16px var(--md-font); }
+  .mx-page-title { display:none; }
+  :root[data-ui="material"] .mx-page-title { display:block; font:500 18px/24px var(--md-font); color:var(--md-on-surface); margin-left:auto; }
+  :root[data-ui="material"] .app-content { padding-bottom:calc(var(--mx-nav-height) + 96px); }
+  :root[data-ui="material"] .card { border:0; border-radius:24px; padding:24px; background:var(--md-surface-container-low); margin-bottom:16px; box-shadow:none; }
+  :root[data-ui="material"] .card:hover { box-shadow:none; transform:none; }
+  :root[data-ui="material"] .card-header { font:600 16px/24px var(--md-font); letter-spacing:0; color:var(--md-on-surface); margin-bottom:16px; text-transform:none; }
+  :root[data-ui="material"] .big-time { font:500 45px/52px var(--md-font); font-variant-numeric:tabular-nums; letter-spacing:-1px; }
+  :root[data-ui="material"] .stat-value { font:600 24px/32px var(--md-font); }
+  :root[data-ui="material"] .stat-label,:root[data-ui="material"] .bar-label { font:500 12px/16px var(--md-font); color:var(--md-on-surface-variant); }
+  :root[data-ui="material"] .stat-box { background:var(--md-surface-container); padding:16px; border:0; border-radius:20px; }
+  :root[data-ui="material"] .active-session { background:var(--md-primary-container)!important; color:var(--md-on-primary-container); border-radius:32px; }
+  :root[data-ui="material"] .active-session .elapsed { font:500 clamp(32px,5vw,48px)/1.2 var(--md-font); font-variant-numeric:tabular-nums; }
+  :root[data-ui="material"] .active-session.has-cover::before { opacity:.18; }
+  :root[data-ui="material"] .active-session .game-name { color:var(--md-on-primary-container); font:600 24px/32px var(--md-font); }
+  :root[data-ui="material"] .active-session .clock-label,:root[data-ui="material"] .active-session .live-label { color:var(--md-on-primary-container); }
+  :root[data-ui="material"] button { font-family:var(--md-font); -webkit-tap-highlight-color:transparent; }
+  :root[data-ui="material"] .btn,:root[data-ui="material"] .btn-primary,:root[data-ui="material"] .btn-danger,:root[data-ui="material"] .btn-ghost { min-height:48px; padding:12px 24px!important; border-radius:24px; font:500 14px/20px var(--md-font)!important; letter-spacing:.1px; box-shadow:none; transition:border-radius var(--mx-fast) var(--mx-spring),background var(--mx-fast),transform var(--mx-fast) var(--mx-spring); }
+  :root[data-ui="material"] .btn:active,:root[data-ui="material"] .btn-primary:active { border-radius:12px; transform:scale(.97); }
+  :root[data-ui="material"] .btn-ghost { border:0; background:var(--md-secondary-container); color:var(--md-on-secondary-container); }
+  :root[data-ui="material"] .modal-actions .btn-ghost { background:transparent; color:var(--md-primary); }
+  :root[data-ui="material"] .btn-danger,:root[data-ui="material"] .btn-stop { background:var(--md-error); color:var(--md-on-error); }
+  :root[data-ui="material"] .btn-icon,:root[data-ui="material"] .session-edit,:root[data-ui="material"] .session-sync,:root[data-ui="material"] .session-delete,:root[data-ui="material"] .btn-goal-edit,:root[data-ui="material"] .name-edit-btn { min-width:48px; min-height:48px; padding:12px!important; border:0; border-radius:24px; display:inline-flex; align-items:center; justify-content:center; background:transparent; color:var(--md-primary); margin-left:0; font:500 14px/20px var(--md-font); }
+  :root[data-ui="material"] .btn-icon svg,:root[data-ui="material"] .mx-symbol { width:24px; height:24px; fill:currentColor; flex-shrink:0; }
+  :root[data-ui="material"] .btn-icon.danger,:root[data-ui="material"] .session-delete { color:var(--md-error); }
+  :root[data-ui="material"] button:disabled { opacity:.38; cursor:default; transform:none; }
+  :root[data-ui="material"] button:not(:disabled):hover { filter:none; }
+  :root[data-ui="material"] :is(button,summary,input,select):focus-visible { outline:3px solid var(--md-primary); outline-offset:3px; }
+  :root[data-ui="material"] .game-tag-filter,:root[data-ui="material"] .top-period,:root[data-ui="material"] .target-opt,:root[data-ui="material"] .pick-opt,:root[data-ui="material"] .settings-nav button,:root[data-ui="material"] .list-summary button { min-height:48px; padding:10px 16px; border:1px solid var(--md-outline-variant); border-radius:14px; font:500 14px/20px var(--md-font); background:var(--md-surface-container-low); color:var(--md-on-surface-variant); transition:background var(--mx-fast),border-radius var(--mx-fast) var(--mx-spring); }
+  :root[data-ui="material"] .game-tag-filter.on,:root[data-ui="material"] .top-period.active,:root[data-ui="material"] .target-opt.on,:root[data-ui="material"] .pick-opt.on,:root[data-ui="material"] .pick-opt.active { background:var(--md-secondary-container); color:var(--md-on-secondary-container); border-color:transparent; }
+  :root[data-ui="material"] .game-tag-filter.on::before { content:'\2713'; margin-right:6px; }
+  :root[data-ui="material"] .top-periods,:root[data-ui="material"] .target-presets { display:flex; flex-wrap:wrap; gap:8px; }
+  :root[data-ui="material"] .theme-opt,:root[data-ui="material"] .sync-seg button { min-height:48px; font:500 14px/20px var(--md-font); }
+  :root[data-ui="material"] .theme-opt.active,:root[data-ui="material"] .sync-seg button.active { background:var(--md-secondary-container); color:var(--md-on-secondary-container); }
+  :root[data-ui="material"] input[type="checkbox"] { appearance:none; width:20px; height:20px; border:2px solid var(--md-on-surface-variant); border-radius:3px; position:relative; flex-shrink:0; background:transparent; margin:14px; }
+  :root[data-ui="material"] input[type="checkbox"]:checked { background:var(--md-primary); border-color:var(--md-primary); }
+  :root[data-ui="material"] input[type="checkbox"]:checked::before { content:''; position:absolute; width:9px; height:5px; border-left:2px solid var(--md-on-primary); border-bottom:2px solid var(--md-on-primary); transform:rotate(-45deg); left:3px; top:3px; }
+  :root[data-ui="material"] .dbx-toggle input[type="checkbox"] { width:52px; height:32px; margin:8px; border-radius:999px; }
+  :root[data-ui="material"] .dbx-toggle input[type="checkbox"]::before { display:none; }
+  :root[data-ui="material"] .rotation-choice > label,:root[data-ui="material"] .games-pinned-filter { min-height:48px; }
+  :root[data-ui="material"] input[type="text"],:root[data-ui="material"] input[type="number"],:root[data-ui="material"] select,:root[data-ui="material"] .cal-trigger { min-height:56px; font:400 16px/24px var(--md-font); border-radius:12px; padding:16px; }
+  :root[data-ui="material"] input.time-input { min-height:48px; }
+  :root[data-ui="material"] .field-group,:root[data-ui="material"] .m3-field { --mx-field-surface:var(--md-surface-container-high); }
+  :root[data-ui="material"] .card .field-group { --mx-field-surface:var(--md-surface-container-low); }
+  :root[data-ui="material"] .active-session .field-group { --mx-field-surface:var(--md-primary-container); }
+  :root[data-ui="material"] .field-group > label,:root[data-ui="material"] .m3-field > label { background:var(--mx-field-surface); }
+  :root[data-ui="material"] .field-group:has(select) > label { transform:translateY(-24px) scale(.78); }
+  :root[data-ui="material"] .backup-hint,:root[data-ui="material"] .rotation-summary,:root[data-ui="material"] .recap-note,:root[data-ui="material"] .game-item-meta,:root[data-ui="material"] .session-times,:root[data-ui="material"] .top-legend { font-size:14px; line-height:20px; color:var(--md-on-surface-variant); }
+  :root[data-ui="material"] .over-budget,:root[data-ui="material"] [role="alert"] { color:var(--md-error)!important; }
+  :root[data-ui="material"] .game-item,:root[data-ui="material"] .session-item,:root[data-ui="material"] .rotation-row,:root[data-ui="material"] .top-row { padding:16px 8px; gap:8px; border-color:var(--md-outline-variant); border-radius:16px; transform:none!important; }
+  :root[data-ui="material"] .game-item:hover,:root[data-ui="material"] .session-item:hover,:root[data-ui="material"] .top-row:hover { background:var(--md-surface-container); }
+  :root[data-ui="material"] .game-item-name,:root[data-ui="material"] .session-game,:root[data-ui="material"] .rotation-game strong { font:500 16px/24px var(--md-font); }
+  :root[data-ui="material"] .library-game-cover { width:56px; height:56px; flex-basis:56px; border:0; border-radius:16px; background:var(--md-secondary-container); color:var(--md-on-secondary-container); }
+  :root[data-ui="material"] .game-platform-badge,:root[data-ui="material"] .game-tag { border:0; border-radius:8px; padding:4px 8px; background:var(--md-surface-container-highest); font-size:12px; color:var(--md-on-surface-variant); }
+  :root[data-ui="material"] .session-day-heading { background:var(--md-surface-container); border-radius:16px; padding:12px 16px; font-size:14px; }
+  :root[data-ui="material"] .rotation-game small { font-size:12px; line-height:18px; }
+  :root[data-ui="material"] .rotation-target-label { min-width:112px; font-size:12px; }
+  :root[data-ui="material"] .rotation-choice input.rotation-target { min-height:56px; font-size:16px; padding:12px; }
+  :root[data-ui="material"] .progress-track,:root[data-ui="material"] .rotation-budget-meter { height:6px; background:var(--md-secondary-container); border:0; }
+  :root[data-ui="material"] .progress-fill,:root[data-ui="material"] .rotation-budget-meter-fill { background:var(--md-primary); }
+  :root[data-ui="material"] .top-main { background:var(--md-surface-container); border-radius:28px; }
+  :root[data-ui="material"] .top-trend { border:0; background:var(--md-secondary-container); color:var(--md-on-secondary-container); font-size:12px; border-radius:8px; }
+  :root[data-ui="material"] .ach-card { border:0; background:var(--md-surface-container-low); box-shadow:none; border-radius:20px; }
+  :root[data-ui="material"] .ach-card:not(.unlocked) { color:var(--md-on-surface-variant); filter:saturate(.25); }
+  :root[data-ui="material"] .ach-card.unlocked { background:var(--md-tertiary-container); color:var(--md-on-tertiary-container); }
+  :root[data-ui="material"] .profile-level { box-shadow:none; border-radius:28px; background:var(--md-tertiary-container); color:var(--md-on-tertiary-container); }
+  :root[data-ui="material"] .profile-name { font:600 28px/36px var(--md-font); }
+  :root[data-ui="material"] .settings-section > h2 { font:600 24px/32px var(--md-font); margin-bottom:16px; }
+  :root[data-ui="material"] .dbx-toggle { padding:8px 0; font-size:16px; min-height:56px; border:0; }
+  :root[data-ui="material"] .settings-maintenance-card { background:var(--md-error-container); color:var(--md-on-error-container); }
+  :root[data-ui="material"] .settings-maintenance-card .backup-hint { color:var(--md-on-error-container); }
+  :root[data-ui="material"] .modal { width:min(560px,calc(100vw - 32px)); max-width:560px; max-height:calc(100dvh - 48px); overflow-y:auto; overscroll-behavior:contain; border-radius:28px; padding:24px; }
+  :root[data-ui="material"] .modal h3 { font:500 24px/32px var(--md-font); margin-bottom:24px; }
+  :root[data-ui="material"] .modal-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; margin-top:24px; }
+  :root[data-ui="material"] .modal-actions button { flex:0 1 auto; }
+  :root[data-ui="material"] .tab-bar { display:grid; grid-template-columns:repeat(var(--mx-tab-count,7),minmax(0,1fr)); gap:4px; padding:8px 12px calc(8px + env(safe-area-inset-bottom)); border:0; border-radius:24px 24px 0 0; background:var(--md-surface-container); }
+  :root[data-ui="material"] .tab-btn { min-height:64px; min-width:48px; gap:4px; padding:4px 0; font:500 12px/16px var(--md-font); }
+  :root[data-ui="material"] .tab-btn .tab-icon { height:32px; width:64px; max-width:100%; }
+  :root[data-ui="material"] .tab-btn::after { border-radius:20px; }
+  :root[data-ui="material"] .tab-btn.active .tab-icon { background:var(--md-secondary-container); border-radius:18px; }
+  :root[data-ui="material"] .tab-btn:active { transform:none; }
+  :root[data-ui="material"] .m3-fab { bottom:calc(var(--mx-nav-height) + 16px); height:56px; border-radius:20px; background:var(--md-tertiary-container); color:var(--md-on-tertiary-container); box-shadow:var(--md-elev-2); }
+  :root[data-ui="material"] .toast { bottom:calc(var(--mx-nav-height) + 16px); font:400 14px/20px var(--md-font); min-height:48px; }
+  :root[data-ui="material"] body:has(.m3-fab.show) .toast { bottom:calc(var(--mx-nav-height) + 88px); }
+  :root[data-ui="material"] .boot-stack { border-radius:36px; }
+  :root[data-ui="material"] .boot-logo { font-family:var(--md-font); }
+  :root[data-ui="material"] .mx-native-select { display:none!important; }
+  .mx-select-button { display:none; }
+  :root[data-ui="material"] .mx-select-button { display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:56px; padding:15px 16px; border:1px solid var(--md-outline); border-radius:12px; background:transparent; color:var(--md-on-surface); font:400 16px/24px var(--md-font); text-align:left; }
+  :root[data-ui="material"] .mx-select-button span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  :root[data-ui="material"] .mx-select-button svg { width:20px; height:20px; fill:currentColor; flex:none; }
+  :root[data-ui="material"] .cal-popover { display:none!important; }
+  dialog.mx-dialog { color:var(--md-on-surface); background:var(--md-surface-container-high); border:0; border-radius:28px; padding:24px; max-height:calc(100dvh - 32px); overflow:auto; box-shadow:var(--md-elev-3); font:400 14px/20px var(--md-font); }
+  dialog.mx-dialog::backdrop { background:rgb(0 0 0 / .32); }
+  dialog.mx-dialog h2 { font:500 24px/32px var(--md-font); margin:0 0 20px; }
+  dialog.mx-menu { padding:8px; border-radius:16px; min-width:200px; max-width:calc(100vw - 24px); max-height:min(400px,70dvh); margin:0; position:fixed; }
+  dialog.mx-menu::backdrop { background:transparent; }
+  .mx-menu [role="option"] { display:flex; align-items:center; width:100%; min-height:48px; gap:12px; padding:12px 16px; color:var(--md-on-surface); background:transparent; border:0; border-radius:8px; font:400 16px/24px var(--md-font); text-align:left; cursor:pointer; }
+  .mx-menu [aria-selected="true"] { background:var(--md-secondary-container); color:var(--md-on-secondary-container); font-weight:600; }
+  .mx-menu [role="option"]:disabled { opacity:.38; }
+  .mx-picker-head { display:flex; align-items:center; gap:8px; }
+  .mx-picker-head h2 { flex:1; }
+  .mx-picker-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; margin-top:20px; }
+  .mx-picker-actions button,.mx-picker-head button,.mx-month-nav button,.mx-period button,.mx-time-part { min-height:48px; min-width:48px; padding:10px 16px; border:0; border-radius:24px; background:transparent; color:var(--md-primary); font:500 14px/20px var(--md-font); cursor:pointer; }
+  .mx-picker-actions button:last-child { background:var(--md-primary); color:var(--md-on-primary); }
+  .mx-month-nav { display:flex; align-items:center; justify-content:space-between; font-weight:600; margin:8px 0; }
+  .mx-date-grid,.mx-weekdays { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:0; }
+  .mx-weekdays span { text-align:center; padding:12px 0; color:var(--md-on-surface-variant); font-size:12px; }
+  .mx-date-grid button { min-height:48px; min-width:0; border:0; border-radius:50%; font:400 14px var(--md-font); background:transparent; color:var(--md-on-surface); cursor:pointer; }
+  .mx-date-grid .mx-other { opacity:.45; }
+  .mx-date-grid [aria-selected="true"] { background:var(--md-primary); color:var(--md-on-primary); }
+  .mx-date-grid .mx-today:not([aria-selected="true"]) { outline:1px solid var(--md-primary); outline-offset:-3px; }
+  #mx-picker.mx-date { width:420px; max-width:100vw; box-sizing:border-box; }
+  #mx-picker.mx-time { width:360px; max-width:100vw; box-sizing:border-box; }
+  .mx-picked-date { font:500 28px/36px var(--md-font); margin:0 0 16px; color:var(--md-on-surface); }
+  .mx-typed-field { display:block; font-size:12px; color:var(--md-on-surface-variant); margin:12px 0; }
+  .mx-typed-field input { display:block; width:100%; box-sizing:border-box; margin-top:6px; min-height:56px; border:1px solid var(--md-outline); border-radius:12px; padding:12px; background:transparent; color:var(--md-on-surface); font:400 16px var(--md-font); }
+  .mx-time-display { display:flex; justify-content:center; gap:8px; align-items:center; margin-bottom:16px; }
+  .mx-time-part { font:500 40px/48px var(--md-font); border-radius:16px; background:var(--md-surface-container-highest); min-width:80px; }
+  .mx-time-part[aria-pressed="true"],.mx-period [aria-pressed="true"] { background:var(--md-primary-container); color:var(--md-on-primary-container); }
+  .mx-period { display:flex; justify-content:center; gap:8px; margin-bottom:12px; }
+  .mx-period button { border:1px solid var(--md-outline); }
+  .mx-dial { width:248px; height:248px; border-radius:50%; background:var(--md-surface-container-highest); position:relative; margin:auto; }
+  .mx-dial button { position:absolute; width:48px; height:48px; border-radius:50%; padding:0; border:0; font:400 16px var(--md-font); color:var(--md-on-surface); background:transparent; cursor:pointer; z-index:1; }
+  .mx-dial button[aria-pressed="true"] { background:var(--md-primary); color:var(--md-on-primary); }
+  .mx-clock-hand { position:absolute; left:123px; top:25px; height:99px; width:2px; background:var(--md-primary); transform-origin:bottom; }
+  .mx-clock-center { position:absolute; width:8px; height:8px; left:120px; top:120px; border-radius:50%; background:var(--md-primary); }
+  .mx-time-inputs { display:flex; gap:12px; }
+  .mx-time-inputs label { flex:1; min-width:0; }
+  .mx-picker-error { color:var(--md-error); margin:8px 0; min-height:20px; }
+  #mx-filter-sheet { position:fixed; inset:auto 0 0; margin:0; width:100%; max-width:none; max-height:88dvh; border-radius:28px 28px 0 0; box-sizing:border-box; padding-bottom:calc(24px + env(safe-area-inset-bottom)); }
+  #mx-filter-sheet #games-filter-body { display:block!important; }
+  #mx-filter-sheet::before { content:''; display:block; width:32px; height:4px; border-radius:4px; background:var(--md-outline); margin:-8px auto 20px; }
+  .mx-sheet-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .mx-sheet-heading button { min-width:48px; min-height:48px; border:0; background:transparent; color:var(--md-on-surface); border-radius:24px; cursor:pointer; }
+  @media(max-width:767px) {
+    :root[data-ui="material"] .app-content { padding:16px 16px calc(var(--mx-nav-height) + 96px); }
+    :root[data-ui="material"] .card { padding:20px; }
+    :root[data-ui="material"] .session-item { flex-wrap:wrap; }
+    :root[data-ui="material"] .session-info { flex-basis:100%; }
+    :root[data-ui="material"] .session-duration { margin-right:auto; }
+    :root[data-ui="material"] .game-item-actions { width:100%; }
+    :root[data-ui="material"] header { padding:12px 16px; }
+    :root[data-ui="material"] .mx-page-title { font-size:16px; }
+  }
+  @media(max-width:599px) { :root[data-ui="material"] .tab-bar { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+  @media(max-width:400px) { #mx-picker.mx-date { width:100vw; padding:12px; } :root[data-ui="material"] .app-title { gap:2px; } :root[data-ui="material"] .version-badge { display:none; } }
+  @media(prefers-reduced-motion:reduce) { :root[data-ui="material"] *, :root[data-ui="material"] *::before,:root[data-ui="material"] *::after { animation-duration:.01ms!important; transition-duration:.01ms!important; scroll-behavior:auto!important; } }
+
+
+  :root[data-ui="material"] .sync-btn { min-width:48px; min-height:48px; padding:12px 16px; border:0; border-radius:24px; background:var(--md-secondary-container); color:var(--md-on-secondary-container); }
+  :root[data-ui="material"] .accent-swatch { width:48px; height:48px; }
+  :root[data-ui="material"] button[data-top-game] { min-height:48px; display:inline-flex; align-items:center; }
+  :root[data-ui="material"] .settings-section .card-header { font-size:16px; }
+
+dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;margin:auto;height:fit-content;} :root[data-ui=material] .sync-seg button{min-width:48px;} :root[data-ui=material] .library-game-copy .game-item-name{white-space:normal;overflow-wrap:anywhere;} :root[data-ui=material] .mx-page-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}:root[data-ui=material] button{min-width:48px;min-height:48px;} :root[data-ui=material] summary{min-height:48px;align-content:center;}
+
+  .rotation-metrics { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:8px 0; }
+  .rotation-time { display:flex; align-items:baseline; gap:6px; font-variant-numeric:tabular-nums; }
+  .rotation-elapsed { color:var(--text2); font-size:.8rem; font-weight:500; line-height:1.5; }
+  .rotation-target-text { color:var(--text2); font-size:.8rem; font-weight:500; line-height:1.5; }
+  .rotation-percent { color:var(--accent); background:var(--accent-dim); padding:4px 10px; border-radius:999px; font-size:.75rem; font-weight:700; font-variant-numeric:tabular-nums; }
+  :root[data-ui="material"] .rotation-elapsed,:root[data-ui="material"] .rotation-target-text { color:var(--md-on-surface-variant); font-size:14px; font-weight:500; line-height:20px; }
+  :root[data-ui="material"] .rotation-percent { background:var(--md-secondary-container); color:var(--md-on-secondary-container); border-radius:8px; font-size:12px; font-weight:600; }
+
+  #weekly-rotation-card[hidden] { display:none!important; }
+
+  .game-milestones { margin:24px 0; padding:16px; border:1px solid var(--border); border-radius:16px; background:var(--surface2); }
+  .game-milestones-heading { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+  .game-milestones-heading h4 { margin:0; color:var(--text); font-size:.9rem; }
+  .game-milestones-heading p { margin:4px 0 0; color:var(--text2); font-size:.75rem; }
+  .game-milestone-row { display:flex; align-items:center; gap:8px; padding:12px 0; border-top:1px solid var(--border); }
+  .game-milestone-row > label { display:flex; align-items:center; gap:10px; flex:1; min-width:0; cursor:pointer; min-height:44px; }
+  .game-milestone-row input[type=checkbox],.milestone-complete-toggle input { width:18px; height:18px; accent-color:var(--accent); flex-shrink:0; }
+  .game-milestone-copy { min-width:0; overflow-wrap:anywhere; }
+  .game-milestone-name { display:block; color:var(--text); font-size:.85rem; font-weight:600; }
+  .game-milestone-row.completed .game-milestone-name { color:var(--text2); }
+  .game-milestone-date { display:block; color:var(--text2); font-size:.72rem; margin-top:4px; }
+  .game-milestone-actions { display:flex; flex-wrap:wrap; gap:4px; }
+  .game-milestone-actions button { min-height:40px; min-width:40px; padding:8px; }
+  .milestone-complete-toggle { display:flex; align-items:center; gap:10px; min-height:48px; margin:0 0 16px; color:var(--text2); font-size:.85rem; cursor:pointer; }
+  #milestone-modal,#milestone-delete-modal { z-index:250; }
+  #milestone-completion-date[hidden],#milestone-error[hidden] { display:none!important; }
+  #milestone-error { color:var(--red); }
+  :root[data-ui=material] .game-milestones { border:0; background:var(--md-surface-container); border-radius:20px; padding:20px; }
+  :root[data-ui=material] .game-milestones-heading h4 { font:600 18px/24px var(--md-font); }
+  :root[data-ui=material] .game-milestone-name { font:500 16px/24px var(--md-font); }
+  :root[data-ui=material] .game-milestone-date { font:400 12px/18px var(--md-font); }
+  @media(max-width:420px){.game-milestone-row{flex-wrap:wrap;}.game-milestone-row > label{flex-basis:100%;}.game-milestone-actions{margin-left:auto;}}
+
+#dashboard-modal .milestone-dashboard { width:calc(100vw - 32px); max-width:560px; box-sizing:border-box; }
+#dashboard-body > * { min-width:0; }
+@media(min-width:850px) {
+ #dashboard-modal .milestone-dashboard { max-width:1000px; }
+ #dashboard-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"summary milestones" "history milestones"; column-gap:28px; align-items:start; }
+ .milestone-dashboard-summary { grid-area:summary; }
+ .milestone-dashboard-history { grid-area:history; }
+ #dashboard-body .game-milestones { grid-area:milestones; margin:0; }
+ #dashboard-modal .dash-cover { height:200px; }
+}
 </style>
+<script>
+// Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
+var MX_PALETTES = {"cyanblue":{"light":{"primary":"#006877","on-primary":"#ffffff","primary-container":"#a2eeff","on-primary-container":"#004e5a","secondary":"#4a6268","on-secondary":"#ffffff","secondary-container":"#cde7ed","on-secondary-container":"#334a50","tertiary":"#545d7e","on-tertiary":"#ffffff","tertiary-container":"#dbe1ff","on-tertiary-container":"#3d4665","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f5fafc","on-background":"#171d1e","surface":"#f5fafc","on-surface":"#171d1e","surface-variant":"#dbe4e7","on-surface-variant":"#3f484a","surface-container-lowest":"#ffffff","surface-container-low":"#eff5f6","surface-container":"#e9eff0","surface-container-high":"#e3e9eb","surface-container-highest":"#dee3e5","outline":"#6f797b","outline-variant":"#bfc8cb","inverse-surface":"#2b3133","inverse-on-surface":"#ecf2f3","inverse-primary":"#83d2e3"},"dark":{"primary":"#83d2e3","on-primary":"#00363e","primary-container":"#004e5a","on-primary-container":"#a2eeff","secondary":"#b1cbd1","on-secondary":"#1c3439","secondary-container":"#334a50","on-secondary-container":"#cde7ed","tertiary":"#bcc5eb","on-tertiary":"#262f4d","tertiary-container":"#3d4665","on-tertiary-container":"#dbe1ff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#0e1416","on-background":"#dee3e5","surface":"#0e1416","on-surface":"#dee3e5","surface-variant":"#3f484a","on-surface-variant":"#bfc8cb","surface-container-lowest":"#090f10","surface-container-low":"#171d1e","surface-container":"#1b2122","surface-container-high":"#252b2c","surface-container-highest":"#303637","outline":"#899295","outline-variant":"#3f484a","inverse-surface":"#dee3e5","inverse-on-surface":"#2b3133","inverse-primary":"#006877"}},"greenteal":{"light":{"primary":"#226a4c","on-primary":"#ffffff","primary-container":"#aaf2cc","on-primary-container":"#005236","secondary":"#4d6357","on-secondary":"#ffffff","secondary-container":"#d0e8d8","on-secondary-container":"#364b40","tertiary":"#3d6473","on-tertiary":"#ffffff","tertiary-container":"#c0e9fb","on-tertiary-container":"#244c5a","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f5fbf5","on-background":"#171d19","surface":"#f5fbf5","on-surface":"#171d19","surface-variant":"#dce5dd","on-surface-variant":"#404943","surface-container-lowest":"#ffffff","surface-container-low":"#f0f5ef","surface-container":"#eaefe9","surface-container-high":"#e4eae4","surface-container-highest":"#dee4de","outline":"#707973","outline-variant":"#c0c9c1","inverse-surface":"#2c322e","inverse-on-surface":"#edf2ec","inverse-primary":"#8ed5b0"},"dark":{"primary":"#8ed5b0","on-primary":"#003824","primary-container":"#005236","on-primary-container":"#aaf2cc","secondary":"#b4ccbd","on-secondary":"#20352a","secondary-container":"#364b40","on-secondary-container":"#d0e8d8","tertiary":"#a5cdde","on-tertiary":"#063543","tertiary-container":"#244c5a","on-tertiary-container":"#c0e9fb","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#0f1511","on-background":"#dee4de","surface":"#0f1511","on-surface":"#dee4de","surface-variant":"#404943","on-surface-variant":"#c0c9c1","surface-container-lowest":"#0a0f0c","surface-container-low":"#171d19","surface-container":"#1b211d","surface-container-high":"#262b28","surface-container-highest":"#303632","outline":"#8a938c","outline-variant":"#404943","inverse-surface":"#dee4de","inverse-on-surface":"#2c322e","inverse-primary":"#226a4c"}},"rose":{"light":{"primary":"#8f4a50","on-primary":"#ffffff","primary-container":"#ffdadb","on-primary-container":"#723339","secondary":"#765658","on-secondary":"#ffffff","secondary-container":"#ffdadb","on-secondary-container":"#5c3f41","tertiary":"#765930","on-tertiary":"#ffffff","tertiary-container":"#ffddb3","on-tertiary-container":"#5c421a","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f7","on-background":"#22191a","surface":"#fff8f7","on-surface":"#22191a","surface-variant":"#f4dddd","on-surface-variant":"#524344","surface-container-lowest":"#ffffff","surface-container-low":"#fff0f0","surface-container":"#fceaea","surface-container-high":"#f6e4e4","surface-container-highest":"#f0dede","outline":"#857373","outline-variant":"#d7c1c2","inverse-surface":"#382e2e","inverse-on-surface":"#ffedec","inverse-primary":"#ffb2b7"},"dark":{"primary":"#ffb2b7","on-primary":"#561d24","primary-container":"#723339","on-primary-container":"#ffdadb","secondary":"#e6bdbe","on-secondary":"#44292b","secondary-container":"#5c3f41","on-secondary-container":"#ffdadb","tertiary":"#e7c08e","on-tertiary":"#432c06","tertiary-container":"#5c421a","on-tertiary-container":"#ffddb3","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#1a1112","on-background":"#f0dede","surface":"#1a1112","on-surface":"#f0dede","surface-variant":"#524344","on-surface-variant":"#d7c1c2","surface-container-lowest":"#140c0c","surface-container-low":"#22191a","surface-container":"#271d1e","surface-container-high":"#312828","surface-container-highest":"#3d3232","outline":"#9f8c8d","outline-variant":"#524344","inverse-surface":"#f0dede","inverse-on-surface":"#382e2e","inverse-primary":"#8f4a50"}},"sunset":{"light":{"primary":"#8a5022","on-primary":"#ffffff","primary-container":"#ffdcc5","on-primary-container":"#6d390b","secondary":"#755845","on-secondary":"#ffffff","secondary-container":"#ffdcc5","on-secondary-container":"#5b412f","tertiary":"#5f6135","on-tertiary":"#ffffff","tertiary-container":"#e4e6ae","on-tertiary-container":"#474920","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f5","on-background":"#221a15","surface":"#fff8f5","on-surface":"#221a15","surface-variant":"#f3dfd2","on-surface-variant":"#52443b","surface-container-lowest":"#ffffff","surface-container-low":"#fff1e9","surface-container":"#fbebe1","surface-container-high":"#f6e5dc","surface-container-highest":"#f0dfd6","outline":"#84746a","outline-variant":"#d6c3b7","inverse-surface":"#382f29","inverse-on-surface":"#feeee4","inverse-primary":"#ffb783"},"dark":{"primary":"#ffb783","on-primary":"#4f2500","primary-container":"#6d390b","on-primary-container":"#ffdcc5","secondary":"#e4bfa7","on-secondary":"#422b1b","secondary-container":"#5b412f","on-secondary-container":"#ffdcc5","tertiary":"#c8ca94","on-tertiary":"#30330b","tertiary-container":"#474920","on-tertiary-container":"#e4e6ae","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#19120d","on-background":"#f0dfd6","surface":"#19120d","on-surface":"#f0dfd6","surface-variant":"#52443b","on-surface-variant":"#d6c3b7","surface-container-lowest":"#140d08","surface-container-low":"#221a15","surface-container":"#261e18","surface-container-high":"#312822","surface-container-highest":"#3c332d","outline":"#9f8d83","outline-variant":"#52443b","inverse-surface":"#f0dfd6","inverse-on-surface":"#382f29","inverse-primary":"#8a5022"}},"pinkviolet":{"light":{"primary":"#8a4a65","on-primary":"#ffffff","primary-container":"#ffd9e4","on-primary-container":"#6e334d","secondary":"#735760","on-secondary":"#ffffff","secondary-container":"#ffd9e4","on-secondary-container":"#5a3f49","tertiary":"#7e5537","on-tertiary":"#ffffff","tertiary-container":"#ffdcc4","on-tertiary-container":"#633e22","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f8","on-background":"#21191c","surface":"#fff8f8","on-surface":"#21191c","surface-variant":"#f2dee3","on-surface-variant":"#514347","surface-container-lowest":"#ffffff","surface-container-low":"#fff0f3","surface-container":"#faeaed","surface-container-high":"#f4e4e8","surface-container-highest":"#eedfe2","outline":"#837378","outline-variant":"#d5c2c7","inverse-surface":"#372e31","inverse-on-surface":"#fdedf0","inverse-primary":"#ffb0cd"},"dark":{"primary":"#ffb0cd","on-primary":"#531d36","primary-container":"#6e334d","on-primary-container":"#ffd9e4","secondary":"#e1bdc9","on-secondary":"#412932","secondary-container":"#5a3f49","on-secondary-container":"#ffd9e4","tertiary":"#f1bc96","on-tertiary":"#49290e","tertiary-container":"#633e22","on-tertiary-container":"#ffdcc4","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#191114","on-background":"#eedfe2","surface":"#191114","on-surface":"#eedfe2","surface-variant":"#514347","on-surface-variant":"#d5c2c7","surface-container-lowest":"#130c0f","surface-container-low":"#21191c","surface-container":"#261d20","surface-container-high":"#30282a","surface-container-highest":"#3c3235","outline":"#9d8c91","outline-variant":"#514347","inverse-surface":"#eedfe2","inverse-on-surface":"#372e31","inverse-primary":"#8a4a65"}},"ocean":{"light":{"primary":"#445e91","on-primary":"#ffffff","primary-container":"#d8e2ff","on-primary-container":"#2b4678","secondary":"#575e71","on-secondary":"#ffffff","secondary-container":"#dbe2f9","on-secondary-container":"#3f4759","tertiary":"#715573","on-tertiary":"#ffffff","tertiary-container":"#fcd7fb","on-tertiary-container":"#583e5b","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f9f9ff","on-background":"#1a1b20","surface":"#f9f9ff","on-surface":"#1a1b20","surface-variant":"#e1e2ec","on-surface-variant":"#44474f","surface-container-lowest":"#ffffff","surface-container-low":"#f3f3fa","surface-container":"#eeedf4","surface-container-high":"#e8e7ef","surface-container-highest":"#e2e2e9","outline":"#75777f","outline-variant":"#c4c6d0","inverse-surface":"#2f3036","inverse-on-surface":"#f0f0f7","inverse-primary":"#adc6ff"},"dark":{"primary":"#adc6ff","on-primary":"#112f60","primary-container":"#2b4678","on-primary-container":"#d8e2ff","secondary":"#bfc6dc","on-secondary":"#293041","secondary-container":"#3f4759","on-secondary-container":"#dbe2f9","tertiary":"#debcdf","on-tertiary":"#402843","tertiary-container":"#583e5b","on-tertiary-container":"#fcd7fb","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#111318","on-background":"#e2e2e9","surface":"#111318","on-surface":"#e2e2e9","surface-variant":"#44474f","on-surface-variant":"#c4c6d0","surface-container-lowest":"#0c0e13","surface-container-low":"#1a1b20","surface-container":"#1e1f25","surface-container-high":"#282a2f","surface-container-highest":"#33353a","outline":"#8e9099","outline-variant":"#44474f","inverse-surface":"#e2e2e9","inverse-on-surface":"#2f3036","inverse-primary":"#445e91"}},"violet":{"light":{"primary":"#66558f","on-primary":"#ffffff","primary-container":"#e9ddff","on-primary-container":"#4d3d75","secondary":"#625b70","on-secondary":"#ffffff","secondary-container":"#e8def8","on-secondary-container":"#4a4458","tertiary":"#7e525f","on-tertiary":"#ffffff","tertiary-container":"#ffd9e2","on-tertiary-container":"#633b48","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fef7ff","on-background":"#1d1b20","surface":"#fef7ff","on-surface":"#1d1b20","surface-variant":"#e7e0eb","on-surface-variant":"#49454e","surface-container-lowest":"#ffffff","surface-container-low":"#f8f2fa","surface-container":"#f2ecf4","surface-container-high":"#ece6ee","surface-container-highest":"#e6e0e9","outline":"#7a757f","outline-variant":"#cac4cf","inverse-surface":"#322f35","inverse-on-surface":"#f5eff7","inverse-primary":"#d0bcfe"},"dark":{"primary":"#d0bcfe","on-primary":"#36265d","primary-container":"#4d3d75","on-primary-container":"#e9ddff","secondary":"#ccc2db","on-secondary":"#332d41","secondary-container":"#4a4458","on-secondary-container":"#e8def8","tertiary":"#efb8c7","on-tertiary":"#4a2531","tertiary-container":"#633b48","on-tertiary-container":"#ffd9e2","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#141218","on-background":"#e6e0e9","surface":"#141218","on-surface":"#e6e0e9","surface-variant":"#49454e","on-surface-variant":"#cac4cf","surface-container-lowest":"#0f0d13","surface-container-low":"#1d1b20","surface-container":"#211f24","surface-container-high":"#2b292f","surface-container-highest":"#36343a","outline":"#948f99","outline-variant":"#49454e","inverse-surface":"#e6e0e9","inverse-on-surface":"#322f35","inverse-primary":"#66558f"}},"gold":{"light":{"primary":"#825513","on-primary":"#ffffff","primary-container":"#ffddb8","on-primary-container":"#653e00","secondary":"#715a41","on-secondary":"#ffffff","secondary-container":"#fcddbd","on-secondary-container":"#57432b","tertiary":"#54643d","on-tertiary":"#ffffff","tertiary-container":"#d7e9b9","on-tertiary-container":"#3d4c28","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f4","on-background":"#211a13","surface":"#fff8f4","on-surface":"#211a13","surface-variant":"#f1e0d0","on-surface-variant":"#504539","surface-container-lowest":"#ffffff","surface-container-low":"#fff1e5","surface-container":"#f9ece0","surface-container-high":"#f3e6da","surface-container-highest":"#eee0d4","outline":"#827568","outline-variant":"#d4c4b5","inverse-surface":"#372f27","inverse-on-surface":"#fceee2","inverse-primary":"#f8bb71"},"dark":{"primary":"#f8bb71","on-primary":"#472a00","primary-container":"#653e00","on-primary-container":"#ffddb8","secondary":"#dfc2a2","on-secondary":"#3f2d17","secondary-container":"#57432b","on-secondary-container":"#fcddbd","tertiary":"#bbcd9e","on-tertiary":"#273513","tertiary-container":"#3d4c28","on-tertiary-container":"#d7e9b9","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#18120c","on-background":"#eee0d4","surface":"#18120c","on-surface":"#eee0d4","surface-variant":"#504539","on-surface-variant":"#d4c4b5","surface-container-lowest":"#130d07","surface-container-low":"#211a13","surface-container":"#251e17","surface-container-high":"#302921","surface-container-highest":"#3b332b","outline":"#9c8e80","outline-variant":"#504539","inverse-surface":"#eee0d4","inverse-on-surface":"#372f27","inverse-primary":"#825513"}},"red":{"light":{"primary":"#904a46","on-primary":"#ffffff","primary-container":"#ffdad7","on-primary-container":"#733330","secondary":"#775654","on-secondary":"#ffffff","secondary-container":"#ffdad7","on-secondary-container":"#5d3f3d","tertiary":"#725b2e","on-tertiary":"#ffffff","tertiary-container":"#ffdea6","on-tertiary-container":"#594319","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f7","on-background":"#231919","surface":"#fff8f7","on-surface":"#231919","surface-variant":"#f5dddb","on-surface-variant":"#534342","surface-container-lowest":"#ffffff","surface-container-low":"#fff0ef","surface-container":"#fceae8","surface-container-high":"#f6e4e2","surface-container-highest":"#f1dedd","outline":"#857371","outline-variant":"#d8c2bf","inverse-surface":"#382e2d","inverse-on-surface":"#ffedeb","inverse-primary":"#ffb3ad"},"dark":{"primary":"#ffb3ad","on-primary":"#571e1b","primary-container":"#733330","on-primary-container":"#ffdad7","secondary":"#e7bdb9","on-secondary":"#442927","secondary-container":"#5d3f3d","on-secondary-container":"#ffdad7","tertiary":"#e1c28c","on-tertiary":"#402d04","tertiary-container":"#594319","on-tertiary-container":"#ffdea6","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#1a1111","on-background":"#f1dedd","surface":"#1a1111","on-surface":"#f1dedd","surface-variant":"#534342","on-surface-variant":"#d8c2bf","surface-container-lowest":"#140c0b","surface-container-low":"#231919","surface-container":"#271d1c","surface-container-high":"#322827","surface-container-highest":"#3d3231","outline":"#a08c8a","outline-variant":"#534342","inverse-surface":"#f1dedd","inverse-on-surface":"#382e2d","inverse-primary":"#904a46"}},"mintlime":{"light":{"primary":"#216a4d","on-primary":"#ffffff","primary-container":"#a9f2cd","on-primary-container":"#005137","secondary":"#4d6357","on-secondary":"#ffffff","secondary-container":"#cfe9d9","on-secondary-container":"#364b40","tertiary":"#3d6473","on-tertiary":"#ffffff","tertiary-container":"#c1e9fb","on-tertiary-container":"#244c5a","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f5fbf5","on-background":"#171d19","surface":"#f5fbf5","on-surface":"#171d19","surface-variant":"#dce5dd","on-surface-variant":"#404943","surface-container-lowest":"#ffffff","surface-container-low":"#eff5ef","surface-container":"#eaefe9","surface-container-high":"#e4eae4","surface-container-highest":"#dee4de","outline":"#707973","outline-variant":"#bfc9c1","inverse-surface":"#2c322e","inverse-on-surface":"#edf2ec","inverse-primary":"#8ed5b2"},"dark":{"primary":"#8ed5b2","on-primary":"#003825","primary-container":"#005137","on-primary-container":"#a9f2cd","secondary":"#b4ccbd","on-secondary":"#1f352a","secondary-container":"#364b40","on-secondary-container":"#cfe9d9","tertiary":"#a5ccde","on-tertiary":"#073543","tertiary-container":"#244c5a","on-tertiary-container":"#c1e9fb","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#0f1511","on-background":"#dee4de","surface":"#0f1511","on-surface":"#dee4de","surface-variant":"#404943","on-surface-variant":"#bfc9c1","surface-container-lowest":"#0a0f0c","surface-container-low":"#171d19","surface-container":"#1b211d","surface-container-high":"#252b28","surface-container-highest":"#303632","outline":"#8a938c","outline-variant":"#404943","inverse-surface":"#dee4de","inverse-on-surface":"#2c322e","inverse-primary":"#216a4d"}},"skyindigo":{"light":{"primary":"#256489","on-primary":"#ffffff","primary-container":"#c9e6ff","on-primary-container":"#004c6e","secondary":"#4f606e","on-secondary":"#ffffff","secondary-container":"#d3e5f5","on-secondary-container":"#384956","tertiary":"#64597c","on-tertiary":"#ffffff","tertiary-container":"#eaddff","on-tertiary-container":"#4c4163","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f6f9fe","on-background":"#181c20","surface":"#f6f9fe","on-surface":"#181c20","surface-variant":"#dde3ea","on-surface-variant":"#41474d","surface-container-lowest":"#ffffff","surface-container-low":"#f1f4f9","surface-container":"#ebeef3","surface-container-high":"#e5e8ed","surface-container-highest":"#dfe3e8","outline":"#71787e","outline-variant":"#c1c7ce","inverse-surface":"#2d3135","inverse-on-surface":"#eef1f6","inverse-primary":"#94cdf7"},"dark":{"primary":"#94cdf7","on-primary":"#00344d","primary-container":"#004c6e","on-primary-container":"#c9e6ff","secondary":"#b7c9d9","on-secondary":"#21323f","secondary-container":"#384956","on-secondary-container":"#d3e5f5","tertiary":"#cec0e8","on-tertiary":"#352b4b","tertiary-container":"#4c4163","on-tertiary-container":"#eaddff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#101417","on-background":"#dfe3e8","surface":"#101417","on-surface":"#dfe3e8","surface-variant":"#41474d","on-surface-variant":"#c1c7ce","surface-container-lowest":"#0a0f12","surface-container-low":"#181c20","surface-container":"#1c2024","surface-container-high":"#262a2e","surface-container-highest":"#313539","outline":"#8b9198","outline-variant":"#41474d","inverse-surface":"#dfe3e8","inverse-on-surface":"#2d3135","inverse-primary":"#256489"}},"berry":{"light":{"primary":"#7c4e7f","on-primary":"#ffffff","primary-container":"#ffd6fd","on-primary-container":"#623766","secondary":"#6c586b","on-secondary":"#ffffff","secondary-container":"#f5dbf1","on-secondary-container":"#534152","tertiary":"#82524a","on-tertiary":"#ffffff","tertiary-container":"#ffdad4","on-tertiary-container":"#673b34","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff7fa","on-background":"#1f1a1f","surface":"#fff7fa","on-surface":"#1f1a1f","surface-variant":"#eddfe8","on-surface-variant":"#4d444c","surface-container-lowest":"#ffffff","surface-container-low":"#fcf0f7","surface-container":"#f6ebf2","surface-container-high":"#f0e5ec","surface-container-highest":"#ebdfe6","outline":"#7f747c","outline-variant":"#d0c3cc","inverse-surface":"#352f34","inverse-on-surface":"#f9eef4","inverse-primary":"#ecb5ec"},"dark":{"primary":"#ecb5ec","on-primary":"#49204e","primary-container":"#623766","on-primary-container":"#ffd6fd","secondary":"#d8bfd5","on-secondary":"#3b2b3b","secondary-container":"#534152","on-secondary-container":"#f5dbf1","tertiary":"#f6b8ad","on-tertiary":"#4c251f","tertiary-container":"#673b34","on-tertiary-container":"#ffdad4","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#171216","on-background":"#ebdfe6","surface":"#171216","on-surface":"#ebdfe6","surface-variant":"#4d444c","on-surface-variant":"#d0c3cc","surface-container-lowest":"#110d11","surface-container-low":"#1f1a1f","surface-container":"#231e23","surface-container-high":"#2e282d","surface-container-highest":"#393338","outline":"#998d96","outline-variant":"#4d444c","inverse-surface":"#ebdfe6","inverse-on-surface":"#352f34","inverse-primary":"#7c4e7f"}},"coral":{"light":{"primary":"#8f4952","on-primary":"#ffffff","primary-container":"#ffdadc","on-primary-container":"#72333b","secondary":"#765659","on-secondary":"#ffffff","secondary-container":"#ffdadc","on-secondary-container":"#5c3f42","tertiary":"#775930","on-tertiary":"#ffffff","tertiary-container":"#ffddb6","on-tertiary-container":"#5d411b","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f7","on-background":"#22191a","surface":"#fff8f7","on-surface":"#22191a","surface-variant":"#f4ddde","on-surface-variant":"#524344","surface-container-lowest":"#ffffff","surface-container-low":"#fff0f0","surface-container":"#fceaea","surface-container-high":"#f6e4e4","surface-container-highest":"#f0dedf","outline":"#857374","outline-variant":"#d7c1c2","inverse-surface":"#382e2f","inverse-on-surface":"#ffeded","inverse-primary":"#ffb2b9"},"dark":{"primary":"#ffb2b9","on-primary":"#561d26","primary-container":"#72333b","on-primary-container":"#ffdadc","secondary":"#e5bdbf","on-secondary":"#44292c","secondary-container":"#5c3f42","on-secondary-container":"#ffdadc","tertiary":"#e8c08e","on-tertiary":"#442b06","tertiary-container":"#5d411b","on-tertiary-container":"#ffddb6","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#1a1112","on-background":"#f0dedf","surface":"#1a1112","on-surface":"#f0dedf","surface-variant":"#524344","on-surface-variant":"#d7c1c2","surface-container-lowest":"#140c0d","surface-container-low":"#22191a","surface-container":"#271d1e","surface-container-high":"#312828","surface-container-highest":"#3d3233","outline":"#9f8c8d","outline-variant":"#524344","inverse-surface":"#f0dedf","inverse-on-surface":"#382e2f","inverse-primary":"#8f4952"}},"forest":{"light":{"primary":"#216a4d","on-primary":"#ffffff","primary-container":"#a9f2cc","on-primary-container":"#005137","secondary":"#4d6357","on-secondary":"#ffffff","secondary-container":"#cfe9d9","on-secondary-container":"#364b40","tertiary":"#3d6473","on-tertiary":"#ffffff","tertiary-container":"#c1e9fb","on-tertiary-container":"#244c5a","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f5fbf5","on-background":"#171d19","surface":"#f5fbf5","on-surface":"#171d19","surface-variant":"#dce5dd","on-surface-variant":"#404943","surface-container-lowest":"#ffffff","surface-container-low":"#f0f5ef","surface-container":"#eaefe9","surface-container-high":"#e4eae4","surface-container-highest":"#dee4de","outline":"#707973","outline-variant":"#bfc9c1","inverse-surface":"#2c322e","inverse-on-surface":"#edf2ec","inverse-primary":"#8ed5b1"},"dark":{"primary":"#8ed5b1","on-primary":"#003825","primary-container":"#005137","on-primary-container":"#a9f2cc","secondary":"#b4ccbd","on-secondary":"#1f352a","secondary-container":"#364b40","on-secondary-container":"#cfe9d9","tertiary":"#a5ccde","on-tertiary":"#073543","tertiary-container":"#244c5a","on-tertiary-container":"#c1e9fb","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#0f1511","on-background":"#dee4de","surface":"#0f1511","on-surface":"#dee4de","surface-variant":"#404943","on-surface-variant":"#bfc9c1","surface-container-lowest":"#0a0f0c","surface-container-low":"#171d19","surface-container":"#1b211d","surface-container-high":"#252b28","surface-container-highest":"#303632","outline":"#8a938c","outline-variant":"#404943","inverse-surface":"#dee4de","inverse-on-surface":"#2c322e","inverse-primary":"#216a4d"}},"amethyst":{"light":{"primary":"#6f528a","on-primary":"#ffffff","primary-container":"#f0dbff","on-primary-container":"#563b70","secondary":"#665a6f","on-secondary":"#ffffff","secondary-container":"#edddf6","on-secondary-container":"#4d4356","tertiary":"#805157","on-tertiary":"#ffffff","tertiary-container":"#ffd9dc","on-tertiary-container":"#653a40","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff7fe","on-background":"#1e1a20","surface":"#fff7fe","on-surface":"#1e1a20","surface-variant":"#e9dfeb","on-surface-variant":"#4a454e","surface-container-lowest":"#ffffff","surface-container-low":"#f9f1f9","surface-container":"#f4ebf3","surface-container-high":"#eee6ee","surface-container-highest":"#e8e0e8","outline":"#7c757e","outline-variant":"#ccc4ce","inverse-surface":"#332f35","inverse-on-surface":"#f6eef6","inverse-primary":"#dbb9f9"},"dark":{"primary":"#dbb9f9","on-primary":"#3e2458","primary-container":"#563b70","on-primary-container":"#f0dbff","secondary":"#d0c1d9","on-secondary":"#362c3f","secondary-container":"#4d4356","on-secondary-container":"#edddf6","tertiary":"#f3b7bd","on-tertiary":"#4b252a","tertiary-container":"#653a40","on-tertiary-container":"#ffd9dc","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#151217","on-background":"#e8e0e8","surface":"#151217","on-surface":"#e8e0e8","surface-variant":"#4a454e","on-surface-variant":"#ccc4ce","surface-container-lowest":"#100d12","surface-container-low":"#1e1a20","surface-container":"#221e24","surface-container-high":"#2c292e","surface-container-highest":"#373339","outline":"#968e98","outline-variant":"#4a454e","inverse-surface":"#e8e0e8","inverse-on-surface":"#332f35","inverse-primary":"#6f528a"}},"amber":{"light":{"primary":"#825513","on-primary":"#ffffff","primary-container":"#ffddb8","on-primary-container":"#653e00","secondary":"#715a41","on-secondary":"#ffffff","secondary-container":"#fcddbd","on-secondary-container":"#57432b","tertiary":"#54643d","on-tertiary":"#ffffff","tertiary-container":"#d7e9b9","on-tertiary-container":"#3d4c28","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f4","on-background":"#211a13","surface":"#fff8f4","on-surface":"#211a13","surface-variant":"#f1e0d0","on-surface-variant":"#504539","surface-container-lowest":"#ffffff","surface-container-low":"#fff1e5","surface-container":"#f9ece0","surface-container-high":"#f3e6da","surface-container-highest":"#eee0d4","outline":"#827568","outline-variant":"#d4c4b5","inverse-surface":"#372f27","inverse-on-surface":"#fceee2","inverse-primary":"#f8bb71"},"dark":{"primary":"#f8bb71","on-primary":"#472a00","primary-container":"#653e00","on-primary-container":"#ffddb8","secondary":"#dfc2a2","on-secondary":"#3f2d17","secondary-container":"#57432b","on-secondary-container":"#fcddbd","tertiary":"#bbcd9e","on-tertiary":"#273513","tertiary-container":"#3d4c28","on-tertiary-container":"#d7e9b9","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#18120c","on-background":"#eee0d4","surface":"#18120c","on-surface":"#eee0d4","surface-variant":"#504539","on-surface-variant":"#d4c4b5","surface-container-lowest":"#130d07","surface-container-low":"#211a13","surface-container":"#251e17","surface-container-high":"#302921","surface-container-highest":"#3b332b","outline":"#9c8e80","outline-variant":"#504539","inverse-surface":"#eee0d4","inverse-on-surface":"#372f27","inverse-primary":"#825513"}},"slate":{"light":{"primary":"#38608f","on-primary":"#ffffff","primary-container":"#d2e4ff","on-primary-container":"#1d4875","secondary":"#535f70","on-secondary":"#ffffff","secondary-container":"#d7e3f8","on-secondary-container":"#3c4858","tertiary":"#6c5677","on-tertiary":"#ffffff","tertiary-container":"#f4d9ff","on-tertiary-container":"#533f5f","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f8f9ff","on-background":"#191c20","surface":"#f8f9ff","on-surface":"#191c20","surface-variant":"#dfe2eb","on-surface-variant":"#43474e","surface-container-lowest":"#ffffff","surface-container-low":"#f2f3fa","surface-container":"#ecedf4","surface-container-high":"#e7e8ee","surface-container-highest":"#e1e2e8","outline":"#73777f","outline-variant":"#c3c6cf","inverse-surface":"#2e3035","inverse-on-surface":"#eff0f7","inverse-primary":"#a2c9fe"},"dark":{"primary":"#a2c9fe","on-primary":"#00325b","primary-container":"#1d4875","on-primary-container":"#d2e4ff","secondary":"#bbc7db","on-secondary":"#263141","secondary-container":"#3c4858","on-secondary-container":"#d7e3f8","tertiary":"#d8bde4","on-tertiary":"#3c2947","tertiary-container":"#533f5f","on-tertiary-container":"#f4d9ff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#111418","on-background":"#e1e2e8","surface":"#111418","on-surface":"#e1e2e8","surface-variant":"#43474e","on-surface-variant":"#c3c6cf","surface-container-lowest":"#0b0e13","surface-container-low":"#191c20","surface-container":"#1d2024","surface-container-high":"#272a2f","surface-container-highest":"#32353a","outline":"#8d9199","outline-variant":"#43474e","inverse-surface":"#e1e2e8","inverse-on-surface":"#2e3035","inverse-primary":"#38608f"}},"aqua":{"light":{"primary":"#00687a","on-primary":"#ffffff","primary-container":"#acedff","on-primary-container":"#004e5c","secondary":"#4b6269","on-secondary":"#ffffff","secondary-container":"#cee7ef","on-secondary-container":"#334a51","tertiary":"#565d7e","on-tertiary":"#ffffff","tertiary-container":"#dde1ff","on-tertiary-container":"#3f4565","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f5fafc","on-background":"#171c1e","surface":"#f5fafc","on-surface":"#171c1e","surface-variant":"#dbe4e7","on-surface-variant":"#3f484b","surface-container-lowest":"#ffffff","surface-container-low":"#eff4f7","surface-container":"#e9eff1","surface-container-high":"#e4e9eb","surface-container-highest":"#dee3e5","outline":"#70797b","outline-variant":"#bfc8cb","inverse-surface":"#2c3133","inverse-on-surface":"#ecf2f4","inverse-primary":"#84d2e7"},"dark":{"primary":"#84d2e7","on-primary":"#003640","primary-container":"#004e5c","on-primary-container":"#acedff","secondary":"#b2cbd2","on-secondary":"#1d343a","secondary-container":"#334a51","on-secondary-container":"#cee7ef","tertiary":"#bfc4eb","on-tertiary":"#282f4d","tertiary-container":"#3f4565","on-tertiary-container":"#dde1ff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#0f1416","on-background":"#dee3e5","surface":"#0f1416","on-surface":"#dee3e5","surface-variant":"#3f484b","on-surface-variant":"#bfc8cb","surface-container-lowest":"#090f11","surface-container-low":"#171c1e","surface-container":"#1b2022","surface-container-high":"#252b2d","surface-container-highest":"#303638","outline":"#899295","outline-variant":"#3f484b","inverse-surface":"#dee3e5","inverse-on-surface":"#2c3133","inverse-primary":"#00687a"}},"plum":{"light":{"primary":"#6f528a","on-primary":"#ffffff","primary-container":"#f0dbff","on-primary-container":"#563b71","secondary":"#665a6f","on-secondary":"#ffffff","secondary-container":"#edddf6","on-secondary-container":"#4d4356","tertiary":"#805157","on-tertiary":"#ffffff","tertiary-container":"#ffd9dd","on-tertiary-container":"#653a40","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff7fe","on-background":"#1e1a20","surface":"#fff7fe","on-surface":"#1e1a20","surface-variant":"#e9dfeb","on-surface-variant":"#4a454e","surface-container-lowest":"#ffffff","surface-container-low":"#f9f1f9","surface-container":"#f4ebf3","surface-container-high":"#eee6ee","surface-container-highest":"#e8e0e8","outline":"#7c757e","outline-variant":"#ccc4ce","inverse-surface":"#332f35","inverse-on-surface":"#f6eef6","inverse-primary":"#dbb9f9"},"dark":{"primary":"#dbb9f9","on-primary":"#3e2458","primary-container":"#563b71","on-primary-container":"#f0dbff","secondary":"#d0c1da","on-secondary":"#362c3f","secondary-container":"#4d4356","on-secondary-container":"#edddf6","tertiary":"#f3b7be","on-tertiary":"#4b252b","tertiary-container":"#653a40","on-tertiary-container":"#ffd9dd","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#151218","on-background":"#e8e0e8","surface":"#151218","on-surface":"#e8e0e8","surface-variant":"#4a454e","on-surface-variant":"#ccc4ce","surface-container-lowest":"#100d12","surface-container-low":"#1e1a20","surface-container":"#221e24","surface-container-high":"#2c292e","surface-container-highest":"#373339","outline":"#968e98","outline-variant":"#4a454e","inverse-surface":"#e8e0e8","inverse-on-surface":"#332f35","inverse-primary":"#6f528a"}},"mango":{"light":{"primary":"#785a0b","on-primary":"#ffffff","primary-container":"#ffdf9f","on-primary-container":"#5c4300","secondary":"#6b5c3f","on-secondary":"#ffffff","secondary-container":"#f5e0bb","on-secondary-container":"#52452a","tertiary":"#4a6546","on-tertiary":"#ffffff","tertiary-container":"#ccebc4","on-tertiary-container":"#334d30","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f2","on-background":"#1f1b13","surface":"#fff8f2","on-surface":"#1f1b13","surface-variant":"#ede1cf","on-surface-variant":"#4d4639","surface-container-lowest":"#ffffff","surface-container-low":"#fcf2e5","surface-container":"#f7ecdf","surface-container-high":"#f1e7d9","surface-container-highest":"#ebe1d4","outline":"#7f7667","outline-variant":"#d0c5b4","inverse-surface":"#353027","inverse-on-surface":"#faefe2","inverse-primary":"#e9c16c"},"dark":{"primary":"#e9c16c","on-primary":"#402d00","primary-container":"#5c4300","on-primary-container":"#ffdf9f","secondary":"#d8c4a0","on-secondary":"#3b2f15","secondary-container":"#52452a","on-secondary-container":"#f5e0bb","tertiary":"#b1cfa9","on-tertiary":"#1d361b","tertiary-container":"#334d30","on-tertiary-container":"#ccebc4","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#17130b","on-background":"#ebe1d4","surface":"#17130b","on-surface":"#ebe1d4","surface-variant":"#4d4639","on-surface-variant":"#d0c5b4","surface-container-lowest":"#110e07","surface-container-low":"#1f1b13","surface-container":"#241f17","surface-container-high":"#2e2921","surface-container-highest":"#39342b","outline":"#998f80","outline-variant":"#4d4639","inverse-surface":"#ebe1d4","inverse-on-surface":"#353027","inverse-primary":"#785a0b"}},"grey":{"light":{"primary":"#000000","on-primary":"#e2e2e2","primary-container":"#3b3b3b","on-primary-container":"#ffffff","secondary":"#5e5e5e","on-secondary":"#ffffff","secondary-container":"#d4d4d4","on-secondary-container":"#1b1b1b","tertiary":"#3b3b3b","on-tertiary":"#e2e2e2","tertiary-container":"#747474","on-tertiary-container":"#ffffff","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#410002","background":"#f9f9f9","on-background":"#1b1b1b","surface":"#f9f9f9","on-surface":"#1b1b1b","surface-variant":"#e2e2e2","on-surface-variant":"#474747","surface-container-lowest":"#ffffff","surface-container-low":"#f3f3f3","surface-container":"#eeeeee","surface-container-high":"#e8e8e8","surface-container-highest":"#e2e2e2","outline":"#777777","outline-variant":"#c6c6c6","inverse-surface":"#303030","inverse-on-surface":"#f1f1f1","inverse-primary":"#c6c6c6"},"dark":{"primary":"#ffffff","on-primary":"#1b1b1b","primary-container":"#d4d4d4","on-primary-container":"#000000","secondary":"#c6c6c6","on-secondary":"#1b1b1b","secondary-container":"#474747","on-secondary-container":"#e2e2e2","tertiary":"#e2e2e2","on-tertiary":"#1b1b1b","tertiary-container":"#919191","on-tertiary-container":"#000000","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#131313","on-background":"#e2e2e2","surface":"#131313","on-surface":"#e2e2e2","surface-variant":"#474747","on-surface-variant":"#c6c6c6","surface-container-lowest":"#0e0e0e","surface-container-low":"#1b1b1b","surface-container":"#1f1f1f","surface-container-high":"#2a2a2a","surface-container-highest":"#353535","outline":"#919191","outline-variant":"#474747","inverse-surface":"#e2e2e2","inverse-on-surface":"#303030","inverse-primary":"#5e5e5e"}}};
+var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M240-200h120v-200q0-17 11.5-28.5T400-440h160q17 0 28.5 11.5T600-400v200h120v-360L480-740 240-560v360Zm-80 0v-360q0-19 8.5-36t23.5-28l240-180q21-16 48-16t48 16l240 180q15 11 23.5 28t8.5 36v360q0 33-23.5 56.5T720-120H560q-17 0-28.5-11.5T520-160v-200h-80v200q0 17-11.5 28.5T400-120H240q-33 0-56.5-23.5T160-200Zm320-270Z\"/></svg>", "bar_chart": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M680-160q-17 0-28.5-11.5T640-200v-200q0-17 11.5-28.5T680-440h80q17 0 28.5 11.5T800-400v200q0 17-11.5 28.5T760-160h-80Zm-240 0q-17 0-28.5-11.5T400-200v-560q0-17 11.5-28.5T440-800h80q17 0 28.5 11.5T560-760v560q0 17-11.5 28.5T520-160h-80Zm-240 0q-17 0-28.5-11.5T160-200v-360q0-17 11.5-28.5T200-600h80q17 0 28.5 11.5T320-560v360q0 17-11.5 28.5T280-160h-80Z\"/></svg>", "leaderboard": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M160-200h160v-320H160v320Zm240 0h160v-560H400v560Zm240 0h160v-240H640v240Zm-560 0v-320q0-33 23.5-56.5T160-600h160v-160q0-33 23.5-56.5T400-840h160q33 0 56.5 23.5T640-760v240h160q33 0 56.5 23.5T880-440v240q0 33-23.5 56.5T800-120H160q-33 0-56.5-23.5T80-200Z\"/></svg>", "sports_esports": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M182-200q-51 0-79-35.5T82-322l42-300q9-60 53.5-99T282-760h396q60 0 104.5 39t53.5 99l42 300q7 51-21 86.5T778-200q-21 0-39-7.5T706-230l-90-90H344l-90 90q-15 15-33 22.5t-39 7.5Zm16-86 114-114h336l114 114q2 2 16 6 11 0 17.5-6.5T800-304l-44-308q-4-29-26-48.5T678-680H282q-30 0-52 19.5T204-612l-44 308q-2 11 4.5 17.5T182-280q2 0 16-6Zm482-154q17 0 28.5-11.5T720-480q0-17-11.5-28.5T680-520q-17 0-28.5 11.5T640-480q0 17 11.5 28.5T680-440Zm-80-120q17 0 28.5-11.5T640-600q0-17-11.5-28.5T600-640q-17 0-28.5 11.5T560-600q0 17 11.5 28.5T600-560Zm-120 80Zm-170-30v40q0 13 8.5 21.5T340-440q13 0 21.5-8.5T370-470v-40h40q13 0 21.5-8.5T440-540q0-13-8.5-21.5T410-570h-40v-40q0-13-8.5-21.5T340-640q-13 0-21.5 8.5T310-610v40h-40q-13 0-21.5 8.5T240-540q0 13 8.5 21.5T270-510h40Z\"/></svg>", "military_tech": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"m480-174-74 56q-12 9-24 .5t-7-22.5l29-92-73-52q-12-8-7-22t19-14h89l28-92-142-84q-18-11-28-29t-10-41v-234q0-33 23.5-56.5T360-880h240q33 0 56.5 23.5T680-800v234q0 23-10 41t-28 29l-142 84 28 92h89q14 0 19 14t-7 22l-73 52 29 92q5 14-7 22.5t-24-.5l-74-56ZM360-800v234l80 48v-282h-80Zm240 0h-80v282l80-48v-234ZM480-647Zm-40-12Zm80 0Z\"/></svg>", "person": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-240v-32q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v32q0 33-23.5 56.5T720-160H240q-33 0-56.5-23.5T160-240Zm80 0h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z\"/></svg>", "settings": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M433-80q-27 0-46.5-18T363-142l-9-66q-13-5-24.5-12T307-235l-62 26q-25 11-50 2t-39-32l-47-82q-14-23-8-49t27-43l53-40q-1-7-1-13.5v-27q0-6.5 1-13.5l-53-40q-21-17-27-43t8-49l47-82q14-23 39-32t50 2l62 26q11-8 23-15t24-12l9-66q4-26 23.5-44t46.5-18h94q27 0 46.5 18t23.5 44l9 66q13 5 24.5 12t22.5 15l62-26q25-11 50-2t39 32l47 82q14 23 8 49t-27 43l-53 40q1 7 1 13.5v27q0 6.5-2 13.5l53 40q21 17 27 43t-8 49l-48 82q-14 23-39 32t-50-2l-60-26q-11 8-23 15t-24 12l-9 66q-4 26-23.5 44T527-80h-94Zm7-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z\"/></svg>", "history": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-120q-126 0-223-76.5T131-392q-4-15 6-27.5t27-14.5q16-2 29 6t18 24q24 90 99 147t170 57q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h70q17 0 28.5 11.5T360-600q0 17-11.5 28.5T320-560H160q-17 0-28.5-11.5T120-600v-160q0-17 11.5-28.5T160-800q17 0 28.5 11.5T200-760v54q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm40-376 100 100q11 11 11 28t-11 28q-11 11-28 11t-28-11L452-452q-6-6-9-13.5t-3-15.5v-159q0-17 11.5-28.5T480-680q17 0 28.5 11.5T520-640v144Z\"/></svg>", "play_arrow": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M320-273v-414q0-17 12-28.5t28-11.5q5 0 10.5 1.5T381-721l326 207q9 6 13.5 15t4.5 19q0 10-4.5 19T707-446L381-239q-5 3-10.5 4.5T360-233q-16 0-28-11.5T320-273Zm80-207Zm0 134 210-134-210-134v268Z\"/></svg>", "pause": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M600-200q-33 0-56.5-23.5T520-280v-400q0-33 23.5-56.5T600-760h80q33 0 56.5 23.5T760-680v400q0 33-23.5 56.5T680-200h-80Zm-320 0q-33 0-56.5-23.5T200-280v-400q0-33 23.5-56.5T280-760h80q33 0 56.5 23.5T440-680v400q0 33-23.5 56.5T360-200h-80Zm320-80h80v-400h-80v400Zm-320 0h80v-400h-80v400Zm0-400v400-400Zm320 0v400-400Z\"/></svg>", "stop": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M240-320v-320q0-33 23.5-56.5T320-720h320q33 0 56.5 23.5T720-640v320q0 33-23.5 56.5T640-240H320q-33 0-56.5-23.5T240-320Zm80 0h320v-320H320v320Zm160-160Z\"/></svg>", "edit": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M200-200h57l391-391-57-57-391 391v57Zm-40 80q-17 0-28.5-11.5T120-160v-97q0-16 6-30.5t17-25.5l505-504q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L313-143q-11 11-25.5 17t-30.5 6h-97Zm600-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z\"/></svg>", "delete": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M280-120q-33 0-56.5-23.5T200-200v-520q-17 0-28.5-11.5T160-760q0-17 11.5-28.5T200-800h160q0-17 11.5-28.5T400-840h160q17 0 28.5 11.5T600-800h160q17 0 28.5 11.5T800-760q0 17-11.5 28.5T760-720v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM400-280q17 0 28.5-11.5T440-320v-280q0-17-11.5-28.5T400-640q-17 0-28.5 11.5T360-600v280q0 17 11.5 28.5T400-280Zm160 0q17 0 28.5-11.5T600-320v-280q0-17-11.5-28.5T560-640q-17 0-28.5 11.5T520-600v280q0 17 11.5 28.5T560-280ZM280-720v520-520Z\"/></svg>", "archive": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-560q-17 0-28.5 11.5T440-520v128l-36-36q-11-11-28-11t-28 11q-11 11-11 28t11 28l104 104q12 12 28 12t28-12l104-104q11-11 11-28t-11-28q-11-11-28-11t-28 11l-36 36v-128q0-17-11.5-28.5T480-560Zm-280-80v440h560v-440H200Zm0 520q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v499q0 33-23.5 56.5T760-120H200Zm16-600h528l-34-40H250l-34 40Zm264 300Z\"/></svg>", "unarchive": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-253q17 0 28.5-11.5T520-293v-128l36 36q11 11 28 11t28-11q11-11 11-28t-11-28L508-544q-12-12-28-12t-28 12L348-441q-11 11-11 28t11 28q11 11 28 11t28-11l36-36v128q0 17 11.5 28.5T480-253ZM200-640v440h560v-440H200Zm0 520q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v499q0 33-23.5 56.5T760-120H200Zm16-600h528l-34-40H250l-34 40Zm264 300Z\"/></svg>", "keep": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M640-760v280l68 68q6 6 9 13.5t3 15.5v23q0 17-11.5 28.5T680-320H520v223q0 8-3 15.5T508-68l-14 14q-6 6-14 6t-14-6l-14-14q-6-6-9-13.5T440-97v-223H280q-17 0-28.5-11.5T240-360v-23q0-8 3-15.5t9-13.5l68-68v-280q-17 0-28.5-11.5T280-800q0-17 11.5-28.5T320-840h320q17 0 28.5 11.5T680-800q0 17-11.5 28.5T640-760ZM354-400h252l-46-46v-314H400v314l-46 46Zm126 0Z\"/></svg>", "close": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z\"/></svg>", "check": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z\"/></svg>", "search": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z\"/></svg>", "add": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M440-440H240q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h200v-200q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v200h200q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H520v200q0 17-11.5 28.5T480-200q-17 0-28.5-11.5T440-240v-200Z\"/></svg>", "sync": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M240-478q0 45 17 87.5t53 78.5l10 10v-58q0-17 11.5-28.5T360-400q17 0 28.5 11.5T400-360v160q0 17-11.5 28.5T360-160H200q-17 0-28.5-11.5T160-200q0-17 11.5-28.5T200-240h70l-16-14q-52-46-73-105t-21-119q0-94 48-170.5T337-766q14-8 29.5-1t20.5 23q5 15-.5 30T367-691q-58 32-92.5 88.5T240-478Zm480-4q0-45-17-87.5T650-648l-10-10v58q0 17-11.5 28.5T600-560q-17 0-28.5-11.5T560-600v-160q0-17 11.5-28.5T600-800h160q17 0 28.5 11.5T800-760q0 17-11.5 28.5T760-720h-70l16 14q49 49 71.5 106.5T800-482q0 94-48 170.5T623-194q-14 8-29.5 1T573-216q-5-15 .5-30t19.5-23q58-32 92.5-88.5T720-482Z\"/></svg>", "calendar_month": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z\"/></svg>", "schedule": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M520-496v-144q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v159q0 8 3 15.5t9 13.5l132 132q11 11 28 11t28-11q11-11 11-28t-11-28L520-496ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z\"/></svg>", "expand_more": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-362q-8 0-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-373q-6 6-13 8.5t-15 2.5Z\"/></svg>", "chevron_left": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z\"/></svg>", "chevron_right": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M504-480 348-636q-11-11-11-28t11-28q11-11 28-11t28 11l184 184q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L404-268q-11 11-28 11t-28-11q-11-11-11-28t11-28l156-156Z\"/></svg>", "info": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-280q17 0 28.5-11.5T520-320v-160q0-17-11.5-28.5T480-520q-17 0-28.5 11.5T440-480v160q0 17 11.5 28.5T480-280Zm0-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z\"/></svg>", "download": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-337q-8 0-15-2.5t-13-8.5L308-492q-12-12-11.5-28t11.5-28q12-12 28.5-12.5T365-549l75 75v-286q0-17 11.5-28.5T480-800q17 0 28.5 11.5T520-760v286l75-75q12-12 28.5-11.5T652-548q11 12 11.5 28T652-492L508-348q-6 6-13 8.5t-15 2.5ZM240-160q-33 0-56.5-23.5T160-240v-80q0-17 11.5-28.5T200-360q17 0 28.5 11.5T240-320v80h480v-80q0-17 11.5-28.5T760-360q17 0 28.5 11.5T800-320v80q0 33-23.5 56.5T720-160H240Z\"/></svg>", "upload": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M240-160q-33 0-56.5-23.5T160-240v-80q0-17 11.5-28.5T200-360q17 0 28.5 11.5T240-320v80h480v-80q0-17 11.5-28.5T760-360q17 0 28.5 11.5T800-320v80q0 33-23.5 56.5T720-160H240Zm200-486-75 75q-12 12-28.5 11.5T308-572q-11-12-11.5-28t11.5-28l144-144q6-6 13-8.5t15-2.5q8 0 15 2.5t13 8.5l144 144q12 12 11.5 28T652-572q-12 12-28.5 12.5T595-571l-75-75v286q0 17-11.5 28.5T480-320q-17 0-28.5-11.5T440-360v-286Z\"/></svg>", "shuffle": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M600-160q-17 0-28.5-11.5T560-200q0-17 11.5-28.5T600-240h64l-99-99q-12-12-11.5-28.5T566-396q12-12 28.5-12t28.5 12l97 98v-62q0-17 11.5-28.5T760-400q17 0 28.5 11.5T800-360v160q0 17-11.5 28.5T760-160H600Zm-428-12q-11-11-11-28t11-28l492-492h-64q-17 0-28.5-11.5T560-760q0-17 11.5-28.5T600-800h160q17 0 28.5 11.5T800-760v160q0 17-11.5 28.5T760-560q-17 0-28.5-11.5T720-600v-64L228-172q-11 11-28 11t-28-11Zm-1-560q-11-11-11-28t11-28q11-11 27.5-11t28.5 11l168 167q11 11 11.5 27.5T395-565q-11 11-28 11t-28-11L171-732Z\"/></svg>", "dark_mode": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-120q-151 0-255.5-104.5T120-480q0-138 90-239.5T440-838q13-2 23 3.5t16 14.5q6 9 6.5 21t-7.5 23q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q11-7 22.5-6.5T819-479q10 5 15.5 15t3.5 24q-14 138-117.5 229T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z\"/></svg>", "light_mode": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM80-440q-17 0-28.5-11.5T40-480q0-17 11.5-28.5T80-520h80q17 0 28.5 11.5T200-480q0 17-11.5 28.5T160-440H80Zm720 0q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520h80q17 0 28.5 11.5T920-480q0 17-11.5 28.5T880-440h-80ZM480-760q-17 0-28.5-11.5T440-800v-80q0-17 11.5-28.5T480-920q17 0 28.5 11.5T520-880v80q0 17-11.5 28.5T480-760Zm0 720q-17 0-28.5-11.5T440-80v-80q0-17 11.5-28.5T480-200q17 0 28.5 11.5T520-160v80q0 17-11.5 28.5T480-40ZM226-678l-43-42q-12-11-11.5-28t11.5-29q12-12 29-12t28 12l42 43q11 12 11 28t-11 28q-11 12-27.5 11.5T226-678Zm494 495-42-43q-11-12-11-28.5t11-27.5q11-12 27.5-11.5T734-282l43 42q12 11 11.5 28T777-183q-12 12-29 12t-28-12Zm-42-495q-12-11-11.5-27.5T678-734l42-43q11-12 28-11.5t29 11.5q12 12 12 29t-12 28l-43 42q-12 11-28 11t-28-11ZM183-183q-12-12-12-29t12-28l43-42q12-11 28.5-11t27.5 11q12 11 11.5 27.5T282-226l-42 43q-11 12-28 11.5T183-183Zm297-297Z\"/></svg>", "timer": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M400-840q-17 0-28.5-11.5T360-880q0-17 11.5-28.5T400-920h160q17 0 28.5 11.5T600-880q0 17-11.5 28.5T560-840H400Zm80 440q17 0 28.5-11.5T520-440v-160q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600v160q0 17 11.5 28.5T480-400Zm0 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l28-28q11-11 28-11t28 11q11 11 11 28t-11 28l-28 28q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Zm0-80q116 0 198-82t82-198q0-116-82-198t-198-82q-116 0-198 82t-82 198q0 116 82 198t198 82Zm0-280Z\"/></svg>", "flag": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M280-400v240q0 17-11.5 28.5T240-120q-17 0-28.5-11.5T200-160v-600q0-17 11.5-28.5T240-800h287q14 0 25 9t14 23l10 48h184q17 0 28.5 11.5T800-680v320q0 17-11.5 28.5T760-320H553q-14 0-25-9t-14-23l-10-48H280Zm306 0h134v-240H543q-14 0-25-9t-14-23l-10-48H280v240h257q14 0 25 9t14 23l10 48Zm-86-160Z\"/></svg>", "warning": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M109-120q-11 0-20-5.5T75-140q-5-9-5.5-19.5T75-180l370-640q6-10 15.5-15t19.5-5q10 0 19.5 5t15.5 15l370 640q6 10 5.5 20.5T885-140q-5 9-14 14.5t-20 5.5H109Zm69-80h604L480-720 178-200Zm302-40q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm0-120q17 0 28.5-11.5T520-400v-120q0-17-11.5-28.5T480-560q-17 0-28.5 11.5T440-520v120q0 17 11.5 28.5T480-360Zm0-100Z\"/></svg>", "star": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143Zm126 18L314-169q-11 7-23 6t-21-8q-9-7-14-17.5t-2-23.5l44-189-147-127q-10-9-12.5-20.5T140-571q4-11 12-18t22-9l194-17 75-178q5-12 15.5-18t21.5-6q11 0 21.5 6t15.5 18l75 178 194 17q14 2 22 9t12 18q4 11 1.5 22.5T809-528L662-401l44 189q3 13-2 23.5T690-171q-9 7-21 8t-23-6L480-269Zm0-201Z\"/></svg>", "keyboard": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M160-200q-33 0-56.5-23.5T80-280v-400q0-33 23.5-56.5T160-760h640q33 0 56.5 23.5T880-680v400q0 33-23.5 56.5T800-200H160Zm0-80h640v-400H160v400Zm200-40h240q17 0 28.5-11.5T640-360q0-17-11.5-28.5T600-400H360q-17 0-28.5 11.5T320-360q0 17 11.5 28.5T360-320Zm-200 40v-400 400Zm80-280q17 0 28.5-11.5T280-600q0-17-11.5-28.5T240-640q-17 0-28.5 11.5T200-600q0 17 11.5 28.5T240-560Zm120 0q17 0 28.5-11.5T400-600q0-17-11.5-28.5T360-640q-17 0-28.5 11.5T320-600q0 17 11.5 28.5T360-560Zm120 0q17 0 28.5-11.5T520-600q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600q0 17 11.5 28.5T480-560Zm120 0q17 0 28.5-11.5T640-600q0-17-11.5-28.5T600-640q-17 0-28.5 11.5T560-600q0 17 11.5 28.5T600-560Zm120 0q17 0 28.5-11.5T760-600q0-17-11.5-28.5T720-640q-17 0-28.5 11.5T680-600q0 17 11.5 28.5T720-560ZM240-440q17 0 28.5-11.5T280-480q0-17-11.5-28.5T240-520q-17 0-28.5 11.5T200-480q0 17 11.5 28.5T240-440Zm120 0q17 0 28.5-11.5T400-480q0-17-11.5-28.5T360-520q-17 0-28.5 11.5T320-480q0 17 11.5 28.5T360-440Zm120 0q17 0 28.5-11.5T520-480q0-17-11.5-28.5T480-520q-17 0-28.5 11.5T440-480q0 17 11.5 28.5T480-440Zm120 0q17 0 28.5-11.5T640-480q0-17-11.5-28.5T600-520q-17 0-28.5 11.5T560-480q0 17 11.5 28.5T600-440Zm120 0q17 0 28.5-11.5T760-480q0-17-11.5-28.5T720-520q-17 0-28.5 11.5T680-480q0 17 11.5 28.5T720-440Z\"/></svg>", "dialpad": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-40q-33 0-56.5-23.5T400-120q0-33 23.5-56.5T480-200q33 0 56.5 23.5T560-120q0 33-23.5 56.5T480-40ZM240-760q-33 0-56.5-23.5T160-840q0-33 23.5-56.5T240-920q33 0 56.5 23.5T320-840q0 33-23.5 56.5T240-760Zm0 240q-33 0-56.5-23.5T160-600q0-33 23.5-56.5T240-680q33 0 56.5 23.5T320-600q0 33-23.5 56.5T240-520Zm0 240q-33 0-56.5-23.5T160-360q0-33 23.5-56.5T240-440q33 0 56.5 23.5T320-360q0 33-23.5 56.5T240-280Zm480-480q-33 0-56.5-23.5T640-840q0-33 23.5-56.5T720-920q33 0 56.5 23.5T800-840q0 33-23.5 56.5T720-760ZM480-280q-33 0-56.5-23.5T400-360q0-33 23.5-56.5T480-440q33 0 56.5 23.5T560-360q0 33-23.5 56.5T480-280Zm240 0q-33 0-56.5-23.5T640-360q0-33 23.5-56.5T720-440q33 0 56.5 23.5T800-360q0 33-23.5 56.5T720-280Zm0-240q-33 0-56.5-23.5T640-600q0-33 23.5-56.5T720-680q33 0 56.5 23.5T800-600q0 33-23.5 56.5T720-520Zm-240 0q-33 0-56.5-23.5T400-600q0-33 23.5-56.5T480-680q33 0 56.5 23.5T560-600q0 33-23.5 56.5T480-520Zm0-240q-33 0-56.5-23.5T400-840q0-33 23.5-56.5T480-920q33 0 56.5 23.5T560-840q0 33-23.5 56.5T480-760Z\"/></svg>"};
+</script>
 <script>
 /* Apply the saved theme AND accent before the first paint so neither the app
    nor the boot splash ever flashes the wrong one. This duplicates the accent
@@ -4702,6 +4919,15 @@ opacity: 0.18;
     if (meta) {
       meta.setAttribute('content', c1 || (light ? '#f2f4fa' : '#0b0d14'));
     }
+    if(material){
+      var roles=(MX_PALETTES[s.accent]||MX_PALETTES.sunset)[t];
+      Object.keys(roles).forEach(function(key){document.documentElement.style.setProperty('--md-'+key,roles[key]);});
+      var tokens={'--bg':'background','--surface':'surface-container-low','--surface2':'surface-container-high','--surface3':'surface-container-highest','--text':'on-surface','--text2':'on-surface-variant','--text3':'on-surface-variant','--border':'outline-variant','--border-strong':'outline','--glass-bg':'surface-container'};
+      Object.keys(tokens).forEach(function(key){document.documentElement.style.setProperty(key,'var(--md-'+tokens[key]+')');});
+      document.documentElement.style.setProperty('--accent',roles.primary);
+      document.documentElement.style.setProperty('--accent-gradient',roles.primary);
+      document.documentElement.style.setProperty('--accent-dim',roles['primary-container']);
+    }
   } catch (e) {}
 })();
 </script>
@@ -4729,7 +4955,7 @@ opacity: 0.18;
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.7.2</span>
+    <span class="version-badge">1.7.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5635,6 +5861,9 @@ opacity: 0.18;
   </div>
 </div>
 
+<div class="modal-overlay" id="milestone-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-modal-title"><h3 id="milestone-modal-title">Add milestone</h3><div class="field-group"><label for="milestone-name">Milestone name</label><input id="milestone-name" type="text" maxlength="80" placeholder="e.g. Finish Chapter 1" autocomplete="off"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Completed</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
+<div class="modal-overlay" id="milestone-delete-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-delete-title"><h3 id="milestone-delete-title">Delete milestone?</h3><p id="milestone-delete-message" class="backup-hint"></p><div class="modal-actions"><button class="btn-ghost" id="milestone-delete-cancel" type="button">Cancel</button><button class="btn-danger" id="milestone-delete-confirm" type="button">Delete</button></div></div></div>
+
 <!-- Goal modal -->
 <div class="modal-overlay" id="goal-modal">
   <div class="modal">
@@ -5692,7 +5921,7 @@ opacity: 0.18;
 
 <!-- Game dashboard modal -->
 <div class="modal-overlay" id="dashboard-modal">
-  <div class="modal" style="max-width:420px;">
+  <div class="modal milestone-dashboard">
     <div class="dash-cover" id="dashboard-cover"></div>
     <h3 id="dashboard-title"></h3>
     <div id="dashboard-body"></div>
@@ -5820,6 +6049,7 @@ opacity: 0.18;
 <script>
 (function() {
   // --- Storage ---
+  const mxFieldRegistry = new Map();
   const KEYS = { games: 'playdex_games', sessions: 'playdex_sessions', settings: 'playdex_settings' };
   // Reject stale writes even before the other tab's storage event is delivered.
   const storageBaseline = Object.fromEntries(Object.values(KEYS).map(key => [key, localStorage.getItem(key)]));
@@ -5855,7 +6085,7 @@ opacity: 0.18;
 
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
-      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform) };
+      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform), milestones: normalizeGameMilestones(g.milestones) };
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -5912,6 +6142,7 @@ opacity: 0.18;
   let cardAnimating = false;
   let timerRaf = null;
   let lastElapsedSec = -1;
+  let lastProgressMinute = -1, lastProgressSessionId = null;
   let lastClockStr = '';
   let lastPausedSec = -1;
   let lastCountdownUpdate = 0;
@@ -6064,10 +6295,10 @@ opacity: 0.18;
       el.textContent = '';
       el.appendChild(document.createTextNode(msg + ' '));
       el.appendChild(btn);
-      el._t = setTimeout(() => el.classList.remove('show'), timeoutMs || 2000);
+      el._t = setTimeout(() => el.classList.remove('show'), timeoutMs || (settings.uiStyle==='material'?6000:2000));
     } else {
       el.textContent = msg;
-      el._t = setTimeout(() => el.classList.remove('show'), timeoutMs || 2000);
+      el._t = setTimeout(() => el.classList.remove('show'), timeoutMs || (settings.uiStyle==='material'?4000:2000));
     }
     el.classList.add('show');
   }
@@ -6178,44 +6409,7 @@ opacity: 0.18;
   }
 
   function m3Roles(theme) {
-    const light = theme === 'light';
-    const src = hexToHsl(accentSourceHex(theme));
-    const P = t => m3Tone(src, t);              // primary palette
-    const N = t => m3Tone(src, t, 8);           // neutral palette
-    const NV = t => m3Tone(src, t, 18);         // neutral variant palette
-    // M3's secondary is the source hue with its chroma pulled right down - that
-    // is what makes containers read as a different colour from the primary
-    // palette rather than as more of the same. Tertiary is the one that moves.
-    const sec = { h: src.h + 12, s: Math.max(6, Math.min(22, src.s * 0.22)) };
-    const ter = m3TertiaryHsl(theme);
-    const S = t => m3Tone(sec, t);
-    const T = t => m3Tone(ter, t);
-    if (light) return {
-      'primary': P(40), 'on-primary': P(100),
-      'primary-container': P(90), 'on-primary-container': P(10),
-      'secondary': S(40), 'secondary-container': S(90), 'on-secondary-container': S(10),
-      'tertiary': T(40), 'tertiary-container': T(90), 'on-tertiary-container': T(10),
-      'error': '#b3261e', 'on-error': '#ffffff', 'error-container': '#f9dedc',
-      'background': N(99), 'on-background': N(10),
-      'on-surface': N(10), 'surface-variant': NV(90), 'on-surface-variant': NV(30),
-      'surface-container-lowest': N(100), 'surface-container-low': N(96),
-      'surface-container': N(94), 'surface-container-high': N(92), 'surface-container-highest': N(90),
-      'outline': NV(50), 'outline-variant': NV(80),
-      'inverse-surface': N(20), 'inverse-on-surface': N(95), 'inverse-primary': P(80)
-    };
-    return {
-      'primary': P(80), 'on-primary': P(20),
-      'primary-container': P(30), 'on-primary-container': P(90),
-      'secondary': S(80), 'secondary-container': S(30), 'on-secondary-container': S(90),
-      'tertiary': T(80), 'tertiary-container': T(30), 'on-tertiary-container': T(90),
-      'error': '#f2b8b5', 'on-error': '#601410', 'error-container': '#8c1d18',
-      'background': N(6), 'on-background': N(90),
-      'on-surface': N(90), 'surface-variant': NV(30), 'on-surface-variant': NV(80),
-      'surface-container-lowest': N(4), 'surface-container-low': N(10),
-      'surface-container': N(12), 'surface-container-high': N(17), 'surface-container-highest': N(22),
-      'outline': NV(60), 'outline-variant': NV(30),
-      'inverse-surface': N(90), 'inverse-on-surface': N(20), 'inverse-primary': P(40)
-    };
+    return (MX_PALETTES[settings.accent]||MX_PALETTES.sunset)[theme];
   }
 
   // Names written by the last Material render, so switching back to the classic
@@ -6234,7 +6428,7 @@ opacity: 0.18;
     '--border-strong': 'outline',
     '--text': 'on-surface',
     '--text2': 'on-surface-variant',
-    '--text3': 'outline',
+    '--text3': 'on-surface-variant',
     '--glass-bg': 'surface-container',
     '--shadow': 'elev-2',
     '--shadow-soft': 'elev-1'
@@ -6277,9 +6471,9 @@ opacity: 0.18;
         // accents (medals, level badge, the "today" bar) still read it in
         // Material mode, where it restores the two-tone character they lost
         // when every other consumer was repointed at a flat role.
-        const tone = theme === 'light' ? 40 : 80;
-        c1 = m3Tone(hexToHsl(c1), tone);
-        c2 = m3Tone(m3TertiaryHsl(theme), tone);
+        const roles=m3Roles(theme);
+        c1 = roles.primary;
+        c2 = roles.tertiary;
       }
       const rgb = hexToRgb(c1);
       const alpha = theme === 'light' ? 0.1 : 0.14;
@@ -7492,6 +7686,7 @@ opacity: 0.18;
       document.getElementById('paused-for').textContent = '';
     }
     lastPausedSec = -1;
+    updateActiveRotationProgress();
   }
 
   function updateLiveChase(elapsed) {
@@ -7542,6 +7737,18 @@ opacity: 0.18;
     return out.sort((a, b) => b.lastMs - a.lastMs);
   }
 
+  function stalePromptEntries(limit=3) {
+    const stale=staleGameEntries(),rotationIds=new Set(rotationGameIds());
+    const entries=stale.filter(entry=>!rotationIds.has(entry.game.id)).slice(0,limit);
+    if(entries.length<limit && stale.some(entry=>rotationIds.has(entry.game.id))) {
+      const selected=new Set(entries.map(entry=>entry.game.id)),lastStop=new Map();
+      sessions.forEach(session=>{if(session.stop===null)return;const time=Date.parse(session.stop);if(Number.isFinite(time))lastStop.set(session.gameId,Math.max(lastStop.get(session.gameId)||0,time));});
+      const replacements=games.filter(game=>!game.archived && !rotationIds.has(game.id) && !selected.has(game.id)).map(game=>({game,lastMs:lastStop.get(game.id)||null})).sort((a,b)=>(a.lastMs||0)-(b.lastMs||0)||a.game.name.localeCompare(b.game.name));
+      entries.push(...replacements.slice(0,limit-entries.length));
+    }
+    return entries;
+  }
+
   // --- Render ---
   function render() {
     renderTodayTab();
@@ -7555,9 +7762,10 @@ opacity: 0.18;
 
   function renderGoal() {
     const goalMin = settings.dailyGoalMinutes || 0;
-    const todayTotal = todaySessionsMs();
+    const liveToday=activeSession && isToday(activeSession.start)?Math.max(0,activeElapsedMs(activeSession,Date.now())):0;
+    const todayTotal = Math.floor((todaySessionsMs()+liveToday)/60000)*60000;
     const weeklyBudget = weeklyRotationBudgetMinutes();
-    document.getElementById('goal-week-budget').textContent = weeklyBudget ? fmtDurationShort(weeklyBudget*60000) : 'Not set';
+    document.getElementById('goal-week-budget').textContent = weeklyBudget ? fmtDurationMinutes(weeklyBudget*60000) : 'Not set';
     const goalText = document.getElementById('goal-text');
     const track = document.getElementById('goal-track');
     const fill = document.getElementById('goal-fill');
@@ -7576,10 +7784,10 @@ opacity: 0.18;
 
     const goalMs = goalMin * 60000;
     const pct = Math.min(100, Math.round(todayTotal / goalMs * 100));
-    goalText.textContent = 'Goal: ' + fmtDurationShort(goalMs);
+    goalText.textContent = 'Goal: ' + fmtDurationMinutes(goalMs);
     track.style.display = '';
     fill.style.width = Math.max(0, pct) + '%';
-    percentEl.textContent = fmtDurationShort(todayTotal) + ' of ' + fmtDurationShort(goalMs) + ' (' + pct + '%)';
+    percentEl.textContent = fmtDurationMinutes(todayTotal) + ' of ' + fmtDurationMinutes(goalMs) + ' (' + pct + '%)';
 
     const streak = computeStreak();
     if (streak > 0) {
@@ -7662,14 +7870,14 @@ opacity: 0.18;
     const budget=weeklyRotationBudgetMinutes();
     if(!budget) return 'Set a daily goal to define your weekly rotation budget.';
     const remaining=budget-planned;
-    return 'Weekly budget: '+fmtDurationShort(budget*60000)+' | Planned: '+fmtDurationShort(planned*60000)+' | '+(remaining<0?'Over budget: ':'Available: ')+fmtDurationShort(Math.abs(remaining)*60000);
+    return 'Weekly budget: '+fmtDurationMinutes(budget*60000)+' | Planned: '+fmtDurationMinutes(planned*60000)+' | '+(remaining<0?'Over budget: ':'Available: ')+fmtDurationMinutes(Math.abs(remaining)*60000);
   }
   function renderRotationBudgetMeter(id,planned) {
     const panel=document.getElementById(id+'-meter'),budget=weeklyRotationBudgetMinutes();
     panel.hidden=!budget;
     if(!budget) { panel.innerHTML=''; return; }
     const remaining=Math.max(0,budget-planned),pct=Math.max(0,Math.min(100,Math.round(remaining/budget*100)));
-    panel.innerHTML='<div class="rotation-budget-meter-label"><span>Available time</span><strong>'+(planned>budget?'Over budget':pct+'% available')+'</strong></div><div class="rotation-budget-meter'+(planned>budget?' over-budget':'')+'" role="progressbar" aria-label="Weekly time still available" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" aria-valuetext="'+escHtml(fmtDurationShort(remaining*60000)+' available of '+fmtDurationShort(budget*60000))+'"><div class="rotation-budget-meter-fill" style="width:'+pct+'%"></div></div>';
+    panel.innerHTML='<div class="rotation-budget-meter-label"><span>Available time</span><strong>'+(planned>budget?'Over budget':pct+'% available')+'</strong></div><div class="rotation-budget-meter'+(planned>budget?' over-budget':'')+'" role="progressbar" aria-label="Weekly time still available" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" aria-valuetext="'+escHtml(fmtDurationMinutes(remaining*60000)+' available of '+fmtDurationMinutes(budget*60000))+'"><div class="rotation-budget-meter-fill" style="width:'+pct+'%"></div></div>';
   }
   function rotationHoursToMinutes(value) {
     const hours=Number(value);
@@ -7679,22 +7887,55 @@ opacity: 0.18;
     const value=Number(settings.weeklyRotationTargets?.[id]);
     return Number.isInteger(value) && value>0 && value<=10080 ? value : 0;
   }
+  function rotationProgressWithLive(ids,now=new Date()) {
+    const progress=rotationWeekProgress(ids,now);
+    if(activeSession && progress.games[activeSession.gameId]) {
+      const start=new Date(activeSession.start);
+      if(start>=progress.bounds.start && start<=progress.bounds.end && start<=now) progress.games[activeSession.gameId].ms+=Math.max(0,activeElapsedMs(activeSession,now.getTime()));
+    }
+    Object.values(progress.games).forEach(entry=>entry.ms=Math.floor(Math.max(0,entry.ms)/60000)*60000);
+    return progress;
+  }
+  function fmtDurationMinutes(ms) {
+    const minutes=Math.floor(Math.max(0,Number(ms)||0)/60000),hours=Math.floor(minutes/60);
+    return hours?hours+'h'+(minutes%60?' '+minutes%60+'m':''):minutes+'m';
+  }
+  function rotationPlayedTime(ms) { return fmtDurationMinutes(ms); }
+  function updateActiveRotationProgress() {
+    if(!activeSession)return;
+    const row=[...document.querySelectorAll('#rotation-list [data-rotation-game]')].find(row=>row.dataset.rotationGame===activeSession.gameId);
+    if(!row)return;
+    const entry=rotationProgressWithLive([activeSession.gameId]).games[activeSession.gameId];
+    const elapsed=row.querySelector('[data-rotation-elapsed]');if(elapsed)elapsed.textContent=rotationPlayedTime(entry.ms);
+    const target=rotationTargetMinutes(activeSession.gameId),percent=row.querySelector('[data-rotation-percent]'),bar=row.querySelector('[data-rotation-progress]');
+    if(target && percent && bar){const pct=Math.min(100,Math.floor(entry.ms/(target*60000)*100));percent.textContent=pct===100?'Target reached':pct+'%';bar.setAttribute('aria-valuenow',String(pct));bar.querySelector('.progress-fill').style.width=pct+'%';}
+  }
   function renderWeeklyRotation() {
-    const ids=rotationGameIds(),progress=rotationWeekProgress(ids);
+    const ids=rotationGameIds();
+    const card=document.getElementById('weekly-rotation-card');
+    const hidden=!!activeSession && !ids.includes(activeSession.gameId);
+    card.hidden=hidden;
+    if(hidden)return;
+    const progress=rotationProgressWithLive(ids);
     const remaining=ids.filter(id=>!rotationTargetMinutes(id) || progress.games[id].ms<rotationTargetMinutes(id)*60000);
     const reached=ids.length-remaining.length;
     document.getElementById('rotation-summary').textContent=ids.length?progress.played+' of '+ids.length+' played this week'+(reached?' | '+reached+' target'+(reached===1?'':'s')+' reached':'')+' | '+fmtDayMonth(progress.bounds.start)+' - '+fmtDayMonth(progress.bounds.end):'Choose a few games for this week. Play one completed session to check a game off.';
+    document.getElementById('rotation-summary').hidden=!!activeSession;
     const planned=ids.reduce((sum,id)=>sum+rotationTargetMinutes(id),0);
     const budgetEl=document.getElementById('rotation-budget');
+    budgetEl.hidden=!!activeSession;
     budgetEl.textContent=rotationBudgetText(planned);
     renderRotationBudgetMeter('rotation-budget',planned);
+    if(activeSession)document.getElementById('rotation-budget-meter').hidden=true;
     budgetEl.classList.toggle('over-budget',!!weeklyRotationBudgetMinutes() && planned>weeklyRotationBudgetMinutes());
     const list=document.getElementById('rotation-list');
-    list.innerHTML=ids.length && !remaining.length ? '<p class="backup-hint">All weekly targets reached! Your games return next week.</p>' : remaining.map(id=>{
-      const game=games.find(g=>g.id===id),entry=progress.games[id],running=activeSession && activeSession.gameId===id;
+    const visible=activeSession?ids.filter(id=>id===activeSession.gameId):remaining;
+    const empty=activeSession?'<p class="backup-hint">Your current game is not in this week\'s rotation.</p>':ids.length && !remaining.length?'<p class="backup-hint">All weekly targets reached! Your games return next week.</p>':'';
+    list.innerHTML=!visible.length ? empty : visible.map(id=>{
+      const game=games.find(g=>g.id===id),entry=progress.games[id];
       const target=rotationTargetMinutes(id),pct=target?Math.min(100,Math.floor(entry.ms/(target*60000)*100)):0;
-      const targetHtml=target?'<small>'+fmtDurationShort(entry.ms)+' / '+fmtDurationShort(target*60000)+(pct===100?' &middot; Target reached':' &middot; '+pct+'%')+'</small><div class="progress-track" role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'';
-      return '<div class="rotation-row"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong><small class="'+(entry.count?'played':'')+'">'+(entry.count?'&#10003; Played this week &middot; '+fmtDurationShort(entry.ms):'Not played yet this week')+'</small>'+targetHtml+'</div><button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'"'+(activeSession?' disabled':'')+'>'+(running?'Playing':'Start')+'</button></div>';
+      const targetHtml=target?'<div class="rotation-metrics" data-rotation-target-text><span class="rotation-time"><span class="rotation-elapsed" data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span><span class="rotation-target-text">/ '+fmtDurationMinutes(target*60000)+'</span></span><span class="rotation-percent" data-rotation-percent>'+(pct===100?'Target reached':pct+'%')+'</span></div><div class="progress-track" data-rotation-progress role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'<small><span data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span> this week</small>';
+      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+targetHtml+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'">Start</button>')+'</div>';
     }).join('');
   }
   function rotationSelectionCount() {
@@ -7722,7 +7963,7 @@ opacity: 0.18;
       const valid=checkbox.checked && Number.isInteger(target) && target>0 && target<=10080;
       const reached=valid && played>=target*60000;
       status.classList.toggle('reached',reached);
-      status.textContent=valid?(reached?'\u2713 Target reached \u00b7 ':'')+fmtDurationShort(played)+' / '+fmtDurationShort(target*60000)+(reached?'':' this week'):'';
+      status.textContent=valid?(reached?'\u2713 Target reached \u00b7 ':'')+fmtDurationMinutes(played)+' / '+fmtDurationMinutes(target*60000)+(reached?'':' this week'):'';
     });
   }
   function openRotationEditor() {
@@ -7834,19 +8075,18 @@ opacity: 0.18;
 
     renderGoal();
 
-    // Stale-game play-again prompt (optional, once per day)
+    // Stale-game prompt: backfill excluded rotation games to keep useful suggestions.
     const spEl = document.getElementById('stale-prompt');
     if (spEl) {
-      const rotationIds = new Set(rotationGameIds());
-      const stale = staleGameEntries().filter(entry => !rotationIds.has(entry.game.id));
+      const stale = stalePromptEntries();
       const show = settings.stalePrompt && !activeSession && stale.length > 0;
       if (show) {
         const spList = document.getElementById('stale-prompt-list');
-        spList.innerHTML = stale.slice(0, 3).map(x => {
-          const daysAgo = Math.max(1, Math.floor((Date.now() - x.lastMs) / 86400000));
+        spList.innerHTML = stale.map(x => {
+          const lastPlayed = x.lastMs ? timeAgo(x.lastMs) : 'Never played';
           return '<div class="stale-prompt-row">' +
             '<span class="stale-prompt-name">' + escHtml(x.game.name) + '</span>' +
-            '<span class="stale-prompt-last">' + daysAgo + 'd ago</span>' +
+            '<span class="stale-prompt-last">' + escHtml(lastPlayed) + '</span>' +
             '<button class="btn btn-start stale-prompt-play" data-game-id="' + x.game.id + '">&#9654; Play again</button>' +
           '</div>';
         }).join('');
@@ -9503,6 +9743,7 @@ opacity: 0.18;
   function openDashboard(id) {
     const game = games.find(g => g.id === id);
     if (!game) return;
+    document.getElementById('dashboard-modal').dataset.gameId = game.id;
     document.getElementById('dashboard-title').textContent = game.name;
     paintCover(document.getElementById('dashboard-cover'), game, 'No cover');
     renderDashboardBody(game);
@@ -9606,6 +9847,8 @@ opacity: 0.18;
       '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
+    html = '<div class="milestone-dashboard-summary">' + html + '</div>' + gameMilestonesHtml(game) + '<div class="milestone-dashboard-history">';
+
     if (completed.length > 0) {
       html += '<div class="modal-subheader">Last 6 months</div>' +
         months.map(m =>
@@ -9640,7 +9883,7 @@ opacity: 0.18;
       html += '<div class="empty-state" style="padding:20px 10px;"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>No sessions recorded for this game yet.</div>';
     }
 
-    body.innerHTML = html;
+    body.innerHTML = html + '</div>';
   }
 
   function escHtml(str) {
@@ -9681,6 +9924,8 @@ opacity: 0.18;
     clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>'
   };
   function iconSvg(name) {
+    const materialNames={today:'home',sessions:'history',stats:'bar_chart',games:'sports_esports',settings:'settings',view:'bar_chart',rename:'edit',archive:'archive',pin:'keep',restore:'unarchive',delete:'delete',deleteX:'close',play:'play_arrow',check:'check',top:'leaderboard',badges:'military_tech',profile:'person',dbx:'sync',clock:'schedule',star:'star',emptyGames:'sports_esports',emptyActive:'sports_esports',emptySessions:'history',emptyDashboard:'bar_chart'};
+    if(settings.uiStyle==='material')return MX_SYMBOLS[materialNames[name]||name]||ICONS[name]||MX_SYMBOLS.star;
     return ICONS[name] || '';
   }
 
@@ -9997,10 +10242,12 @@ opacity: 0.18;
       el.querySelector('.cal-trigger').setAttribute('aria-expanded', 'false');
       if (onChange) onChange(_value);
     });
-    return {
+    const field = {
       get value() { return _value; },
       set value(v) { _value = v || ''; setLabel(); resetView(); }
     };
+    mxFieldRegistry.set(id,{kind:'date',field,onChange});
+    return field;
   }
 
   // Close any open calendar popover on outside click
@@ -10092,10 +10339,12 @@ opacity: 0.18;
       el.classList.remove('open');
       el.querySelector('.cal-trigger').setAttribute('aria-expanded', 'false');
     });
-    return {
+    const field = {
       get value() { return _value; },
       set value(v) { _value = v || ''; setLabel(); }
     };
+    mxFieldRegistry.set(id,{kind:'time',field});
+    return field;
   }
 
   function setCalDateTime(dateField, timeField, iso) {
@@ -10504,6 +10753,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         void el.offsetWidth;
         el.classList.add('tick');
       }
+      const progressMinute=Math.floor(elapsed/60000);
+      if(progressMinute!==lastProgressMinute || activeSession.id!==lastProgressSessionId) {
+        lastProgressMinute=progressMinute;lastProgressSessionId=activeSession.id;
+        updateActiveRotationProgress();renderGoal();
+      }
       const nowStr = fmtTime(new Date().toISOString());
       if (nowStr !== lastClockStr) {
         lastClockStr = nowStr;
@@ -10550,6 +10804,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         document.title = APP_TITLE;
       }
     } else {
+      lastProgressMinute=-1;lastProgressSessionId=null;
       document.title = APP_TITLE;
     }
     timerRaf = requestAnimationFrame(updateTimer);
@@ -10860,6 +11115,238 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   organizeSettings();
 
+  function mxRefreshIcons(){
+    function swap(host,name){if(!host)return;if(host._mxOriginal===undefined)host._mxOriginal=host.innerHTML;const skin=mxMaterial()?'material':'classic';if(host.dataset.mxSkin!==skin){host.dataset.mxSkin=skin;host.innerHTML=mxMaterial()?mxSymbol(name):host._mxOriginal;}}
+    const navigation={today:'home',sessions:'history',stats:'bar_chart',top:'leaderboard',games:'sports_esports',badges:'military_tech',profile:'person',settings:'settings'};
+    document.querySelectorAll('.tab-btn').forEach(button=>swap(button.querySelector('.tab-icon'),navigation[button.dataset.tab]));
+    document.querySelectorAll('.library-game-cover > span').forEach(host=>swap(host,'sports_esports'));
+  }
+
+  // Material component layer: retain the app's data model and field interfaces.
+  function mxSymbol(name) { return MX_SYMBOLS[name] || MX_SYMBOLS.sports_esports || ''; }
+  function mxMaterial() { return settings.uiStyle === 'material'; }
+  const mxMenu=document.createElement('dialog');mxMenu.id='mx-menu';mxMenu.className='mx-dialog mx-menu';mxMenu.setAttribute('aria-label','Choose an option');document.body.append(mxMenu);
+  const mxSelectButtons=new WeakMap();
+  let mxMenuSource=null,mxTypeBuffer='',mxTypeTimer=0;
+  function mxCloseMenu() { if(mxMenu.open)mxMenu.close();const button=mxMenuSource&&mxSelectButtons.get(mxMenuSource);if(button){button.setAttribute('aria-expanded','false');button.focus();}mxMenuSource=null; }
+  function mxOpenMenu(select) {
+    if(select.disabled)return;
+    mxCloseMenu();mxMenuSource=select;
+    const trigger=mxSelectButtons.get(select);trigger.setAttribute('aria-expanded','true');
+    mxMenu.innerHTML='<div role="listbox" aria-label="'+escHtml(trigger.getAttribute('aria-label')||'Choose an option')+'">'+[...select.options].map((option,index)=>'<button type="button" role="option" data-option="'+index+'" aria-selected="'+option.selected+'"'+(option.disabled?' disabled':'')+'>'+escHtml(option.textContent)+'</button>').join('')+'</div>';
+    const rect=trigger.getBoundingClientRect();mxMenu.style.minWidth=Math.min(rect.width,innerWidth-24)+'px';
+    mxMenu.showModal();
+    mxMenu.style.left=Math.max(12,Math.min(rect.left,innerWidth-mxMenu.offsetWidth-12))+'px';
+    mxMenu.style.top=Math.max(12,Math.min(rect.bottom+4,innerHeight-mxMenu.offsetHeight-12))+'px';
+    (mxMenu.querySelector('[aria-selected="true"]:not(:disabled)')||mxMenu.querySelector('[role="option"]:not(:disabled)'))?.focus();
+  }
+  mxMenu.addEventListener('click',event=>{
+    const option=event.target.closest('[data-option]');
+    if(option && mxMenuSource){const source=mxMenuSource;source.selectedIndex=Number(option.dataset.option);mxCloseMenu();source.dispatchEvent(new Event('change',{bubbles:true}));mxSyncSelects();}
+    else if(event.target===mxMenu)mxCloseMenu();
+  });
+  mxMenu.addEventListener('cancel',event=>{event.preventDefault();mxCloseMenu();});
+  mxMenu.addEventListener('keydown',event=>{
+    event.stopPropagation();const choices=[...mxMenu.querySelectorAll('[role="option"]:not(:disabled)')];let index=choices.indexOf(document.activeElement);
+    if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();index=event.key==='Home'?0:event.key==='End'?choices.length-1:(index+(event.key==='ArrowDown'?1:-1)+choices.length)%choices.length;choices[index]?.focus();}
+    else if(event.key==='Escape'){event.preventDefault();mxCloseMenu();}
+    else if(event.key.length===1 && event.key!==' '){mxTypeBuffer+=event.key.toLowerCase();clearTimeout(mxTypeTimer);mxTypeTimer=setTimeout(()=>mxTypeBuffer='',700);choices.find(option=>option.textContent.toLowerCase().startsWith(mxTypeBuffer))?.focus();}
+  });
+  function mxSyncSelects() {
+    document.querySelectorAll('select').forEach(select=>{
+      let button=mxSelectButtons.get(select);
+      if(!button){
+        button=document.createElement('button');button.type='button';button.className='mx-select-button';button.setAttribute('aria-haspopup','listbox');button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','mx-menu');
+        button.innerHTML='<span></span>'+mxSymbol('expand_more');select.after(button);mxSelectButtons.set(select,button);
+        button.addEventListener('click',()=>mxOpenMenu(select));
+        button.addEventListener('keydown',event=>{if(['ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();mxOpenMenu(select);}});
+        select.addEventListener('change',mxSyncSelects);
+      }
+      const text=select.selectedOptions[0]?.textContent||'Select';if(button.firstElementChild.textContent!==text)button.firstElementChild.textContent=text;
+      const label=select.getAttribute('aria-label')||document.querySelector('label[for="'+select.id+'"]')?.textContent||select.title||'Choose an option';
+      if(button.getAttribute('aria-label')!==label)button.setAttribute('aria-label',label);
+      if(button.disabled!==select.disabled)button.disabled=select.disabled;
+      if(mxMaterial()){if(!select.classList.contains('mx-native-select'))select.classList.add('mx-native-select');select.tabIndex=-1;select.setAttribute('aria-hidden','true');}
+      else {if(select.classList.contains('mx-native-select'))select.classList.remove('mx-native-select');select.removeAttribute('aria-hidden');select.removeAttribute('tabindex');}
+    });
+  }
+  function mxPickerDialog(title,kind) {
+    const dialog=document.createElement('dialog');dialog.id='mx-picker';dialog.className='mx-dialog mx-'+kind;dialog.setAttribute('aria-label',title);document.body.append(dialog);
+    let finish;
+    const result=new Promise(resolve=>{finish=value=>{if(dialog.open)dialog.close();dialog.remove();resolve(value);};});
+    dialog.addEventListener('cancel',event=>{event.preventDefault();finish(false);});
+    dialog.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();finish(false);}});
+    dialog.addEventListener('click',event=>{if(event.target===dialog){const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)finish(false);}});
+    return {dialog,result,finish};
+  }
+  async function mxDatePicker(binding,trigger) {
+    const {dialog,result,finish}=mxPickerDialog('Select date','date');let draft=binding.field.value||'',view=draft?new Date(draft+'T12:00'):new Date(),typed=false;
+    function valid(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const date=new Date(value+'T12:00');return Number.isFinite(date.getTime())&&calFmtDate(date)===value;}
+    function render(){
+      const value=draft?new Date(draft+'T12:00'):null;
+      dialog.innerHTML='<div class="mx-picker-head"><h2>Select date</h2><button type="button" data-mode aria-label="'+(typed?'Show calendar':'Type a date')+'">'+mxSymbol(typed?'calendar_month':'keyboard')+'</button></div><p class="mx-picked-date">'+(value?escHtml(value.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})):'Select a date')+'</p>'+(typed?'<label class="mx-typed-field">Date (YYYY-MM-DD)<input id="mx-date-input" type="text" inputmode="numeric" placeholder="YYYY-MM-DD" value="'+escHtml(draft)+'"></label>':'<div class="mx-month-nav"><button type="button" data-month="-1" aria-label="Previous month">'+mxSymbol('chevron_left')+'</button><span>'+CAL_MONTHS[view.getMonth()]+' '+view.getFullYear()+'</span><button type="button" data-month="1" aria-label="Next month">'+mxSymbol('chevron_right')+'</button></div><div class="mx-weekdays"></div><div class="mx-date-grid" role="grid" aria-label="Choose a date"></div>')+'<p class="mx-picker-error" role="alert"></p><div class="mx-picker-actions"><button type="button" data-clear>Clear</button><button type="button" data-today>Today</button><button type="button" data-cancel>Cancel</button><button type="button" data-ok>OK</button></div>';
+      dialog.querySelector('[data-mode]').onclick=()=>{if(typed){const input=dialog.querySelector('#mx-date-input');if(input.value && !valid(input.value)){dialog.querySelector('[role="alert"]').textContent='Enter a valid date in YYYY-MM-DD format.';return;}draft=input.value;if(draft)view=new Date(draft+'T12:00');}typed=!typed;render();};
+      if(!typed){
+        const weekdays=weekStartsOnMonday()?['M','T','W','T','F','S','S']:['S','M','T','W','T','F','S'];dialog.querySelector('.mx-weekdays').innerHTML=weekdays.map(day=>'<span>'+day+'</span>').join('');
+        const offset=(new Date(view.getFullYear(),view.getMonth(),1).getDay()+(weekStartsOnMonday()?6:0))%7;
+        const grid=dialog.querySelector('.mx-date-grid');
+        for(let index=0;index<42;index++){
+          const date=new Date(view.getFullYear(),view.getMonth(),index-offset+1),key=calFmtDate(date),button=document.createElement('button');button.type='button';button.textContent=date.getDate();button.dataset.date=key;button.setAttribute('role','gridcell');button.setAttribute('aria-label',date.toLocaleDateString(undefined,{dateStyle:'full'}));button.setAttribute('aria-selected',String(key===draft));button.className=(date.getMonth()!==view.getMonth()?'mx-other ':'')+(key===calFmtDate(new Date())?'mx-today':'');button.onclick=()=>{draft=key;render();dialog.querySelector('[data-date="'+draft+'"]')?.focus();};
+          button.onkeydown=event=>{const days={ArrowLeft:-1,ArrowRight:1,ArrowUp:-7,ArrowDown:7}[event.key];if(days){event.preventDefault();const next=new Date(date);next.setDate(next.getDate()+days);draft=calFmtDate(next);view=next;render();dialog.querySelector('[data-date="'+draft+'"]')?.focus();}};grid.append(button);
+        }
+        dialog.querySelectorAll('[data-month]').forEach(button=>button.onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+Number(button.dataset.month),1);render();});
+      }
+      dialog.querySelector('[data-clear]').onclick=()=>{draft='';render();};dialog.querySelector('[data-today]').onclick=()=>{draft=calFmtDate(new Date());view=new Date();render();};dialog.querySelector('[data-cancel]').onclick=()=>finish(false);
+      dialog.querySelector('[data-ok]').onclick=()=>{if(typed)draft=dialog.querySelector('#mx-date-input').value.trim();if(draft&&!valid(draft)){dialog.querySelector('[role="alert"]').textContent='Enter a valid date in YYYY-MM-DD format.';return;}finish(true);};
+    }
+    render();dialog.showModal();if(await result){binding.field.value=draft;if(binding.onChange)binding.onChange(draft);}trigger.focus();
+  }
+  async function mxTimePicker(binding,trigger) {
+    const {dialog,result,finish}=mxPickerDialog('Select time','time');const parts=(binding.field.value||'00:00').split(':').map(Number);let hour=parts[0],minute=parts[1],phase='hour',typed=false,cleared=false;
+    function readInput(){if(!typed)return true;const h=Number(dialog.querySelector('#mx-hour-input').value),m=Number(dialog.querySelector('#mx-minute-input').value);if(!Number.isInteger(h)||h<1||h>12||!Number.isInteger(m)||m<0||m>59||!dialog.querySelector('#mx-hour-input').value||!dialog.querySelector('#mx-minute-input').value){dialog.querySelector('[role="alert"]').textContent='Enter hours from 1 to 12 and minutes from 00 to 59.';return false;}hour=(h%12)+(hour>=12?12:0);minute=m;cleared=false;return true;}
+    function render(){
+      const h12=hour%12||12;
+      dialog.innerHTML='<div class="mx-picker-head"><h2>Select time</h2><button type="button" data-mode aria-label="'+(typed?'Show clock dial':'Type a time')+'">'+mxSymbol(typed?'schedule':'keyboard')+'</button></div>'+(typed?'<div class="mx-time-inputs"><label class="mx-typed-field">Hour<input id="mx-hour-input" type="number" min="1" max="12" value="'+h12+'"></label><label class="mx-typed-field">Minute<input id="mx-minute-input" type="number" min="0" max="59" value="'+calPad(minute)+'"></label></div>':'<div class="mx-time-display"><button class="mx-time-part" type="button" data-phase="hour" aria-label="Choose hour" aria-pressed="'+(phase==='hour')+'">'+calPad(h12)+'</button><span>:</span><button class="mx-time-part" type="button" data-phase="minute" aria-label="Choose minute" aria-pressed="'+(phase==='minute')+'">'+calPad(minute)+'</button></div>')+'<div class="mx-period"><button type="button" data-period="am" aria-pressed="'+(hour<12)+'">AM</button><button type="button" data-period="pm" aria-pressed="'+(hour>=12)+'">PM</button></div>'+(typed?'':'<div class="mx-dial" role="group" aria-label="'+(phase==='hour'?'Choose hour':'Choose minute')+'"><span class="mx-clock-hand"></span><span class="mx-clock-center"></span></div>')+'<p class="mx-picker-error" role="alert">'+(cleared?'Time cleared; choose OK to confirm.':'')+'</p><div class="mx-picker-actions"><button type="button" data-clear>Clear</button><button type="button" data-now>Now</button><button type="button" data-cancel>Cancel</button><button type="button" data-ok>OK</button></div>';
+      dialog.querySelector('[data-mode]').onclick=()=>{if(!readInput())return;typed=!typed;render();};
+      if(typed)dialog.querySelectorAll('.mx-time-inputs input').forEach(input=>input.addEventListener('input',()=>cleared=false));
+      dialog.querySelectorAll('[data-phase]').forEach(button=>button.onclick=()=>{phase=button.dataset.phase;render();});
+      dialog.querySelectorAll('[data-period]').forEach(button=>button.onclick=()=>{if(!readInput())return;hour=hour%12+(button.dataset.period==='pm'?12:0);render();});
+      if(!typed){const dial=dialog.querySelector('.mx-dial');dial.querySelector('.mx-clock-hand').style.transform='rotate('+(phase==='hour'?(hour%12)*30:minute*6)+'deg)';for(let index=0;index<12;index++){const value=phase==='hour'?(index||12):index*5,angle=index*Math.PI/6,button=document.createElement('button');button.type='button';button.textContent=phase==='hour'?value:calPad(value);button.style.left=100+Math.sin(angle)*99+'px';button.style.top=100-Math.cos(angle)*99+'px';button.setAttribute('aria-label',value+(phase==='hour'?' hours':' minutes'));button.setAttribute('aria-pressed',String(phase==='hour'?value===h12:value===minute));button.onclick=()=>{cleared=false;if(phase==='hour'){hour=value%12+(hour>=12?12:0);phase='minute';}else minute=value;render();};dial.append(button);}}
+      dialog.querySelector('[data-clear]').onclick=()=>{cleared=true;hour=0;minute=0;typed=false;render();};dialog.querySelector('[data-now]').onclick=()=>{const now=new Date();hour=now.getHours();minute=now.getMinutes();cleared=false;render();};dialog.querySelector('[data-cancel]').onclick=()=>finish(false);dialog.querySelector('[data-ok]').onclick=()=>{if(!cleared&&!readInput())return;finish(true);};
+    }
+    render();dialog.showModal();if(await result)binding.field.value=cleared?'':calPad(hour)+':'+calPad(minute);trigger.focus();
+  }
+  document.addEventListener('click',event=>{
+    if(!mxMaterial())return;const trigger=event.target.closest('.cal-trigger');if(!trigger)return;
+    const binding=mxFieldRegistry.get(trigger.closest('.cal-field')?.id);if(!binding)return;
+    event.preventDefault();event.stopImmediatePropagation();if(document.getElementById('mx-picker'))return;
+    if(binding.kind==='date')void mxDatePicker(binding,trigger);else void mxTimePicker(binding,trigger);
+  },true);
+  // Preserve the existing dialogs while adding keyboard containment and restoration.
+  const mxOverlayFocus=new WeakMap();
+  function mxSyncDialogs(){
+    if(!mxMaterial())return;
+    document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+      const opened=overlay.classList.contains('open');
+      if(opened&&!mxOverlayFocus.has(overlay)){mxOverlayFocus.set(overlay,document.activeElement);const modal=overlay.querySelector('.modal');if(modal){modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label',modal.querySelector('h3')?.textContent||'Dialog');if(mxMaterial())requestAnimationFrame(()=>{if(overlay.classList.contains('open')&&!overlay.contains(document.activeElement))modal.querySelector('button:not(:disabled),input,select')?.focus();});}}
+      else if(!opened&&mxOverlayFocus.has(overlay)){const previous=mxOverlayFocus.get(overlay);mxOverlayFocus.delete(overlay);if(previous?.isConnected)previous.focus();}
+    });
+  }
+  document.addEventListener('keydown',event=>{
+    if(!mxMaterial()||event.key!=='Tab'||document.querySelector('dialog[open]'))return;
+    const overlay=[...document.querySelectorAll('.modal-overlay.open')].at(-1);if(!overlay)return;
+    const focusable=[...overlay.querySelectorAll('button,input,select,textarea,a[href],[tabindex="0"]')].filter(element=>!element.disabled&&element.getClientRects().length);
+    if(!focusable.length)return;
+    const first=focusable[0],last=focusable.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  },true);
+  const mxSheet=document.createElement('dialog');mxSheet.id='mx-filter-sheet';mxSheet.className='mx-dialog';mxSheet.setAttribute('aria-label','Game filters');mxSheet.innerHTML='<div class="mx-sheet-heading"><h2>Filters</h2><button type="button" aria-label="Close filters">'+mxSymbol('close')+'</button></div>';document.body.append(mxSheet);
+  let mxFilterBodyHome=null;
+  function mxCloseFilters(){if(mxSheet.open)mxSheet.close();const body=document.getElementById('games-filter-body');if(mxFilterBodyHome&&body)mxFilterBodyHome.append(body);document.querySelector('.games-filter-panel')?.classList.add('filters-collapsed');updateGameFilterExpanded();document.getElementById('games-filter-toggle')?.focus();}
+  mxSheet.querySelector('button').onclick=mxCloseFilters;mxSheet.addEventListener('cancel',event=>{event.preventDefault();mxCloseFilters();});
+  mxSheet.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();mxCloseFilters();}});
+  document.getElementById('games-filter-toggle').addEventListener('click',()=>{
+    if(!mxMaterial()||innerWidth>=900)return;const body=document.getElementById('games-filter-body');mxFilterBodyHome=body.parentElement;mxSheet.append(body);mxSheet.showModal();
+  });
+  function mxNavigation(){
+    const bar=document.querySelector('.tab-bar');if(!bar)return;
+    const visible=[...bar.querySelectorAll('.tab-btn')].filter(button=>getComputedStyle(button).display!=='none');
+    const count=String(visible.length);if(document.documentElement.style.getPropertyValue('--mx-tab-count')!==count)document.documentElement.style.setProperty('--mx-tab-count',count);
+    const height=Math.round(bar.getBoundingClientRect().height)+'px';if(document.documentElement.style.getPropertyValue('--mx-nav-height')!==height)document.documentElement.style.setProperty('--mx-nav-height',height);
+    const title=document.querySelector('.mx-page-title');const label=document.querySelector('.tab-btn.active')?.textContent.trim()||'Today';if(title&&title.textContent!==label)title.textContent=label;
+    if(mxSheet.open&&(!mxMaterial()||innerWidth>=900))mxCloseFilters();
+  }
+  const mxTitle=document.createElement('span');mxTitle.className='mx-page-title';mxTitle.textContent='Today';document.querySelector('header').insertBefore(mxTitle,document.getElementById('sync-btn'));
+  function mxRefresh(){mxSyncSelects();mxSyncDialogs();mxNavigation();mxRefreshIcons();}
+  let mxRefreshQueued=false;
+  const mxObserver=new MutationObserver(()=>{if(!mxRefreshQueued){mxRefreshQueued=true;requestAnimationFrame(()=>{mxRefreshQueued=false;mxRefresh();});}});
+  mxObserver.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','disabled']});
+  new MutationObserver(()=>mxRefresh()).observe(document.documentElement,{attributes:true,attributeFilter:['data-ui','data-theme']});
+  new ResizeObserver(mxNavigation).observe(document.querySelector('.tab-bar'));window.addEventListener('resize',mxNavigation);
+  mxRefresh();
+
+
+
+  function normalizeGameMilestones(items) {
+    const seen = new Set();
+    return (Array.isArray(items) ? items : []).filter(m => m && typeof m.id === 'string' && typeof m.name === 'string' && m.name.trim() && !seen.has(m.id) && seen.add(m.id)).map(m => ({id:m.id,name:m.name.trim().slice(0,80),completedAt:milestoneValidDate(m.completedAt)?m.completedAt:null}));
+  }
+  function milestoneValidDate(value) {
+    if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+    const date=new Date(value+'T12:00:00Z');
+    return !isNaN(date.getTime())&&date.toISOString().slice(0,10)===value;
+  }
+  function milestoneAttr(value){return escHtml(String(value)).replace(/"/g,'&quot;');}
+  function gameMilestonesHtml(game) {
+    const items=normalizeGameMilestones(game.milestones);
+    const done=items.filter(m=>m.completedAt).length;
+    const rows=items.slice().sort((a,b)=>!!a.completedAt-!!b.completedAt||(b.completedAt||'').localeCompare(a.completedAt||''));
+    return '<section class="game-milestones"><div class="game-milestones-heading"><div><h4>Personal milestones</h4><p>'+done+' of '+items.length+' completed</p></div><button class="btn-ghost" data-milestone-action="add">+ Add milestone</button></div>'+
+      (rows.length?rows.map(m=>'<div class="game-milestone-row'+(m.completedAt?' completed':'')+'"><label><input type="checkbox" data-milestone-action="toggle" data-milestone-id="'+milestoneAttr(m.id)+'" '+(m.completedAt?'checked':'')+'><span class="game-milestone-copy"><span class="game-milestone-name">'+escHtml(m.name)+'</span><span class="game-milestone-date">'+(m.completedAt?'Completed '+escHtml(m.completedAt):'Not completed')+'</span></span></label><div class="game-milestone-actions"><button class="btn-ghost" data-milestone-action="edit" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Edit milestone">Edit</button><button class="btn-ghost" data-milestone-action="delete" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Delete milestone">Delete</button></div></div>').join(''):'<p class="backup-hint">Add a checkpoint, a challenge, or a personal goal for this game.</p>')+'</section>';
+  }
+  let milestoneEditorGame=null,milestoneEditorId=null,milestoneDeleteId=null;
+  const milestoneDateField=createCalField('milestone-date');
+  function refreshMilestoneDashboard(game){renderDashboardBody(game);}
+  function openMilestoneEditor(game,id){
+    milestoneEditorGame=game.id;milestoneEditorId=id||null;
+    const item=(game.milestones||[]).find(m=>m.id===id);
+    document.getElementById('milestone-modal-title').textContent=item?'Edit milestone':'Add milestone';
+    document.getElementById('milestone-name').value=item?item.name:'';
+    document.getElementById('milestone-completed').checked=!!(item&&item.completedAt);
+    milestoneDateField.value=item&&item.completedAt?item.completedAt:todayStr();
+    document.getElementById('milestone-completion-date').hidden=!(item&&item.completedAt);
+    document.getElementById('milestone-error').hidden=true;
+    document.getElementById('milestone-modal').classList.add('open');
+    setTimeout(()=>document.getElementById('milestone-name').focus(),50);
+  }
+  document.getElementById('dashboard-body').addEventListener('click',event=>{
+    const control=event.target.closest('[data-milestone-action]');
+    if(!control)return;
+    const game=games.find(g=>g.id===document.getElementById('dashboard-modal').dataset.gameId);
+    if(!game)return;
+    const id=control.dataset.milestoneId,action=control.dataset.milestoneAction;
+    if(action==='add'||action==='edit'){openMilestoneEditor(game,id);return;}
+    if(action==='delete'){
+      milestoneEditorGame=game.id;milestoneDeleteId=id;
+      const item=(game.milestones||[]).find(m=>m.id===id);if(!item)return;
+      document.getElementById('milestone-delete-message').textContent='Delete "'+item.name+'"? This cannot be undone.';
+      document.getElementById('milestone-delete-modal').classList.add('open');return;
+    }
+    if(action==='toggle'){
+      checkStorageFresh();
+      const current=games.find(g=>g.id===game.id);
+      const item=current&&normalizeGameMilestones(current.milestones).find(m=>m.id===id);
+      if(!item)return;
+      current.milestones=normalizeGameMilestones(current.milestones);
+      current.milestones.find(m=>m.id===id).completedAt=control.checked?todayStr():null;
+      saveGames(games);refreshMilestoneDashboard(current);
+    }
+  });
+  document.getElementById('milestone-completed').addEventListener('change',event=>{document.getElementById('milestone-completion-date').hidden=!event.target.checked;});
+  document.getElementById('milestone-cancel').onclick=()=>document.getElementById('milestone-modal').classList.remove('open');
+  document.getElementById('milestone-save').onclick=()=>{
+    const name=document.getElementById('milestone-name').value.trim();
+    const completed=document.getElementById('milestone-completed').checked;
+    const date=milestoneDateField.value;
+    const error=document.getElementById('milestone-error');
+    let message=!name?'Enter a milestone name.':completed&&(!milestoneValidDate(date)||date>todayStr())?'Choose a completion date on or before today.':'';
+    if(message){error.textContent=message;error.hidden=false;return;}
+    checkStorageFresh();
+    const game=games.find(g=>g.id===milestoneEditorGame);if(!game)return;
+    game.milestones=normalizeGameMilestones(game.milestones);
+    const item=game.milestones.find(m=>m.id===milestoneEditorId);
+    if(milestoneEditorId&&!item)return;
+    if(item){item.name=name;item.completedAt=completed?date:null;}
+    else game.milestones.push({id:uid(),name:name,completedAt:completed?date:null});
+    saveGames(games);document.getElementById('milestone-modal').classList.remove('open');refreshMilestoneDashboard(game);
+  };
+  document.getElementById('milestone-delete-cancel').onclick=()=>document.getElementById('milestone-delete-modal').classList.remove('open');
+  document.getElementById('milestone-delete-confirm').onclick=()=>{
+    checkStorageFresh();
+    const game=games.find(g=>g.id===milestoneEditorGame);if(!game)return;
+    game.milestones=normalizeGameMilestones(game.milestones).filter(m=>m.id!==milestoneDeleteId);
+    saveGames(games);document.getElementById('milestone-delete-modal').classList.remove('open');refreshMilestoneDashboard(game);
+  };
+
   // --- Initial render ---
   backfillUnlockDates('gentle');
   applyTheme();
@@ -10901,7 +11388,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     deferredInstallPrompt = null;
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.7.2';
+    const APP_VERSION = '1.7.3';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {

@@ -1,5 +1,0 @@
-PlayDex - Low Priority
-======================
-
-Personal game milestones
-- Add named checkpoints per game, with completion dates on the game dashboard.
