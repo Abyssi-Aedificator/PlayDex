@@ -4751,6 +4751,39 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 
   #weekly-rotation-card[hidden] { display:none!important; }
 
+  .game-milestones { margin:24px 0; padding:16px; border:1px solid var(--border); border-radius:16px; background:var(--surface2); }
+  .game-milestones-heading { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+  .game-milestones-heading h4 { margin:0; color:var(--text); font-size:.9rem; }
+  .game-milestones-heading p { margin:4px 0 0; color:var(--text2); font-size:.75rem; }
+  .game-milestone-row { display:flex; align-items:center; gap:8px; padding:12px 0; border-top:1px solid var(--border); }
+  .game-milestone-row > label { display:flex; align-items:center; gap:10px; flex:1; min-width:0; cursor:pointer; min-height:44px; }
+  .game-milestone-row input[type=checkbox],.milestone-complete-toggle input { width:18px; height:18px; accent-color:var(--accent); flex-shrink:0; }
+  .game-milestone-copy { min-width:0; overflow-wrap:anywhere; }
+  .game-milestone-name { display:block; color:var(--text); font-size:.85rem; font-weight:600; }
+  .game-milestone-row.completed .game-milestone-name { color:var(--text2); }
+  .game-milestone-date { display:block; color:var(--text2); font-size:.72rem; margin-top:4px; }
+  .game-milestone-actions { display:flex; flex-wrap:wrap; gap:4px; }
+  .game-milestone-actions button { min-height:40px; min-width:40px; padding:8px; }
+  .milestone-complete-toggle { display:flex; align-items:center; gap:10px; min-height:48px; margin:0 0 16px; color:var(--text2); font-size:.85rem; cursor:pointer; }
+  #milestone-modal,#milestone-delete-modal { z-index:250; }
+  #milestone-completion-date[hidden],#milestone-error[hidden] { display:none!important; }
+  #milestone-error { color:var(--red); }
+  :root[data-ui=material] .game-milestones { border:0; background:var(--md-surface-container); border-radius:20px; padding:20px; }
+  :root[data-ui=material] .game-milestones-heading h4 { font:600 18px/24px var(--md-font); }
+  :root[data-ui=material] .game-milestone-name { font:500 16px/24px var(--md-font); }
+  :root[data-ui=material] .game-milestone-date { font:400 12px/18px var(--md-font); }
+  @media(max-width:420px){.game-milestone-row{flex-wrap:wrap;}.game-milestone-row > label{flex-basis:100%;}.game-milestone-actions{margin-left:auto;}}
+
+#dashboard-modal .milestone-dashboard { width:calc(100vw - 32px); max-width:560px; box-sizing:border-box; }
+#dashboard-body > * { min-width:0; }
+@media(min-width:850px) {
+ #dashboard-modal .milestone-dashboard { max-width:1000px; }
+ #dashboard-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"summary milestones" "history milestones"; column-gap:28px; align-items:start; }
+ .milestone-dashboard-summary { grid-area:summary; }
+ .milestone-dashboard-history { grid-area:history; }
+ #dashboard-body .game-milestones { grid-area:milestones; margin:0; }
+ #dashboard-modal .dash-cover { height:200px; }
+}
 </style>
 <script>
 // Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
@@ -4922,7 +4955,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.7.2</span>
+    <span class="version-badge">1.7.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5828,6 +5861,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
+<div class="modal-overlay" id="milestone-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-modal-title"><h3 id="milestone-modal-title">Add milestone</h3><div class="field-group"><label for="milestone-name">Milestone name</label><input id="milestone-name" type="text" maxlength="80" placeholder="e.g. Finish Chapter 1" autocomplete="off"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Completed</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
+<div class="modal-overlay" id="milestone-delete-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-delete-title"><h3 id="milestone-delete-title">Delete milestone?</h3><p id="milestone-delete-message" class="backup-hint"></p><div class="modal-actions"><button class="btn-ghost" id="milestone-delete-cancel" type="button">Cancel</button><button class="btn-danger" id="milestone-delete-confirm" type="button">Delete</button></div></div></div>
+
 <!-- Goal modal -->
 <div class="modal-overlay" id="goal-modal">
   <div class="modal">
@@ -5885,7 +5921,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
 <!-- Game dashboard modal -->
 <div class="modal-overlay" id="dashboard-modal">
-  <div class="modal" style="max-width:420px;">
+  <div class="modal milestone-dashboard">
     <div class="dash-cover" id="dashboard-cover"></div>
     <h3 id="dashboard-title"></h3>
     <div id="dashboard-body"></div>
@@ -6049,7 +6085,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
-      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform) };
+      const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform), milestones: normalizeGameMilestones(g.milestones) };
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -9707,6 +9743,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function openDashboard(id) {
     const game = games.find(g => g.id === id);
     if (!game) return;
+    document.getElementById('dashboard-modal').dataset.gameId = game.id;
     document.getElementById('dashboard-title').textContent = game.name;
     paintCover(document.getElementById('dashboard-cover'), game, 'No cover');
     renderDashboardBody(game);
@@ -9810,6 +9847,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
+    html = '<div class="milestone-dashboard-summary">' + html + '</div>' + gameMilestonesHtml(game) + '<div class="milestone-dashboard-history">';
+
     if (completed.length > 0) {
       html += '<div class="modal-subheader">Last 6 months</div>' +
         months.map(m =>
@@ -9844,7 +9883,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       html += '<div class="empty-state" style="padding:20px 10px;"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>No sessions recorded for this game yet.</div>';
     }
 
-    body.innerHTML = html;
+    body.innerHTML = html + '</div>';
   }
 
   function escHtml(str) {
@@ -11226,6 +11265,88 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   mxRefresh();
 
 
+
+  function normalizeGameMilestones(items) {
+    const seen = new Set();
+    return (Array.isArray(items) ? items : []).filter(m => m && typeof m.id === 'string' && typeof m.name === 'string' && m.name.trim() && !seen.has(m.id) && seen.add(m.id)).map(m => ({id:m.id,name:m.name.trim().slice(0,80),completedAt:milestoneValidDate(m.completedAt)?m.completedAt:null}));
+  }
+  function milestoneValidDate(value) {
+    if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+    const date=new Date(value+'T12:00:00Z');
+    return !isNaN(date.getTime())&&date.toISOString().slice(0,10)===value;
+  }
+  function milestoneAttr(value){return escHtml(String(value)).replace(/"/g,'&quot;');}
+  function gameMilestonesHtml(game) {
+    const items=normalizeGameMilestones(game.milestones);
+    const done=items.filter(m=>m.completedAt).length;
+    const rows=items.slice().sort((a,b)=>!!a.completedAt-!!b.completedAt||(b.completedAt||'').localeCompare(a.completedAt||''));
+    return '<section class="game-milestones"><div class="game-milestones-heading"><div><h4>Personal milestones</h4><p>'+done+' of '+items.length+' completed</p></div><button class="btn-ghost" data-milestone-action="add">+ Add milestone</button></div>'+
+      (rows.length?rows.map(m=>'<div class="game-milestone-row'+(m.completedAt?' completed':'')+'"><label><input type="checkbox" data-milestone-action="toggle" data-milestone-id="'+milestoneAttr(m.id)+'" '+(m.completedAt?'checked':'')+'><span class="game-milestone-copy"><span class="game-milestone-name">'+escHtml(m.name)+'</span><span class="game-milestone-date">'+(m.completedAt?'Completed '+escHtml(m.completedAt):'Not completed')+'</span></span></label><div class="game-milestone-actions"><button class="btn-ghost" data-milestone-action="edit" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Edit milestone">Edit</button><button class="btn-ghost" data-milestone-action="delete" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Delete milestone">Delete</button></div></div>').join(''):'<p class="backup-hint">Add a checkpoint, a challenge, or a personal goal for this game.</p>')+'</section>';
+  }
+  let milestoneEditorGame=null,milestoneEditorId=null,milestoneDeleteId=null;
+  const milestoneDateField=createCalField('milestone-date');
+  function refreshMilestoneDashboard(game){renderDashboardBody(game);}
+  function openMilestoneEditor(game,id){
+    milestoneEditorGame=game.id;milestoneEditorId=id||null;
+    const item=(game.milestones||[]).find(m=>m.id===id);
+    document.getElementById('milestone-modal-title').textContent=item?'Edit milestone':'Add milestone';
+    document.getElementById('milestone-name').value=item?item.name:'';
+    document.getElementById('milestone-completed').checked=!!(item&&item.completedAt);
+    milestoneDateField.value=item&&item.completedAt?item.completedAt:todayStr();
+    document.getElementById('milestone-completion-date').hidden=!(item&&item.completedAt);
+    document.getElementById('milestone-error').hidden=true;
+    document.getElementById('milestone-modal').classList.add('open');
+    setTimeout(()=>document.getElementById('milestone-name').focus(),50);
+  }
+  document.getElementById('dashboard-body').addEventListener('click',event=>{
+    const control=event.target.closest('[data-milestone-action]');
+    if(!control)return;
+    const game=games.find(g=>g.id===document.getElementById('dashboard-modal').dataset.gameId);
+    if(!game)return;
+    const id=control.dataset.milestoneId,action=control.dataset.milestoneAction;
+    if(action==='add'||action==='edit'){openMilestoneEditor(game,id);return;}
+    if(action==='delete'){
+      milestoneEditorGame=game.id;milestoneDeleteId=id;
+      const item=(game.milestones||[]).find(m=>m.id===id);if(!item)return;
+      document.getElementById('milestone-delete-message').textContent='Delete "'+item.name+'"? This cannot be undone.';
+      document.getElementById('milestone-delete-modal').classList.add('open');return;
+    }
+    if(action==='toggle'){
+      checkStorageFresh();
+      const current=games.find(g=>g.id===game.id);
+      const item=current&&normalizeGameMilestones(current.milestones).find(m=>m.id===id);
+      if(!item)return;
+      current.milestones=normalizeGameMilestones(current.milestones);
+      current.milestones.find(m=>m.id===id).completedAt=control.checked?todayStr():null;
+      saveGames(games);refreshMilestoneDashboard(current);
+    }
+  });
+  document.getElementById('milestone-completed').addEventListener('change',event=>{document.getElementById('milestone-completion-date').hidden=!event.target.checked;});
+  document.getElementById('milestone-cancel').onclick=()=>document.getElementById('milestone-modal').classList.remove('open');
+  document.getElementById('milestone-save').onclick=()=>{
+    const name=document.getElementById('milestone-name').value.trim();
+    const completed=document.getElementById('milestone-completed').checked;
+    const date=milestoneDateField.value;
+    const error=document.getElementById('milestone-error');
+    let message=!name?'Enter a milestone name.':completed&&(!milestoneValidDate(date)||date>todayStr())?'Choose a completion date on or before today.':'';
+    if(message){error.textContent=message;error.hidden=false;return;}
+    checkStorageFresh();
+    const game=games.find(g=>g.id===milestoneEditorGame);if(!game)return;
+    game.milestones=normalizeGameMilestones(game.milestones);
+    const item=game.milestones.find(m=>m.id===milestoneEditorId);
+    if(milestoneEditorId&&!item)return;
+    if(item){item.name=name;item.completedAt=completed?date:null;}
+    else game.milestones.push({id:uid(),name:name,completedAt:completed?date:null});
+    saveGames(games);document.getElementById('milestone-modal').classList.remove('open');refreshMilestoneDashboard(game);
+  };
+  document.getElementById('milestone-delete-cancel').onclick=()=>document.getElementById('milestone-delete-modal').classList.remove('open');
+  document.getElementById('milestone-delete-confirm').onclick=()=>{
+    checkStorageFresh();
+    const game=games.find(g=>g.id===milestoneEditorGame);if(!game)return;
+    game.milestones=normalizeGameMilestones(game.milestones).filter(m=>m.id!==milestoneDeleteId);
+    saveGames(games);document.getElementById('milestone-delete-modal').classList.remove('open');refreshMilestoneDashboard(game);
+  };
+
   // --- Initial render ---
   backfillUnlockDates('gentle');
   applyTheme();
@@ -11267,7 +11388,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     deferredInstallPrompt = null;
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.7.2';
+    const APP_VERSION = '1.7.3';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {

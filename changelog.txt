@@ -3,6 +3,8 @@ PlayDex - Changelog
 
 Version 1.7.3
 -------------------
+- Game dashboards use a wider two-column layout on larger screens, with milestones beside stats and history.
+- Added personal game milestones with named checkpoints, editable completion dates, and actions to complete, reopen, edit, or delete them from each game dashboard.
 - Weekly rotation and daily goal progress use whole-minute precision and refresh as live playtime reaches each minute; the main session timer retains seconds.
 - Weekly rotation is hidden while a running or paused session belongs to a game outside the rotation, and returns when the session stops.
 - Weekly rotation time uses a compact, consistent text style for played and target durations, matching the surrounding interface.
