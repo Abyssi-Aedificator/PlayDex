@@ -4787,6 +4787,46 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
  #dashboard-body .game-milestones { grid-area:milestones; margin:0; }
  #dashboard-modal .dash-cover { height:200px; }
 }
+
+/* Classic visual refinements */
+.classic-archived-label,.classic-milestone-progress { display:none; }
+:root:not([data-ui="material"]) .card-header { font-size:13px; letter-spacing:.55px; line-height:1.4; }
+:root:not([data-ui="material"]) .tab-btn { isolation:isolate; }
+:root:not([data-ui="material"]) .tab-btn.active::before { content:""; position:absolute; inset:7px 4px; background:var(--accent-dim); border-radius:12px; z-index:-1; pointer-events:none; }
+:root:not([data-ui="material"]) :is(.game-item-actions .btn-icon,.session-edit,.session-sync) { box-sizing:border-box; min-height:36px; border-color:color-mix(in srgb,var(--text2) 14%,transparent); border-radius:9px; background:transparent; }
+:root:not([data-ui="material"]) .game-item-actions .btn-icon { width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; padding:8px; }
+:root:not([data-ui="material"]) :is(.session-edit,.session-sync) { padding:6px 10px; }
+:root:not([data-ui="material"]) :is(.game-item-actions .btn-icon:not(.play),.session-edit,.session-sync:not(.on)) { color:var(--text2); }
+:root:not([data-ui="material"]) :is(.game-item-actions .btn-icon,.session-edit,.session-sync):hover { background:var(--surface2); border-color:var(--border-strong); }
+:root:not([data-ui="material"]) .game-item-actions .btn-icon.play { background:var(--accent-dim); color:var(--accent); border-color:var(--accent); }
+:root:not([data-ui="material"]) .game-item-actions .btn-icon.pin.on { color:var(--accent); background:var(--accent-dim); }
+:root:not([data-ui="material"]) .game-item-actions .btn-icon.danger { margin-left:10px; color:var(--red); }
+:root:not([data-ui="material"]) .session-delete { margin-left:14px; }
+:root:not([data-ui="material"]) :is(.progress-track,.rotation-game .progress-track,.rotation-budget-meter,.classic-milestone-progress) { height:8px; box-sizing:border-box; border:1px solid var(--border); background:var(--surface2); border-radius:999px; overflow:hidden; }
+:root:not([data-ui="material"]) :is(.progress-fill,.rotation-budget-meter-fill,.classic-milestone-fill) { height:100%; border-radius:inherit; }
+:root:not([data-ui="material"]) .rotation-metrics { margin:8px 0; }
+:root:not([data-ui="material"]) .rotation-budget-meter-label { align-items:baseline; font-size:12px; line-height:1.5; margin-bottom:8px; }
+:root:not([data-ui="material"]) .rotation-budget-meter.over-budget { border-color:var(--red); }
+:root:not([data-ui="material"]) .classic-milestone-progress { display:block; margin:4px 0 16px; }
+:root:not([data-ui="material"]) .classic-milestone-fill { display:block; background:var(--accent); }
+:root:not([data-ui="material"]) .card:has(> .goal-header) { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px 12px; align-items:center; }
+:root:not([data-ui="material"]) .card:has(> .goal-header) > .card-header { grid-column:1; grid-row:1; margin:0; }
+:root:not([data-ui="material"]) :is(.goal-header,.goal-footer) { display:contents; }
+:root:not([data-ui="material"]) .goal-header #goal-text { grid-column:1; grid-row:2; }
+:root:not([data-ui="material"]) #btn-goal-edit { grid-column:2; grid-row:1; justify-self:end; }
+:root:not([data-ui="material"]) #goal-percent { grid-column:2; grid-row:2; text-align:right; font-variant-numeric:tabular-nums; }
+:root:not([data-ui="material"]) #goal-track { grid-column:1 / -1; grid-row:3; margin:0; }
+:root:not([data-ui="material"]) #streak-pill { grid-column:1 / -1; grid-row:4; justify-self:start; }
+:root:not([data-ui="material"]) .goal-week-budget { grid-column:1 / -1; grid-row:5; }
+:root:not([data-ui="material"]) .game-item.archived { opacity:1; }
+:root:not([data-ui="material"]) .game-item.archived .game-item-name { text-decoration:none; color:var(--text2); font-weight:500; }
+:root:not([data-ui="material"]) .classic-archived-label { display:inline-flex; align-items:center; padding:2px 6px; font-size:10px; line-height:16px; color:var(--text2); border:1px solid var(--border); border-radius:6px; background:var(--surface2); flex-shrink:0; }
+:root:not([data-ui="material"]) .game-item.archived .game-item-name-row { flex-wrap:wrap; row-gap:5px; }
+@media(max-width:450px) {
+ :root:not([data-ui="material"]) .game-item-actions { flex-wrap:wrap; justify-content:flex-end; row-gap:6px; }
+ :root:not([data-ui="material"]) #goal-percent { font-size:12px; }
+}
+
 </style>
 <script>
 // Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
@@ -9730,7 +9770,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
-            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span><span class="classic-archived-label">Archived</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' +
             tagsHtml(g) +
             gameMeta(count, e) +
@@ -11304,7 +11344,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const items=normalizeGameMilestones(game.milestones);
     const done=items.filter(m=>m.completedAt).length;
     const rows=items.slice().sort((a,b)=>!!a.completedAt-!!b.completedAt||(b.completedAt||'').localeCompare(a.completedAt||''));
-    return '<section class="game-milestones"><div class="game-milestones-heading"><div><h4>Personal milestones</h4><p>'+done+' of '+items.length+' completed</p></div><button class="btn-ghost" data-milestone-action="add">+ Add milestone</button></div>'+
+    return '<section class="game-milestones"><div class="game-milestones-heading"><div><h4>Personal milestones</h4><p>'+done+' of '+items.length+' completed</p></div><button class="btn-ghost" data-milestone-action="add">+ Add milestone</button></div><div class="classic-milestone-progress" role="progressbar" aria-label="Personal milestones completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+(items.length?done/items.length*100:0)+'" aria-valuetext="'+done+' of '+items.length+' completed"><span class="classic-milestone-fill" style="width:'+(items.length?done/items.length*100:0)+'%"></span></div>'+
       (rows.length?rows.map(m=>'<div class="game-milestone-row'+(m.completedAt?' completed':'')+'"><label><input type="checkbox" data-milestone-action="toggle" data-milestone-id="'+milestoneAttr(m.id)+'" '+(m.completedAt?'checked':'')+'><span class="game-milestone-copy"><span class="game-milestone-name">'+escHtml(m.name)+'</span><span class="game-milestone-date">'+(m.completedAt?'Completed '+escHtml(m.completedAt):'Not completed')+'</span></span></label><div class="game-milestone-actions"><button class="btn-ghost" data-milestone-action="edit" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Edit milestone">Edit</button><button class="btn-ghost" data-milestone-action="delete" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Delete milestone">Delete</button></div></div>').join(''):'<p class="backup-hint">Add a checkpoint, a challenge, or a personal goal for this game.</p>')+'</section>';
   }
   let milestoneEditorGame=null,milestoneEditorId=null,milestoneDeleteId=null;
