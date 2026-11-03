@@ -3,11 +3,12 @@ PlayDex - Changelog
 
 Version 1.8.1
 -------------------
+- Added a Settings toggle to automatically base the daily goal and weekly rotation budget on last week's rounded daily average, disabling manual goal editing while enabled.
 - Fixed Liquid Glass session sync filters so the Unsynced label fits inside its segment.
 - Liquid Glass panels are more translucent, with stronger backdrop blur, soft reflective highlights, and brighter glass edges while preserving accessibility fallbacks.
 - Renamed the Apple interface option to Liquid Glass.
 - Apple theme-coloured backgrounds drift gently in a 24-second loop, pause while the app is hidden, and stay static when the system requests reduced motion.
-- Today's Goal shows average daily playtime over the previous seven completed days, including days with no sessions.
+- Today's Goal shows average daily playtime for the previous calendar week rounded to the nearest whole hour, following Week starts on and including days with no sessions.
 - Apple uses a background drawn from the selected Theme Colour and semi-transparent frosted panels, with opaque fallbacks for Reduce transparency and Increase contrast.
 - Apple Increase contrast uses the selected Theme Colour for stronger borders and the selected navigation item, with readable contrasting text.
 - Removed the Apple Reduce motion switch; system reduced-motion preferences continue to apply automatically.

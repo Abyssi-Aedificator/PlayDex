@@ -5507,7 +5507,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         <span class="goal-text" id="goal-percent"></span>
       </div>
       <div class="goal-week-budget"><span>Weekly goal (7 days)</span><strong id="goal-week-budget">0:00:00</strong></div>
-      <div class="goal-week-budget" style="grid-row:6"><span>Daily average (previous 7 days)</span><strong id="goal-week-average">0s</strong></div>
+      <div class="goal-week-budget" style="grid-row:6"><span>Daily average (last week)</span><strong id="goal-week-average">0s</strong></div>
     </div>
 
     <div class="card" id="start-game-card">
@@ -5924,6 +5924,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
           <button class="accent-swatch" data-accent="mango" style="background-image:linear-gradient(135deg,#fbbf24 50%,#f97316 50%)" title="Mango to Tangerine" aria-label="Mango to Tangerine"></button>
         </div>
       </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Playtime goal</div>
+      <label class="dbx-toggle"><input type="checkbox" id="setAutoDailyGoal"><span class="dbx-toggle-label">Automatically use last week's daily average</span></label>
+      <p class="backup-hint">Uses the previous calendar week's average rounded to whole hours. Manual editing is disabled while enabled. The weekly rotation budget is seven times the daily goal and updates automatically each week.</p>
+      <p class="backup-hint" id="auto-goal-error" role="alert" style="color:var(--red)" hidden></p>
     </div>
     <div class="card">
       <div class="card-header">Live session</div>
@@ -8290,16 +8296,30 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     renderTop();
   }
 
+  function lastWeekAverageHours() {
+    const weekStart = dateKey(getWeekBounds().start);
+    let total = 0;
+    for (let day = 1; day <= 7; day++) total += totalMsForDate(addDays(weekStart, -day));
+    return Math.min(24, Math.max(0, Math.round(total / 7 / 3600000)));
+  }
+
+  function effectiveDailyGoalMinutes() {
+    return settings.autoDailyGoal ? lastWeekAverageHours()*60 : (Number(settings.dailyGoalMinutes)||0);
+  }
+
   function renderGoal() {
-    const goalMin = settings.dailyGoalMinutes || 0;
+    const automatic = !!settings.autoDailyGoal;
+    document.getElementById('setAutoDailyGoal').checked = automatic;
+    document.getElementById('btn-goal-edit').disabled = automatic;
+    document.getElementById('btn-goal-edit').textContent = automatic ? 'Automatic' : 'Edit';
+    document.getElementById('goal-hours').disabled = automatic;
+    document.getElementById('goal-save').disabled = automatic;
+    const goalMin = effectiveDailyGoalMinutes();
     const liveToday=activeSession && isToday(activeSession.start)?Math.max(0,activeElapsedMs(activeSession,Date.now())):0;
     const todayTotal = Math.floor((todaySessionsMs()+liveToday)/60000)*60000;
     const weeklyBudget = weeklyRotationBudgetMinutes();
-    document.getElementById('goal-week-budget').textContent = weeklyBudget ? fmtDurationMinutes(weeklyBudget*60000) : 'Not set';
-    const averageEnd = todayStr();
-    let previousWeekTotal = 0;
-    for (let day = 1; day <= 7; day++) previousWeekTotal += totalMsForDate(addDays(averageEnd, -day));
-    document.getElementById('goal-week-average').textContent = fmtDurationMinutes(Math.floor(previousWeekTotal / 7 / 60000) * 60000);
+    document.getElementById('goal-week-budget').textContent = (weeklyBudget || automatic) ? fmtDurationMinutes(weeklyBudget*60000) : 'Not set';
+    document.getElementById('goal-week-average').textContent = lastWeekAverageHours() + 'h';
     const goalText = document.getElementById('goal-text');
     const track = document.getElementById('goal-track');
     const fill = document.getElementById('goal-fill');
@@ -8345,7 +8365,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function computeStreak() {
-    const goalMin = settings.dailyGoalMinutes || 0;
+    const goalMin = effectiveDailyGoalMinutes();
     if (goalMin <= 0) return 0;
     const goalMs = goalMin * 60000;
     let streak = 0;
@@ -8408,20 +8428,20 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return rotationGameIds().reduce((sum,id)=>sum+rotationTargetMinutes(id),0)+archivedRotationSpentMinutes();
   }
   function weeklyRotationBudgetMinutes() {
-    const daily=Number(settings.dailyGoalMinutes);
+    const daily=effectiveDailyGoalMinutes();
     return Number.isFinite(daily) && daily>0 ? Math.min(10080,Math.floor(daily*7)) : 0;
   }
   function rotationBudgetText(planned) {
     const budget=weeklyRotationBudgetMinutes();
-    if(!budget) return 'Set a daily goal to define your weekly rotation budget.';
+    if(!budget && !settings.autoDailyGoal) return 'Set a daily goal to define your weekly rotation budget.';
     const remaining=budget-planned;
     return 'Weekly budget: '+fmtDurationMinutes(budget*60000)+' | Planned: '+fmtDurationMinutes(planned*60000)+' | '+(remaining<0?'Over budget: ':'Available: ')+fmtDurationMinutes(Math.abs(remaining)*60000);
   }
   function renderRotationBudgetMeter(id,planned) {
     const panel=document.getElementById(id+'-meter'),budget=weeklyRotationBudgetMinutes();
-    panel.hidden=!budget;
-    if(!budget) { panel.innerHTML=''; return; }
-    const remaining=Math.max(0,budget-planned),pct=Math.max(0,Math.min(100,Math.round(remaining/budget*100)));
+    panel.hidden=!budget && !settings.autoDailyGoal;
+    if(!budget && !settings.autoDailyGoal) { panel.innerHTML=''; return; }
+    const remaining=Math.max(0,budget-planned),pct=Math.max(0,Math.min(100,(budget ? Math.round(remaining/budget*100) : 0)));
     panel.innerHTML='<div class="rotation-budget-meter-label"><span>Available time</span><strong>'+(planned>budget?'Over budget':pct+'% available')+'</strong></div><div class="rotation-budget-meter'+(planned>budget?' over-budget':'')+'" role="progressbar" aria-label="Weekly time still available" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" aria-valuetext="'+escHtml(fmtDurationMinutes(remaining*60000)+' available of '+fmtDurationMinutes(budget*60000))+'"><div class="rotation-budget-meter-fill" style="width:'+pct+'%"></div></div>';
   }
   function rotationHoursToMinutes(value) {
@@ -8472,7 +8492,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     budgetEl.textContent=rotationBudgetText(planned);
     renderRotationBudgetMeter('rotation-budget',planned);
     if(activeSession)document.getElementById('rotation-budget-meter').hidden=true;
-    budgetEl.classList.toggle('over-budget',!!weeklyRotationBudgetMinutes() && planned>weeklyRotationBudgetMinutes());
+    budgetEl.classList.toggle('over-budget',(!!weeklyRotationBudgetMinutes() || !!settings.autoDailyGoal) && planned>weeklyRotationBudgetMinutes());
     const list=document.getElementById('rotation-list');
     const visible=activeSession?ids.filter(id=>id===activeSession.gameId):remaining;
     const empty=activeSession?'<p class="backup-hint">Your current game is not in this week\'s rotation.</p>':ids.length && !remaining.length?'<p class="backup-hint">All weekly targets reached! Your games return next week.</p>':'';
@@ -8490,7 +8510,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const value=rotationHoursToMinutes(checkbox.closest('.rotation-choice').querySelector('.rotation-target').value);
       return sum+(Number.isFinite(value) && value>0?value:0);
     },archivedRotationSpentMinutes());
-    const budget=weeklyRotationBudgetMinutes(),over=!!budget && planned>budget;
+    const budget=weeklyRotationBudgetMinutes(),over=(!!budget || !!settings.autoDailyGoal) && planned>budget;
     const budgetEl=document.getElementById('rotation-editor-budget');
     renderRotationBudgetMeter('rotation-editor-budget',planned);
     budgetEl.textContent=rotationBudgetText(planned);budgetEl.classList.toggle('over-budget',over);
@@ -9235,7 +9255,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       if (weekRun > longestWeekStreak) longestWeekStreak = weekRun;
     });
 
-    const goalMin = settings.dailyGoalMinutes || 0;
+    const goalMin = effectiveDailyGoalMinutes();
     let longestDailyGoalStreak = 0;
     if (goalMin > 0 && completed.length) {
       const goalMs = goalMin * 60000;
@@ -10699,7 +10719,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const progress=rotationWeekProgress([id]);
       const spent=Math.min(target,Math.floor(progress.games[id].ms/60000));
       const planned=rotationCommittedMinutes()+target-spent;
-      if (budget && planned>budget) {
+      if ((budget || settings.autoDailyGoal) && planned>budget) {
         toast('Restoring this game would exceed the weekly budget by '+fmtDurationMinutes((planned-budget)*60000)+'. Reduce rotation targets or increase your daily goal first.',null,null,8000);
         return;
       }
@@ -11026,6 +11046,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   // --- Goal modal ---
   document.getElementById('btn-goal-edit').addEventListener('click', () => {
+    if (settings.autoDailyGoal) return;
     document.getElementById('goal-hours').value = Math.ceil((settings.dailyGoalMinutes || 0)/60);
     document.getElementById('goal-budget-error').hidden = true;
     document.getElementById('goal-modal').classList.add('open');
@@ -11035,7 +11056,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.getElementById('goal-modal').classList.remove('open');
   });
 
+
   document.getElementById('goal-save').addEventListener('click', () => {
+    if (settings.autoDailyGoal) return;
     const input = document.getElementById('goal-hours');
     if (!input.checkValidity()) { input.reportValidity(); return; }
     const v = Math.round((Number(input.value) || 0)*60);
@@ -11417,6 +11440,23 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   });
 
   // --- Settings: Live session ---
+  document.getElementById('setAutoDailyGoal').addEventListener('change', event => {
+    const enabled = event.target.checked;
+    const error = document.getElementById('auto-goal-error');
+    const budget = (enabled ? lastWeekAverageHours()*60 : Number(settings.dailyGoalMinutes)||0)*7;
+    if (rotationCommittedMinutes() > budget) {
+      event.target.checked = !!settings.autoDailyGoal;
+      error.textContent = 'Your rotation exceeds this goal\'s weekly budget of '+fmtDurationShort(budget*60000)+'. Reduce your rotation targets before changing this option.';
+      error.hidden = false;
+      return;
+    }
+    error.hidden = true;
+    settings.autoDailyGoal = enabled;
+    saveSettings(settings);
+    document.getElementById('goal-modal').classList.remove('open');
+    render();
+  });
+
   const setTabTitleEl = document.getElementById('setTabTitle');
   setTabTitleEl.checked = !!settings.tabTitle;
   setTabTitleEl.addEventListener('change', e => {
@@ -11592,7 +11632,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       targets[checkbox.value]=rotationHoursToMinutes(input.value);
     }
     const budget=weeklyRotationBudgetMinutes(),planned=Object.values(targets).reduce((sum,value)=>sum+value,archivedRotationSpentMinutes());
-    if(budget && planned>budget) {
+    if((budget || settings.autoDailyGoal) && planned>budget) {
       const error=document.getElementById('rotation-budget-error');
       error.textContent='Over budget by '+fmtDurationShort((planned-budget)*60000)+'. Reduce your targets to '+fmtDurationShort(budget*60000)+' total before saving.';
       error.hidden=false;
