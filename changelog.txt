@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.7.4
+-------------------
+- Session rows show each game's all-time recorded playtime beside the session times in a subtle label using the selected theme colour.
+
 Version 1.7.3
 -------------------
 - Game dashboards use a wider two-column layout on larger screens, with milestones beside stats and history.

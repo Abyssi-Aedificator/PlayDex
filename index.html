@@ -1383,6 +1383,9 @@ opacity: 0.18;
     color: var(--text2);
   }
 
+  .session-times { display:flex; flex-wrap:wrap; align-items:baseline; column-gap:12px; row-gap:2px; }
+  .session-game-total { color:var(--accent); font-size:inherit; font-weight:400; font-variant-numeric:tabular-nums; white-space:nowrap; }
+
   .session-duration {
     font-weight: 700;
     font-size: 0.9rem;
@@ -4955,7 +4958,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.7.3</span>
+    <span class="version-badge">1.7.4</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -8120,6 +8123,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     gameSelect.innerHTML = '<option value="">All games</option>' + games.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(g=>'<option value="'+escHtml(g.id)+'">'+escHtml(g.name)+(g.archived ? ' (archived)' : '')+'</option>').join('');
     gameSelect.value = sessionGameFilter;
     const filtered = filteredSessions();
+    const gameTotals = new Map();
+    sessions.forEach(session => {
+      if (session.stop === null) return;
+      gameTotals.set(session.gameId, (gameTotals.get(session.gameId) || 0) + (session.durationMs || 0));
+    });
     const showDate = false;
     const summaryEl = document.getElementById('sessions-summary');
     {
@@ -8173,7 +8181,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         return heading + '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.platform ? ' <span class="session-platform">' + escHtml(normalizePlatform(s.platform)) + '</span>' : '') + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
-            '<div class="session-times">' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</div>' +
+            '<div class="session-times"><span>' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</span><span class="session-game-total" title="All-time recorded playtime for this game">Total: ' + fmtDurationShort(gameTotals.get(s.gameId) || 0) + '</span></div>' +
           '</div>' +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + pauseTag + '</span>' +
           '<button class="session-edit" data-id="' + s.id + '" title="Edit session">Edit</button>' +
@@ -11388,7 +11396,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     deferredInstallPrompt = null;
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.7.3';
+    const APP_VERSION = '1.7.4';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
