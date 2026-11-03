@@ -8137,7 +8137,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const gameTotals = new Map();
     sessions.forEach(session => {
       if (session.stop === null) return;
-      gameTotals.set(session.gameId, (gameTotals.get(session.gameId) || 0) + (session.durationMs || 0));
+      const key=JSON.stringify([dateKey(session.start),session.gameId]);
+      gameTotals.set(key, (gameTotals.get(key) || 0) + (session.durationMs || 0));
     });
     const showDate = false;
     const summaryEl = document.getElementById('sessions-summary');
@@ -8192,7 +8193,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         return heading + '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.platform ? ' <span class="session-platform">' + escHtml(normalizePlatform(s.platform)) + '</span>' : '') + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
-            '<div class="session-times"><span>' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</span><span class="session-game-total" title="All-time recorded playtime for this game">Total: ' + fmtDurationShort(gameTotals.get(s.gameId) || 0) + '</span></div>' +
+            '<div class="session-times"><span>' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</span><span class="session-game-total" title="Total recorded playtime for this game on this day">Total: ' + fmtDurationShort(gameTotals.get(JSON.stringify([day,s.gameId])) || 0) + '</span></div>' +
           '</div>' +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + pauseTag + '</span>' +
           '<button class="session-edit" data-id="' + s.id + '" title="Edit session">Edit</button>' +
