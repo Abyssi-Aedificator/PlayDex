@@ -1,6 +1,21 @@
 PlayDex - Changelog
 ====================
 
+Version 1.8.1
+-------------------
+- Fixed Liquid Glass session sync filters so the Unsynced label fits inside its segment.
+- Liquid Glass panels are more translucent, with stronger backdrop blur, soft reflective highlights, and brighter glass edges while preserving accessibility fallbacks.
+- Renamed the Apple interface option to Liquid Glass.
+- Apple theme-coloured backgrounds drift gently in a 24-second loop, pause while the app is hidden, and stay static when the system requests reduced motion.
+- Today's Goal shows average daily playtime over the previous seven completed days, including days with no sessions.
+- Apple uses a background drawn from the selected Theme Colour and semi-transparent frosted panels, with opaque fallbacks for Reduce transparency and Increase contrast.
+- Apple Increase contrast uses the selected Theme Colour for stronger borders and the selected navigation item, with readable contrasting text.
+- Removed the Apple Reduce motion switch; system reduced-motion preferences continue to apply automatically.
+- Refined the Apple interface around Liquid Glass principles: neutral glass navigation with layered highlights and progressive edge refraction, a moving selection lens, scroll-edge separation, capsule controls, and adaptive sheets and popovers.
+- Apple display options follow system accessibility preferences and provide additional Reduce transparency and Increase contrast controls.
+- Added an Apple-inspired third interface with grouped light and dark surfaces, system typography, translucent floating navigation, rounded controls, and accessible theme-colour accents.
+- Interface selection persists across launches; switching among Classic, Material 3, and Apple keeps the selected theme colour and existing data.
+
 Version 1.8.0
 -------------------
 - Added spacing between the game name and tags fields in the Classic Edit Game dialog.

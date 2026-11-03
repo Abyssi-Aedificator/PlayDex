@@ -16,7 +16,9 @@ A lightweight, installable web app that tracks your game sessions, playtime by g
 - **Player profile & badges** – achievements and levels, milestones, a time-of-day heatmap, and a cumulative playtime curve.
 - **Backup & export** – JSON export/import and CSV export, plus optional Dropbox sync across devices with the five previous changes and rollback from Settings.
 - **Installable PWA** – works offline; install it as a standalone app on desktop or mobile.
-- **Themes & interfaces** – dark / light (follows your system) with accent-colour choices, and a choice of the Classic look or a Google Material 3 Expressive look with tonal palettes, bundled typography, themed menus and date/time pickers.
+- **Themes & interfaces** – dark / light (follows your system) with accent-colour choices, and a choice of Classic, Google Material 3 Expressive, or an Apple-inspired Liquid Glass interface with grouped surfaces, adaptive translucent navigation, and accessibility display options.
+
+The Liquid Glass interface follows [Apple's Liquid Glass material guidance](https://developer.apple.com/design/human-interface-guidelines/materials): stronger optical glass effects belong to navigation and temporary controls, while content panels use a softer translucent material over a Theme Colour background. It follows supported system display preferences and offers additional Reduce transparency and Increase contrast controls. Increased contrast follows the chosen Theme Colour, while reduced-motion support follows the system preference automatically. The theme-coloured backdrop drifts gently while the app is visible and stays static when the system requests reduced motion. This is a browser implementation with progressive blur and edge-refraction effects; Apple's native platform renderer is not part of this PWA.
 
 ## Getting started
 

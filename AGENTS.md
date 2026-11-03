@@ -86,9 +86,9 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - **Time picker (Add/Edit Session):** the four HH/MM inputs are custom RTF controls, not `<input type="time">`. The trigger ids (`add-session-time`, ...) live on the `.cal-field` wrapper divs, set via `createTimeField()`. `setCalDateTime`/`getCalDateTime(dateField, timeField, iso)` take field *objects*, not string ids. Value is stored 24h `HH:MM` but shown as AM/PM.
 - **Animations:** all smooth motion is `cubic-bezier(0.4,0,0.2,1)`; stagger delays are capped (`Math.min(i*40,320)`). A `@media (prefers-reduced-motion: reduce)` block (line ~1445) forces durations to 0.01ms. `renderSessionsTab(animate=true)` — pass `animate=false` for in-place updates (sync/delete toggles) so the whole list doesn't re-animate.
 
-## Interface skins (Classic / Material 3)
+## Interface skins (Classic / Material 3 / Apple)
 
-- `settings.uiStyle` is `'classic'` (default) or `'material'`. It is applied as a
+- `settings.uiStyle` is `'classic'` (default), `'material'`, or `'apple'`. It is applied as a
   `data-ui` attribute on `<html>` by `applyUI()` and, to avoid a flash, by the
   pre-paint script in `<head>` alongside `data-theme`.
 - Every Material 3 rule lives in one block scoped to `:root[data-ui="material"]`
@@ -156,6 +156,20 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - Watch the equal-specificity trap: `:root[data-ui="material"] input[type="text"]`
   and `:root[data-ui="material"] input.time-input` are both (0,3,1), so the
   `.time-input` override must stay **after** the generic input rule.
+
+### Apple interface
+
+- Apple rules are scoped to `:root[data-ui="apple"]`; Classic-only rules use `:root:is([data-ui="classic"],:not([data-ui]))` so they cannot leak into the third skin.
+- Use a Theme Colour backdrop with softer translucent content panels; reserve stronger refractive effects for navigation, the header, and transient feedback. System fonts and existing inline icons require no Apple font or symbol assets.
+- `appleAccentRoles()` supplies contrast-safe accent text and filled-button text before first paint and at runtime. `applyAppleAccent()` preserves the selected accent when changing skins; remove Material token overrides before applying Classic or Apple accents.
+- Apple navigation retains all destinations, uses two rows below 600px, and derives content/snackbar clearance from the shared `--mx-nav-height` measurement plus safe-area insets.
+- Apple uses the existing native select and compact date/time fields. Topmost-overlay focus handling is shared with Material; Material menus, picker dialogs, and the FAB remain exclusive to Material mode.
+- The Liquid Glass functional layer uses a shared neutral tab-bar material and `.apple-tab-lens` selection indicator. Never add a separate backdrop filter to the selection lens or refraction to content cards; outer content panels use a single softer blur and nested panels stay dense. Primary-action tint is reserved for prominent controls.
+- `refreshAppleGlass()` aligns the lens and samples the underlying DOM surfaces for legible label tones and denser material over rows. The optional inline SVG displacement filter uses a locally generated edge map; unsupported rendering falls back to regular blur, then an opaque surface when blur is unavailable.
+- `appleGlassPreferences()` combines device-local display overrides with system media preferences before first paint and at runtime. Reduce transparency and Increase contrast disable refraction; The system reduced-motion preference disables pointer lighting, moving-lens transitions, press scaling, and scripted smooth scrolling; there is no app-level Reduce motion switch.
+- The Apple backdrop is a separate fixed layer using a 24-second transform animation; content never moves with it. Visibility changes pause/resume its current phase, leaving Apple mode stops it, and system reduced motion or forced colours disable it.
+- The backdrop uses both colours of the selected accent preset before first paint and at runtime. Reduce transparency and Increase contrast restore opaque panels; switching skins removes Apple-only backdrop properties.
+- Scroll-edge decoration never receives pointer events. Keep the Apple body on `overflow-x:clip` so its sticky glass header remains attached to the viewport, and preserve navigation clearance from `--mx-nav-height` and safe-area insets.
 
 ## Top tab
 

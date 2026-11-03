@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -419,13 +419,13 @@
   .tab-btn .tab-icon { font-size: 1.3rem; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
   .tab-btn .tab-icon svg { width: 22px; height: 22px; display: block; }
 
-  :root:not([data-ui="material"]) .tab-btn {
+  :root:is([data-ui="classic"],:not([data-ui])) .tab-btn {
     transition: color 0.2s ease, background 0.2s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  :root:not([data-ui="material"]) .tab-btn:hover {
+  :root:is([data-ui="classic"],:not([data-ui])) .tab-btn:hover {
     transform: translateY(-1px);
   }
-  :root:not([data-ui="material"]) .tab-btn:active {
+  :root:is([data-ui="classic"],:not([data-ui])) .tab-btn:active {
     transform: translateY(0) scale(0.97);
   }
 
@@ -509,14 +509,14 @@
     box-shadow: var(--shadow-soft);
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease;
   }
-  :root:not([data-ui="material"]) .game-item,
-  :root:not([data-ui="material"]) .session-item,
-  :root:not([data-ui="material"]) .top-row {
+  :root:is([data-ui="classic"],:not([data-ui])) .game-item,
+  :root:is([data-ui="classic"],:not([data-ui])) .session-item,
+  :root:is([data-ui="classic"],:not([data-ui])) .top-row {
     transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
   }
-  :root:not([data-ui="material"]) .game-item:hover,
-  :root:not([data-ui="material"]) .session-item:hover,
-  :root:not([data-ui="material"]) .top-row:hover {
+  :root:is([data-ui="classic"],:not([data-ui])) .game-item:hover,
+  :root:is([data-ui="classic"],:not([data-ui])) .session-item:hover,
+  :root:is([data-ui="classic"],:not([data-ui])) .top-row:hover {
     background: var(--surface2);
     transform: translateX(2px);
   }
@@ -1432,10 +1432,10 @@ opacity: 0.18;
     transition: color 0.15s, background 0.15s;
     flex-shrink: 0;
   }
-  :root:not([data-ui="material"]) .session-delete {
+  :root:is([data-ui="classic"],:not([data-ui])) .session-delete {
     transition: color 0.15s, background 0.15s, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  :root:not([data-ui="material"]) .session-delete:active:not(:disabled) {
+  :root:is([data-ui="classic"],:not([data-ui])) .session-delete:active:not(:disabled) {
     transform: scale(0.94);
   }
 
@@ -1866,10 +1866,10 @@ opacity: 0.18;
   .dbx-toggle.top-archived-toggle:has(input:checked) { border-color:var(--accent); background:var(--accent-dim); color:var(--text); }
   .top-archived-toggle .dbx-toggle-label { font-weight:500; }
   .top-archived-toggle input:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
-  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"] { appearance:none; -webkit-appearance:none; position:relative; width:40px; height:24px; margin:0; border:1px solid var(--border-strong); border-radius:999px; background:var(--surface3); transition:background-color .2s cubic-bezier(0.4,0,0.2,1); }
-  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"]::after { content:''; position:absolute; width:16px; height:16px; top:3px; left:3px; border-radius:50%; background:var(--text2); transition:transform .2s cubic-bezier(0.4,0,0.2,1),background-color .2s cubic-bezier(0.4,0,0.2,1); }
-  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"]:checked { background:var(--accent-dim); border-color:var(--accent); }
-  :root:not([data-ui="material"]) .top-archived-toggle input[type="checkbox"]:checked::after { transform:translateX(16px); background:var(--accent); }
+  :root:is([data-ui="classic"],:not([data-ui])) .top-archived-toggle input[type="checkbox"] { appearance:none; -webkit-appearance:none; position:relative; width:40px; height:24px; margin:0; border:1px solid var(--border-strong); border-radius:999px; background:var(--surface3); transition:background-color .2s cubic-bezier(0.4,0,0.2,1); }
+  :root:is([data-ui="classic"],:not([data-ui])) .top-archived-toggle input[type="checkbox"]::after { content:''; position:absolute; width:16px; height:16px; top:3px; left:3px; border-radius:50%; background:var(--text2); transition:transform .2s cubic-bezier(0.4,0,0.2,1),background-color .2s cubic-bezier(0.4,0,0.2,1); }
+  :root:is([data-ui="classic"],:not([data-ui])) .top-archived-toggle input[type="checkbox"]:checked { background:var(--accent-dim); border-color:var(--accent); }
+  :root:is([data-ui="classic"],:not([data-ui])) .top-archived-toggle input[type="checkbox"]:checked::after { transform:translateX(16px); background:var(--accent); }
   @media(max-width:360px) { .top-custom { grid-template-columns:minmax(0,1fr); } }
   .top-periods {
     display: flex;
@@ -2166,7 +2166,7 @@ opacity: 0.18;
 
   /* Input row helper */
   .field-group { margin-bottom: 12px; }
-  :root:not([data-ui="material"]) #rename-input { margin-bottom:12px; }
+  :root:is([data-ui="classic"],:not([data-ui])) #rename-input { margin-bottom:12px; }
   .field-group label {
     display: block;
     font-size: 0.75rem;
@@ -4790,46 +4790,476 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 
 /* Classic visual refinements */
 .classic-archived-label,.classic-milestone-progress { display:none; }
-:root:not([data-ui="material"]) .card-header { font-size:13px; letter-spacing:.55px; line-height:1.4; }
-:root:not([data-ui="material"]) .tab-btn { isolation:isolate; }
-:root:not([data-ui="material"]) .tab-btn.active::before { content:""; position:absolute; inset:7px 4px; background:var(--accent-dim); border-radius:12px; z-index:-1; pointer-events:none; }
-:root:not([data-ui="material"]) :is(.game-item-actions .btn-icon,.session-edit,.session-sync) { box-sizing:border-box; min-height:36px; border-color:color-mix(in srgb,var(--text2) 14%,transparent); border-radius:9px; background:transparent; }
-:root:not([data-ui="material"]) .game-item-actions .btn-icon { width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; padding:8px; }
-:root:not([data-ui="material"]) :is(.session-edit,.session-sync) { padding:6px 10px; }
-:root:not([data-ui="material"]) :is(.game-item-actions .btn-icon:not(.play),.session-edit,.session-sync:not(.on)) { color:var(--text2); }
-:root:not([data-ui="material"]) :is(.game-item-actions .btn-icon,.session-edit,.session-sync):hover { background:var(--surface2); border-color:var(--border-strong); }
-:root:not([data-ui="material"]) .game-item-actions .btn-icon.play { background:var(--accent-dim); color:var(--accent); border-color:var(--accent); }
-:root:not([data-ui="material"]) .game-item-actions .btn-icon.pin.on { color:var(--accent); background:var(--accent-dim); }
-:root:not([data-ui="material"]) .game-item-actions .btn-icon.danger { margin-left:10px; color:var(--red); }
-:root:not([data-ui="material"]) .session-delete { margin-left:14px; }
-:root:not([data-ui="material"]) :is(.progress-track,.rotation-game .progress-track,.rotation-budget-meter,.classic-milestone-progress) { height:8px; box-sizing:border-box; border:1px solid var(--border); background:var(--surface2); border-radius:999px; overflow:hidden; }
-:root:not([data-ui="material"]) :is(.progress-fill,.rotation-budget-meter-fill,.classic-milestone-fill) { height:100%; border-radius:inherit; }
-:root:not([data-ui="material"]) .rotation-metrics { margin:8px 0; }
-:root:not([data-ui="material"]) .rotation-budget-meter-label { align-items:baseline; font-size:12px; line-height:1.5; margin-bottom:8px; }
-:root:not([data-ui="material"]) .rotation-budget-meter.over-budget { border-color:var(--red); }
-:root:not([data-ui="material"]) .classic-milestone-progress { display:block; margin:4px 0 16px; }
-:root:not([data-ui="material"]) .classic-milestone-fill { display:block; background:var(--accent); }
-:root:not([data-ui="material"]) .card:has(> .goal-header) { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px 12px; align-items:center; }
-:root:not([data-ui="material"]) .card:has(> .goal-header) > .card-header { grid-column:1; grid-row:1; margin:0; }
-:root:not([data-ui="material"]) :is(.goal-header,.goal-footer) { display:contents; }
-:root:not([data-ui="material"]) .goal-header #goal-text { grid-column:1; grid-row:2; }
-:root:not([data-ui="material"]) #btn-goal-edit { grid-column:2; grid-row:1; justify-self:end; }
-:root:not([data-ui="material"]) #goal-percent { grid-column:2; grid-row:2; text-align:right; font-variant-numeric:tabular-nums; }
-:root:not([data-ui="material"]) #goal-track { grid-column:1 / -1; grid-row:3; margin:0; }
-:root:not([data-ui="material"]) #streak-pill { grid-column:1 / -1; grid-row:4; justify-self:start; }
-:root:not([data-ui="material"]) .goal-week-budget { grid-column:1 / -1; grid-row:5; }
-:root:not([data-ui="material"]) .game-item.archived { opacity:1; }
-:root:not([data-ui="material"]) .game-item.archived .game-item-name { text-decoration:none; color:var(--text2); font-weight:500; }
-:root:not([data-ui="material"]) .classic-archived-label { display:inline-flex; align-items:center; padding:2px 6px; font-size:10px; line-height:16px; color:var(--text2); border:1px solid var(--border); border-radius:6px; background:var(--surface2); flex-shrink:0; }
-:root:not([data-ui="material"]) .game-item.archived .game-item-name-row { flex-wrap:wrap; row-gap:5px; }
+:root:is([data-ui="classic"],:not([data-ui])) .card-header { font-size:13px; letter-spacing:.55px; line-height:1.4; }
+:root:is([data-ui="classic"],:not([data-ui])) .tab-btn { isolation:isolate; }
+:root:is([data-ui="classic"],:not([data-ui])) .tab-btn.active::before { content:""; position:absolute; inset:7px 4px; background:var(--accent-dim); border-radius:12px; z-index:-1; pointer-events:none; }
+:root:is([data-ui="classic"],:not([data-ui])) :is(.game-item-actions .btn-icon,.session-edit,.session-sync) { box-sizing:border-box; min-height:36px; border-color:color-mix(in srgb,var(--text2) 14%,transparent); border-radius:9px; background:transparent; }
+:root:is([data-ui="classic"],:not([data-ui])) .game-item-actions .btn-icon { width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; padding:8px; }
+:root:is([data-ui="classic"],:not([data-ui])) :is(.session-edit,.session-sync) { padding:6px 10px; }
+:root:is([data-ui="classic"],:not([data-ui])) :is(.game-item-actions .btn-icon:not(.play),.session-edit,.session-sync:not(.on)) { color:var(--text2); }
+:root:is([data-ui="classic"],:not([data-ui])) :is(.game-item-actions .btn-icon,.session-edit,.session-sync):hover { background:var(--surface2); border-color:var(--border-strong); }
+:root:is([data-ui="classic"],:not([data-ui])) .game-item-actions .btn-icon.play { background:var(--accent-dim); color:var(--accent); border-color:var(--accent); }
+:root:is([data-ui="classic"],:not([data-ui])) .game-item-actions .btn-icon.pin.on { color:var(--accent); background:var(--accent-dim); }
+:root:is([data-ui="classic"],:not([data-ui])) .game-item-actions .btn-icon.danger { margin-left:10px; color:var(--red); }
+:root:is([data-ui="classic"],:not([data-ui])) .session-delete { margin-left:14px; }
+:root:is([data-ui="classic"],:not([data-ui])) :is(.progress-track,.rotation-game .progress-track,.rotation-budget-meter,.classic-milestone-progress) { height:8px; box-sizing:border-box; border:1px solid var(--border); background:var(--surface2); border-radius:999px; overflow:hidden; }
+:root:is([data-ui="classic"],:not([data-ui])) :is(.progress-fill,.rotation-budget-meter-fill,.classic-milestone-fill) { height:100%; border-radius:inherit; }
+:root:is([data-ui="classic"],:not([data-ui])) .rotation-metrics { margin:8px 0; }
+:root:is([data-ui="classic"],:not([data-ui])) .rotation-budget-meter-label { align-items:baseline; font-size:12px; line-height:1.5; margin-bottom:8px; }
+:root:is([data-ui="classic"],:not([data-ui])) .rotation-budget-meter.over-budget { border-color:var(--red); }
+:root:is([data-ui="classic"],:not([data-ui])) .classic-milestone-progress { display:block; margin:4px 0 16px; }
+:root:is([data-ui="classic"],:not([data-ui])) .classic-milestone-fill { display:block; background:var(--accent); }
+:root:is([data-ui="classic"],:not([data-ui])) .card:has(> .goal-header) { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px 12px; align-items:center; }
+:root:is([data-ui="classic"],:not([data-ui])) .card:has(> .goal-header) > .card-header { grid-column:1; grid-row:1; margin:0; }
+:root:is([data-ui="classic"],:not([data-ui])) :is(.goal-header,.goal-footer) { display:contents; }
+:root:is([data-ui="classic"],:not([data-ui])) .goal-header #goal-text { grid-column:1; grid-row:2; }
+:root:is([data-ui="classic"],:not([data-ui])) #btn-goal-edit { grid-column:2; grid-row:1; justify-self:end; }
+:root:is([data-ui="classic"],:not([data-ui])) #goal-percent { grid-column:2; grid-row:2; text-align:right; font-variant-numeric:tabular-nums; }
+:root:is([data-ui="classic"],:not([data-ui])) #goal-track { grid-column:1 / -1; grid-row:3; margin:0; }
+:root:is([data-ui="classic"],:not([data-ui])) #streak-pill { grid-column:1 / -1; grid-row:4; justify-self:start; }
+:root:is([data-ui="classic"],:not([data-ui])) .goal-week-budget { grid-column:1 / -1; grid-row:5; }
+:root:is([data-ui="classic"],:not([data-ui])) .game-item.archived { opacity:1; }
+:root:is([data-ui="classic"],:not([data-ui])) .game-item.archived .game-item-name { text-decoration:none; color:var(--text2); font-weight:500; }
+:root:is([data-ui="classic"],:not([data-ui])) .classic-archived-label { display:inline-flex; align-items:center; padding:2px 6px; font-size:10px; line-height:16px; color:var(--text2); border:1px solid var(--border); border-radius:6px; background:var(--surface2); flex-shrink:0; }
+:root:is([data-ui="classic"],:not([data-ui])) .game-item.archived .game-item-name-row { flex-wrap:wrap; row-gap:5px; }
 @media(max-width:450px) {
- :root:not([data-ui="material"]) .game-item-actions { flex-wrap:wrap; justify-content:flex-end; row-gap:6px; }
- :root:not([data-ui="material"]) #goal-percent { font-size:12px; }
+ :root:is([data-ui="classic"],:not([data-ui])) .game-item-actions { flex-wrap:wrap; justify-content:flex-end; row-gap:6px; }
+ :root:is([data-ui="classic"],:not([data-ui])) #goal-percent { font-size:12px; }
 }
+
+
+/* Apple-inspired interface: grouped content, translucent navigation, system type. */
+:root[data-ui="apple"] {
+  --apple-font:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --radius:16px; --radius-sm:12px; --radius-lg:22px;
+  --apple-tint:var(--accent); --apple-ink:var(--accent); --apple-on-accent:#fff;
+  --apple-glass-solid:#f9f9fb; --apple-glass:rgba(249,249,251,.86);
+  --bg:#f2f2f7; --surface:#fff; --surface2:#f2f2f7; --surface3:#e5e5ea;
+  --border:rgba(60,60,67,.14); --border-strong:rgba(60,60,67,.25);
+  --text:#1c1c1e; --text2:#62626c; --text3:#6e6e73;
+  --green:#248a3d; --green-ink:#248a3d; --red:#d70015; --yellow:#996300; --yellow-ink:#996300;
+  --green-dim:rgba(36,138,61,.1); --red-dim:rgba(215,0,21,.09); --yellow-dim:rgba(153,99,0,.09);
+  --shadow:0 16px 48px rgba(0,0,0,.14); --shadow-soft:0 2px 14px rgba(0,0,0,.035);
+  --glass-bg:var(--apple-glass); --glass-border:rgba(255,255,255,.65);
+}
+:root[data-ui="apple"][data-theme="dark"] {
+  --apple-glass-solid:#242426; --apple-glass:rgba(36,36,38,.87);
+  --bg:#000; --surface:#1c1c1e; --surface2:#2c2c2e; --surface3:#3a3a3c;
+  --border:rgba(255,255,255,.12); --border-strong:rgba(255,255,255,.23);
+  --text:#f5f5f7; --text2:#aeaeb2; --text3:#98989d;
+  --green:#30d158; --green-ink:#30d158; --red:#ff6961; --yellow:#ffd60a; --yellow-ink:#ffd60a;
+  --green-dim:rgba(48,209,88,.12); --red-dim:rgba(255,105,97,.12); --yellow-dim:rgba(255,214,10,.12);
+  --shadow:0 18px 64px rgba(0,0,0,.5); --shadow-soft:0 2px 14px rgba(0,0,0,.12);
+  --glass-border:rgba(255,255,255,.13);
+}
+:root[data-ui="apple"] body { background:var(--bg); color:var(--text); font:400 15px/1.5 var(--apple-font); letter-spacing:-.015em; }
+:root[data-ui="apple"] :is(button,input,select,textarea) { font-family:var(--apple-font); }
+:root[data-ui="apple"] :is(.ambient-orbs,.boot-glow) { display:none; }
+:root[data-ui="apple"] header { background:var(--apple-glass-solid); border:0; border-bottom:1px solid var(--border); box-shadow:none; padding:14px 24px; gap:12px; }
+:root[data-ui="apple"] header h1 { color:var(--text); font:700 24px/1.15 var(--apple-font); letter-spacing:-.04em; background:none; -webkit-text-fill-color:currentColor; }
+:root[data-ui="apple"] .version-badge { border:0; background:var(--surface2); color:var(--text2); padding:4px 8px; font:600 10px/1.2 var(--apple-font); }
+:root[data-ui="apple"] .mx-page-title { display:none; }
+:root[data-ui="apple"] .app-content { padding-bottom:calc(var(--mx-nav-height,132px) + 36px + env(safe-area-inset-bottom,0px)); }
+:root[data-ui="apple"] .card { background:var(--surface); border:1px solid var(--border); border-radius:22px; padding:22px; box-shadow:var(--shadow-soft); margin-bottom:18px; }
+:root[data-ui="apple"] .card:hover { transform:none; box-shadow:var(--shadow-soft); }
+:root[data-ui="apple"] .card-header { color:var(--text); font-size:17px; font-weight:600; line-height:1.35; letter-spacing:-.025em; text-transform:none; gap:0; margin-bottom:18px; }
+:root[data-ui="apple"] .card-header::before { display:none; }
+:root[data-ui="apple"] .big-time { color:var(--text); font-size:clamp(42px,5vw,58px); font-weight:600; letter-spacing:-.045em; font-variant-numeric:tabular-nums; text-shadow:none; }
+:root[data-ui="apple"] :is(.stat-value,.dash-value) { font-weight:600; letter-spacing:-.025em; font-variant-numeric:tabular-nums; }
+:root[data-ui="apple"] .stat-value { font-size:26px; line-height:1.25; }
+:root[data-ui="apple"] :is(.stat-label,.big-time-label,.modal-subheader) { color:var(--text2); font-size:12px; letter-spacing:.01em; }
+:root[data-ui="apple"] .tab-bar { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px; width:calc(100% - 24px); max-width:900px; left:50%; right:auto; bottom:calc(8px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); padding:6px; box-sizing:border-box; background:var(--apple-glass-solid); border:1px solid var(--glass-border); border-radius:28px; box-shadow:0 8px 30px rgba(0,0,0,.14); }
+:root[data-ui="apple"] .tab-btn { position:relative; min-width:0; min-height:50px; padding:6px 2px; border-radius:21px; color:var(--text2); font-size:11px; font-weight:500; line-height:1.15; gap:4px; transition:background .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1); }
+:root[data-ui="apple"] .tab-btn .tab-icon { width:23px; height:23px; transform:none; }
+:root[data-ui="apple"] .tab-btn.active { background:var(--accent-dim); color:var(--apple-ink); font-weight:600; }
+:root[data-ui="apple"] .tab-btn.active :is(.tab-icon,svg) { transform:none; }
+:root[data-ui="apple"] .tab-btn::after,:root[data-ui="apple"] .tab-btn::before { display:none; }
+:root[data-ui="apple"] .tab-btn:hover { background:var(--surface2); transform:none; }
+:root[data-ui="apple"] .tab-btn.active:hover { background:var(--accent-dim); }
+:root[data-ui="apple"] :is(.btn,.btn-primary,.btn-ghost,.btn-icon,.session-edit,.session-sync,.session-delete,.btn-goal-edit,.name-edit-btn,.sync-btn,.install-btn) { box-sizing:border-box; min-height:44px; font-size:14px; font-weight:600; line-height:1.3; border-radius:14px; box-shadow:none; text-shadow:none; transition:background .2s cubic-bezier(.4,0,.2,1),transform .2s cubic-bezier(.4,0,.2,1); }
+:root[data-ui="apple"] :is(.btn-primary,.btn-start,.btn-pause) { background:var(--apple-tint); color:var(--apple-on-accent); border:1px solid transparent; padding:11px 18px; }
+:root[data-ui="apple"] :is(.btn-primary,.btn-start,.btn-pause):hover { filter:brightness(.95); transform:none; box-shadow:none; }
+:root[data-ui="apple"] :is(.btn,.btn-primary,.btn-ghost,.btn-icon):active:not(:disabled) { transform:scale(.98); }
+:root[data-ui="apple"] .btn-stop { background:var(--red-dim); border:1px solid transparent; color:var(--red); box-shadow:none; }
+:root[data-ui="apple"] .btn-danger { background:var(--red-dim); border-color:transparent; color:var(--red); }
+:root[data-ui="apple"] :is(.btn-ghost,.btn-goal-edit,.name-edit-btn,.session-edit,.session-sync,.sync-btn,.install-btn) { padding:10px 14px; border:1px solid transparent; background:var(--surface2); color:var(--apple-ink); }
+:root[data-ui="apple"] :is(.btn-ghost,.btn-goal-edit,.session-edit,.sync-btn,.install-btn):hover { background:var(--surface3); border-color:transparent; transform:none; }
+:root[data-ui="apple"] .btn-accent { background:var(--accent-dim); color:var(--apple-ink); border-color:transparent; }
+:root[data-ui="apple"] .btn-icon { display:inline-flex; justify-content:center; align-items:center; width:44px; height:44px; padding:10px; border:0; background:var(--surface2); color:var(--text2); }
+:root[data-ui="apple"] .btn-icon svg { width:19px; height:19px; }
+:root[data-ui="apple"] .btn-icon:hover { background:var(--surface3); border:0; transform:none; }
+:root[data-ui="apple"] :is(.btn-icon.play,.btn-icon.pin.on) { background:var(--accent-dim); color:var(--apple-ink); }
+:root[data-ui="apple"] :is(.btn-icon.danger,.session-delete) { color:var(--red); margin-left:8px; }
+:root[data-ui="apple"] .session-delete { min-width:44px; padding:12px; }
+:root[data-ui="apple"] .session-sync.on { color:var(--green); background:var(--green-dim); border-color:transparent; }
+:root[data-ui="apple"] :is(button,input,select,textarea,[tabindex]):focus-visible { outline:3px solid var(--apple-ink); outline-offset:3px; }
+:root[data-ui="apple"] :is(button,input,select,textarea):disabled { opacity:.45; }
+:root[data-ui="apple"] :is(input[type="text"],input[type="number"],input[type="url"],select,textarea,.cal-trigger) { width:100%; min-height:46px; box-sizing:border-box; padding:11px 14px; border:1px solid var(--border); border-radius:12px; background:var(--surface2); color:var(--text); font-size:15px; line-height:1.4; box-shadow:none; }
+:root[data-ui="apple"] input.time-input { width:58px; min-height:44px; padding:8px; text-align:center; }
+:root[data-ui="apple"] :is(input,textarea)::placeholder { color:var(--text3); opacity:1; }
+:root[data-ui="apple"] :is(.field-group > label,.m3-field > label) { color:var(--text2); font-size:13px; font-weight:500; }
+:root[data-ui="apple"] .m3-field { display:flex; flex-direction:column; gap:7px; margin-bottom:12px; }
+:root[data-ui="apple"] .m3-field > label { display:block; order:-1; margin:0; }
+:root[data-ui="apple"] :is(.theme-select,.sync-seg) { display:flex; gap:3px; padding:3px; border:0; border-radius:13px; background:var(--surface2); }
+:root[data-ui="apple"] :is(.theme-opt,.sync-seg button) { flex:1; min-width:0; min-height:38px; padding:8px 10px; background:transparent; border:0; border-radius:10px; color:var(--text2); box-shadow:none; font-size:13px; font-weight:500; }
+:root[data-ui="apple"] .sync-seg { display:grid; grid-template-columns:repeat(3,minmax(max-content,1fr)); flex-shrink:0; }
+:root[data-ui="apple"] .sync-seg button { white-space:nowrap; }
+:root[data-ui="apple"] :is(.theme-opt.active,.sync-seg button.active) { background:var(--surface); color:var(--text); box-shadow:0 1px 5px rgba(0,0,0,.12); }
+:root[data-ui="apple"] :is(.target-opt,.pick-opt,.top-period,.game-tag-filter,.settings-nav button) { min-height:38px; padding:8px 13px; background:var(--surface2); border:0; border-radius:999px; color:var(--text2); font-size:13px; font-weight:500; }
+:root[data-ui="apple"] :is(.target-opt.on,.pick-opt.on,.top-period.active,.game-tag-filter.on,.settings-nav button.active) { background:var(--accent-dim); color:var(--apple-ink); font-weight:600; border:0; }
+:root[data-ui="apple"] .dbx-toggle { min-height:48px; padding:8px 0; gap:12px; align-items:center; }
+:root[data-ui="apple"] .dbx-toggle input[type="checkbox"] { appearance:none; -webkit-appearance:none; position:relative; width:51px; height:31px; min-width:51px; border:0; border-radius:999px; background:var(--surface3); margin:0; cursor:pointer; transition:background .2s cubic-bezier(.4,0,.2,1); }
+:root[data-ui="apple"] .dbx-toggle input[type="checkbox"]::after { content:""; position:absolute; width:27px; height:27px; top:2px; left:2px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.22); transition:transform .2s cubic-bezier(.4,0,.2,1); }
+:root[data-ui="apple"] .dbx-toggle input[type="checkbox"]:checked { background:var(--apple-tint); }
+:root[data-ui="apple"] .dbx-toggle input[type="checkbox"]:checked::after { transform:translateX(20px); }
+:root[data-ui="apple"] :is(.rotation-choice input[type="checkbox"],.milestone-complete-toggle input,.game-milestone-row input[type="checkbox"],.games-filter-panel input[type="checkbox"]) { width:22px; height:22px; accent-color:var(--apple-ink); flex-shrink:0; }
+:root[data-ui="apple"] .rotation-choice > label:first-child { min-height:44px; }
+:root[data-ui="apple"] :is(.game-item,.session-item,.top-row) { padding:16px 0; border-radius:0; border-bottom:1px solid var(--border); background:transparent; box-shadow:none; }
+:root[data-ui="apple"] :is(.game-item,.session-item,.top-row):hover { transform:none; background:transparent; }
+:root[data-ui="apple"] .game-item-name { font-size:16px; font-weight:600; letter-spacing:-.02em; }
+:root[data-ui="apple"] .game-item.archived { opacity:1; }
+:root[data-ui="apple"] .game-item.archived .game-item-name { text-decoration:none; color:var(--text2); }
+:root[data-ui="apple"] .classic-archived-label { display:inline-flex; font-size:11px; padding:2px 6px; border-radius:6px; background:var(--surface2); color:var(--text2); flex-shrink:0; }
+:root[data-ui="apple"] .game-item.archived .game-item-name-row { flex-wrap:wrap; gap:6px; }
+:root[data-ui="apple"] :is(.game-platform-badge,.no-cover-tag,.game-tag,.trend-badge) { background:var(--surface2); color:var(--text2); border:0; border-radius:6px; font-weight:500; }
+:root[data-ui="apple"] .library-game-cover { border-radius:14px; }
+:root[data-ui="apple"] .game-item-actions { gap:6px; }
+:root[data-ui="apple"] .archive-section-label { border:0; color:var(--text2); font-size:12px; font-weight:600; letter-spacing:.04em; padding-top:18px; }
+:root[data-ui="apple"] .session-day-heading { margin-top:20px; background:var(--surface2); border:0; border-radius:12px; padding:10px 12px; font-size:13px; }
+:root[data-ui="apple"] .session-game { font-size:15px; font-weight:600; }
+:root[data-ui="apple"] :is(.session-times,.session-game-total,.session-platform) { font-size:12px; }
+:root[data-ui="apple"] .session-pause-info { background:var(--surface2); border:0; color:var(--text2); }
+:root[data-ui="apple"] .session-duration { font-size:15px; font-weight:600; }
+:root[data-ui="apple"] .session-filter-row { gap:12px; }
+:root[data-ui="apple"] :is(.stat-card,.compare-stat,.recap-stat,.game-milestones,.dbx-history-panel) { background:var(--surface2); border:0; border-radius:16px; box-shadow:none; }
+:root[data-ui="apple"] :is(.comparison-table,.dash-row) { font-size:14px; }
+:root[data-ui="apple"] :is(.progress-track,.rotation-game .progress-track,.rotation-budget-meter,.classic-milestone-progress) { height:7px; box-sizing:border-box; border:0; border-radius:999px; background:var(--surface3); overflow:hidden; box-shadow:none; }
+:root[data-ui="apple"] :is(.progress-fill,.rotation-budget-meter-fill,.classic-milestone-fill) { border-radius:inherit; background:var(--apple-tint); }
+:root[data-ui="apple"] .progress-fill::after { display:none; }
+:root[data-ui="apple"] .classic-milestone-progress { display:block; margin:6px 0 16px; }
+:root[data-ui="apple"] .classic-milestone-fill { display:block; height:100%; }
+:root[data-ui="apple"] .rotation-percent { color:var(--apple-ink); background:var(--accent-dim); font-size:12px; font-weight:600; border-radius:8px; }
+:root[data-ui="apple"] .rotation-budget-meter-label { font-size:12px; align-items:baseline; }
+:root[data-ui="apple"] .active-session { border:1px solid var(--border); border-radius:26px; box-shadow:var(--shadow-soft); }
+:root[data-ui="apple"] :is(.active-session .big-time,.active-session.paused .big-time) { font-weight:600; text-shadow:none; }
+:root[data-ui="apple"] .active-session .active-game-name { font-size:23px; line-height:1.25; letter-spacing:-.035em; }
+:root[data-ui="apple"] .live-indicator { font-weight:600; box-shadow:none; }
+:root[data-ui="apple"] .modal-overlay { background:rgba(0,0,0,.38); padding:20px 16px; }
+:root[data-ui="apple"] .modal { width:100%; border:1px solid var(--border); border-radius:26px; padding:26px; background:var(--surface); box-shadow:var(--shadow); max-height:calc(100dvh - 40px); overflow-y:auto; }
+:root[data-ui="apple"] .modal h3 { color:var(--text); font:650 22px/1.3 var(--apple-font); letter-spacing:-.035em; margin-bottom:20px; }
+:root[data-ui="apple"] .modal-actions { gap:10px; flex-wrap:wrap; margin-top:24px; }
+:root[data-ui="apple"] .modal-actions .btn-ghost:not(.btn-danger) { border:0; background:transparent; }
+:root[data-ui="apple"] :is(.cal-popover,.time-popover) { border-radius:18px; border:1px solid var(--border); background:var(--surface); padding:14px; box-shadow:var(--shadow); }
+:root[data-ui="apple"] :is(.cal-nav,.cal-day,.cal-action) { min-width:36px; min-height:36px; border-radius:50%; }
+:root[data-ui="apple"] .cal-day.selected { background:var(--apple-tint); color:var(--apple-on-accent); border:0; }
+:root[data-ui="apple"] .cal-day.today:not(.selected) { color:var(--apple-ink); background:var(--accent-dim); border:0; }
+:root[data-ui="apple"] .cal-field { min-width:0; }
+:root[data-ui="apple"] :is(.time-input,.ampm-btn) { border-radius:10px; }
+:root[data-ui="apple"] #boot-splash { background:var(--bg); }
+:root[data-ui="apple"] .boot-stack { background:var(--surface); border:1px solid var(--border); border-radius:28px; box-shadow:var(--shadow-soft); }
+:root[data-ui="apple"] .boot-logo { color:var(--text); font-family:var(--apple-font); font-weight:700; letter-spacing:-.04em; }
+:root[data-ui="apple"] .boot-caption { color:var(--text2); }
+:root[data-ui="apple"] .boot-bar { height:4px; border:0; background:var(--surface3); border-radius:999px; }
+:root[data-ui="apple"] .boot-bar > span { background:var(--apple-tint); box-shadow:none; }
+:root[data-ui="apple"] #toast { bottom:calc(var(--mx-nav-height,132px) + 24px + env(safe-area-inset-bottom,0px)); max-width:min(420px,calc(100vw - 32px)); padding:14px 18px; background:var(--apple-glass-solid); color:var(--text); border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow); font-size:14px; }
+:root[data-ui="apple"] .streak-pill { box-shadow:none; border:0; }
+@supports ((backdrop-filter:blur(20px)) or (-webkit-backdrop-filter:blur(20px))) {
+ :root[data-ui="apple"] :is(header,.tab-bar,#toast) { background:var(--apple-glass); backdrop-filter:blur(24px) saturate(160%); -webkit-backdrop-filter:blur(24px) saturate(160%); }
+}
+@media(min-width:600px) {
+ :root[data-ui="apple"] .tab-bar { grid-template-columns:repeat(var(--mx-tab-count,7),minmax(0,1fr)); border-radius:26px; padding:7px; }
+ :root[data-ui="apple"] .tab-btn { min-height:54px; }
+}
+@media(max-width:600px) {
+ :root[data-ui="apple"] header { padding:12px 16px; }
+ :root[data-ui="apple"] .card { padding:18px; border-radius:20px; }
+ :root[data-ui="apple"] .session-item { display:grid; grid-template-columns:minmax(0,1fr) auto auto auto; gap:10px 6px; }
+ :root[data-ui="apple"] .session-info { grid-column:1 / -1; }
+ :root[data-ui="apple"] .session-duration { grid-column:1; margin:0; display:flex; flex-wrap:wrap; align-items:center; gap:5px; white-space:normal; }
+ :root[data-ui="apple"] .session-pause-info { margin-left:0; }
+ :root[data-ui="apple"] :is(.session-edit,.session-sync,.session-delete) { margin-left:0; }
+ :root[data-ui="apple"] .session-edit { grid-column:2; }
+ :root[data-ui="apple"] .session-sync { grid-column:3; }
+ :root[data-ui="apple"] .session-delete { grid-column:4; }
+ :root[data-ui="apple"] .modal { padding:22px; border-radius:24px; }
+ :root[data-ui="apple"] .modal-actions > button { flex:1; }
+}
+@media(prefers-reduced-transparency:reduce) {
+ :root[data-ui="apple"] :is(header,.tab-bar,#toast) { background:var(--apple-glass-solid); backdrop-filter:none; -webkit-backdrop-filter:none; }
+}
+@media(prefers-reduced-motion:reduce) {
+ :root[data-ui="apple"] *,:root[data-ui="apple"] *::before,:root[data-ui="apple"] *::after { animation-duration:.01ms!important; transition-duration:.01ms!important; scroll-behavior:auto!important; }
+ :root[data-ui="apple"] :is(button,.card,.tab-btn):active { transform:none; }
+}
+
+:root[data-ui="apple"] .btn-ghost.btn-danger { background:var(--red-dim); color:var(--red); }
+:root[data-ui="apple"] .top-period.on { background:var(--accent-dim); color:var(--apple-ink); }
+
+
+
+/* Liquid Glass-inspired functional layer. Content remains on standard surfaces. */
+:root[data-ui="apple"] body { overflow-x:clip; overflow-y:visible; }
+:root[data-ui="apple"] header { flex-shrink:0; }
+:root[data-ui="apple"] {
+ --lg-fill:rgba(255,255,255,.58); --lg-fill-busy:rgba(255,255,255,.72);
+ --lg-solid:#f5f5f7; --lg-label:#3c3c43; --lg-label-strong:#1c1c1e;
+ --lg-edge:rgba(255,255,255,.72); --lg-edge-low:rgba(0,0,0,.09);
+ --lg-shadow:0 8px 28px rgba(0,0,0,.12),0 1px 5px rgba(0,0,0,.07);
+ --lg-selection:rgba(255,255,255,.6); --lg-selection-edge:rgba(255,255,255,.9);
+ --lg-motion:280ms; --lg-highlight-x:50%; --lg-highlight-y:0%;
+}
+:root[data-ui="apple"][data-theme="dark"] {
+ --lg-fill:rgba(40,40,44,.56); --lg-fill-busy:rgba(40,40,44,.76);
+ --lg-solid:#242426; --lg-label:#d1d1d6; --lg-label-strong:#f5f5f7;
+ --lg-edge:rgba(255,255,255,.23); --lg-edge-low:rgba(0,0,0,.3);
+ --lg-shadow:0 10px 36px rgba(0,0,0,.34),0 1px 5px rgba(0,0,0,.2);
+ --lg-selection:rgba(255,255,255,.13); --lg-selection-edge:rgba(255,255,255,.29);
+}
+.apple-tab-lens,.apple-scroll-edge { display:none; pointer-events:none; }
+.apple-display-options[hidden] { display:none!important; }
+:root[data-ui="apple"] header {
+ position:sticky; top:0; z-index:100; isolation:isolate; background:var(--lg-solid);
+ border:0; box-shadow:0 1px 0 var(--lg-edge-low); padding:12px 22px;
+}
+:root[data-ui="apple"] header::before,:root[data-ui="apple"] .tab-bar::before {
+ content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+ background:radial-gradient(100% 90% at var(--lg-highlight-x) var(--lg-highlight-y),rgba(255,255,255,.22),transparent 60%);
+ box-shadow:inset 0 1px 0 var(--lg-edge),inset 0 -1px 0 var(--lg-edge-low);
+ z-index:0;
+}
+:root[data-ui="apple"] header > * { position:relative; z-index:1; }
+:root[data-ui="apple"] header::after {
+ content:""; position:absolute; top:100%; left:0; right:0; height:22px;
+ background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 84%,transparent),transparent);
+ pointer-events:none; opacity:0; transition:opacity var(--lg-motion) cubic-bezier(.4,0,.2,1);
+}
+:root[data-ui="apple"][data-apple-scrolled="true"] header::after { opacity:1; }
+:root[data-ui="apple"] .tab-bar {
+ isolation:isolate; border:0; padding:6px; gap:2px; border-radius:34px;
+ background:var(--lg-solid); box-shadow:var(--lg-shadow); overflow:visible;
+ transition:box-shadow var(--lg-motion) cubic-bezier(.4,0,.2,1),background-color var(--lg-motion) cubic-bezier(.4,0,.2,1);
+}
+:root[data-ui="apple"] .tab-bar[data-glass-tone="light"] {
+ --lg-fill:rgba(255,255,255,.58); --lg-fill-busy:rgba(255,255,255,.72); --lg-solid:#f5f5f7;
+ --lg-label:#3c3c43; --lg-label-strong:#1c1c1e; --lg-edge:rgba(255,255,255,.72);
+ --lg-selection:rgba(255,255,255,.6); --lg-selection-edge:rgba(255,255,255,.9);
+}
+:root[data-ui="apple"] .tab-bar[data-glass-tone="dark"] {
+ --lg-fill:rgba(40,40,44,.56); --lg-fill-busy:rgba(40,40,44,.76); --lg-solid:#242426;
+ --lg-label:#d1d1d6; --lg-label-strong:#f5f5f7; --lg-edge:rgba(255,255,255,.23);
+ --lg-selection:rgba(255,255,255,.13); --lg-selection-edge:rgba(255,255,255,.29);
+}
+:root[data-ui="apple"][data-apple-scrolled="true"] .tab-bar { box-shadow:var(--lg-shadow),0 5px 18px rgba(0,0,0,.08); }
+:root[data-ui="apple"] .tab-btn { z-index:2; color:var(--lg-label); border-radius:28px; min-height:52px; }
+:root[data-ui="apple"] .tab-btn.active,:root[data-ui="apple"] .tab-btn.active:hover {
+ color:var(--lg-selected-ink,var(--apple-ink)); background:transparent;
+}
+:root[data-ui="apple"] .tab-btn:hover { background:rgba(128,128,128,.08); }
+:root[data-ui="apple"] .tab-btn.active .tab-icon { transform:scale(1.035); }
+:root[data-ui="apple"] .tab-btn:active { background:transparent; }
+:root[data-ui="apple"] .apple-tab-lens {
+ display:block; position:absolute; z-index:1; left:0; top:0; border-radius:28px;
+ width:var(--lg-lens-width,0px); height:var(--lg-lens-height,0px);
+ transform:translate3d(var(--lg-lens-x,0px),var(--lg-lens-y,0px),0);
+ background:var(--lg-selection); opacity:0;
+ box-shadow:inset 0 1px 0 var(--lg-selection-edge),inset 0 -1px 0 rgba(128,128,128,.12),0 1px 5px rgba(0,0,0,.07);
+ transition:transform var(--lg-motion) cubic-bezier(.4,0,.2,1),width var(--lg-motion) cubic-bezier(.4,0,.2,1),height var(--lg-motion) cubic-bezier(.4,0,.2,1),scale 140ms cubic-bezier(.4,0,.2,1);
+}
+:root[data-ui="apple"] .apple-tab-lens[data-ready="true"] { opacity:1; }
+:root[data-ui="apple"] .tab-bar[data-glass-pressed="true"] .apple-tab-lens { scale:.965; }
+:root[data-ui="apple"] .apple-scroll-edge {
+ display:block; position:fixed; z-index:98; left:0; right:0; bottom:0;
+ height:calc(var(--mx-nav-height,132px) + 38px + env(safe-area-inset-bottom,0px));
+ background:linear-gradient(to top,color-mix(in srgb,var(--bg) 76%,transparent),color-mix(in srgb,var(--bg) 25%,transparent) 50%,transparent);
+}
+:root[data-ui="apple"] :is(.card,.game-milestones,.dbx-history-panel) { backdrop-filter:none; -webkit-backdrop-filter:none; }
+:root[data-ui="apple"] :is(.btn-primary,.btn-start,.btn-pause) {
+ border-radius:999px; background:var(--apple-tint); color:var(--apple-on-accent);
+ border:0; box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -1px 0 rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.1);
+}
+:root[data-ui="apple"] :is(.btn-ghost,.btn-goal-edit,.session-edit,.session-sync,.sync-btn,.install-btn,.btn-accent) {
+ background:var(--surface2); color:var(--text); border:0; border-radius:999px;
+}
+:root[data-ui="apple"] .btn-ghost.btn-danger { background:var(--red-dim); color:var(--red); }
+:root[data-ui="apple"] :is(.btn-icon.play,.btn-icon.pin.on) { background:var(--surface2); color:var(--apple-ink); }
+:root[data-ui="apple"] :is(.target-opt.on,.pick-opt.on,.top-period.active,.top-period.on,.game-tag-filter.on) { background:var(--surface3); color:var(--text); }
+:root[data-ui="apple"] :is(.btn-icon,.session-delete) { border-radius:50%; }
+:root[data-ui="apple"] header :is(.sync-btn,.install-btn) { background:transparent; color:var(--text); box-shadow:none; }
+:root[data-ui="apple"] header :is(.sync-btn,.install-btn):hover { background:rgba(128,128,128,.1); }
+:root[data-ui="apple"] .modal-overlay { background:rgba(0,0,0,.32); }
+:root[data-ui="apple"] .modal {
+ background:var(--surface); border:1px solid var(--lg-edge);
+ box-shadow:var(--shadow),inset 0 1px 0 var(--lg-edge); border-radius:30px; isolation:isolate;
+}
+:root[data-ui="apple"] .modal h3 { font-weight:700; text-align:left; }
+:root[data-ui="apple"] .modal-actions :is(.btn-ghost,.btn-primary,.btn-danger) { min-height:44px; border-radius:999px; }
+:root[data-ui="apple"] :is(.cal-popover,.time-popover) {
+ background:var(--surface); border:1px solid var(--lg-edge); border-radius:22px;
+ box-shadow:var(--shadow),inset 0 1px 0 var(--lg-edge);
+ transform-origin:50% 0; animation:apple-popover-in 180ms cubic-bezier(.4,0,.2,1);
+}
+:root[data-ui="apple"] #toast { background:var(--lg-solid); border:1px solid var(--lg-edge); box-shadow:var(--lg-shadow); }
+:root[data-ui="apple"] .apple-display-options { border-top:1px solid var(--border); margin-top:18px; padding-top:14px; }
+:root[data-ui="apple"] .apple-display-options > p { font-size:12px; color:var(--text2); margin:0 0 8px; }
+:root[data-ui="apple"] .apple-display-options .dbx-toggle-label { font-size:14px; }
+@keyframes apple-popover-in {
+ from { opacity:0; transform:translateY(-3px) scale(.97); }
+ to { opacity:1; transform:translateY(0) scale(1); }
+}
+@supports ((backdrop-filter:blur(20px)) or (-webkit-backdrop-filter:blur(20px))) {
+ :root[data-ui="apple"] :is(header,.tab-bar,#toast) {
+  background:var(--lg-fill); backdrop-filter:blur(18px) saturate(155%); -webkit-backdrop-filter:blur(18px) saturate(155%);
+ }
+ :root[data-ui="apple"] .tab-bar[data-glass-optics="true"] { backdrop-filter:var(--lg-refraction); }
+ :root[data-ui="apple"] .tab-bar[data-glass-busy="true"] { background:var(--lg-fill-busy); }
+ :root[data-ui="apple"] :is(.modal,.cal-popover,.time-popover) {
+  background:color-mix(in srgb,var(--surface) 88%,transparent); backdrop-filter:blur(24px) saturate(140%); -webkit-backdrop-filter:blur(24px) saturate(140%);
+ }
+}
+@media(min-width:600px) {
+ :root[data-ui="apple"] .tab-bar { border-radius:35px; padding:7px; }
+ :root[data-ui="apple"] :is(.session-edit,.session-sync) { border-radius:11px; }
+}
+@media(max-width:600px) {
+ :root[data-ui="apple"] header { padding:12px 16px; }
+ :root[data-ui="apple"] .modal-overlay { align-items:flex-end; padding:12px 8px calc(8px + env(safe-area-inset-bottom,0px)); }
+ :root[data-ui="apple"] .modal { border-radius:30px; padding:24px; margin:0 auto; max-height:calc(100dvh - 28px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); }
+ :root[data-ui="apple"] .modal-overlay.open .modal { animation:apple-sheet-in 260ms cubic-bezier(.4,0,.2,1); }
+}
+@keyframes apple-sheet-in {
+ from { opacity:.5; transform:translateY(22px); }
+ to { opacity:1; transform:translateY(0); }
+}
+:root[data-ui="apple"][data-apple-reduce-transparency="true"] :is(header,.tab-bar,.modal,.cal-popover,.time-popover,#toast) {
+ background:var(--lg-solid); backdrop-filter:none; -webkit-backdrop-filter:none;
+}
+:root[data-ui="apple"][data-apple-reduce-transparency="true"] .apple-scroll-edge { display:none; }
+:root[data-ui="apple"][data-apple-increase-contrast="true"] :is(header,.tab-bar,.modal,.cal-popover,.time-popover,#toast) {
+ background:var(--surface); color:var(--text); border:2px solid var(--apple-ink); backdrop-filter:none; -webkit-backdrop-filter:none;
+}
+:root[data-ui="apple"][data-apple-increase-contrast="true"] .tab-bar { --lg-label:var(--text); --lg-label-strong:var(--text); }
+:root[data-ui="apple"][data-apple-increase-contrast="true"] .apple-tab-lens { background:var(--apple-tint); outline:2px solid var(--apple-ink); outline-offset:-2px; transition:none; }
+:root[data-ui="apple"][data-apple-increase-contrast="true"] .tab-btn.active { font-weight:700; color:var(--apple-on-accent); transition:none; }
+:root[data-ui="apple"][data-apple-system-reduce-motion="true"] *,:root[data-ui="apple"][data-apple-system-reduce-motion="true"] *::before,:root[data-ui="apple"][data-apple-system-reduce-motion="true"] *::after {
+ animation-duration:.01ms!important; transition-duration:.01ms!important; scroll-behavior:auto!important;
+}
+:root[data-ui="apple"][data-apple-system-reduce-motion="true"] :is(.apple-tab-lens,button) { scale:1!important; }
+:root[data-ui="apple"][data-apple-system-reduce-motion="true"] .tab-btn.active .tab-icon { transform:none; }
+@media(prefers-reduced-transparency:reduce) {
+ :root[data-ui="apple"] :is(header,.tab-bar,.modal,.cal-popover,.time-popover,#toast) { background:var(--lg-solid); backdrop-filter:none; -webkit-backdrop-filter:none; }
+}
+@media(prefers-contrast:more) {
+ :root[data-ui="apple"] :is(header,.tab-bar,.modal,.cal-popover,.time-popover,#toast) { background:var(--surface); border:2px solid var(--apple-ink); backdrop-filter:none; -webkit-backdrop-filter:none; }
+}
+@media(forced-colors:active) {
+ :root[data-ui="apple"] :is(header,.tab-bar,.modal,.cal-popover,.time-popover,#toast) { background:Canvas!important; border:1px solid CanvasText; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; }
+ :root[data-ui="apple"] .apple-tab-lens { background:Highlight!important; outline:1px solid Highlight!important; }
+ :root[data-ui="apple"] .tab-btn.active { color:HighlightText!important; }
+}
+
+
+:root[data-ui="apple"][data-apple-system-reduce-motion="true"] button:active { transform:none; }
+:root[data-ui="apple"]:has(.modal-overlay.open) .tab-bar { opacity:.65; }
+@media(pointer:coarse) {
+ :root[data-ui="apple"] :is(.target-opt,.pick-opt,.top-period,.game-tag-filter,.settings-nav button,.theme-opt,.sync-seg button) { min-height:44px; }
+}
+:root[data-ui="apple"] .modal :is(.cal-popover,.time-popover),:root[data-ui="apple"]:has(.modal-overlay.open) #toast { background:var(--surface); backdrop-filter:none; -webkit-backdrop-filter:none; }
+
+/* Theme-coloured backdrop with quieter translucent content material. */
+:root[data-ui="apple"] {
+ --apple-backdrop-secondary:var(--apple-tint); --text3:#63636b;
+ --apple-backdrop-strength-a:24%; --apple-backdrop-strength-b:20%;
+ --apple-backdrop-strength-c:10%;
+ --apple-panel-fill:rgba(255,255,255,.52);
+ --apple-panel-rim:rgba(255,255,255,.65);
+ --apple-panel-shadow:0 12px 32px rgba(38,30,50,.08),inset 0 -1px 0 rgba(255,255,255,.22);
+}
+:root[data-ui="apple"][data-theme="dark"] {
+ --bg:#0b0b10; --text3:#aaaab0;
+ --apple-backdrop-strength-a:32%; --apple-backdrop-strength-b:26%;
+ --apple-backdrop-strength-c:12%;
+ --apple-panel-fill:rgba(28,28,30,.46);
+ --apple-panel-rim:rgba(255,255,255,.24);
+ --apple-panel-shadow:0 12px 32px rgba(0,0,0,.22),inset 0 -1px 0 rgba(255,255,255,.07);
+}
+:root[data-ui="apple"] { --apple-backdrop-image:
+  radial-gradient(ellipse 85vw 85vh at 0% 0%,color-mix(in srgb,var(--apple-tint) var(--apple-backdrop-strength-a),transparent),transparent 75%),
+  radial-gradient(ellipse 90vw 100vh at 100% 45%,color-mix(in srgb,var(--apple-backdrop-secondary) var(--apple-backdrop-strength-b),transparent),transparent 76%),
+  radial-gradient(ellipse 95vw 75vh at 25% 100%,color-mix(in srgb,var(--apple-tint) var(--apple-backdrop-strength-c),transparent),transparent 80%); }
+:root[data-ui="apple"] body,:root[data-ui="apple"] #boot-splash {
+ background-color:var(--bg);
+ background-image:var(--apple-backdrop-image);
+ background-attachment:fixed;
+ background-size:100vw 100vh; background-repeat:no-repeat;
+}
+:root[data-ui="apple"] :is(.card,.boot-stack) {
+ background:var(--surface); border-color:var(--border);
+ box-shadow:var(--apple-panel-shadow),inset 0 1px 0 var(--apple-panel-rim);
+}
+:root[data-ui="apple"] :is(.card,.boot-stack):hover { box-shadow:var(--apple-panel-shadow),inset 0 1px 0 var(--apple-panel-rim); }
+@supports ((backdrop-filter:blur(10px)) or (-webkit-backdrop-filter:blur(10px))) {
+ :root[data-ui="apple"] :is(.card,.boot-stack) { background:linear-gradient(135deg,rgba(255,255,255,.12),transparent 42%,rgba(255,255,255,.025)),var(--apple-panel-fill); backdrop-filter:blur(22px) saturate(140%); -webkit-backdrop-filter:blur(22px) saturate(140%); }
+}
+:root[data-ui="apple"] :is(.card .card,.modal .card) { background:var(--surface2); backdrop-filter:none; -webkit-backdrop-filter:none; }
+:root[data-ui="apple"] .apple-scroll-edge {
+ background:linear-gradient(to top,color-mix(in srgb,var(--bg) 45%,transparent),color-mix(in srgb,var(--bg) 20%,transparent) 50%,transparent);
+}
+:root[data-ui="apple"][data-apple-reduce-transparency="true"] :is(.card,.boot-stack),
+:root[data-ui="apple"][data-apple-increase-contrast="true"] :is(.card,.boot-stack) {
+ background:var(--surface); backdrop-filter:none; -webkit-backdrop-filter:none;
+}
+:root[data-ui="apple"][data-apple-increase-contrast="true"] :is(.card,.boot-stack) { border:2px solid var(--apple-ink); box-shadow:none; }
+@media(prefers-reduced-transparency:reduce) {
+ :root[data-ui="apple"] :is(.card,.boot-stack) { background:var(--surface); backdrop-filter:none; -webkit-backdrop-filter:none; }
+}
+@media(prefers-contrast:more) {
+ :root[data-ui="apple"] :is(.card,.boot-stack) { background:var(--surface); border:2px solid var(--apple-ink); backdrop-filter:none; -webkit-backdrop-filter:none; }
+}
+@media(forced-colors:active) {
+ :root[data-ui="apple"] body,:root[data-ui="apple"] #boot-splash { background:Canvas; }
+ :root[data-ui="apple"] :is(.card,.boot-stack) { background:Canvas!important; color:CanvasText; border:1px solid CanvasText; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; box-shadow:none; }
+}
+
+
+
+/* Move only the Apple backdrop; content and controls stay in place. */
+.apple-animated-backdrop { display:none; pointer-events:none; }
+:root[data-ui="apple"] body { isolation:isolate; background-image:none; }
+:root[data-ui="apple"] .apple-animated-backdrop {
+ display:block; position:fixed; inset:-8vh -8vw; z-index:-1;
+ background-image:var(--apple-backdrop-image); background-size:100% 100%; background-repeat:no-repeat;
+ transform-origin:center; will-change:transform;
+ animation:apple-backdrop-drift 24s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes apple-backdrop-drift {
+ 0%,100% { transform:translate3d(-3%,-2%,0) scale(1.03); }
+ 50% { transform:translate3d(3%,2%,0) scale(1.07); }
+}
+:root[data-ui="apple"][data-apple-background-paused="true"] .apple-animated-backdrop { animation-play-state:paused; }
+:root[data-ui="apple"][data-apple-system-reduce-motion="true"] .apple-animated-backdrop {
+ animation:none!important; transform:none!important; inset:0; will-change:auto;
+}
+@media(prefers-reduced-motion:reduce) {
+ :root[data-ui="apple"] .apple-animated-backdrop { animation:none!important; transform:none!important; inset:0; will-change:auto; }
+}
+@media(forced-colors:active) {
+ :root[data-ui="apple"] .apple-animated-backdrop { display:none; animation:none!important; }
+}
+
 
 </style>
 <script>
 // Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
+function appleAccentRoles(hex,theme,backgroundOverride) {
+  var n=parseInt(String(hex).replace('#',''),16);if(!Number.isFinite(n))n=0xfb923c;
+  var source=[(n>>16)&255,(n>>8)&255,n&255];
+  function luminance(rgb){return rgb.map(function(v){v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);}).reduce(function(sum,v,i){return sum+v*[.2126,.7152,.0722][i];},0);}
+  function contrast(a,b){var x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+  function hexColor(rgb){return '#'+rgb.map(function(v){return Math.round(v).toString(16).padStart(2,'0');}).join('');}
+  var background=backgroundOverride||(theme==='light'?[242,242,247]:[44,44,46]),ink=source.slice(),end=theme==='light'?0:255;
+  for(var i=0;i<24&&contrast(ink,background)<4.5;i++)ink=ink.map(function(v){return Math.round(v*.85+end*.15);});
+  return {ink:hexColor(ink),onAccent:contrast(source,[255,255,255])>=contrast(source,[0,0,0])?'#ffffff':'#000000'};
+}
 var MX_PALETTES = {"cyanblue":{"light":{"primary":"#006877","on-primary":"#ffffff","primary-container":"#a2eeff","on-primary-container":"#004e5a","secondary":"#4a6268","on-secondary":"#ffffff","secondary-container":"#cde7ed","on-secondary-container":"#334a50","tertiary":"#545d7e","on-tertiary":"#ffffff","tertiary-container":"#dbe1ff","on-tertiary-container":"#3d4665","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f5fafc","on-background":"#171d1e","surface":"#f5fafc","on-surface":"#171d1e","surface-variant":"#dbe4e7","on-surface-variant":"#3f484a","surface-container-lowest":"#ffffff","surface-container-low":"#eff5f6","surface-container":"#e9eff0","surface-container-high":"#e3e9eb","surface-container-highest":"#dee3e5","outline":"#6f797b","outline-variant":"#bfc8cb","inverse-surface":"#2b3133","inverse-on-surface":"#ecf2f3","inverse-primary":"#83d2e3"},"dark":{"primary":"#83d2e3","on-primary":"#00363e","primary-container":"#004e5a","on-primary-container":"#a2eeff","secondary":"#b1cbd1","on-secondary":"#1c3439","secondary-container":"#334a50","on-secondary-container":"#cde7ed","tertiary":"#bcc5eb","on-tertiary":"#262f4d","tertiary-container":"#3d4665","on-tertiary-container":"#dbe1ff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#0e1416","on-background":"#dee3e5","surface":"#0e1416","on-surface":"#dee3e5","surface-variant":"#3f484a","on-surface-variant":"#bfc8cb","surface-container-lowest":"#090f10","surface-container-low":"#171d1e","surface-container":"#1b2122","surface-container-high":"#252b2c","surface-container-highest":"#303637","outline":"#899295","outline-variant":"#3f484a","inverse-surface":"#dee3e5","inverse-on-surface":"#2b3133","inverse-primary":"#006877"}},"greenteal":{"light":{"primary":"#226a4c","on-primary":"#ffffff","primary-container":"#aaf2cc","on-primary-container":"#005236","secondary":"#4d6357","on-secondary":"#ffffff","secondary-container":"#d0e8d8","on-secondary-container":"#364b40","tertiary":"#3d6473","on-tertiary":"#ffffff","tertiary-container":"#c0e9fb","on-tertiary-container":"#244c5a","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f5fbf5","on-background":"#171d19","surface":"#f5fbf5","on-surface":"#171d19","surface-variant":"#dce5dd","on-surface-variant":"#404943","surface-container-lowest":"#ffffff","surface-container-low":"#f0f5ef","surface-container":"#eaefe9","surface-container-high":"#e4eae4","surface-container-highest":"#dee4de","outline":"#707973","outline-variant":"#c0c9c1","inverse-surface":"#2c322e","inverse-on-surface":"#edf2ec","inverse-primary":"#8ed5b0"},"dark":{"primary":"#8ed5b0","on-primary":"#003824","primary-container":"#005236","on-primary-container":"#aaf2cc","secondary":"#b4ccbd","on-secondary":"#20352a","secondary-container":"#364b40","on-secondary-container":"#d0e8d8","tertiary":"#a5cdde","on-tertiary":"#063543","tertiary-container":"#244c5a","on-tertiary-container":"#c0e9fb","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#0f1511","on-background":"#dee4de","surface":"#0f1511","on-surface":"#dee4de","surface-variant":"#404943","on-surface-variant":"#c0c9c1","surface-container-lowest":"#0a0f0c","surface-container-low":"#171d19","surface-container":"#1b211d","surface-container-high":"#262b28","surface-container-highest":"#303632","outline":"#8a938c","outline-variant":"#404943","inverse-surface":"#dee4de","inverse-on-surface":"#2c322e","inverse-primary":"#226a4c"}},"rose":{"light":{"primary":"#8f4a50","on-primary":"#ffffff","primary-container":"#ffdadb","on-primary-container":"#723339","secondary":"#765658","on-secondary":"#ffffff","secondary-container":"#ffdadb","on-secondary-container":"#5c3f41","tertiary":"#765930","on-tertiary":"#ffffff","tertiary-container":"#ffddb3","on-tertiary-container":"#5c421a","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f7","on-background":"#22191a","surface":"#fff8f7","on-surface":"#22191a","surface-variant":"#f4dddd","on-surface-variant":"#524344","surface-container-lowest":"#ffffff","surface-container-low":"#fff0f0","surface-container":"#fceaea","surface-container-high":"#f6e4e4","surface-container-highest":"#f0dede","outline":"#857373","outline-variant":"#d7c1c2","inverse-surface":"#382e2e","inverse-on-surface":"#ffedec","inverse-primary":"#ffb2b7"},"dark":{"primary":"#ffb2b7","on-primary":"#561d24","primary-container":"#723339","on-primary-container":"#ffdadb","secondary":"#e6bdbe","on-secondary":"#44292b","secondary-container":"#5c3f41","on-secondary-container":"#ffdadb","tertiary":"#e7c08e","on-tertiary":"#432c06","tertiary-container":"#5c421a","on-tertiary-container":"#ffddb3","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#1a1112","on-background":"#f0dede","surface":"#1a1112","on-surface":"#f0dede","surface-variant":"#524344","on-surface-variant":"#d7c1c2","surface-container-lowest":"#140c0c","surface-container-low":"#22191a","surface-container":"#271d1e","surface-container-high":"#312828","surface-container-highest":"#3d3232","outline":"#9f8c8d","outline-variant":"#524344","inverse-surface":"#f0dede","inverse-on-surface":"#382e2e","inverse-primary":"#8f4a50"}},"sunset":{"light":{"primary":"#8a5022","on-primary":"#ffffff","primary-container":"#ffdcc5","on-primary-container":"#6d390b","secondary":"#755845","on-secondary":"#ffffff","secondary-container":"#ffdcc5","on-secondary-container":"#5b412f","tertiary":"#5f6135","on-tertiary":"#ffffff","tertiary-container":"#e4e6ae","on-tertiary-container":"#474920","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f5","on-background":"#221a15","surface":"#fff8f5","on-surface":"#221a15","surface-variant":"#f3dfd2","on-surface-variant":"#52443b","surface-container-lowest":"#ffffff","surface-container-low":"#fff1e9","surface-container":"#fbebe1","surface-container-high":"#f6e5dc","surface-container-highest":"#f0dfd6","outline":"#84746a","outline-variant":"#d6c3b7","inverse-surface":"#382f29","inverse-on-surface":"#feeee4","inverse-primary":"#ffb783"},"dark":{"primary":"#ffb783","on-primary":"#4f2500","primary-container":"#6d390b","on-primary-container":"#ffdcc5","secondary":"#e4bfa7","on-secondary":"#422b1b","secondary-container":"#5b412f","on-secondary-container":"#ffdcc5","tertiary":"#c8ca94","on-tertiary":"#30330b","tertiary-container":"#474920","on-tertiary-container":"#e4e6ae","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#19120d","on-background":"#f0dfd6","surface":"#19120d","on-surface":"#f0dfd6","surface-variant":"#52443b","on-surface-variant":"#d6c3b7","surface-container-lowest":"#140d08","surface-container-low":"#221a15","surface-container":"#261e18","surface-container-high":"#312822","surface-container-highest":"#3c332d","outline":"#9f8d83","outline-variant":"#52443b","inverse-surface":"#f0dfd6","inverse-on-surface":"#382f29","inverse-primary":"#8a5022"}},"pinkviolet":{"light":{"primary":"#8a4a65","on-primary":"#ffffff","primary-container":"#ffd9e4","on-primary-container":"#6e334d","secondary":"#735760","on-secondary":"#ffffff","secondary-container":"#ffd9e4","on-secondary-container":"#5a3f49","tertiary":"#7e5537","on-tertiary":"#ffffff","tertiary-container":"#ffdcc4","on-tertiary-container":"#633e22","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f8","on-background":"#21191c","surface":"#fff8f8","on-surface":"#21191c","surface-variant":"#f2dee3","on-surface-variant":"#514347","surface-container-lowest":"#ffffff","surface-container-low":"#fff0f3","surface-container":"#faeaed","surface-container-high":"#f4e4e8","surface-container-highest":"#eedfe2","outline":"#837378","outline-variant":"#d5c2c7","inverse-surface":"#372e31","inverse-on-surface":"#fdedf0","inverse-primary":"#ffb0cd"},"dark":{"primary":"#ffb0cd","on-primary":"#531d36","primary-container":"#6e334d","on-primary-container":"#ffd9e4","secondary":"#e1bdc9","on-secondary":"#412932","secondary-container":"#5a3f49","on-secondary-container":"#ffd9e4","tertiary":"#f1bc96","on-tertiary":"#49290e","tertiary-container":"#633e22","on-tertiary-container":"#ffdcc4","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#191114","on-background":"#eedfe2","surface":"#191114","on-surface":"#eedfe2","surface-variant":"#514347","on-surface-variant":"#d5c2c7","surface-container-lowest":"#130c0f","surface-container-low":"#21191c","surface-container":"#261d20","surface-container-high":"#30282a","surface-container-highest":"#3c3235","outline":"#9d8c91","outline-variant":"#514347","inverse-surface":"#eedfe2","inverse-on-surface":"#372e31","inverse-primary":"#8a4a65"}},"ocean":{"light":{"primary":"#445e91","on-primary":"#ffffff","primary-container":"#d8e2ff","on-primary-container":"#2b4678","secondary":"#575e71","on-secondary":"#ffffff","secondary-container":"#dbe2f9","on-secondary-container":"#3f4759","tertiary":"#715573","on-tertiary":"#ffffff","tertiary-container":"#fcd7fb","on-tertiary-container":"#583e5b","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f9f9ff","on-background":"#1a1b20","surface":"#f9f9ff","on-surface":"#1a1b20","surface-variant":"#e1e2ec","on-surface-variant":"#44474f","surface-container-lowest":"#ffffff","surface-container-low":"#f3f3fa","surface-container":"#eeedf4","surface-container-high":"#e8e7ef","surface-container-highest":"#e2e2e9","outline":"#75777f","outline-variant":"#c4c6d0","inverse-surface":"#2f3036","inverse-on-surface":"#f0f0f7","inverse-primary":"#adc6ff"},"dark":{"primary":"#adc6ff","on-primary":"#112f60","primary-container":"#2b4678","on-primary-container":"#d8e2ff","secondary":"#bfc6dc","on-secondary":"#293041","secondary-container":"#3f4759","on-secondary-container":"#dbe2f9","tertiary":"#debcdf","on-tertiary":"#402843","tertiary-container":"#583e5b","on-tertiary-container":"#fcd7fb","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#111318","on-background":"#e2e2e9","surface":"#111318","on-surface":"#e2e2e9","surface-variant":"#44474f","on-surface-variant":"#c4c6d0","surface-container-lowest":"#0c0e13","surface-container-low":"#1a1b20","surface-container":"#1e1f25","surface-container-high":"#282a2f","surface-container-highest":"#33353a","outline":"#8e9099","outline-variant":"#44474f","inverse-surface":"#e2e2e9","inverse-on-surface":"#2f3036","inverse-primary":"#445e91"}},"violet":{"light":{"primary":"#66558f","on-primary":"#ffffff","primary-container":"#e9ddff","on-primary-container":"#4d3d75","secondary":"#625b70","on-secondary":"#ffffff","secondary-container":"#e8def8","on-secondary-container":"#4a4458","tertiary":"#7e525f","on-tertiary":"#ffffff","tertiary-container":"#ffd9e2","on-tertiary-container":"#633b48","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fef7ff","on-background":"#1d1b20","surface":"#fef7ff","on-surface":"#1d1b20","surface-variant":"#e7e0eb","on-surface-variant":"#49454e","surface-container-lowest":"#ffffff","surface-container-low":"#f8f2fa","surface-container":"#f2ecf4","surface-container-high":"#ece6ee","surface-container-highest":"#e6e0e9","outline":"#7a757f","outline-variant":"#cac4cf","inverse-surface":"#322f35","inverse-on-surface":"#f5eff7","inverse-primary":"#d0bcfe"},"dark":{"primary":"#d0bcfe","on-primary":"#36265d","primary-container":"#4d3d75","on-primary-container":"#e9ddff","secondary":"#ccc2db","on-secondary":"#332d41","secondary-container":"#4a4458","on-secondary-container":"#e8def8","tertiary":"#efb8c7","on-tertiary":"#4a2531","tertiary-container":"#633b48","on-tertiary-container":"#ffd9e2","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#141218","on-background":"#e6e0e9","surface":"#141218","on-surface":"#e6e0e9","surface-variant":"#49454e","on-surface-variant":"#cac4cf","surface-container-lowest":"#0f0d13","surface-container-low":"#1d1b20","surface-container":"#211f24","surface-container-high":"#2b292f","surface-container-highest":"#36343a","outline":"#948f99","outline-variant":"#49454e","inverse-surface":"#e6e0e9","inverse-on-surface":"#322f35","inverse-primary":"#66558f"}},"gold":{"light":{"primary":"#825513","on-primary":"#ffffff","primary-container":"#ffddb8","on-primary-container":"#653e00","secondary":"#715a41","on-secondary":"#ffffff","secondary-container":"#fcddbd","on-secondary-container":"#57432b","tertiary":"#54643d","on-tertiary":"#ffffff","tertiary-container":"#d7e9b9","on-tertiary-container":"#3d4c28","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f4","on-background":"#211a13","surface":"#fff8f4","on-surface":"#211a13","surface-variant":"#f1e0d0","on-surface-variant":"#504539","surface-container-lowest":"#ffffff","surface-container-low":"#fff1e5","surface-container":"#f9ece0","surface-container-high":"#f3e6da","surface-container-highest":"#eee0d4","outline":"#827568","outline-variant":"#d4c4b5","inverse-surface":"#372f27","inverse-on-surface":"#fceee2","inverse-primary":"#f8bb71"},"dark":{"primary":"#f8bb71","on-primary":"#472a00","primary-container":"#653e00","on-primary-container":"#ffddb8","secondary":"#dfc2a2","on-secondary":"#3f2d17","secondary-container":"#57432b","on-secondary-container":"#fcddbd","tertiary":"#bbcd9e","on-tertiary":"#273513","tertiary-container":"#3d4c28","on-tertiary-container":"#d7e9b9","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#18120c","on-background":"#eee0d4","surface":"#18120c","on-surface":"#eee0d4","surface-variant":"#504539","on-surface-variant":"#d4c4b5","surface-container-lowest":"#130d07","surface-container-low":"#211a13","surface-container":"#251e17","surface-container-high":"#302921","surface-container-highest":"#3b332b","outline":"#9c8e80","outline-variant":"#504539","inverse-surface":"#eee0d4","inverse-on-surface":"#372f27","inverse-primary":"#825513"}},"red":{"light":{"primary":"#904a46","on-primary":"#ffffff","primary-container":"#ffdad7","on-primary-container":"#733330","secondary":"#775654","on-secondary":"#ffffff","secondary-container":"#ffdad7","on-secondary-container":"#5d3f3d","tertiary":"#725b2e","on-tertiary":"#ffffff","tertiary-container":"#ffdea6","on-tertiary-container":"#594319","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f7","on-background":"#231919","surface":"#fff8f7","on-surface":"#231919","surface-variant":"#f5dddb","on-surface-variant":"#534342","surface-container-lowest":"#ffffff","surface-container-low":"#fff0ef","surface-container":"#fceae8","surface-container-high":"#f6e4e2","surface-container-highest":"#f1dedd","outline":"#857371","outline-variant":"#d8c2bf","inverse-surface":"#382e2d","inverse-on-surface":"#ffedeb","inverse-primary":"#ffb3ad"},"dark":{"primary":"#ffb3ad","on-primary":"#571e1b","primary-container":"#733330","on-primary-container":"#ffdad7","secondary":"#e7bdb9","on-secondary":"#442927","secondary-container":"#5d3f3d","on-secondary-container":"#ffdad7","tertiary":"#e1c28c","on-tertiary":"#402d04","tertiary-container":"#594319","on-tertiary-container":"#ffdea6","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#1a1111","on-background":"#f1dedd","surface":"#1a1111","on-surface":"#f1dedd","surface-variant":"#534342","on-surface-variant":"#d8c2bf","surface-container-lowest":"#140c0b","surface-container-low":"#231919","surface-container":"#271d1c","surface-container-high":"#322827","surface-container-highest":"#3d3231","outline":"#a08c8a","outline-variant":"#534342","inverse-surface":"#f1dedd","inverse-on-surface":"#382e2d","inverse-primary":"#904a46"}},"mintlime":{"light":{"primary":"#216a4d","on-primary":"#ffffff","primary-container":"#a9f2cd","on-primary-container":"#005137","secondary":"#4d6357","on-secondary":"#ffffff","secondary-container":"#cfe9d9","on-secondary-container":"#364b40","tertiary":"#3d6473","on-tertiary":"#ffffff","tertiary-container":"#c1e9fb","on-tertiary-container":"#244c5a","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f5fbf5","on-background":"#171d19","surface":"#f5fbf5","on-surface":"#171d19","surface-variant":"#dce5dd","on-surface-variant":"#404943","surface-container-lowest":"#ffffff","surface-container-low":"#eff5ef","surface-container":"#eaefe9","surface-container-high":"#e4eae4","surface-container-highest":"#dee4de","outline":"#707973","outline-variant":"#bfc9c1","inverse-surface":"#2c322e","inverse-on-surface":"#edf2ec","inverse-primary":"#8ed5b2"},"dark":{"primary":"#8ed5b2","on-primary":"#003825","primary-container":"#005137","on-primary-container":"#a9f2cd","secondary":"#b4ccbd","on-secondary":"#1f352a","secondary-container":"#364b40","on-secondary-container":"#cfe9d9","tertiary":"#a5ccde","on-tertiary":"#073543","tertiary-container":"#244c5a","on-tertiary-container":"#c1e9fb","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#0f1511","on-background":"#dee4de","surface":"#0f1511","on-surface":"#dee4de","surface-variant":"#404943","on-surface-variant":"#bfc9c1","surface-container-lowest":"#0a0f0c","surface-container-low":"#171d19","surface-container":"#1b211d","surface-container-high":"#252b28","surface-container-highest":"#303632","outline":"#8a938c","outline-variant":"#404943","inverse-surface":"#dee4de","inverse-on-surface":"#2c322e","inverse-primary":"#216a4d"}},"skyindigo":{"light":{"primary":"#256489","on-primary":"#ffffff","primary-container":"#c9e6ff","on-primary-container":"#004c6e","secondary":"#4f606e","on-secondary":"#ffffff","secondary-container":"#d3e5f5","on-secondary-container":"#384956","tertiary":"#64597c","on-tertiary":"#ffffff","tertiary-container":"#eaddff","on-tertiary-container":"#4c4163","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f6f9fe","on-background":"#181c20","surface":"#f6f9fe","on-surface":"#181c20","surface-variant":"#dde3ea","on-surface-variant":"#41474d","surface-container-lowest":"#ffffff","surface-container-low":"#f1f4f9","surface-container":"#ebeef3","surface-container-high":"#e5e8ed","surface-container-highest":"#dfe3e8","outline":"#71787e","outline-variant":"#c1c7ce","inverse-surface":"#2d3135","inverse-on-surface":"#eef1f6","inverse-primary":"#94cdf7"},"dark":{"primary":"#94cdf7","on-primary":"#00344d","primary-container":"#004c6e","on-primary-container":"#c9e6ff","secondary":"#b7c9d9","on-secondary":"#21323f","secondary-container":"#384956","on-secondary-container":"#d3e5f5","tertiary":"#cec0e8","on-tertiary":"#352b4b","tertiary-container":"#4c4163","on-tertiary-container":"#eaddff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#101417","on-background":"#dfe3e8","surface":"#101417","on-surface":"#dfe3e8","surface-variant":"#41474d","on-surface-variant":"#c1c7ce","surface-container-lowest":"#0a0f12","surface-container-low":"#181c20","surface-container":"#1c2024","surface-container-high":"#262a2e","surface-container-highest":"#313539","outline":"#8b9198","outline-variant":"#41474d","inverse-surface":"#dfe3e8","inverse-on-surface":"#2d3135","inverse-primary":"#256489"}},"berry":{"light":{"primary":"#7c4e7f","on-primary":"#ffffff","primary-container":"#ffd6fd","on-primary-container":"#623766","secondary":"#6c586b","on-secondary":"#ffffff","secondary-container":"#f5dbf1","on-secondary-container":"#534152","tertiary":"#82524a","on-tertiary":"#ffffff","tertiary-container":"#ffdad4","on-tertiary-container":"#673b34","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff7fa","on-background":"#1f1a1f","surface":"#fff7fa","on-surface":"#1f1a1f","surface-variant":"#eddfe8","on-surface-variant":"#4d444c","surface-container-lowest":"#ffffff","surface-container-low":"#fcf0f7","surface-container":"#f6ebf2","surface-container-high":"#f0e5ec","surface-container-highest":"#ebdfe6","outline":"#7f747c","outline-variant":"#d0c3cc","inverse-surface":"#352f34","inverse-on-surface":"#f9eef4","inverse-primary":"#ecb5ec"},"dark":{"primary":"#ecb5ec","on-primary":"#49204e","primary-container":"#623766","on-primary-container":"#ffd6fd","secondary":"#d8bfd5","on-secondary":"#3b2b3b","secondary-container":"#534152","on-secondary-container":"#f5dbf1","tertiary":"#f6b8ad","on-tertiary":"#4c251f","tertiary-container":"#673b34","on-tertiary-container":"#ffdad4","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#171216","on-background":"#ebdfe6","surface":"#171216","on-surface":"#ebdfe6","surface-variant":"#4d444c","on-surface-variant":"#d0c3cc","surface-container-lowest":"#110d11","surface-container-low":"#1f1a1f","surface-container":"#231e23","surface-container-high":"#2e282d","surface-container-highest":"#393338","outline":"#998d96","outline-variant":"#4d444c","inverse-surface":"#ebdfe6","inverse-on-surface":"#352f34","inverse-primary":"#7c4e7f"}},"coral":{"light":{"primary":"#8f4952","on-primary":"#ffffff","primary-container":"#ffdadc","on-primary-container":"#72333b","secondary":"#765659","on-secondary":"#ffffff","secondary-container":"#ffdadc","on-secondary-container":"#5c3f42","tertiary":"#775930","on-tertiary":"#ffffff","tertiary-container":"#ffddb6","on-tertiary-container":"#5d411b","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f7","on-background":"#22191a","surface":"#fff8f7","on-surface":"#22191a","surface-variant":"#f4ddde","on-surface-variant":"#524344","surface-container-lowest":"#ffffff","surface-container-low":"#fff0f0","surface-container":"#fceaea","surface-container-high":"#f6e4e4","surface-container-highest":"#f0dedf","outline":"#857374","outline-variant":"#d7c1c2","inverse-surface":"#382e2f","inverse-on-surface":"#ffeded","inverse-primary":"#ffb2b9"},"dark":{"primary":"#ffb2b9","on-primary":"#561d26","primary-container":"#72333b","on-primary-container":"#ffdadc","secondary":"#e5bdbf","on-secondary":"#44292c","secondary-container":"#5c3f42","on-secondary-container":"#ffdadc","tertiary":"#e8c08e","on-tertiary":"#442b06","tertiary-container":"#5d411b","on-tertiary-container":"#ffddb6","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#1a1112","on-background":"#f0dedf","surface":"#1a1112","on-surface":"#f0dedf","surface-variant":"#524344","on-surface-variant":"#d7c1c2","surface-container-lowest":"#140c0d","surface-container-low":"#22191a","surface-container":"#271d1e","surface-container-high":"#312828","surface-container-highest":"#3d3233","outline":"#9f8c8d","outline-variant":"#524344","inverse-surface":"#f0dedf","inverse-on-surface":"#382e2f","inverse-primary":"#8f4952"}},"forest":{"light":{"primary":"#216a4d","on-primary":"#ffffff","primary-container":"#a9f2cc","on-primary-container":"#005137","secondary":"#4d6357","on-secondary":"#ffffff","secondary-container":"#cfe9d9","on-secondary-container":"#364b40","tertiary":"#3d6473","on-tertiary":"#ffffff","tertiary-container":"#c1e9fb","on-tertiary-container":"#244c5a","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f5fbf5","on-background":"#171d19","surface":"#f5fbf5","on-surface":"#171d19","surface-variant":"#dce5dd","on-surface-variant":"#404943","surface-container-lowest":"#ffffff","surface-container-low":"#f0f5ef","surface-container":"#eaefe9","surface-container-high":"#e4eae4","surface-container-highest":"#dee4de","outline":"#707973","outline-variant":"#bfc9c1","inverse-surface":"#2c322e","inverse-on-surface":"#edf2ec","inverse-primary":"#8ed5b1"},"dark":{"primary":"#8ed5b1","on-primary":"#003825","primary-container":"#005137","on-primary-container":"#a9f2cc","secondary":"#b4ccbd","on-secondary":"#1f352a","secondary-container":"#364b40","on-secondary-container":"#cfe9d9","tertiary":"#a5ccde","on-tertiary":"#073543","tertiary-container":"#244c5a","on-tertiary-container":"#c1e9fb","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#0f1511","on-background":"#dee4de","surface":"#0f1511","on-surface":"#dee4de","surface-variant":"#404943","on-surface-variant":"#bfc9c1","surface-container-lowest":"#0a0f0c","surface-container-low":"#171d19","surface-container":"#1b211d","surface-container-high":"#252b28","surface-container-highest":"#303632","outline":"#8a938c","outline-variant":"#404943","inverse-surface":"#dee4de","inverse-on-surface":"#2c322e","inverse-primary":"#216a4d"}},"amethyst":{"light":{"primary":"#6f528a","on-primary":"#ffffff","primary-container":"#f0dbff","on-primary-container":"#563b70","secondary":"#665a6f","on-secondary":"#ffffff","secondary-container":"#edddf6","on-secondary-container":"#4d4356","tertiary":"#805157","on-tertiary":"#ffffff","tertiary-container":"#ffd9dc","on-tertiary-container":"#653a40","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff7fe","on-background":"#1e1a20","surface":"#fff7fe","on-surface":"#1e1a20","surface-variant":"#e9dfeb","on-surface-variant":"#4a454e","surface-container-lowest":"#ffffff","surface-container-low":"#f9f1f9","surface-container":"#f4ebf3","surface-container-high":"#eee6ee","surface-container-highest":"#e8e0e8","outline":"#7c757e","outline-variant":"#ccc4ce","inverse-surface":"#332f35","inverse-on-surface":"#f6eef6","inverse-primary":"#dbb9f9"},"dark":{"primary":"#dbb9f9","on-primary":"#3e2458","primary-container":"#563b70","on-primary-container":"#f0dbff","secondary":"#d0c1d9","on-secondary":"#362c3f","secondary-container":"#4d4356","on-secondary-container":"#edddf6","tertiary":"#f3b7bd","on-tertiary":"#4b252a","tertiary-container":"#653a40","on-tertiary-container":"#ffd9dc","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#151217","on-background":"#e8e0e8","surface":"#151217","on-surface":"#e8e0e8","surface-variant":"#4a454e","on-surface-variant":"#ccc4ce","surface-container-lowest":"#100d12","surface-container-low":"#1e1a20","surface-container":"#221e24","surface-container-high":"#2c292e","surface-container-highest":"#373339","outline":"#968e98","outline-variant":"#4a454e","inverse-surface":"#e8e0e8","inverse-on-surface":"#332f35","inverse-primary":"#6f528a"}},"amber":{"light":{"primary":"#825513","on-primary":"#ffffff","primary-container":"#ffddb8","on-primary-container":"#653e00","secondary":"#715a41","on-secondary":"#ffffff","secondary-container":"#fcddbd","on-secondary-container":"#57432b","tertiary":"#54643d","on-tertiary":"#ffffff","tertiary-container":"#d7e9b9","on-tertiary-container":"#3d4c28","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f4","on-background":"#211a13","surface":"#fff8f4","on-surface":"#211a13","surface-variant":"#f1e0d0","on-surface-variant":"#504539","surface-container-lowest":"#ffffff","surface-container-low":"#fff1e5","surface-container":"#f9ece0","surface-container-high":"#f3e6da","surface-container-highest":"#eee0d4","outline":"#827568","outline-variant":"#d4c4b5","inverse-surface":"#372f27","inverse-on-surface":"#fceee2","inverse-primary":"#f8bb71"},"dark":{"primary":"#f8bb71","on-primary":"#472a00","primary-container":"#653e00","on-primary-container":"#ffddb8","secondary":"#dfc2a2","on-secondary":"#3f2d17","secondary-container":"#57432b","on-secondary-container":"#fcddbd","tertiary":"#bbcd9e","on-tertiary":"#273513","tertiary-container":"#3d4c28","on-tertiary-container":"#d7e9b9","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#18120c","on-background":"#eee0d4","surface":"#18120c","on-surface":"#eee0d4","surface-variant":"#504539","on-surface-variant":"#d4c4b5","surface-container-lowest":"#130d07","surface-container-low":"#211a13","surface-container":"#251e17","surface-container-high":"#302921","surface-container-highest":"#3b332b","outline":"#9c8e80","outline-variant":"#504539","inverse-surface":"#eee0d4","inverse-on-surface":"#372f27","inverse-primary":"#825513"}},"slate":{"light":{"primary":"#38608f","on-primary":"#ffffff","primary-container":"#d2e4ff","on-primary-container":"#1d4875","secondary":"#535f70","on-secondary":"#ffffff","secondary-container":"#d7e3f8","on-secondary-container":"#3c4858","tertiary":"#6c5677","on-tertiary":"#ffffff","tertiary-container":"#f4d9ff","on-tertiary-container":"#533f5f","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f8f9ff","on-background":"#191c20","surface":"#f8f9ff","on-surface":"#191c20","surface-variant":"#dfe2eb","on-surface-variant":"#43474e","surface-container-lowest":"#ffffff","surface-container-low":"#f2f3fa","surface-container":"#ecedf4","surface-container-high":"#e7e8ee","surface-container-highest":"#e1e2e8","outline":"#73777f","outline-variant":"#c3c6cf","inverse-surface":"#2e3035","inverse-on-surface":"#eff0f7","inverse-primary":"#a2c9fe"},"dark":{"primary":"#a2c9fe","on-primary":"#00325b","primary-container":"#1d4875","on-primary-container":"#d2e4ff","secondary":"#bbc7db","on-secondary":"#263141","secondary-container":"#3c4858","on-secondary-container":"#d7e3f8","tertiary":"#d8bde4","on-tertiary":"#3c2947","tertiary-container":"#533f5f","on-tertiary-container":"#f4d9ff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#111418","on-background":"#e1e2e8","surface":"#111418","on-surface":"#e1e2e8","surface-variant":"#43474e","on-surface-variant":"#c3c6cf","surface-container-lowest":"#0b0e13","surface-container-low":"#191c20","surface-container":"#1d2024","surface-container-high":"#272a2f","surface-container-highest":"#32353a","outline":"#8d9199","outline-variant":"#43474e","inverse-surface":"#e1e2e8","inverse-on-surface":"#2e3035","inverse-primary":"#38608f"}},"aqua":{"light":{"primary":"#00687a","on-primary":"#ffffff","primary-container":"#acedff","on-primary-container":"#004e5c","secondary":"#4b6269","on-secondary":"#ffffff","secondary-container":"#cee7ef","on-secondary-container":"#334a51","tertiary":"#565d7e","on-tertiary":"#ffffff","tertiary-container":"#dde1ff","on-tertiary-container":"#3f4565","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#f5fafc","on-background":"#171c1e","surface":"#f5fafc","on-surface":"#171c1e","surface-variant":"#dbe4e7","on-surface-variant":"#3f484b","surface-container-lowest":"#ffffff","surface-container-low":"#eff4f7","surface-container":"#e9eff1","surface-container-high":"#e4e9eb","surface-container-highest":"#dee3e5","outline":"#70797b","outline-variant":"#bfc8cb","inverse-surface":"#2c3133","inverse-on-surface":"#ecf2f4","inverse-primary":"#84d2e7"},"dark":{"primary":"#84d2e7","on-primary":"#003640","primary-container":"#004e5c","on-primary-container":"#acedff","secondary":"#b2cbd2","on-secondary":"#1d343a","secondary-container":"#334a51","on-secondary-container":"#cee7ef","tertiary":"#bfc4eb","on-tertiary":"#282f4d","tertiary-container":"#3f4565","on-tertiary-container":"#dde1ff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#0f1416","on-background":"#dee3e5","surface":"#0f1416","on-surface":"#dee3e5","surface-variant":"#3f484b","on-surface-variant":"#bfc8cb","surface-container-lowest":"#090f11","surface-container-low":"#171c1e","surface-container":"#1b2022","surface-container-high":"#252b2d","surface-container-highest":"#303638","outline":"#899295","outline-variant":"#3f484b","inverse-surface":"#dee3e5","inverse-on-surface":"#2c3133","inverse-primary":"#00687a"}},"plum":{"light":{"primary":"#6f528a","on-primary":"#ffffff","primary-container":"#f0dbff","on-primary-container":"#563b71","secondary":"#665a6f","on-secondary":"#ffffff","secondary-container":"#edddf6","on-secondary-container":"#4d4356","tertiary":"#805157","on-tertiary":"#ffffff","tertiary-container":"#ffd9dd","on-tertiary-container":"#653a40","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff7fe","on-background":"#1e1a20","surface":"#fff7fe","on-surface":"#1e1a20","surface-variant":"#e9dfeb","on-surface-variant":"#4a454e","surface-container-lowest":"#ffffff","surface-container-low":"#f9f1f9","surface-container":"#f4ebf3","surface-container-high":"#eee6ee","surface-container-highest":"#e8e0e8","outline":"#7c757e","outline-variant":"#ccc4ce","inverse-surface":"#332f35","inverse-on-surface":"#f6eef6","inverse-primary":"#dbb9f9"},"dark":{"primary":"#dbb9f9","on-primary":"#3e2458","primary-container":"#563b71","on-primary-container":"#f0dbff","secondary":"#d0c1da","on-secondary":"#362c3f","secondary-container":"#4d4356","on-secondary-container":"#edddf6","tertiary":"#f3b7be","on-tertiary":"#4b252b","tertiary-container":"#653a40","on-tertiary-container":"#ffd9dd","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#151218","on-background":"#e8e0e8","surface":"#151218","on-surface":"#e8e0e8","surface-variant":"#4a454e","on-surface-variant":"#ccc4ce","surface-container-lowest":"#100d12","surface-container-low":"#1e1a20","surface-container":"#221e24","surface-container-high":"#2c292e","surface-container-highest":"#373339","outline":"#968e98","outline-variant":"#4a454e","inverse-surface":"#e8e0e8","inverse-on-surface":"#332f35","inverse-primary":"#6f528a"}},"mango":{"light":{"primary":"#785a0b","on-primary":"#ffffff","primary-container":"#ffdf9f","on-primary-container":"#5c4300","secondary":"#6b5c3f","on-secondary":"#ffffff","secondary-container":"#f5e0bb","on-secondary-container":"#52452a","tertiary":"#4a6546","on-tertiary":"#ffffff","tertiary-container":"#ccebc4","on-tertiary-container":"#334d30","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","background":"#fff8f2","on-background":"#1f1b13","surface":"#fff8f2","on-surface":"#1f1b13","surface-variant":"#ede1cf","on-surface-variant":"#4d4639","surface-container-lowest":"#ffffff","surface-container-low":"#fcf2e5","surface-container":"#f7ecdf","surface-container-high":"#f1e7d9","surface-container-highest":"#ebe1d4","outline":"#7f7667","outline-variant":"#d0c5b4","inverse-surface":"#353027","inverse-on-surface":"#faefe2","inverse-primary":"#e9c16c"},"dark":{"primary":"#e9c16c","on-primary":"#402d00","primary-container":"#5c4300","on-primary-container":"#ffdf9f","secondary":"#d8c4a0","on-secondary":"#3b2f15","secondary-container":"#52452a","on-secondary-container":"#f5e0bb","tertiary":"#b1cfa9","on-tertiary":"#1d361b","tertiary-container":"#334d30","on-tertiary-container":"#ccebc4","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#17130b","on-background":"#ebe1d4","surface":"#17130b","on-surface":"#ebe1d4","surface-variant":"#4d4639","on-surface-variant":"#d0c5b4","surface-container-lowest":"#110e07","surface-container-low":"#1f1b13","surface-container":"#241f17","surface-container-high":"#2e2921","surface-container-highest":"#39342b","outline":"#998f80","outline-variant":"#4d4639","inverse-surface":"#ebe1d4","inverse-on-surface":"#353027","inverse-primary":"#785a0b"}},"grey":{"light":{"primary":"#000000","on-primary":"#e2e2e2","primary-container":"#3b3b3b","on-primary-container":"#ffffff","secondary":"#5e5e5e","on-secondary":"#ffffff","secondary-container":"#d4d4d4","on-secondary-container":"#1b1b1b","tertiary":"#3b3b3b","on-tertiary":"#e2e2e2","tertiary-container":"#747474","on-tertiary-container":"#ffffff","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#410002","background":"#f9f9f9","on-background":"#1b1b1b","surface":"#f9f9f9","on-surface":"#1b1b1b","surface-variant":"#e2e2e2","on-surface-variant":"#474747","surface-container-lowest":"#ffffff","surface-container-low":"#f3f3f3","surface-container":"#eeeeee","surface-container-high":"#e8e8e8","surface-container-highest":"#e2e2e2","outline":"#777777","outline-variant":"#c6c6c6","inverse-surface":"#303030","inverse-on-surface":"#f1f1f1","inverse-primary":"#c6c6c6"},"dark":{"primary":"#ffffff","on-primary":"#1b1b1b","primary-container":"#d4d4d4","on-primary-container":"#000000","secondary":"#c6c6c6","on-secondary":"#1b1b1b","secondary-container":"#474747","on-secondary-container":"#e2e2e2","tertiary":"#e2e2e2","on-tertiary":"#1b1b1b","tertiary-container":"#919191","on-tertiary-container":"#000000","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","background":"#131313","on-background":"#e2e2e2","surface":"#131313","on-surface":"#e2e2e2","surface-variant":"#474747","on-surface-variant":"#c6c6c6","surface-container-lowest":"#0e0e0e","surface-container-low":"#1b1b1b","surface-container":"#1f1f1f","surface-container-high":"#2a2a2a","surface-container-highest":"#353535","outline":"#919191","outline-variant":"#474747","inverse-surface":"#e2e2e2","inverse-on-surface":"#303030","inverse-primary":"#5e5e5e"}}};
 var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M240-200h120v-200q0-17 11.5-28.5T400-440h160q17 0 28.5 11.5T600-400v200h120v-360L480-740 240-560v360Zm-80 0v-360q0-19 8.5-36t23.5-28l240-180q21-16 48-16t48 16l240 180q15 11 23.5 28t8.5 36v360q0 33-23.5 56.5T720-120H560q-17 0-28.5-11.5T520-160v-200h-80v200q0 17-11.5 28.5T400-120H240q-33 0-56.5-23.5T160-200Zm320-270Z\"/></svg>", "bar_chart": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M680-160q-17 0-28.5-11.5T640-200v-200q0-17 11.5-28.5T680-440h80q17 0 28.5 11.5T800-400v200q0 17-11.5 28.5T760-160h-80Zm-240 0q-17 0-28.5-11.5T400-200v-560q0-17 11.5-28.5T440-800h80q17 0 28.5 11.5T560-760v560q0 17-11.5 28.5T520-160h-80Zm-240 0q-17 0-28.5-11.5T160-200v-360q0-17 11.5-28.5T200-600h80q17 0 28.5 11.5T320-560v360q0 17-11.5 28.5T280-160h-80Z\"/></svg>", "leaderboard": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M160-200h160v-320H160v320Zm240 0h160v-560H400v560Zm240 0h160v-240H640v240Zm-560 0v-320q0-33 23.5-56.5T160-600h160v-160q0-33 23.5-56.5T400-840h160q33 0 56.5 23.5T640-760v240h160q33 0 56.5 23.5T880-440v240q0 33-23.5 56.5T800-120H160q-33 0-56.5-23.5T80-200Z\"/></svg>", "sports_esports": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M182-200q-51 0-79-35.5T82-322l42-300q9-60 53.5-99T282-760h396q60 0 104.5 39t53.5 99l42 300q7 51-21 86.5T778-200q-21 0-39-7.5T706-230l-90-90H344l-90 90q-15 15-33 22.5t-39 7.5Zm16-86 114-114h336l114 114q2 2 16 6 11 0 17.5-6.5T800-304l-44-308q-4-29-26-48.5T678-680H282q-30 0-52 19.5T204-612l-44 308q-2 11 4.5 17.5T182-280q2 0 16-6Zm482-154q17 0 28.5-11.5T720-480q0-17-11.5-28.5T680-520q-17 0-28.5 11.5T640-480q0 17 11.5 28.5T680-440Zm-80-120q17 0 28.5-11.5T640-600q0-17-11.5-28.5T600-640q-17 0-28.5 11.5T560-600q0 17 11.5 28.5T600-560Zm-120 80Zm-170-30v40q0 13 8.5 21.5T340-440q13 0 21.5-8.5T370-470v-40h40q13 0 21.5-8.5T440-540q0-13-8.5-21.5T410-570h-40v-40q0-13-8.5-21.5T340-640q-13 0-21.5 8.5T310-610v40h-40q-13 0-21.5 8.5T240-540q0 13 8.5 21.5T270-510h40Z\"/></svg>", "military_tech": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"m480-174-74 56q-12 9-24 .5t-7-22.5l29-92-73-52q-12-8-7-22t19-14h89l28-92-142-84q-18-11-28-29t-10-41v-234q0-33 23.5-56.5T360-880h240q33 0 56.5 23.5T680-800v234q0 23-10 41t-28 29l-142 84 28 92h89q14 0 19 14t-7 22l-73 52 29 92q5 14-7 22.5t-24-.5l-74-56ZM360-800v234l80 48v-282h-80Zm240 0h-80v282l80-48v-234ZM480-647Zm-40-12Zm80 0Z\"/></svg>", "person": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-240v-32q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v32q0 33-23.5 56.5T720-160H240q-33 0-56.5-23.5T160-240Zm80 0h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z\"/></svg>", "settings": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M433-80q-27 0-46.5-18T363-142l-9-66q-13-5-24.5-12T307-235l-62 26q-25 11-50 2t-39-32l-47-82q-14-23-8-49t27-43l53-40q-1-7-1-13.5v-27q0-6.5 1-13.5l-53-40q-21-17-27-43t8-49l47-82q14-23 39-32t50 2l62 26q11-8 23-15t24-12l9-66q4-26 23.5-44t46.5-18h94q27 0 46.5 18t23.5 44l9 66q13 5 24.5 12t22.5 15l62-26q25-11 50-2t39 32l47 82q14 23 8 49t-27 43l-53 40q1 7 1 13.5v27q0 6.5-2 13.5l53 40q21 17 27 43t-8 49l-48 82q-14 23-39 32t-50-2l-60-26q-11 8-23 15t-24 12l-9 66q-4 26-23.5 44T527-80h-94Zm7-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z\"/></svg>", "history": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-120q-126 0-223-76.5T131-392q-4-15 6-27.5t27-14.5q16-2 29 6t18 24q24 90 99 147t170 57q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h70q17 0 28.5 11.5T360-600q0 17-11.5 28.5T320-560H160q-17 0-28.5-11.5T120-600v-160q0-17 11.5-28.5T160-800q17 0 28.5 11.5T200-760v54q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm40-376 100 100q11 11 11 28t-11 28q-11 11-28 11t-28-11L452-452q-6-6-9-13.5t-3-15.5v-159q0-17 11.5-28.5T480-680q17 0 28.5 11.5T520-640v144Z\"/></svg>", "play_arrow": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M320-273v-414q0-17 12-28.5t28-11.5q5 0 10.5 1.5T381-721l326 207q9 6 13.5 15t4.5 19q0 10-4.5 19T707-446L381-239q-5 3-10.5 4.5T360-233q-16 0-28-11.5T320-273Zm80-207Zm0 134 210-134-210-134v268Z\"/></svg>", "pause": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M600-200q-33 0-56.5-23.5T520-280v-400q0-33 23.5-56.5T600-760h80q33 0 56.5 23.5T760-680v400q0 33-23.5 56.5T680-200h-80Zm-320 0q-33 0-56.5-23.5T200-280v-400q0-33 23.5-56.5T280-760h80q33 0 56.5 23.5T440-680v400q0 33-23.5 56.5T360-200h-80Zm320-80h80v-400h-80v400Zm-320 0h80v-400h-80v400Zm0-400v400-400Zm320 0v400-400Z\"/></svg>", "stop": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M240-320v-320q0-33 23.5-56.5T320-720h320q33 0 56.5 23.5T720-640v320q0 33-23.5 56.5T640-240H320q-33 0-56.5-23.5T240-320Zm80 0h320v-320H320v320Zm160-160Z\"/></svg>", "edit": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M200-200h57l391-391-57-57-391 391v57Zm-40 80q-17 0-28.5-11.5T120-160v-97q0-16 6-30.5t17-25.5l505-504q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L313-143q-11 11-25.5 17t-30.5 6h-97Zm600-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z\"/></svg>", "delete": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M280-120q-33 0-56.5-23.5T200-200v-520q-17 0-28.5-11.5T160-760q0-17 11.5-28.5T200-800h160q0-17 11.5-28.5T400-840h160q17 0 28.5 11.5T600-800h160q17 0 28.5 11.5T800-760q0 17-11.5 28.5T760-720v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM400-280q17 0 28.5-11.5T440-320v-280q0-17-11.5-28.5T400-640q-17 0-28.5 11.5T360-600v280q0 17 11.5 28.5T400-280Zm160 0q17 0 28.5-11.5T600-320v-280q0-17-11.5-28.5T560-640q-17 0-28.5 11.5T520-600v280q0 17 11.5 28.5T560-280ZM280-720v520-520Z\"/></svg>", "archive": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-560q-17 0-28.5 11.5T440-520v128l-36-36q-11-11-28-11t-28 11q-11 11-11 28t11 28l104 104q12 12 28 12t28-12l104-104q11-11 11-28t-11-28q-11-11-28-11t-28 11l-36 36v-128q0-17-11.5-28.5T480-560Zm-280-80v440h560v-440H200Zm0 520q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v499q0 33-23.5 56.5T760-120H200Zm16-600h528l-34-40H250l-34 40Zm264 300Z\"/></svg>", "unarchive": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-253q17 0 28.5-11.5T520-293v-128l36 36q11 11 28 11t28-11q11-11 11-28t-11-28L508-544q-12-12-28-12t-28 12L348-441q-11 11-11 28t11 28q11 11 28 11t28-11l36-36v128q0 17 11.5 28.5T480-253ZM200-640v440h560v-440H200Zm0 520q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v499q0 33-23.5 56.5T760-120H200Zm16-600h528l-34-40H250l-34 40Zm264 300Z\"/></svg>", "keep": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M640-760v280l68 68q6 6 9 13.5t3 15.5v23q0 17-11.5 28.5T680-320H520v223q0 8-3 15.5T508-68l-14 14q-6 6-14 6t-14-6l-14-14q-6-6-9-13.5T440-97v-223H280q-17 0-28.5-11.5T240-360v-23q0-8 3-15.5t9-13.5l68-68v-280q-17 0-28.5-11.5T280-800q0-17 11.5-28.5T320-840h320q17 0 28.5 11.5T680-800q0 17-11.5 28.5T640-760ZM354-400h252l-46-46v-314H400v314l-46 46Zm126 0Z\"/></svg>", "close": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z\"/></svg>", "check": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z\"/></svg>", "search": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z\"/></svg>", "add": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M440-440H240q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h200v-200q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v200h200q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H520v200q0 17-11.5 28.5T480-200q-17 0-28.5-11.5T440-240v-200Z\"/></svg>", "sync": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M240-478q0 45 17 87.5t53 78.5l10 10v-58q0-17 11.5-28.5T360-400q17 0 28.5 11.5T400-360v160q0 17-11.5 28.5T360-160H200q-17 0-28.5-11.5T160-200q0-17 11.5-28.5T200-240h70l-16-14q-52-46-73-105t-21-119q0-94 48-170.5T337-766q14-8 29.5-1t20.5 23q5 15-.5 30T367-691q-58 32-92.5 88.5T240-478Zm480-4q0-45-17-87.5T650-648l-10-10v58q0 17-11.5 28.5T600-560q-17 0-28.5-11.5T560-600v-160q0-17 11.5-28.5T600-800h160q17 0 28.5 11.5T800-760q0 17-11.5 28.5T760-720h-70l16 14q49 49 71.5 106.5T800-482q0 94-48 170.5T623-194q-14 8-29.5 1T573-216q-5-15 .5-30t19.5-23q58-32 92.5-88.5T720-482Z\"/></svg>", "calendar_month": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z\"/></svg>", "schedule": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M520-496v-144q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v159q0 8 3 15.5t9 13.5l132 132q11 11 28 11t28-11q11-11 11-28t-11-28L520-496ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z\"/></svg>", "expand_more": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-362q-8 0-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-373q-6 6-13 8.5t-15 2.5Z\"/></svg>", "chevron_left": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z\"/></svg>", "chevron_right": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M504-480 348-636q-11-11-11-28t11-28q11-11 28-11t28 11l184 184q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L404-268q-11 11-28 11t-28-11q-11-11-11-28t11-28l156-156Z\"/></svg>", "info": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-280q17 0 28.5-11.5T520-320v-160q0-17-11.5-28.5T480-520q-17 0-28.5 11.5T440-480v160q0 17 11.5 28.5T480-280Zm0-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z\"/></svg>", "download": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-337q-8 0-15-2.5t-13-8.5L308-492q-12-12-11.5-28t11.5-28q12-12 28.5-12.5T365-549l75 75v-286q0-17 11.5-28.5T480-800q17 0 28.5 11.5T520-760v286l75-75q12-12 28.5-11.5T652-548q11 12 11.5 28T652-492L508-348q-6 6-13 8.5t-15 2.5ZM240-160q-33 0-56.5-23.5T160-240v-80q0-17 11.5-28.5T200-360q17 0 28.5 11.5T240-320v80h480v-80q0-17 11.5-28.5T760-360q17 0 28.5 11.5T800-320v80q0 33-23.5 56.5T720-160H240Z\"/></svg>", "upload": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M240-160q-33 0-56.5-23.5T160-240v-80q0-17 11.5-28.5T200-360q17 0 28.5 11.5T240-320v80h480v-80q0-17 11.5-28.5T760-360q17 0 28.5 11.5T800-320v80q0 33-23.5 56.5T720-160H240Zm200-486-75 75q-12 12-28.5 11.5T308-572q-11-12-11.5-28t11.5-28l144-144q6-6 13-8.5t15-2.5q8 0 15 2.5t13 8.5l144 144q12 12 11.5 28T652-572q-12 12-28.5 12.5T595-571l-75-75v286q0 17-11.5 28.5T480-320q-17 0-28.5-11.5T440-360v-286Z\"/></svg>", "shuffle": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M600-160q-17 0-28.5-11.5T560-200q0-17 11.5-28.5T600-240h64l-99-99q-12-12-11.5-28.5T566-396q12-12 28.5-12t28.5 12l97 98v-62q0-17 11.5-28.5T760-400q17 0 28.5 11.5T800-360v160q0 17-11.5 28.5T760-160H600Zm-428-12q-11-11-11-28t11-28l492-492h-64q-17 0-28.5-11.5T560-760q0-17 11.5-28.5T600-800h160q17 0 28.5 11.5T800-760v160q0 17-11.5 28.5T760-560q-17 0-28.5-11.5T720-600v-64L228-172q-11 11-28 11t-28-11Zm-1-560q-11-11-11-28t11-28q11-11 27.5-11t28.5 11l168 167q11 11 11.5 27.5T395-565q-11 11-28 11t-28-11L171-732Z\"/></svg>", "dark_mode": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-120q-151 0-255.5-104.5T120-480q0-138 90-239.5T440-838q13-2 23 3.5t16 14.5q6 9 6.5 21t-7.5 23q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q11-7 22.5-6.5T819-479q10 5 15.5 15t3.5 24q-14 138-117.5 229T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z\"/></svg>", "light_mode": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM80-440q-17 0-28.5-11.5T40-480q0-17 11.5-28.5T80-520h80q17 0 28.5 11.5T200-480q0 17-11.5 28.5T160-440H80Zm720 0q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520h80q17 0 28.5 11.5T920-480q0 17-11.5 28.5T880-440h-80ZM480-760q-17 0-28.5-11.5T440-800v-80q0-17 11.5-28.5T480-920q17 0 28.5 11.5T520-880v80q0 17-11.5 28.5T480-760Zm0 720q-17 0-28.5-11.5T440-80v-80q0-17 11.5-28.5T480-200q17 0 28.5 11.5T520-160v80q0 17-11.5 28.5T480-40ZM226-678l-43-42q-12-11-11.5-28t11.5-29q12-12 29-12t28 12l42 43q11 12 11 28t-11 28q-11 12-27.5 11.5T226-678Zm494 495-42-43q-11-12-11-28.5t11-27.5q11-12 27.5-11.5T734-282l43 42q12 11 11.5 28T777-183q-12 12-29 12t-28-12Zm-42-495q-12-11-11.5-27.5T678-734l42-43q11-12 28-11.5t29 11.5q12 12 12 29t-12 28l-43 42q-12 11-28 11t-28-11ZM183-183q-12-12-12-29t12-28l43-42q12-11 28.5-11t27.5 11q12 11 11.5 27.5T282-226l-42 43q-11 12-28 11.5T183-183Zm297-297Z\"/></svg>", "timer": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M400-840q-17 0-28.5-11.5T360-880q0-17 11.5-28.5T400-920h160q17 0 28.5 11.5T600-880q0 17-11.5 28.5T560-840H400Zm80 440q17 0 28.5-11.5T520-440v-160q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600v160q0 17 11.5 28.5T480-400Zm0 320q-74 0-139.5-28.5T226-186q-49-49-77.5-114.5T120-440q0-74 28.5-139.5T226-694q49-49 114.5-77.5T480-800q62 0 119 20t107 58l28-28q11-11 28-11t28 11q11 11 11 28t-11 28l-28 28q38 50 58 107t20 119q0 74-28.5 139.5T734-186q-49 49-114.5 77.5T480-80Zm0-80q116 0 198-82t82-198q0-116-82-198t-198-82q-116 0-198 82t-82 198q0 116 82 198t198 82Zm0-280Z\"/></svg>", "flag": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M280-400v240q0 17-11.5 28.5T240-120q-17 0-28.5-11.5T200-160v-600q0-17 11.5-28.5T240-800h287q14 0 25 9t14 23l10 48h184q17 0 28.5 11.5T800-680v320q0 17-11.5 28.5T760-320H553q-14 0-25-9t-14-23l-10-48H280Zm306 0h134v-240H543q-14 0-25-9t-14-23l-10-48H280v240h257q14 0 25 9t14 23l10 48Zm-86-160Z\"/></svg>", "warning": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M109-120q-11 0-20-5.5T75-140q-5-9-5.5-19.5T75-180l370-640q6-10 15.5-15t19.5-5q10 0 19.5 5t15.5 15l370 640q6 10 5.5 20.5T885-140q-5 9-14 14.5t-20 5.5H109Zm69-80h604L480-720 178-200Zm302-40q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm0-120q17 0 28.5-11.5T520-400v-120q0-17-11.5-28.5T480-560q-17 0-28.5 11.5T440-520v120q0 17 11.5 28.5T480-360Zm0-100Z\"/></svg>", "star": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143Zm126 18L314-169q-11 7-23 6t-21-8q-9-7-14-17.5t-2-23.5l44-189-147-127q-10-9-12.5-20.5T140-571q4-11 12-18t22-9l194-17 75-178q5-12 15.5-18t21.5-6q11 0 21.5 6t15.5 18l75 178 194 17q14 2 22 9t12 18q4 11 1.5 22.5T809-528L662-401l44 189q3 13-2 23.5T690-171q-9 7-21 8t-23-6L480-269Zm0-201Z\"/></svg>", "keyboard": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M160-200q-33 0-56.5-23.5T80-280v-400q0-33 23.5-56.5T160-760h640q33 0 56.5 23.5T880-680v400q0 33-23.5 56.5T800-200H160Zm0-80h640v-400H160v400Zm200-40h240q17 0 28.5-11.5T640-360q0-17-11.5-28.5T600-400H360q-17 0-28.5 11.5T320-360q0 17 11.5 28.5T360-320Zm-200 40v-400 400Zm80-280q17 0 28.5-11.5T280-600q0-17-11.5-28.5T240-640q-17 0-28.5 11.5T200-600q0 17 11.5 28.5T240-560Zm120 0q17 0 28.5-11.5T400-600q0-17-11.5-28.5T360-640q-17 0-28.5 11.5T320-600q0 17 11.5 28.5T360-560Zm120 0q17 0 28.5-11.5T520-600q0-17-11.5-28.5T480-640q-17 0-28.5 11.5T440-600q0 17 11.5 28.5T480-560Zm120 0q17 0 28.5-11.5T640-600q0-17-11.5-28.5T600-640q-17 0-28.5 11.5T560-600q0 17 11.5 28.5T600-560Zm120 0q17 0 28.5-11.5T760-600q0-17-11.5-28.5T720-640q-17 0-28.5 11.5T680-600q0 17 11.5 28.5T720-560ZM240-440q17 0 28.5-11.5T280-480q0-17-11.5-28.5T240-520q-17 0-28.5 11.5T200-480q0 17 11.5 28.5T240-440Zm120 0q17 0 28.5-11.5T400-480q0-17-11.5-28.5T360-520q-17 0-28.5 11.5T320-480q0 17 11.5 28.5T360-440Zm120 0q17 0 28.5-11.5T520-480q0-17-11.5-28.5T480-520q-17 0-28.5 11.5T440-480q0 17 11.5 28.5T480-440Zm120 0q17 0 28.5-11.5T640-480q0-17-11.5-28.5T600-520q-17 0-28.5 11.5T560-480q0 17 11.5 28.5T600-440Zm120 0q17 0 28.5-11.5T760-480q0-17-11.5-28.5T720-520q-17 0-28.5 11.5T680-480q0 17 11.5 28.5T720-440Z\"/></svg>", "dialpad": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" height=\"24\" viewBox=\"0 -960 960 960\" width=\"24\"><path d=\"M480-40q-33 0-56.5-23.5T400-120q0-33 23.5-56.5T480-200q33 0 56.5 23.5T560-120q0 33-23.5 56.5T480-40ZM240-760q-33 0-56.5-23.5T160-840q0-33 23.5-56.5T240-920q33 0 56.5 23.5T320-840q0 33-23.5 56.5T240-760Zm0 240q-33 0-56.5-23.5T160-600q0-33 23.5-56.5T240-680q33 0 56.5 23.5T320-600q0 33-23.5 56.5T240-520Zm0 240q-33 0-56.5-23.5T160-360q0-33 23.5-56.5T240-440q33 0 56.5 23.5T320-360q0 33-23.5 56.5T240-280Zm480-480q-33 0-56.5-23.5T640-840q0-33 23.5-56.5T720-920q33 0 56.5 23.5T800-840q0 33-23.5 56.5T720-760ZM480-280q-33 0-56.5-23.5T400-360q0-33 23.5-56.5T480-440q33 0 56.5 23.5T560-360q0 33-23.5 56.5T480-280Zm240 0q-33 0-56.5-23.5T640-360q0-33 23.5-56.5T720-440q33 0 56.5 23.5T800-360q0 33-23.5 56.5T720-280Zm0-240q-33 0-56.5-23.5T640-600q0-33 23.5-56.5T720-680q33 0 56.5 23.5T800-600q0 33-23.5 56.5T720-520Zm-240 0q-33 0-56.5-23.5T400-600q0-33 23.5-56.5T480-680q33 0 56.5 23.5T560-600q0 33-23.5 56.5T480-520Zm0-240q-33 0-56.5-23.5T400-840q0-33 23.5-56.5T480-920q33 0 56.5 23.5T560-840q0 33-23.5 56.5T480-760Z\"/></svg>"};
 </script>
@@ -4910,8 +5340,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
     var material = s.uiStyle === 'material';
+    var apple = s.uiStyle === 'apple';
+    document.documentElement.setAttribute('data-apple-background-paused',String(!apple||document.hidden));
+    document.documentElement.setAttribute('data-apple-system-reduce-motion',String(apple&&matchMedia('(prefers-reduced-motion: reduce)').matches));
+    [['appleReduceTransparency','apple-reduce-transparency','prefers-reduced-transparency: reduce'],['appleIncreaseContrast','apple-increase-contrast','prefers-contrast: more']].forEach(function(option){document.documentElement.setAttribute('data-'+option[1],String(apple&&(s[option[0]]===true||matchMedia('('+option[2]+')').matches||(option[0]==='appleIncreaseContrast'&&matchMedia('(forced-colors: active)').matches))));});
     document.documentElement.setAttribute('data-theme', t);
-    document.documentElement.setAttribute('data-ui', material ? 'material' : 'classic');
+    document.documentElement.setAttribute('data-ui', material ? 'material' : apple ? 'apple' : 'classic');
 
     // Resolve the chosen accent exactly as applyAccent() will.
     var p = (s.accent && PRESETS[s.accent]) || PRESETS.sunset;
@@ -4936,8 +5370,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         c2 = hslToHex(terHsl.h, terHsl.s, tone);
       }
       var root = document.documentElement;
+      if(apple){var appleRoles=appleAccentRoles(c1,t,t==='light'?[220,220,224]:[76,76,78]);root.style.setProperty('--apple-backdrop-secondary',c2);root.style.setProperty('--apple-tint',c1);root.style.setProperty('--apple-ink',appleRoles.ink);root.style.setProperty('--apple-on-accent',appleRoles.onAccent);}
       var rgb = hexToRgb(c1);
-      root.style.setProperty('--accent', c1);
+      root.style.setProperty('--accent', apple ? appleRoles.ink : c1);
       root.style.setProperty('--accent-gradient', c1);
       root.style.setProperty('--accent-violet', c1);
       root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + (light ? 0.1 : 0.14) + ')');
@@ -4976,6 +5411,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 </script>
 </head>
 <body>
+<div class="apple-animated-backdrop" aria-hidden="true"></div>
 
 <div id="boot-splash" role="status" aria-label="Loading PlayDex" aria-live="polite">
   <div class="boot-glow" aria-hidden="true"></div>
@@ -4998,7 +5434,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.8.0</span>
+    <span class="version-badge">1.8.1</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5071,6 +5507,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         <span class="goal-text" id="goal-percent"></span>
       </div>
       <div class="goal-week-budget"><span>Weekly goal (7 days)</span><strong id="goal-week-budget">0:00:00</strong></div>
+      <div class="goal-week-budget" style="grid-row:6"><span>Daily average (previous 7 days)</span><strong id="goal-week-average">0s</strong></div>
     </div>
 
     <div class="card" id="start-game-card">
@@ -5442,6 +5879,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <div class="theme-select" id="ui-select">
         <button class="theme-opt" data-ui-opt="classic">Classic</button>
         <button class="theme-opt" data-ui-opt="material">Material 3</button>
+        <button class="theme-opt" data-ui-opt="apple">Liquid Glass</button>
       </div>
       <div class="card-header" style="margin-top:18px;">Calendar</div>
       <div class="target-row">
@@ -5451,7 +5889,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
           <button class="target-opt" type="button" data-weekstart="sunday">Sunday</button>
         </div>
       </div>
-      <div class="backup-hint" style="margin-top:8px;">Material 3 restyles the app with Google&rsquo;s Material Design: tonal colour, rounded shapes and a floating action button.</div>
+      <div class="backup-hint" style="margin-top:8px;">Choose Classic, Google-inspired Material 3, or Apple-inspired Liquid Glass.</div>
+<div class="apple-display-options" id="apple-display-options" hidden>
+<p>Display preferences follow your system. You can also reduce effects here.</p>
+<label class="dbx-toggle"><input id="apple-reduce-transparency" type="checkbox"><span class="dbx-toggle-label">Reduce transparency</span></label>
+<label class="dbx-toggle"><input id="apple-increase-contrast" type="checkbox"><span class="dbx-toggle-label">Increase contrast</span></label>
+</div>
       <div class="card-header" id="accent-header" style="margin-top:18px;">Theme Colour</div>
       <div class="accent-picker" id="accent-picker">
         <div class="accent-col">
@@ -6494,10 +6937,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function applyUI() {
-    const ui = settings.uiStyle === 'material' ? 'material' : 'classic';
+    const ui = ['classic','material','apple'].includes(settings.uiStyle) ? settings.uiStyle : 'classic';
     document.documentElement.setAttribute('data-ui', ui);
+    appleGlassPreferences();
+    document.querySelectorAll('.tab-btn').forEach(button=>button.setAttribute('aria-current',button.classList.contains('active')?'page':'false'));
     document.querySelectorAll('.theme-opt[data-ui-opt]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.uiOpt === ui);
+      btn.setAttribute('aria-pressed',String(btn.dataset.uiOpt === ui));
     });
   }
 
@@ -6571,6 +7017,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (accent) meta.setAttribute('content', accent);
   }
 
+  function applyAppleAccent(theme) {
+    const root=document.documentElement;
+    ['--apple-tint','--apple-ink','--apple-on-accent','--apple-backdrop-secondary'].forEach(key=>root.style.removeProperty(key));
+    if(settings.uiStyle!=='apple')return;
+    const preset=(settings.accent&&ACCENT_PRESETS[settings.accent])||ACCENT_PRESETS.sunset;
+    const tint=theme==='light'&&preset.lightC1?preset.lightC1:preset.c1;
+    const roles=appleAccentRoles(tint,theme,theme==='light'?[220,220,224]:[76,76,78]);
+    root.style.setProperty('--apple-backdrop-secondary',theme==='light'&&preset.lightC2?preset.lightC2:preset.c2);
+    root.style.setProperty('--apple-tint',tint);root.style.setProperty('--apple-ink',roles.ink);root.style.setProperty('--apple-on-accent',roles.onAccent);
+    root.style.setProperty('--accent',roles.ink);root.style.setProperty('--accent-violet',roles.ink);
+  }
   function applyTheme() {
     const theme = resolvedTheme();
     document.documentElement.setAttribute('data-theme', theme);
@@ -6578,8 +7035,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       btn.classList.toggle('active', btn.dataset.themeOpt === settings.theme);
     });
     applyUI();
-    applyAccent(theme);
-    applyMaterialTokens(theme);
+    if (settings.uiStyle === 'material') {
+      applyAccent(theme);
+      applyMaterialTokens(theme);
+    } else {
+      applyMaterialTokens(theme);
+      applyAccent(theme);
+    }
+    applyAppleAccent(theme);
     updateThemeColorMeta();
   }
 
@@ -7422,14 +7885,18 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   // --- Tab switching ---
   function goTab(name) {
     currentTab = name;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      const selected=b.dataset.tab===name;
+      b.classList.toggle('active',selected);
+      b.setAttribute('aria-current',selected?'page':'false');
+    });
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
     document.querySelector('.app-content').classList.toggle('merged', name === 'today');
     const fab = document.getElementById('m3-fab-log');
     if (fab) fab.classList.toggle('show', name === 'today');
     render();
     if (name === 'settings' && (dbx.accessToken || dbx.refreshToken)) void dbxLoadHistory();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: settings.uiStyle==='apple' && document.documentElement.dataset.appleSystemReduceMotion==='true' ? 'auto' : 'smooth' });
   }
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => goTab(btn.dataset.tab));
@@ -7548,7 +8015,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.getElementById('target-custom').value = '';
     toast('Started: ' + game.name);
     render();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: settings.uiStyle==='apple' && document.documentElement.dataset.appleSystemReduceMotion==='true' ? 'auto' : 'smooth' });
   }
 
   // Start a game from the Games list, then jump to Today (respects the one-active-session guard)
@@ -7829,6 +8296,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const todayTotal = Math.floor((todaySessionsMs()+liveToday)/60000)*60000;
     const weeklyBudget = weeklyRotationBudgetMinutes();
     document.getElementById('goal-week-budget').textContent = weeklyBudget ? fmtDurationMinutes(weeklyBudget*60000) : 'Not set';
+    const averageEnd = todayStr();
+    let previousWeekTotal = 0;
+    for (let day = 1; day <= 7; day++) previousWeekTotal += totalMsForDate(addDays(averageEnd, -day));
+    document.getElementById('goal-week-average').textContent = fmtDurationMinutes(Math.floor(previousWeekTotal / 7 / 60000) * 60000);
     const goalText = document.getElementById('goal-text');
     const track = document.getElementById('goal-track');
     const fill = document.getElementById('goal-fill');
@@ -10910,7 +11381,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   // --- Appearance (interface style) ---
   document.querySelectorAll('.theme-opt[data-ui-opt]').forEach(btn => {
     btn.addEventListener('click', () => {
-      settings.uiStyle = btn.dataset.uiOpt === 'material' ? 'material' : 'classic';
+      settings.uiStyle = ['material','apple'].includes(btn.dataset.uiOpt) ? btn.dataset.uiOpt : 'classic';
       saveSettings(settings);
       applyTheme();
     });
@@ -11181,7 +11652,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const heading=document.createElement('h2');heading.textContent=title;section.append(heading);
       items.filter(Boolean).forEach(card=>section.append(card));panel.append(section);
       const button=document.createElement('button');button.type='button';button.className='btn-ghost';button.textContent=title;
-      button.addEventListener('click',()=>section.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}));nav.append(button);
+      button.addEventListener('click',()=>section.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches||(settings.uiStyle==='apple'&&document.documentElement.dataset.appleSystemReduceMotion==='true')?'auto':'smooth',block:'start'}));nav.append(button);
     });
     // Move calendar preferences next to the tracking settings.
     const calendar=[...appearance.querySelectorAll('.card-header')].find(element=>element.textContent.trim()==='Calendar');
@@ -11321,15 +11792,15 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     return [...overlay.querySelectorAll('button,input,select,textarea,a[href],[tabindex]')].filter(element=>!element.matches(':disabled') && element.tabIndex>=0 && element.getClientRects().length);
   }
   function mxSyncDialogs(){
-    if(!mxMaterial())return;
+    if(!mxMaterial()&&settings.uiStyle!=='apple')return;
     document.querySelectorAll('.modal-overlay').forEach(overlay=>{
       const opened=overlay.classList.contains('open');
-      if(opened&&!mxOverlayFocus.has(overlay)){mxOverlayFocus.set(overlay,document.activeElement);const modal=overlay.querySelector('.modal');if(modal){modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label',modal.querySelector('h3')?.textContent||'Dialog');if(mxMaterial())requestAnimationFrame(()=>{if(mxTopOverlay()===overlay&&!overlay.contains(document.activeElement))mxOverlayControls(overlay)[0]?.focus();});}}
+      if(opened&&!mxOverlayFocus.has(overlay)){mxOverlayFocus.set(overlay,document.activeElement);const modal=overlay.querySelector('.modal');if(modal){modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label',modal.querySelector('h3')?.textContent||'Dialog');if(mxMaterial()||settings.uiStyle==='apple')requestAnimationFrame(()=>{if(mxTopOverlay()===overlay&&!overlay.contains(document.activeElement))mxOverlayControls(overlay)[0]?.focus();});}}
       else if(!opened&&mxOverlayFocus.has(overlay)){const previous=mxOverlayFocus.get(overlay);mxOverlayFocus.delete(overlay);const top=mxTopOverlay();if(previous?.isConnected&&(!top||top.contains(previous)))previous.focus();else if(top)mxOverlayControls(top)[0]?.focus();}
     });
   }
   document.addEventListener('keydown',event=>{
-    if(!mxMaterial()||event.key!=='Tab'||document.querySelector('dialog[open]'))return;
+    if((!mxMaterial()&&settings.uiStyle!=='apple')||event.key!=='Tab'||document.querySelector('dialog[open]'))return;
     const overlay=mxTopOverlay();if(!overlay)return;
     const focusable=mxOverlayControls(overlay);
     if(!focusable.length)return;
@@ -11346,6 +11817,123 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('games-filter-toggle').addEventListener('click',()=>{
     if(!mxMaterial()||innerWidth>=900)return;const body=document.getElementById('games-filter-body');mxFilterBodyHome=body.parentElement;mxSheet.append(body);mxSheet.showModal();
   });
+
+  const appleGlassState={key:'',frame:0,opticsSize:'',filter:null,map:null,lens:null};
+  const appleGlassBar=document.querySelector('.tab-bar');
+  appleGlassBar.setAttribute('aria-label','Main navigation');
+  const appleGlassEdge=document.createElement('div');appleGlassEdge.className='apple-scroll-edge';appleGlassEdge.setAttribute('aria-hidden','true');document.body.append(appleGlassEdge);
+  const appleTabLens=document.createElement('span');appleTabLens.className='apple-tab-lens';appleTabLens.setAttribute('aria-hidden','true');appleGlassBar.prepend(appleTabLens);appleGlassState.lens=appleTabLens;
+  function appleGlassPreferences() {
+    const root=document.documentElement,active=settings.uiStyle==='apple';
+    const options=[
+      ['appleReduceTransparency','apple-reduce-transparency','prefers-reduced-transparency: reduce'],
+      ['appleIncreaseContrast','apple-increase-contrast','prefers-contrast: more']
+    ];
+    options.forEach(([setting,id,media])=>{
+      const input=document.getElementById(id);if(input)input.checked=settings[setting]===true;
+      const enabled=active&&(settings[setting]===true||matchMedia('('+media+')').matches||(setting==='appleIncreaseContrast'&&matchMedia('(forced-colors: active)').matches));
+      const attr='data-'+id;if(root.getAttribute(attr)!==String(enabled))root.setAttribute(attr,String(enabled));
+    });
+    const motion=String(active&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+    if(root.dataset.appleSystemReduceMotion!==motion)root.dataset.appleSystemReduceMotion=motion;
+    const paused=String(!active||document.hidden);
+    if(root.dataset.appleBackgroundPaused!==paused)root.dataset.appleBackgroundPaused=paused;
+    const panel=document.getElementById('apple-display-options');if(panel)panel.hidden=!active;
+  }
+  function queueAppleGlass() {
+    if(appleGlassState.frame)return;
+    appleGlassState.frame=requestAnimationFrame(()=>{appleGlassState.frame=0;refreshAppleGlass();});
+  }
+  function appleBackdropColor(x,y) {
+    const elements=document.elementsFromPoint(x,y);
+    const busy=elements.some(node=>!node.closest('.tab-bar,header,#toast,.apple-scroll-edge,.modal-overlay,dialog')&&node.closest('.game-item,.session-item,.top-row,.rotation-row,.dash-row,.card-header'));
+    let element=elements.find(node=>!node.closest('.tab-bar,header,#toast,.apple-scroll-edge,.modal-overlay,dialog'));
+    while(element){
+      const color=getComputedStyle(element).backgroundColor;
+      if(color.startsWith('rgb')){
+        const parts=color.match(/[\d.]+/g).map(Number);
+        if(parts.length===3||parts[3]>.6)return {color:parts.slice(0,3),busy};
+      }
+      element=element.parentElement;
+    }
+    return {color:document.documentElement.dataset.theme==='dark'?[28,28,30]:[242,242,247],busy};
+  }
+  function updateAppleOptics(width,height) {
+    const root=document.documentElement;
+    const reduced=root.dataset.appleReduceTransparency==='true'||root.dataset.appleIncreaseContrast==='true'||root.dataset.appleSystemReduceMotion==='true'||matchMedia('(forced-colors: active)').matches;
+    if(reduced||!CSS.supports('backdrop-filter','url("#apple-glass-lens-filter")')){appleGlassBar.dataset.glassOptics='false';return;}
+    const size=Math.round(width)+'x'+Math.round(height);
+    if(appleGlassState.opticsSize===size){appleGlassBar.dataset.glassOptics='true';return;}
+    try{
+      if(!appleGlassState.filter){
+        const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+        svg.id='apple-glass-optics';svg.setAttribute('aria-hidden','true');svg.setAttribute('width','0');svg.setAttribute('height','0');svg.style.position='absolute';svg.style.pointerEvents='none';
+        svg.innerHTML='<defs><filter id="apple-glass-lens-filter" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="8" result="soft"/><feImage id="apple-glass-lens-map" x="0" y="0" preserveAspectRatio="none" result="field"/><feDisplacementMap in="soft" in2="field" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter></defs>';
+        document.body.append(svg);appleGlassState.filter=svg.querySelector('filter');appleGlassState.map=svg.querySelector('feImage');
+      }
+      const factor=Math.min(1,640/width),w=Math.max(1,Math.round(width*factor)),h=Math.max(1,Math.round(height*factor));
+      const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+      const context=canvas.getContext('2d'),image=context.createImageData(w,h),radius=Math.min(34*factor,h/2),edge=Math.max(2,12*factor);
+      for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+        const px=x+.5-w/2,py=y+.5-h/2,qx=Math.abs(px)-(w/2-radius),qy=Math.abs(py)-(h/2-radius);
+        const ox=Math.max(qx,0),oy=Math.max(qy,0),length=Math.hypot(ox,oy);
+        const distance=length+Math.min(Math.max(qx,qy),0)-radius,influence=Math.max(0,1-Math.abs(distance)/edge);
+        let nx=0,ny=0;if(qx>0&&qy>0){nx=Math.sign(px)*ox/length;ny=Math.sign(py)*oy/length;}else if(qx>qy)nx=Math.sign(px);else ny=Math.sign(py);
+        const i=(y*w+x)*4;image.data[i]=128+nx*70*influence;image.data[i+1]=128+ny*70*influence;image.data[i+2]=128;image.data[i+3]=255;
+      }
+      context.putImageData(image,0,0);
+      appleGlassState.filter.setAttribute('width',width);appleGlassState.filter.setAttribute('height',height);
+      appleGlassState.map.setAttribute('width',width);appleGlassState.map.setAttribute('height',height);appleGlassState.map.setAttribute('href',canvas.toDataURL());
+      appleGlassBar.style.setProperty('--lg-refraction','url("#apple-glass-lens-filter") saturate(155%)');
+      appleGlassState.opticsSize=size;appleGlassBar.dataset.glassOptics='true';
+    }catch(error){appleGlassBar.dataset.glassOptics='false';}
+  }
+  function refreshAppleGlass() {
+    if(settings.uiStyle!=='apple'){appleGlassState.key='';return;}
+    const root=document.documentElement,bar=appleGlassBar,rect=bar.getBoundingClientRect();
+    const selected=[...bar.querySelectorAll('.tab-btn.active')].find(button=>button.getClientRects().length);
+    const key=[innerWidth,innerHeight,Math.round(rect.width),Math.round(rect.height),Math.round(scrollY),selected?.dataset.tab,root.dataset.theme,root.style.getPropertyValue('--apple-tint'),root.dataset.appleReduceTransparency,root.dataset.appleIncreaseContrast,root.dataset.appleSystemReduceMotion].join('|');
+    if(key===appleGlassState.key)return;appleGlassState.key=key;
+    const scrolled=String(scrollY>8);if(root.dataset.appleScrolled!==scrolled)root.dataset.appleScrolled=scrolled;
+    if(selected){
+      const values={'--lg-lens-x':selected.offsetLeft+'px','--lg-lens-y':selected.offsetTop+'px','--lg-lens-width':selected.offsetWidth+'px','--lg-lens-height':selected.offsetHeight+'px'};
+      Object.entries(values).forEach(([key,value])=>{if(appleTabLens.style.getPropertyValue(key)!==value)appleTabLens.style.setProperty(key,value);});
+      appleTabLens.dataset.ready='true';
+    }else appleTabLens.dataset.ready='false';
+    const samples=[.25,.5,.75].map(fraction=>appleBackdropColor(rect.left+rect.width*fraction,Math.min(innerHeight-1,rect.top+rect.height/2)));
+    const average=[0,1,2].map(index=>samples.reduce((sum,sample)=>sum+sample.color[index],0)/samples.length);
+    const luminance=average.reduce((sum,value,index)=>sum+value*[.2126,.7152,.0722][index],0);
+    const tone=luminance<140?'dark':'light',busy=samples.some(sample=>sample.busy);bar.dataset.glassTone=tone;bar.dataset.glassBusy=String(busy);
+    const tint=root.style.getPropertyValue('--apple-tint').trim()||'#fb923c';
+    const base=tone==='light'?[255,255,255]:[40,40,44],alpha=busy?(tone==='light'?.72:.76):(tone==='light'?.58:.56);
+    const opaque=root.dataset.appleReduceTransparency==='true'||root.dataset.appleIncreaseContrast==='true';
+    const glass=opaque?(tone==='light'?[245,245,247]:[36,36,38]):base.map((value,index)=>value*alpha+average[index]*(1-alpha));
+    const selectionAlpha=tone==='light'?.6:.13,selection=glass.map(value=>Math.round(255*selectionAlpha+value*(1-selectionAlpha)));
+    bar.style.setProperty('--lg-selected-ink',appleAccentRoles(tint,tone,selection).ink);
+    updateAppleOptics(rect.width,rect.height);
+  }
+  for(const [id,setting]of [['apple-reduce-transparency','appleReduceTransparency'],['apple-increase-contrast','appleIncreaseContrast']]){
+    document.getElementById(id).addEventListener('change',event=>{settings[setting]=event.target.checked;saveSettings(settings);appleGlassPreferences();queueAppleGlass();});
+  }
+  for(const query of ['(prefers-reduced-transparency: reduce)','(prefers-contrast: more)','(prefers-reduced-motion: reduce)','(forced-colors: active)']){
+    matchMedia(query).addEventListener('change',()=>{appleGlassPreferences();queueAppleGlass();});
+  }
+  document.addEventListener('visibilitychange',appleGlassPreferences);
+  window.addEventListener('scroll',queueAppleGlass,{passive:true});
+  for(const surface of [document.querySelector('header'),appleGlassBar]){
+    surface.addEventListener('pointermove',event=>{
+      if(settings.uiStyle!=='apple'||document.documentElement.dataset.appleSystemReduceMotion==='true'||!matchMedia('(hover: hover) and (pointer: fine)').matches)return;
+      const rect=surface.getBoundingClientRect();
+      surface.style.setProperty('--lg-highlight-x',Math.round((event.clientX-rect.left)/rect.width*100)+'%');
+      surface.style.setProperty('--lg-highlight-y',Math.round((event.clientY-rect.top)/rect.height*100)+'%');
+    },{passive:true});
+    surface.addEventListener('pointerleave',()=>{surface.style.removeProperty('--lg-highlight-x');surface.style.removeProperty('--lg-highlight-y');});
+  }
+  appleGlassBar.addEventListener('pointerdown',event=>{if(settings.uiStyle==='apple'&&event.target.closest('.tab-btn'))appleGlassBar.dataset.glassPressed='true';},{passive:true});
+  const releaseAppleGlass=()=>{if(appleGlassBar.dataset.glassPressed==='true')appleGlassBar.dataset.glassPressed='false';};
+  document.addEventListener('pointerup',releaseAppleGlass,{passive:true});document.addEventListener('pointercancel',releaseAppleGlass,{passive:true});
+
+
   function mxNavigation(){
     const bar=document.querySelector('.tab-bar');if(!bar)return;
     const visible=[...bar.querySelectorAll('.tab-btn')].filter(button=>getComputedStyle(button).display!=='none');
@@ -11353,6 +11941,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const height=Math.round(bar.getBoundingClientRect().height)+'px';if(document.documentElement.style.getPropertyValue('--mx-nav-height')!==height)document.documentElement.style.setProperty('--mx-nav-height',height);
     const title=document.querySelector('.mx-page-title');const label=document.querySelector('.tab-btn.active')?.textContent.trim()||'Today';if(title&&title.textContent!==label)title.textContent=label;
     if(mxSheet.open&&(!mxMaterial()||innerWidth>=900))mxCloseFilters();
+    queueAppleGlass();
   }
   const mxTitle=document.createElement('span');mxTitle.className='mx-page-title';mxTitle.textContent='Today';document.querySelector('header').insertBefore(mxTitle,document.getElementById('sync-btn'));
   function mxRefresh(){mxSyncSelects();mxSyncDialogs();mxNavigation();mxRefreshIcons();}
@@ -11490,7 +12079,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.8.0';
+    const APP_VERSION = '1.8.1';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
