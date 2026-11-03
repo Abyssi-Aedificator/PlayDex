@@ -1,6 +1,14 @@
 PlayDex - Changelog
 ====================
 
+Version 1.7.3
+-------------------
+- Material mode now uses HCT-generated light and dark palettes, bundled Roboto Flex typography, Material Symbols, and expressive tonal surfaces.
+- Material navigation keeps every destination, uses two rows below 600px, and positions content, the FAB, and snackbars around the actual navigation height.
+- Material mode has accessible themed select menus, date-picker dialogs, and dial or keyboard time entry with confirmation and cancellation.
+- Material buttons, chips, checkboxes, settings, lists, charts, and dialogs share consistent sizing, focus states, hierarchy, and reduced-motion support.
+- Material game filters open as a bottom sheet on compact screens; the bundled font is cached for offline use.
+
 Version 1.7.2
 -------------------
 - Games you haven't played in a while excludes weekly rotation games and no longer has a dismiss button.

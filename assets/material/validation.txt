@@ -1,0 +1,15 @@
+Material 3 Expressive validation
+
+All tabs: light/dark at 360, 390, 600, 900, and 1440px; no horizontal overflow.
+Existing dialogs: 170 theme/viewport cases passed.
+Date/time: confirm, cancel, typed validation, Monday/Sunday week start.
+Menus: keyboard selection, Escape, nested menu in mobile filter sheet.
+Budget guards, empty states, archived/long-name games, Classic native controls, local font loading, and preview data isolation passed.
+CSS zoom 200%: no horizontal overflow at 390px and 1440px.
+
+The reviewed redesign is now applied to index.html. Normal local storage, Dropbox connections, and service worker registration are restored.
+
+Palette checks: all 21 presets in light/dark; tested semantic text pairs meet 4.5:1, lowest measured 4.67:1.
+JavaScript syntax and manifest JSON passed.
+
+Production promotion checks: Material and Classic startup, saved-library loading, enabled Dropbox connection, /PlayDex/ service-worker scope, cached font, and offline reload passed with no runtime errors.
