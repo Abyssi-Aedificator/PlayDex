@@ -1,6 +1,13 @@
 PlayDex - Changelog
 ====================
 
+Version 1.7.5
+-------------------
+- Starting a game resets the Target selection to Off and clears custom minutes, while preserving the chosen target on the new session.
+- Archived games offer Edit when either their cover or platform is missing; Edit disappears once both are filled in.
+- Session-row game totals show playtime for that game on the session date instead of combining all-time history.
+- Archiving a weekly rotation game releases its unused target time back to Available time, while its completed playtime stays counted for the current week; rotation and daily-goal budget checks use the same calculation.
+
 Version 1.7.4
 -------------------
 - Session rows show each game's all-time recorded playtime beside the session times in a subtle label using the selected theme colour.
