@@ -7865,6 +7865,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     });
     return {bounds,games:result,played:ids.filter(id=>result[id].count>0).length};
   }
+  function archivedRotationIds() {
+    const selected=new Set(Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[]);
+    return games.filter(game=>game.archived && selected.has(game.id)).map(game=>game.id);
+  }
+  function archivedRotationSpentMinutes(now=new Date()) {
+    const ids=archivedRotationIds(),progress=rotationWeekProgress(ids,now);
+    return ids.reduce((sum,id)=>sum+Math.min(rotationTargetMinutes(id),Math.floor(progress.games[id].ms/60000)),0);
+  }
+  function rotationCommittedMinutes() {
+    return rotationGameIds().reduce((sum,id)=>sum+rotationTargetMinutes(id),0)+archivedRotationSpentMinutes();
+  }
   function weeklyRotationBudgetMinutes() {
     const daily=Number(settings.dailyGoalMinutes);
     return Number.isFinite(daily) && daily>0 ? Math.min(10080,Math.floor(daily*7)) : 0;
@@ -7924,7 +7935,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const reached=ids.length-remaining.length;
     document.getElementById('rotation-summary').textContent=ids.length?progress.played+' of '+ids.length+' played this week'+(reached?' | '+reached+' target'+(reached===1?'':'s')+' reached':'')+' | '+fmtDayMonth(progress.bounds.start)+' - '+fmtDayMonth(progress.bounds.end):'Choose a few games for this week. Play one completed session to check a game off.';
     document.getElementById('rotation-summary').hidden=!!activeSession;
-    const planned=ids.reduce((sum,id)=>sum+rotationTargetMinutes(id),0);
+    const planned=rotationCommittedMinutes();
     const budgetEl=document.getElementById('rotation-budget');
     budgetEl.hidden=!!activeSession;
     budgetEl.textContent=rotationBudgetText(planned);
@@ -7947,7 +7958,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const planned=[...document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')].reduce((sum,checkbox)=>{
       const value=rotationHoursToMinutes(checkbox.closest('.rotation-choice').querySelector('.rotation-target').value);
       return sum+(Number.isFinite(value) && value>0?value:0);
-    },0);
+    },archivedRotationSpentMinutes());
     const budget=weeklyRotationBudgetMinutes(),over=!!budget && planned>budget;
     const budgetEl=document.getElementById('rotation-editor-budget');
     renderRotationBudgetMeter('rotation-editor-budget',planned);
@@ -10490,7 +10501,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const input = document.getElementById('goal-hours');
     if (!input.checkValidity()) { input.reportValidity(); return; }
     const v = Math.round((Number(input.value) || 0)*60);
-    const planned = rotationGameIds().reduce((sum,id) => sum+rotationTargetMinutes(id),0);
+    const planned = rotationCommittedMinutes();
     const weekly = v*7;
     if (planned > weekly) {
       const error = document.getElementById('goal-budget-error');
@@ -11042,7 +11053,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(!input.checkValidity()) { input.reportValidity(); return; }
       targets[checkbox.value]=rotationHoursToMinutes(input.value);
     }
-    const budget=weeklyRotationBudgetMinutes(),planned=Object.values(targets).reduce((sum,value)=>sum+value,0);
+    const budget=weeklyRotationBudgetMinutes(),planned=Object.values(targets).reduce((sum,value)=>sum+value,archivedRotationSpentMinutes());
     if(budget && planned>budget) {
       const error=document.getElementById('rotation-budget-error');
       error.textContent='Over budget by '+fmtDurationShort((planned-budget)*60000)+'. Reduce your targets to '+fmtDurationShort(budget*60000)+' total before saving.';
@@ -11050,7 +11061,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       error.scrollIntoView({block:'nearest'});
       return;
     }
-    settings.weeklyRotation=chosen.map(input=>input.value);
+    const archivedIds=archivedRotationIds();
+    archivedIds.forEach(id=>{ const target=rotationTargetMinutes(id); if(target)targets[id]=target; });
+    settings.weeklyRotation=chosen.map(input=>input.value).concat(archivedIds);
     settings.weeklyRotationTargets=targets;
     saveSettings(settings);renderTodayTab();document.getElementById('rotation-modal').classList.remove('open');toast('Weekly rotation saved');
   });

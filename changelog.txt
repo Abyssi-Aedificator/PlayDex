@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.7.5
+-------------------
+- Archiving a weekly rotation game releases its unused target time back to Available time, while its completed playtime stays counted for the current week; rotation and daily-goal budget checks use the same calculation.
+
 Version 1.7.4
 -------------------
 - Session rows show each game's all-time recorded playtime beside the session times in a subtle label using the selected theme colour.
