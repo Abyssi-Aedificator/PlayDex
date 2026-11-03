@@ -4787,6 +4787,46 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
  #dashboard-body .game-milestones { grid-area:milestones; margin:0; }
  #dashboard-modal .dash-cover { height:200px; }
 }
+
+/* Classic visual refinements */
+.classic-archived-label,.classic-milestone-progress { display:none; }
+:root:not([data-ui="material"]) .card-header { font-size:13px; letter-spacing:.55px; line-height:1.4; }
+:root:not([data-ui="material"]) .tab-btn { isolation:isolate; }
+:root:not([data-ui="material"]) .tab-btn.active::before { content:""; position:absolute; inset:7px 4px; background:var(--accent-dim); border-radius:12px; z-index:-1; pointer-events:none; }
+:root:not([data-ui="material"]) :is(.game-item-actions .btn-icon,.session-edit,.session-sync) { box-sizing:border-box; min-height:36px; border-color:color-mix(in srgb,var(--text2) 14%,transparent); border-radius:9px; background:transparent; }
+:root:not([data-ui="material"]) .game-item-actions .btn-icon { width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; padding:8px; }
+:root:not([data-ui="material"]) :is(.session-edit,.session-sync) { padding:6px 10px; }
+:root:not([data-ui="material"]) :is(.game-item-actions .btn-icon:not(.play),.session-edit,.session-sync:not(.on)) { color:var(--text2); }
+:root:not([data-ui="material"]) :is(.game-item-actions .btn-icon,.session-edit,.session-sync):hover { background:var(--surface2); border-color:var(--border-strong); }
+:root:not([data-ui="material"]) .game-item-actions .btn-icon.play { background:var(--accent-dim); color:var(--accent); border-color:var(--accent); }
+:root:not([data-ui="material"]) .game-item-actions .btn-icon.pin.on { color:var(--accent); background:var(--accent-dim); }
+:root:not([data-ui="material"]) .game-item-actions .btn-icon.danger { margin-left:10px; color:var(--red); }
+:root:not([data-ui="material"]) .session-delete { margin-left:14px; }
+:root:not([data-ui="material"]) :is(.progress-track,.rotation-game .progress-track,.rotation-budget-meter,.classic-milestone-progress) { height:8px; box-sizing:border-box; border:1px solid var(--border); background:var(--surface2); border-radius:999px; overflow:hidden; }
+:root:not([data-ui="material"]) :is(.progress-fill,.rotation-budget-meter-fill,.classic-milestone-fill) { height:100%; border-radius:inherit; }
+:root:not([data-ui="material"]) .rotation-metrics { margin:8px 0; }
+:root:not([data-ui="material"]) .rotation-budget-meter-label { align-items:baseline; font-size:12px; line-height:1.5; margin-bottom:8px; }
+:root:not([data-ui="material"]) .rotation-budget-meter.over-budget { border-color:var(--red); }
+:root:not([data-ui="material"]) .classic-milestone-progress { display:block; margin:4px 0 16px; }
+:root:not([data-ui="material"]) .classic-milestone-fill { display:block; background:var(--accent); }
+:root:not([data-ui="material"]) .card:has(> .goal-header) { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px 12px; align-items:center; }
+:root:not([data-ui="material"]) .card:has(> .goal-header) > .card-header { grid-column:1; grid-row:1; margin:0; }
+:root:not([data-ui="material"]) :is(.goal-header,.goal-footer) { display:contents; }
+:root:not([data-ui="material"]) .goal-header #goal-text { grid-column:1; grid-row:2; }
+:root:not([data-ui="material"]) #btn-goal-edit { grid-column:2; grid-row:1; justify-self:end; }
+:root:not([data-ui="material"]) #goal-percent { grid-column:2; grid-row:2; text-align:right; font-variant-numeric:tabular-nums; }
+:root:not([data-ui="material"]) #goal-track { grid-column:1 / -1; grid-row:3; margin:0; }
+:root:not([data-ui="material"]) #streak-pill { grid-column:1 / -1; grid-row:4; justify-self:start; }
+:root:not([data-ui="material"]) .goal-week-budget { grid-column:1 / -1; grid-row:5; }
+:root:not([data-ui="material"]) .game-item.archived { opacity:1; }
+:root:not([data-ui="material"]) .game-item.archived .game-item-name { text-decoration:none; color:var(--text2); font-weight:500; }
+:root:not([data-ui="material"]) .classic-archived-label { display:inline-flex; align-items:center; padding:2px 6px; font-size:10px; line-height:16px; color:var(--text2); border:1px solid var(--border); border-radius:6px; background:var(--surface2); flex-shrink:0; }
+:root:not([data-ui="material"]) .game-item.archived .game-item-name-row { flex-wrap:wrap; row-gap:5px; }
+@media(max-width:450px) {
+ :root:not([data-ui="material"]) .game-item-actions { flex-wrap:wrap; justify-content:flex-end; row-gap:6px; }
+ :root:not([data-ui="material"]) #goal-percent { font-size:12px; }
+}
+
 </style>
 <script>
 // Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
@@ -4958,7 +4998,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.7.5</span>
+    <span class="version-badge">1.8.0</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -6710,11 +6750,32 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     dbxRefreshIndicators();
   }
 
-  function dbxValidateFile(data) {
-    if (!data || !Array.isArray(data.games) || !Array.isArray(data.sessions)) throw new Error('Invalid PlayDex backup');
-    normalizeGames(data.games);
-    if (data.sessions.some(s => !s || typeof s !== 'object' || typeof s.start !== 'string')) throw new Error('Invalid session history');
+  function validateBackupData(data) {
+    const record=value=>value && typeof value==='object' && !Array.isArray(value);
+    const text=value=>typeof value==='string' && value.trim().length>0;
+    const date=value=>typeof value==='string' && Number.isFinite(Date.parse(value));
+    if (!record(data) || !Array.isArray(data.games) || !Array.isArray(data.sessions)) throw new Error('Invalid PlayDex backup');
+    const gameIds=new Set(),sessionIds=new Set();
+    data.games.forEach(game=>{
+      if (!record(game) || !text(game.id) || !text(game.name) || gameIds.has(game.id)) throw new Error('Invalid or duplicate game');
+      gameIds.add(game.id);
+    });
+    let running=0;
+    data.sessions.forEach(session=>{
+      if (!record(session) || !text(session.id) || sessionIds.has(session.id) || !text(session.gameId) || typeof session.gameName!=='string' || !date(session.start)) throw new Error('Invalid or duplicate session');
+      sessionIds.add(session.id);
+      if (session.stop===null) {
+        running++;
+        if (running>1) throw new Error('Backup contains more than one running session');
+      } else if (!date(session.stop) || Date.parse(session.stop)<Date.parse(session.start) || !Number.isFinite(session.durationMs) || session.durationMs<0) throw new Error('Invalid session times or duration');
+      if (session.pauses!==undefined && (!Array.isArray(session.pauses) || session.pauses.some(pause=>!record(pause) || !date(pause.from) || !date(pause.to) || Date.parse(pause.to)<Date.parse(pause.from)))) throw new Error('Invalid session pauses');
+      if (session.pausedAt!=null && !date(session.pausedAt)) throw new Error('Invalid pause date');
+      if (session.targetMs!=null && (!Number.isFinite(session.targetMs) || session.targetMs<0)) throw new Error('Invalid session target');
+    });
     return data;
+  }
+  function dbxValidateFile(data) {
+    return validateBackupData(data);
   }
   function dbxWithHistory(next, previous) {
     const history = previous ? [{ savedAt: previous.exportedAt || new Date().toISOString(), games: previous.games, sessions: previous.sessions }, ...(Array.isArray(previous.history) ? previous.history : [])].slice(0,5) : [];
@@ -6856,10 +6917,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function dbxApplyBackupText(backup) {
     const { text, rev } = backup;
-    const parsed = JSON.parse(text);
-    if (!parsed || !Array.isArray(parsed.games) || !Array.isArray(parsed.sessions)) {
-      throw new Error('not a PlayDex backup');
-    }
+    const parsed = validateBackupData(JSON.parse(text));
     dbxRecovery();
     clearTimeout(dbxSyncTimer);
     dbxSkipAutoUpload = true;
@@ -9730,7 +9788,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
-            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
+            '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span><span class="classic-archived-label">Archived</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' +
             tagsHtml(g) +
             gameMeta(count, e) +
@@ -10159,16 +10217,22 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     game.archived = true;
     saveGames(games);
     render();
-    toast('Archived: ' + game.name, 'Undo', () => {
-      game.archived = false;
-      saveGames(games);
-      render();
-    }, 6000);
+    toast('Archived: ' + game.name, 'Undo', () => restoreGame(id), 6000);
   }
 
   function restoreGame(id) {
     const game = games.find(g => g.id === id);
-    if (!game) return;
+    if (!game || !game.archived) return;
+    if (archivedRotationIds().includes(id)) {
+      const budget=weeklyRotationBudgetMinutes(),target=rotationTargetMinutes(id);
+      const progress=rotationWeekProgress([id]);
+      const spent=Math.min(target,Math.floor(progress.games[id].ms/60000));
+      const planned=rotationCommittedMinutes()+target-spent;
+      if (budget && planned>budget) {
+        toast('Restoring this game would exceed the weekly budget by '+fmtDurationMinutes((planned-budget)*60000)+'. Reduce rotation targets or increase your daily goal first.',null,null,8000);
+        return;
+      }
+    }
     game.archived = false;
     saveGames(games);
     toast('Restored: ' + game.name);
@@ -10582,16 +10646,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const data = JSON.parse(reader.result);
-        if (!data || !Array.isArray(data.games) || !Array.isArray(data.sessions)) {
-          toast('Invalid backup file');
-          return;
-        }
+        const data = validateBackupData(JSON.parse(reader.result));
         // Manual imports keep local settings; ignore backup settings
         importData = { games: data.games, sessions: data.sessions };
         document.getElementById('import-modal').classList.add('open');
-      } catch {
-        toast('Invalid JSON file');
+      } catch (error) {
+        importData = null;
+        toast(error instanceof SyntaxError ? 'Invalid JSON file' : 'Invalid backup: '+error.message);
       }
     };
     reader.readAsText(file);
@@ -10605,6 +10666,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
 document.getElementById('import-confirm').addEventListener('click', () => {
     if (importData) {
+      try { validateBackupData(importData); }
+      catch (error) { importData=null; toast('Invalid backup: '+error.message); document.getElementById('import-modal').classList.remove('open'); return; }
+      checkStorageFresh();
       const localSettings = JSON.parse(JSON.stringify(settings));
       games = normalizeGames(importData.games);
       sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
@@ -11247,21 +11311,32 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(binding.kind==='date')void mxDatePicker(binding,trigger);else void mxTimePicker(binding,trigger);
   },true);
   // Preserve the existing dialogs while adding keyboard containment and restoration.
-  const mxOverlayFocus=new WeakMap();
+  const mxOverlayFocus=new Map();
+  function mxTopOverlay() {
+    const order=[...mxOverlayFocus.keys()];
+    return [...document.querySelectorAll('.modal-overlay.open')].filter(overlay=>overlay.getClientRects().length)
+      .sort((a,b)=>(Number(getComputedStyle(a).zIndex)||0)-(Number(getComputedStyle(b).zIndex)||0) || order.indexOf(a)-order.indexOf(b)).at(-1) || null;
+  }
+  function mxOverlayControls(overlay) {
+    return [...overlay.querySelectorAll('button,input,select,textarea,a[href],[tabindex]')].filter(element=>!element.matches(':disabled') && element.tabIndex>=0 && element.getClientRects().length);
+  }
   function mxSyncDialogs(){
     if(!mxMaterial())return;
     document.querySelectorAll('.modal-overlay').forEach(overlay=>{
       const opened=overlay.classList.contains('open');
-      if(opened&&!mxOverlayFocus.has(overlay)){mxOverlayFocus.set(overlay,document.activeElement);const modal=overlay.querySelector('.modal');if(modal){modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label',modal.querySelector('h3')?.textContent||'Dialog');if(mxMaterial())requestAnimationFrame(()=>{if(overlay.classList.contains('open')&&!overlay.contains(document.activeElement))modal.querySelector('button:not(:disabled),input,select')?.focus();});}}
-      else if(!opened&&mxOverlayFocus.has(overlay)){const previous=mxOverlayFocus.get(overlay);mxOverlayFocus.delete(overlay);if(previous?.isConnected)previous.focus();}
+      if(opened&&!mxOverlayFocus.has(overlay)){mxOverlayFocus.set(overlay,document.activeElement);const modal=overlay.querySelector('.modal');if(modal){modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label',modal.querySelector('h3')?.textContent||'Dialog');if(mxMaterial())requestAnimationFrame(()=>{if(mxTopOverlay()===overlay&&!overlay.contains(document.activeElement))mxOverlayControls(overlay)[0]?.focus();});}}
+      else if(!opened&&mxOverlayFocus.has(overlay)){const previous=mxOverlayFocus.get(overlay);mxOverlayFocus.delete(overlay);const top=mxTopOverlay();if(previous?.isConnected&&(!top||top.contains(previous)))previous.focus();else if(top)mxOverlayControls(top)[0]?.focus();}
     });
   }
   document.addEventListener('keydown',event=>{
     if(!mxMaterial()||event.key!=='Tab'||document.querySelector('dialog[open]'))return;
-    const overlay=[...document.querySelectorAll('.modal-overlay.open')].at(-1);if(!overlay)return;
-    const focusable=[...overlay.querySelectorAll('button,input,select,textarea,a[href],[tabindex="0"]')].filter(element=>!element.disabled&&element.getClientRects().length);
+    const overlay=mxTopOverlay();if(!overlay)return;
+    const focusable=mxOverlayControls(overlay);
     if(!focusable.length)return;
-    const first=focusable[0],last=focusable.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+    const first=focusable[0],last=focusable.at(-1);
+    if(!overlay.contains(document.activeElement)){event.preventDefault();(event.shiftKey?last:first).focus();}
+    else if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
   },true);
   const mxSheet=document.createElement('dialog');mxSheet.id='mx-filter-sheet';mxSheet.className='mx-dialog';mxSheet.setAttribute('aria-label','Game filters');mxSheet.innerHTML='<div class="mx-sheet-heading"><h2>Filters</h2><button type="button" aria-label="Close filters">'+mxSymbol('close')+'</button></div>';document.body.append(mxSheet);
   let mxFilterBodyHome=null;
@@ -11304,7 +11379,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const items=normalizeGameMilestones(game.milestones);
     const done=items.filter(m=>m.completedAt).length;
     const rows=items.slice().sort((a,b)=>!!a.completedAt-!!b.completedAt||(b.completedAt||'').localeCompare(a.completedAt||''));
-    return '<section class="game-milestones"><div class="game-milestones-heading"><div><h4>Personal milestones</h4><p>'+done+' of '+items.length+' completed</p></div><button class="btn-ghost" data-milestone-action="add">+ Add milestone</button></div>'+
+    return '<section class="game-milestones"><div class="game-milestones-heading"><div><h4>Personal milestones</h4><p>'+done+' of '+items.length+' completed</p></div><button class="btn-ghost" data-milestone-action="add">+ Add milestone</button></div><div class="classic-milestone-progress" role="progressbar" aria-label="Personal milestones completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+(items.length?done/items.length*100:0)+'" aria-valuetext="'+done+' of '+items.length+' completed"><span class="classic-milestone-fill" style="width:'+(items.length?done/items.length*100:0)+'%"></span></div>'+
       (rows.length?rows.map(m=>'<div class="game-milestone-row'+(m.completedAt?' completed':'')+'"><label><input type="checkbox" data-milestone-action="toggle" data-milestone-id="'+milestoneAttr(m.id)+'" '+(m.completedAt?'checked':'')+'><span class="game-milestone-copy"><span class="game-milestone-name">'+escHtml(m.name)+'</span><span class="game-milestone-date">'+(m.completedAt?'Completed '+escHtml(m.completedAt):'Not completed')+'</span></span></label><div class="game-milestone-actions"><button class="btn-ghost" data-milestone-action="edit" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Edit milestone">Edit</button><button class="btn-ghost" data-milestone-action="delete" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Delete milestone">Delete</button></div></div>').join(''):'<p class="backup-hint">Add a checkpoint, a challenge, or a personal goal for this game.</p>')+'</section>';
   }
   let milestoneEditorGame=null,milestoneEditorId=null,milestoneDeleteId=null;
@@ -11411,8 +11486,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if (btn) btn.remove();
     deferredInstallPrompt = null;
   });
+  document.getElementById('target-reached-ok').addEventListener('click', () => {
+    document.getElementById('target-reached-modal').classList.remove('open');
+  });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.7.5';
+    const APP_VERSION = '1.8.0';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
@@ -11472,9 +11550,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         });
         location.reload();
       } catch(error) {toast(error.message);button.disabled=false;}
-    });
-    document.getElementById('target-reached-ok').addEventListener('click', () => {
-      document.getElementById('target-reached-modal').classList.remove('open');
     });
   }
 })();

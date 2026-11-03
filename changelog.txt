@@ -1,59 +1,45 @@
 PlayDex - Changelog
 ====================
 
-Version 1.7.5
+Version 1.8.0
 -------------------
-- Starting a game resets the Target selection to Off and clears custom minutes, while preserving the chosen target on the new session.
-- Archived games offer Edit when either their cover or platform is missing; Edit disappears once both are filled in.
-- Session-row game totals show playtime for that game on the session date instead of combining all-time history.
-- Archiving a weekly rotation game releases its unused target time back to Available time, while its completed playtime stays counted for the current week; rotation and daily-goal budget checks use the same calculation.
-
-Version 1.7.4
--------------------
-- Session rows show each game's all-time recorded playtime beside the session times in a subtle label using the selected theme colour.
-
-Version 1.7.3
--------------------
-- Game dashboards use a wider two-column layout on larger screens, with milestones beside stats and history.
-- Added personal game milestones with named checkpoints, editable completion dates, and actions to complete, reopen, edit, or delete them from each game dashboard.
-- Weekly rotation and daily goal progress use whole-minute precision and refresh as live playtime reaches each minute; the main session timer retains seconds.
-- Weekly rotation is hidden while a running or paused session belongs to a game outside the rotation, and returns when the session stops.
-- Weekly rotation time uses a compact, consistent text style for played and target durations, matching the surrounding interface.
-- Stale-game reminders replace rotation exclusions with the next available non-rotation games, including never-played games, to show up to three suggestions.
-- Rotation progress removes the duplicated played-status line and emphasizes elapsed time, target duration, and a distinct percentage badge.
-- During an active session, weekly rotation hides its budget and overview and updates target progress live for the current game, excluding paused time.
-- During running or paused sessions, weekly rotation shows only the current rotation game and hides Start and Playing actions; the normal list returns after stopping.
-- Material mode now uses HCT-generated light and dark palettes, bundled Roboto Flex typography, Material Symbols, and expressive tonal surfaces.
-- Material navigation keeps every destination, uses two rows below 600px, and positions content, the FAB, and snackbars around the actual navigation height.
-- Material mode has accessible themed select menus, date-picker dialogs, and dial or keyboard time entry with confirmation and cancellation.
-- Material buttons, chips, checkboxes, settings, lists, charts, and dialogs share consistent sizing, focus states, hierarchy, and reduced-motion support.
-- Material game filters open as a bottom sheet on compact screens; the bundled font is cached for offline use.
-
-Version 1.7.2
--------------------
-- Games you haven't played in a while excludes weekly rotation games and no longer has a dismiss button.
-- Weekly rotation allows any number of games, with combined targets still limited by the weekly time budget.
-- Weekly rotation targets accept whole hours only; existing partial targets round up in the editor and change only when saved.
-- Daily playtime goals accept whole hours only; budget warnings recommend the minimum whole-hour goal needed for the rotation.
-
-Version 1.7.1
--------------------
-- Saving a daily goal is blocked if its weekly budget cannot cover saved rotation targets, with a message showing the minimum required daily goal.
-- Today's Goal is entered in hours, with decimal support and existing daily goal durations preserved.
-- Saving an over-budget rotation displays how much time to remove and the maximum allowed total, keeping the editor open for corrections.
-- Weekly rotation targets are entered in hours, including decimals, while preserving existing target durations.
-- Weekly rotation and its editor show a progress bar for the unallocated weekly time, updating as targets change.
-- Today's Goal calculates a weekly goal of seven times the daily goal; weekly rotation shows planned and available time and limits combined targets to that budget.
-- Game library rows show square cover thumbnails with themed placeholders and platform badges.
-- Sessions are grouped by date with daily totals for the current filters and simpler individual rows.
-- Games filters collapse on smaller screens, show an active-filter count, and provide removable filter chips above results.
-- Top replaces its permanent ranking legend with an expandable guide and clearer movement badges.
-- Settings groups controls under Appearance, Session tracking, Dropbox, and Data, with section navigation and visually separated data-maintenance actions.
-- Widened the Games filter panel for easier use on larger screens.
-- Archived games without a cover offer an Edit action; the action disappears after a cover is added.
-- Games has a right-side filter panel for platform, missing platform, active or archived games, pinned games, and tags, with a result count and Clear filters; it stacks above the list on smaller screens.
-- Games has a No platform selected filter with a count, combining with search and tags to find games missing a console or PC assignment.
 - Added spacing between the game name and tags fields in the Classic Edit Game dialog.
+- Games has a No platform selected filter with a count, combining with search and tags to find games missing a console or PC assignment.
+- Games has a right-side filter panel for platform, missing platform, active or archived games, pinned games, and tags, with a result count and Clear filters; it stacks above the list on smaller screens.
+- Archived games offer Edit when either their cover or platform is missing; Edit disappears once both are filled in.
+- Widened the Games filter panel for easier use on larger screens.
+- Settings groups controls under Appearance, Session tracking, Dropbox, and Data, with section navigation and visually separated data-maintenance actions.
+- Top replaces its permanent ranking legend with an expandable guide and clearer movement badges.
+- Games filters collapse on smaller screens, show an active-filter count, and provide removable filter chips above results.
+- Sessions are grouped by date with daily totals for the current filters and simpler individual rows.
+- Game library rows show square cover thumbnails with themed placeholders and platform badges.
+- Today's Goal calculates a weekly goal of seven times the daily goal; weekly rotation shows planned and available time and limits combined targets to that budget.
+- Weekly rotation and its editor show a progress bar for the unallocated weekly time, updating as targets change.
+- Weekly rotation targets use whole-hour input; existing partial targets round up in the editor and change only when saved.
+- Saving an over-budget rotation displays how much time to remove and the maximum allowed total, keeping the editor open for corrections.
+- Daily playtime goals use whole-hour input, with budget checks showing the minimum daily goal required to cover saved rotation targets.
+- Weekly rotation allows any number of games, with combined targets still limited by the weekly time budget.
+- Games you haven't played in a while excludes weekly rotation games and no longer has a dismiss button.
+- Material game filters open as a bottom sheet on compact screens; the bundled font is cached for offline use.
+- Material buttons, chips, checkboxes, settings, lists, charts, and dialogs share consistent sizing, focus states, hierarchy, and reduced-motion support.
+- Material mode has accessible themed select menus, date-picker dialogs, and dial or keyboard time entry with confirmation and cancellation.
+- Material navigation keeps every destination, uses two rows below 600px, and positions content, the FAB, and snackbars around the actual navigation height.
+- Material mode now uses HCT-generated light and dark palettes, bundled Roboto Flex typography, Material Symbols, and expressive tonal surfaces.
+- During a running or paused session, rotation shows only the current rotation game, hides Start and Playing actions and budget details, and updates progress using active playtime; the card is hidden for games outside the rotation.
+- Rotation progress uses compact elapsed and target durations, a distinct percentage badge, and a progress bar without duplicate played-status text.
+- Stale-game reminders replace rotation exclusions with the next available non-rotation games, including never-played games, to show up to three suggestions.
+- Weekly rotation and daily goal progress use whole-minute precision and refresh as live playtime reaches each minute; the main session timer retains seconds.
+- Added personal game milestones with named checkpoints, editable completion dates, and actions to complete, reopen, edit, or delete them from each game dashboard.
+- Game dashboards use a wider two-column layout on larger screens, with milestones beside stats and history.
+- Session rows show each game's combined playtime for the session date in a subtle label using the selected theme colour.
+- Archiving a weekly rotation game releases its unused target time back to Available time, while its completed playtime stays counted for the current week; rotation and daily-goal budget checks use the same calculation.
+- Starting a game resets the Target selection to Off and clears custom minutes, while preserving the chosen target on the new session.
+- Classic goal, rotation, and milestone progress bars share rounded styling and values above the bars; archived games keep readable artwork and use an Archived label instead of crossed-out names.
+- Classic uses clearer card headings, a theme-coloured selected-tab background, and consistently sized secondary actions with separated Delete buttons.
+- The target-reached Got it button works even when service workers are unavailable.
+- Material dialogs keep keyboard focus inside the topmost dialog, including milestone editors opened over a game dashboard.
+- Restoring or undoing the archive of a rotation game is blocked with an explanation when its restored target would exceed the weekly budget.
+- Invalid backup records are rejected before replacing local data during manual import, Dropbox download, or rollback.
 
 Version 1.7.0
 -------------------

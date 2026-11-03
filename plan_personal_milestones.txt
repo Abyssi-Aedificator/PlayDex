@@ -1,0 +1,32 @@
+PlayDex - Personal Milestones Ideas
+==================================
+
+Milestone substeps
+- Break a checkpoint into smaller tasks, with progress such as 3 of 5 completed.
+
+Pin your next milestone
+- Show one chosen checkpoint on the active-session card and weekly rotation row.
+
+Reusable templates
+- Save milestone sets, such as Finish campaign / Complete side quests / Find collectibles, and apply them to other games.
+
+Groups and manual ordering
+- Organize milestones under groups such as Campaign, Challenges, or Collectibles, and choose their order.
+
+Completion timeline
+- Show recently completed personal milestones across all games in Profile, with dates and game artwork.
+
+Numeric progress
+- Track goals such as 12 of 30 collectibles, with a progress bar.
+
+Milestone dependencies
+- Make milestones such as Finish Chapter 2 available after completing Finish Chapter 1.
+
+Optional target dates
+- Set a date to aim for and highlight approaching milestones.
+
+Completion prompts after sessions
+- When stopping a game, optionally ask whether any pending milestones were completed.
+
+Repeatable milestones
+- Reset selected challenges weekly or monthly while keeping their completion history.
