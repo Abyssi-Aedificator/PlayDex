@@ -4741,6 +4741,16 @@ opacity: 0.18;
 
 dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;margin:auto;height:fit-content;} :root[data-ui=material] .sync-seg button{min-width:48px;} :root[data-ui=material] .library-game-copy .game-item-name{white-space:normal;overflow-wrap:anywhere;} :root[data-ui=material] .mx-page-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}:root[data-ui=material] button{min-width:48px;min-height:48px;} :root[data-ui=material] summary{min-height:48px;align-content:center;}
 
+  .rotation-metrics { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:8px 0; }
+  .rotation-time { display:flex; align-items:baseline; gap:6px; font-variant-numeric:tabular-nums; }
+  .rotation-elapsed { color:var(--text2); font-size:.8rem; font-weight:500; line-height:1.5; }
+  .rotation-target-text { color:var(--text2); font-size:.8rem; font-weight:500; line-height:1.5; }
+  .rotation-percent { color:var(--accent); background:var(--accent-dim); padding:4px 10px; border-radius:999px; font-size:.75rem; font-weight:700; font-variant-numeric:tabular-nums; }
+  :root[data-ui="material"] .rotation-elapsed,:root[data-ui="material"] .rotation-target-text { color:var(--md-on-surface-variant); font-size:14px; font-weight:500; line-height:20px; }
+  :root[data-ui="material"] .rotation-percent { background:var(--md-secondary-container); color:var(--md-on-secondary-container); border-radius:8px; font-size:12px; font-weight:600; }
+
+  #weekly-rotation-card[hidden] { display:none!important; }
+
 </style>
 <script>
 // Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
@@ -6096,6 +6106,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   let cardAnimating = false;
   let timerRaf = null;
   let lastElapsedSec = -1;
+  let lastProgressMinute = -1, lastProgressSessionId = null;
   let lastClockStr = '';
   let lastPausedSec = -1;
   let lastCountdownUpdate = 0;
@@ -7639,6 +7650,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       document.getElementById('paused-for').textContent = '';
     }
     lastPausedSec = -1;
+    updateActiveRotationProgress();
   }
 
   function updateLiveChase(elapsed) {
@@ -7702,9 +7714,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function renderGoal() {
     const goalMin = settings.dailyGoalMinutes || 0;
-    const todayTotal = todaySessionsMs();
+    const liveToday=activeSession && isToday(activeSession.start)?Math.max(0,activeElapsedMs(activeSession,Date.now())):0;
+    const todayTotal = Math.floor((todaySessionsMs()+liveToday)/60000)*60000;
     const weeklyBudget = weeklyRotationBudgetMinutes();
-    document.getElementById('goal-week-budget').textContent = weeklyBudget ? fmtDurationShort(weeklyBudget*60000) : 'Not set';
+    document.getElementById('goal-week-budget').textContent = weeklyBudget ? fmtDurationMinutes(weeklyBudget*60000) : 'Not set';
     const goalText = document.getElementById('goal-text');
     const track = document.getElementById('goal-track');
     const fill = document.getElementById('goal-fill');
@@ -7723,10 +7736,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
     const goalMs = goalMin * 60000;
     const pct = Math.min(100, Math.round(todayTotal / goalMs * 100));
-    goalText.textContent = 'Goal: ' + fmtDurationShort(goalMs);
+    goalText.textContent = 'Goal: ' + fmtDurationMinutes(goalMs);
     track.style.display = '';
     fill.style.width = Math.max(0, pct) + '%';
-    percentEl.textContent = fmtDurationShort(todayTotal) + ' of ' + fmtDurationShort(goalMs) + ' (' + pct + '%)';
+    percentEl.textContent = fmtDurationMinutes(todayTotal) + ' of ' + fmtDurationMinutes(goalMs) + ' (' + pct + '%)';
 
     const streak = computeStreak();
     if (streak > 0) {
@@ -7809,14 +7822,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const budget=weeklyRotationBudgetMinutes();
     if(!budget) return 'Set a daily goal to define your weekly rotation budget.';
     const remaining=budget-planned;
-    return 'Weekly budget: '+fmtDurationShort(budget*60000)+' | Planned: '+fmtDurationShort(planned*60000)+' | '+(remaining<0?'Over budget: ':'Available: ')+fmtDurationShort(Math.abs(remaining)*60000);
+    return 'Weekly budget: '+fmtDurationMinutes(budget*60000)+' | Planned: '+fmtDurationMinutes(planned*60000)+' | '+(remaining<0?'Over budget: ':'Available: ')+fmtDurationMinutes(Math.abs(remaining)*60000);
   }
   function renderRotationBudgetMeter(id,planned) {
     const panel=document.getElementById(id+'-meter'),budget=weeklyRotationBudgetMinutes();
     panel.hidden=!budget;
     if(!budget) { panel.innerHTML=''; return; }
     const remaining=Math.max(0,budget-planned),pct=Math.max(0,Math.min(100,Math.round(remaining/budget*100)));
-    panel.innerHTML='<div class="rotation-budget-meter-label"><span>Available time</span><strong>'+(planned>budget?'Over budget':pct+'% available')+'</strong></div><div class="rotation-budget-meter'+(planned>budget?' over-budget':'')+'" role="progressbar" aria-label="Weekly time still available" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" aria-valuetext="'+escHtml(fmtDurationShort(remaining*60000)+' available of '+fmtDurationShort(budget*60000))+'"><div class="rotation-budget-meter-fill" style="width:'+pct+'%"></div></div>';
+    panel.innerHTML='<div class="rotation-budget-meter-label"><span>Available time</span><strong>'+(planned>budget?'Over budget':pct+'% available')+'</strong></div><div class="rotation-budget-meter'+(planned>budget?' over-budget':'')+'" role="progressbar" aria-label="Weekly time still available" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" aria-valuetext="'+escHtml(fmtDurationMinutes(remaining*60000)+' available of '+fmtDurationMinutes(budget*60000))+'"><div class="rotation-budget-meter-fill" style="width:'+pct+'%"></div></div>';
   }
   function rotationHoursToMinutes(value) {
     const hours=Number(value);
@@ -7826,22 +7839,55 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const value=Number(settings.weeklyRotationTargets?.[id]);
     return Number.isInteger(value) && value>0 && value<=10080 ? value : 0;
   }
+  function rotationProgressWithLive(ids,now=new Date()) {
+    const progress=rotationWeekProgress(ids,now);
+    if(activeSession && progress.games[activeSession.gameId]) {
+      const start=new Date(activeSession.start);
+      if(start>=progress.bounds.start && start<=progress.bounds.end && start<=now) progress.games[activeSession.gameId].ms+=Math.max(0,activeElapsedMs(activeSession,now.getTime()));
+    }
+    Object.values(progress.games).forEach(entry=>entry.ms=Math.floor(Math.max(0,entry.ms)/60000)*60000);
+    return progress;
+  }
+  function fmtDurationMinutes(ms) {
+    const minutes=Math.floor(Math.max(0,Number(ms)||0)/60000),hours=Math.floor(minutes/60);
+    return hours?hours+'h'+(minutes%60?' '+minutes%60+'m':''):minutes+'m';
+  }
+  function rotationPlayedTime(ms) { return fmtDurationMinutes(ms); }
+  function updateActiveRotationProgress() {
+    if(!activeSession)return;
+    const row=[...document.querySelectorAll('#rotation-list [data-rotation-game]')].find(row=>row.dataset.rotationGame===activeSession.gameId);
+    if(!row)return;
+    const entry=rotationProgressWithLive([activeSession.gameId]).games[activeSession.gameId];
+    const elapsed=row.querySelector('[data-rotation-elapsed]');if(elapsed)elapsed.textContent=rotationPlayedTime(entry.ms);
+    const target=rotationTargetMinutes(activeSession.gameId),percent=row.querySelector('[data-rotation-percent]'),bar=row.querySelector('[data-rotation-progress]');
+    if(target && percent && bar){const pct=Math.min(100,Math.floor(entry.ms/(target*60000)*100));percent.textContent=pct===100?'Target reached':pct+'%';bar.setAttribute('aria-valuenow',String(pct));bar.querySelector('.progress-fill').style.width=pct+'%';}
+  }
   function renderWeeklyRotation() {
-    const ids=rotationGameIds(),progress=rotationWeekProgress(ids);
+    const ids=rotationGameIds();
+    const card=document.getElementById('weekly-rotation-card');
+    const hidden=!!activeSession && !ids.includes(activeSession.gameId);
+    card.hidden=hidden;
+    if(hidden)return;
+    const progress=rotationProgressWithLive(ids);
     const remaining=ids.filter(id=>!rotationTargetMinutes(id) || progress.games[id].ms<rotationTargetMinutes(id)*60000);
     const reached=ids.length-remaining.length;
     document.getElementById('rotation-summary').textContent=ids.length?progress.played+' of '+ids.length+' played this week'+(reached?' | '+reached+' target'+(reached===1?'':'s')+' reached':'')+' | '+fmtDayMonth(progress.bounds.start)+' - '+fmtDayMonth(progress.bounds.end):'Choose a few games for this week. Play one completed session to check a game off.';
+    document.getElementById('rotation-summary').hidden=!!activeSession;
     const planned=ids.reduce((sum,id)=>sum+rotationTargetMinutes(id),0);
     const budgetEl=document.getElementById('rotation-budget');
+    budgetEl.hidden=!!activeSession;
     budgetEl.textContent=rotationBudgetText(planned);
     renderRotationBudgetMeter('rotation-budget',planned);
+    if(activeSession)document.getElementById('rotation-budget-meter').hidden=true;
     budgetEl.classList.toggle('over-budget',!!weeklyRotationBudgetMinutes() && planned>weeklyRotationBudgetMinutes());
     const list=document.getElementById('rotation-list');
-    list.innerHTML=ids.length && !remaining.length ? '<p class="backup-hint">All weekly targets reached! Your games return next week.</p>' : remaining.map(id=>{
-      const game=games.find(g=>g.id===id),entry=progress.games[id],running=activeSession && activeSession.gameId===id;
+    const visible=activeSession?ids.filter(id=>id===activeSession.gameId):remaining;
+    const empty=activeSession?'<p class="backup-hint">Your current game is not in this week\'s rotation.</p>':ids.length && !remaining.length?'<p class="backup-hint">All weekly targets reached! Your games return next week.</p>':'';
+    list.innerHTML=!visible.length ? empty : visible.map(id=>{
+      const game=games.find(g=>g.id===id),entry=progress.games[id];
       const target=rotationTargetMinutes(id),pct=target?Math.min(100,Math.floor(entry.ms/(target*60000)*100)):0;
-      const targetHtml=target?'<small>'+fmtDurationShort(entry.ms)+' / '+fmtDurationShort(target*60000)+(pct===100?' &middot; Target reached':' &middot; '+pct+'%')+'</small><div class="progress-track" role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'';
-      return '<div class="rotation-row"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong><small class="'+(entry.count?'played':'')+'">'+(entry.count?'&#10003; Played this week &middot; '+fmtDurationShort(entry.ms):'Not played yet this week')+'</small>'+targetHtml+'</div><button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'"'+(activeSession?' disabled':'')+'>'+(running?'Playing':'Start')+'</button></div>';
+      const targetHtml=target?'<div class="rotation-metrics" data-rotation-target-text><span class="rotation-time"><span class="rotation-elapsed" data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span><span class="rotation-target-text">/ '+fmtDurationMinutes(target*60000)+'</span></span><span class="rotation-percent" data-rotation-percent>'+(pct===100?'Target reached':pct+'%')+'</span></div><div class="progress-track" data-rotation-progress role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'<small><span data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span> this week</small>';
+      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+targetHtml+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'">Start</button>')+'</div>';
     }).join('');
   }
   function rotationSelectionCount() {
@@ -7869,7 +7915,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const valid=checkbox.checked && Number.isInteger(target) && target>0 && target<=10080;
       const reached=valid && played>=target*60000;
       status.classList.toggle('reached',reached);
-      status.textContent=valid?(reached?'\u2713 Target reached \u00b7 ':'')+fmtDurationShort(played)+' / '+fmtDurationShort(target*60000)+(reached?'':' this week'):'';
+      status.textContent=valid?(reached?'\u2713 Target reached \u00b7 ':'')+fmtDurationMinutes(played)+' / '+fmtDurationMinutes(target*60000)+(reached?'':' this week'):'';
     });
   }
   function openRotationEditor() {
@@ -10657,6 +10703,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         void el.offsetWidth;
         el.classList.add('tick');
       }
+      const progressMinute=Math.floor(elapsed/60000);
+      if(progressMinute!==lastProgressMinute || activeSession.id!==lastProgressSessionId) {
+        lastProgressMinute=progressMinute;lastProgressSessionId=activeSession.id;
+        updateActiveRotationProgress();renderGoal();
+      }
       const nowStr = fmtTime(new Date().toISOString());
       if (nowStr !== lastClockStr) {
         lastClockStr = nowStr;
@@ -10703,6 +10754,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         document.title = APP_TITLE;
       }
     } else {
+      lastProgressMinute=-1;lastProgressSessionId=null;
       document.title = APP_TITLE;
     }
     timerRaf = requestAnimationFrame(updateTimer);
