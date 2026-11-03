@@ -7701,6 +7701,18 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return out.sort((a, b) => b.lastMs - a.lastMs);
   }
 
+  function stalePromptEntries(limit=3) {
+    const stale=staleGameEntries(),rotationIds=new Set(rotationGameIds());
+    const entries=stale.filter(entry=>!rotationIds.has(entry.game.id)).slice(0,limit);
+    if(entries.length<limit && stale.some(entry=>rotationIds.has(entry.game.id))) {
+      const selected=new Set(entries.map(entry=>entry.game.id)),lastStop=new Map();
+      sessions.forEach(session=>{if(session.stop===null)return;const time=Date.parse(session.stop);if(Number.isFinite(time))lastStop.set(session.gameId,Math.max(lastStop.get(session.gameId)||0,time));});
+      const replacements=games.filter(game=>!game.archived && !rotationIds.has(game.id) && !selected.has(game.id)).map(game=>({game,lastMs:lastStop.get(game.id)||null})).sort((a,b)=>(a.lastMs||0)-(b.lastMs||0)||a.game.name.localeCompare(b.game.name));
+      entries.push(...replacements.slice(0,limit-entries.length));
+    }
+    return entries;
+  }
+
   // --- Render ---
   function render() {
     renderTodayTab();
@@ -8027,19 +8039,18 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
     renderGoal();
 
-    // Stale-game play-again prompt (optional, once per day)
+    // Stale-game prompt: backfill excluded rotation games to keep useful suggestions.
     const spEl = document.getElementById('stale-prompt');
     if (spEl) {
-      const rotationIds = new Set(rotationGameIds());
-      const stale = staleGameEntries().filter(entry => !rotationIds.has(entry.game.id));
+      const stale = stalePromptEntries();
       const show = settings.stalePrompt && !activeSession && stale.length > 0;
       if (show) {
         const spList = document.getElementById('stale-prompt-list');
-        spList.innerHTML = stale.slice(0, 3).map(x => {
-          const daysAgo = Math.max(1, Math.floor((Date.now() - x.lastMs) / 86400000));
+        spList.innerHTML = stale.map(x => {
+          const lastPlayed = x.lastMs ? timeAgo(x.lastMs) : 'Never played';
           return '<div class="stale-prompt-row">' +
             '<span class="stale-prompt-name">' + escHtml(x.game.name) + '</span>' +
-            '<span class="stale-prompt-last">' + daysAgo + 'd ago</span>' +
+            '<span class="stale-prompt-last">' + escHtml(lastPlayed) + '</span>' +
             '<button class="btn btn-start stale-prompt-play" data-game-id="' + x.game.id + '">&#9654; Play again</button>' +
           '</div>';
         }).join('');
