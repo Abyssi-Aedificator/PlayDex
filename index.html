@@ -5071,6 +5071,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         <span class="goal-text" id="goal-percent"></span>
       </div>
       <div class="goal-week-budget"><span>Weekly goal (7 days)</span><strong id="goal-week-budget">0:00:00</strong></div>
+      <div class="goal-week-budget" style="grid-row:6"><span>Daily average (previous 7 days)</span><strong id="goal-week-average">0s</strong></div>
     </div>
 
     <div class="card" id="start-game-card">
@@ -7829,6 +7830,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const todayTotal = Math.floor((todaySessionsMs()+liveToday)/60000)*60000;
     const weeklyBudget = weeklyRotationBudgetMinutes();
     document.getElementById('goal-week-budget').textContent = weeklyBudget ? fmtDurationMinutes(weeklyBudget*60000) : 'Not set';
+    const averageEnd = todayStr();
+    let previousWeekTotal = 0;
+    for (let day = 1; day <= 7; day++) previousWeekTotal += totalMsForDate(addDays(averageEnd, -day));
+    document.getElementById('goal-week-average').textContent = fmtDurationMinutes(Math.floor(previousWeekTotal / 7 / 60000) * 60000);
     const goalText = document.getElementById('goal-text');
     const track = document.getElementById('goal-track');
     const fill = document.getElementById('goal-fill');

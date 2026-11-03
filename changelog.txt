@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.8.1
+-------------------
+- Today's Goal shows average daily playtime over the previous seven completed days, including days with no sessions.
+
 Version 1.8.0
 -------------------
 - Added spacing between the game name and tags fields in the Classic Edit Game dialog.
