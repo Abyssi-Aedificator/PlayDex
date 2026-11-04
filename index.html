@@ -5434,7 +5434,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.8.1</span>
+    <span class="version-badge">1.8.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -6389,7 +6389,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div class="modal-overlay" id="dbx-confirm-modal">
   <div class="modal">
     <h3>Download from Dropbox?</h3>
-    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;">This replaces the games and sessions on this device. Settings stay on this device. A recovery copy of your current history will be saved before replacement.</p>
+    <p style="font-size:0.85rem;color:var(--text2);margin-bottom:4px;">This replaces games, sessions, and synced settings on this device. Theme, Interface, and Theme Colour stay on this device. A recovery copy is saved before replacement.</p>
     <div class="modal-actions">
       <button class="btn-ghost" id="dbx-confirm-cancel">Cancel</button>
       <button class="btn-danger" id="dbx-confirm-download" style="padding:8px 16px;font-size:0.85rem;">Download</button>
@@ -6397,7 +6397,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
-<div class="modal-overlay" id="dbx-rollback-modal"><div class="modal"><h3>Roll back Dropbox?</h3><p id="dbx-rollback-message" class="backup-hint"></p><p class="backup-hint">This replaces games and sessions in the live Dropbox file and on this device. Your current local history is saved as a recovery copy first. The current Dropbox version joins the five-version history.</p><div class="modal-actions"><button class="btn-ghost" id="dbx-rollback-cancel">Cancel</button><button class="btn-danger" id="dbx-rollback-confirm">Roll back</button></div></div></div>
+<div class="modal-overlay" id="dbx-rollback-modal"><div class="modal"><h3>Roll back Dropbox?</h3><p id="dbx-rollback-message" class="backup-hint"></p><p class="backup-hint">This replaces games and sessions in Dropbox and on this device, and restores synced settings if the selected version includes them. Your current local history is saved as a recovery copy first. The current Dropbox version joins the five-version history.</p><div class="modal-actions"><button class="btn-ghost" id="dbx-rollback-cancel">Cancel</button><button class="btn-danger" id="dbx-rollback-confirm">Roll back</button></div></div></div>
 
 <!-- Dropbox newer-backup prompt -->
 <div class="modal-overlay" id="dbx-sync-modal">
@@ -6605,9 +6605,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     scheduleAutoUpload();
   }
 
+  function defaultSettings() {
+    return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' };
+  }
+
   function loadSettings() {
-    try { return Object.assign({ dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' }, JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
-    catch { return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' }; }
+    try { return Object.assign(defaultSettings(), JSON.parse(localStorage.getItem(KEYS.settings)) || {}); }
+    catch { return defaultSettings(); }
   }
 
   function mergeFullClear(a, b) {
@@ -6617,8 +6621,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function saveSettings(settings) {
+    const previous = JSON.stringify(syncSettings(loadSettings()));
     writeLocalData(KEYS.settings, settings);
-    scheduleAutoUpload();
+    if (previous !== JSON.stringify(syncSettings(settings))) scheduleAutoUpload();
   }
 
   function uid() {
@@ -7068,8 +7073,15 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   if (!dbx) dbx = { appKey: '', accessToken: '', refreshToken: '', expiresAt: 0, account: '', lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, hideSyncBanner: false, mock: false };
   const dbxSave = () => { try { localStorage.setItem(DBX_KEY, JSON.stringify(dbx)); } catch {} };
   const dbxRedirectUri = () => location.origin + location.pathname;
-  const syncSettings = () => { const s = Object.assign({}, settings); delete s.accent; return s; };
-  const dbxSnapshot = () => JSON.stringify({ games, sessions });
+  const DEVICE_SETTINGS = ['theme', 'uiStyle', 'accent'];
+  function syncSettings(source) {
+    return Object.fromEntries(Object.keys(source).filter(key => !DEVICE_SETTINGS.includes(key)).sort().map(key => [key, source[key]]));
+  }
+  function dbxSnapshot(data = { games, sessions, settings }) {
+    const state = { games: normalizeGames(data.games), sessions: data.sessions };
+    if (data.settings) state.settings = syncSettings(data.settings);
+    return JSON.stringify(state);
+  }
   let dbxSyncTimer = null, dbxSkipAutoUpload = false, dbxLastUploadedState = '';
   let dbxDirty = !!dbx.dirty, dbxBannerDismissed = false;
   let dbxSyncOps = 0, dbxPendingDownload = null;
@@ -7224,6 +7236,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const text=value=>typeof value==='string' && value.trim().length>0;
     const date=value=>typeof value==='string' && Number.isFinite(Date.parse(value));
     if (!record(data) || !Array.isArray(data.games) || !Array.isArray(data.sessions)) throw new Error('Invalid PlayDex backup');
+    if (data.settings !== undefined && !record(data.settings)) throw new Error('Invalid backup settings');
     const gameIds=new Set(),sessionIds=new Set();
     data.games.forEach(game=>{
       if (!record(game) || !text(game.id) || !text(game.name) || gameIds.has(game.id)) throw new Error('Invalid or duplicate game');
@@ -7247,7 +7260,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return validateBackupData(data);
   }
   function dbxWithHistory(next, previous) {
-    const history = previous ? [{ savedAt: previous.exportedAt || new Date().toISOString(), games: previous.games, sessions: previous.sessions }, ...(Array.isArray(previous.history) ? previous.history : [])].slice(0,5) : [];
+    const history = previous ? [{ savedAt: previous.exportedAt || new Date().toISOString(), games: previous.games, sessions: previous.sessions, settings: previous.settings ? syncSettings(previous.settings) : undefined }, ...(Array.isArray(previous.history) ? previous.history : [])].slice(0,5) : [];
     return Object.assign({}, next, { history });
   }
   async function dbxReadLive() {
@@ -7300,7 +7313,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const entry=dbxValidateFile(current.data.history[index]);
       dbxRecovery();
       const localBefore=dbxSnapshot();
-      const payload=dbxWithHistory({app:'PlayDex',version:1,exportedAt:new Date().toISOString(),games:entry.games,sessions:entry.sessions},current.data);
+      const currentSettings = entry.settings || current.data.settings;
+      const payload=dbxWithHistory({app:'PlayDex',version:1,exportedAt:new Date().toISOString(),games:entry.games,sessions:entry.sessions,settings:currentSettings ? syncSettings(currentSettings) : undefined},current.data);
       const res=await fetch('https://content.dropboxapi.com/2/files/upload',{
         method:'POST',headers:{'Authorization':'Bearer '+dbx.accessToken,'Content-Type':'application/octet-stream','Dropbox-API-Arg':JSON.stringify({path:DBX_PATH,mode:{'.tag':'update',update:current.rev},strict_conflict:true,mute:true})},body:JSON.stringify(payload)
       });
@@ -7348,7 +7362,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
           const remoteMeta = JSON.parse(remoteRes.headers.get('Dropbox-API-Result') || '{}');
           if (!remoteMeta.rev || !Array.isArray(remote.games) || !Array.isArray(remote.sessions) ||
               JSON.stringify(normalizeGames(remote.games)) !== JSON.stringify(games) ||
-              JSON.stringify(remote.sessions) !== JSON.stringify(sessions)) { dbxConflict(); return; }
+              JSON.stringify(remote.sessions) !== JSON.stringify(sessions) ||
+              (remote.settings && dbxSnapshot(dbxValidateFile(remote)) !== dbxSnapshot())) { dbxConflict(); return; }
           rev = remoteMeta.rev;
           dbx.rev = rev;
           dbxSave();
@@ -7362,7 +7377,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const previous = rev ? await dbxReadLive() : null;
       if (previous && previous.rev !== rev) { dbxConflict(); return; }
       const uploadedState = dbxSnapshot();
-      if (previous && JSON.stringify({games:normalizeGames(previous.data.games),sessions:previous.data.sessions}) === uploadedState) {
+      if (previous && dbxSnapshot(previous.data) === uploadedState) {
         dbx.rev=previous.rev; dbxMarkSynced(); dbxHistoryView=previous; dbxPaintHistory(); toast('Dropbox is already up to date'); return;
       }
       const payload = dbxWithHistory(Object.assign({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString() }, JSON.parse(uploadedState)), previous ? previous.data : null);
@@ -7384,6 +7399,16 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     finally { dbxSyncSpinning(false); }
   }
 
+  function refreshSyncedSettingsControls() {
+    for (const [id, key] of [['setTabTitle', 'tabTitle'], ['setTargetNotif', 'targetNotif'], ['setStalePrompt', 'stalePrompt']]) {
+      document.getElementById(id).checked = !!settings[key];
+    }
+    idlePresetBtns.forEach(b => b.classList.toggle('on', Number(b.dataset.idle) === (settings.idleRemindMin || 0)));
+    stalePresetBtns.forEach(b => b.classList.toggle('on', Number(b.dataset.days) === (settings.staleDays || 0)));
+    weekStartPresetBtns.forEach(b => b.classList.toggle('on', b.dataset.weekstart === (settings.weekStartsOn || 'monday')));
+    if (!settings.tabTitle) document.title = APP_TITLE;
+  }
+
   function dbxApplyBackupText(backup) {
     const { text, rev } = backup;
     const parsed = validateBackupData(JSON.parse(text));
@@ -7393,8 +7418,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     try {
       games = normalizeGames(parsed.games);
       sessions = parsed.sessions;
-      // Never overwrite device-local settings from Dropbox sync/backups pulled via sync
-      // (manual full exports are handled by the explicit import action below)
+      if (parsed.settings) {
+        const nextSettings = Object.assign(defaultSettings(), syncSettings(parsed.settings));
+        DEVICE_SETTINGS.forEach(key => { nextSettings[key] = settings[key]; });
+        settings = nextSettings;
+        saveSettings(settings);
+        refreshSyncedSettingsControls();
+      }
       saveGames(games);
       saveSessions(sessions);
       backfillUnlockDates('gentle');
@@ -11684,7 +11714,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const cards=[...panel.children].filter(element=>element.classList.contains('card'));
     const find=title=>cards.find(card=>card.querySelector('.card-header')?.textContent.trim()===title);
     const appearance=find('Appearance'),live=find('Live session'),library=find('Game list'),dropbox=find('Dropbox Sync'),backup=find('Backup'),maintenance=find('Achievements'),shortcuts=find('Keyboard shortcuts');
-    const sections=[['appearance','Appearance',[appearance]],['tracking','Session tracking',[live,library,shortcuts]],['dropbox','Dropbox',[dropbox]],['data','Data',[backup,maintenance]]];
+    const sections=[['appearance','Appearance',[appearance]],['tracking','Session tracking',[find('Playtime goal'),live,library,shortcuts]],['dropbox','Dropbox',[dropbox]],['data','Data',[backup,maintenance]]];
     const nav=document.createElement('nav');nav.className='settings-nav';nav.setAttribute('aria-label','Settings sections');
     panel.prepend(nav);
     sections.forEach(([id,title,items])=>{
@@ -12119,7 +12149,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.8.1';
+    const APP_VERSION = '1.8.2';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {

@@ -1,21 +1,26 @@
 PlayDex - Changelog
 ====================
 
+Version 1.8.2
+-------------------
+- Dropbox now syncs settings including weekly rotation games and targets, while Theme, Interface, and Theme Colour stay on each device.
+
 Version 1.8.1
 -------------------
-- Added a Settings toggle to automatically base the daily goal and weekly rotation budget on last week's rounded daily average, disabling manual goal editing while enabled.
+- Added Settings > Playtime goal > Automatically use last week's daily average; the daily goal updates automatically and the weekly rotation budget is seven times that goal.
 - Fixed Liquid Glass session sync filters so the Unsynced label fits inside its segment.
 - Liquid Glass panels are more translucent, with stronger backdrop blur, soft reflective highlights, and brighter glass edges while preserving accessibility fallbacks.
 - Renamed the Apple interface option to Liquid Glass.
-- Apple theme-coloured backgrounds drift gently in a 24-second loop, pause while the app is hidden, and stay static when the system requests reduced motion.
-- Today's Goal shows average daily playtime for the previous calendar week rounded to the nearest whole hour, following Week starts on and including days with no sessions.
-- Apple uses a background drawn from the selected Theme Colour and semi-transparent frosted panels, with opaque fallbacks for Reduce transparency and Increase contrast.
-- Apple Increase contrast uses the selected Theme Colour for stronger borders and the selected navigation item, with readable contrasting text.
-- Removed the Apple Reduce motion switch; system reduced-motion preferences continue to apply automatically.
-- Refined the Apple interface around Liquid Glass principles: neutral glass navigation with layered highlights and progressive edge refraction, a moving selection lens, scroll-edge separation, capsule controls, and adaptive sheets and popovers.
-- Apple display options follow system accessibility preferences and provide additional Reduce transparency and Increase contrast controls.
-- Added an Apple-inspired third interface with grouped light and dark surfaces, system typography, translucent floating navigation, rounded controls, and accessible theme-colour accents.
-- Interface selection persists across launches; switching among Classic, Material 3, and Apple keeps the selected theme colour and existing data.
+- Liquid Glass theme-coloured backgrounds drift gently in a 24-second loop, pause while the app is hidden, and stay static when the system requests reduced motion.
+- Today's Goal shows Daily average (last week) for the previous calendar week, rounded to the nearest whole hour, following Week starts on and including days with no sessions.
+- Automatic goals disable manual editing; turning the option off restores the saved manual goal, and changes that would put the weekly rotation over budget are blocked.
+- Liquid Glass uses a background drawn from the selected Theme Colour and semi-transparent frosted panels, with opaque fallbacks for Reduce transparency and Increase contrast.
+- Liquid Glass Increase contrast uses the selected Theme Colour for stronger borders and the selected navigation item, with readable contrasting text.
+- Removed the Liquid Glass Reduce motion switch; system reduced-motion preferences continue to apply automatically.
+- Refined the Liquid Glass interface around Liquid Glass principles: neutral glass navigation with layered highlights and progressive edge refraction, a moving selection lens, scroll-edge separation, capsule controls, and adaptive sheets and popovers.
+- Liquid Glass display options follow system accessibility preferences and provide additional Reduce transparency and Increase contrast controls.
+- Added an Apple-inspired Liquid Glass interface with grouped light and dark surfaces, system typography, translucent floating navigation, rounded controls, and accessible theme-colour accents.
+- Interface selection persists across launches; switching among Classic, Material 3, and Liquid Glass keeps the selected theme colour and existing data.
 
 Version 1.8.0
 -------------------
