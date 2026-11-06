@@ -1387,6 +1387,15 @@ opacity: 0.18;
   .playtime-session-list { list-style:none; padding:0; margin:4px 0 0; }
   .playtime-session-row { padding:4px 0; color:var(--text2); font-size:.75rem; }
   #session-finish-review .modal-actions { flex-wrap:wrap; }
+  .beat-time-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:10px; }
+  .beat-time-fields input { min-width:0; }
+  .beat-time-fields .beat-played-field { grid-column:1 / -1; }
+  .beat-progress-row { padding:10px 0; border-top:1px solid var(--border); }
+  .beat-progress-label { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; font-size:.8rem; }
+  .beat-progress-label > span { color:var(--text2); font-variant-numeric:tabular-nums; }
+  .beat-progress-row .progress-track { height:6px; margin:6px 0 0; }
+  .finish-beat-progress { margin-top:12px; }
+  .dashboard-milestone-column { display:grid; gap:18px; }
   #session-finish-sync { display:inline-grid; place-items:center; }
   #session-finish-sync span { grid-area:1 / 1; }
   #session-finish-sync:not(:disabled) .finish-synced-label,
@@ -4811,7 +4820,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
   .game-milestone-actions { display:flex; flex-wrap:wrap; gap:4px; }
   .game-milestone-actions button { min-height:40px; min-width:40px; padding:8px; }
   .milestone-complete-toggle { display:flex; align-items:center; gap:10px; min-height:48px; margin:0 0 16px; color:var(--text2); font-size:.85rem; cursor:pointer; }
-  #milestone-modal,#milestone-delete-modal { z-index:250; }
+  #milestone-modal,#milestone-delete-modal,#beat-time-modal { z-index:250; }
   #milestone-completion-date[hidden],#milestone-error[hidden] { display:none!important; }
   #milestone-error { color:var(--red); }
   :root[data-ui=material] .game-milestones { border:0; background:var(--md-surface-container); border-radius:20px; padding:20px; }
@@ -4827,7 +4836,8 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
  #dashboard-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"summary milestones" "history milestones"; column-gap:28px; align-items:start; }
  .milestone-dashboard-summary { grid-area:summary; }
  .milestone-dashboard-history { grid-area:history; }
- #dashboard-body .game-milestones { grid-area:milestones; margin:0; }
+ #dashboard-body .dashboard-milestone-column { grid-area:milestones; }
+ #dashboard-body .game-milestones { margin:0; }
  #dashboard-modal .dash-cover { height:200px; }
 }
 
@@ -5477,7 +5487,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.8.2</span>
+    <span class="version-badge">1.8.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -6428,6 +6438,28 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
+<div class="modal-overlay" id="beat-time-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="beat-time-title">
+    <h3 id="beat-time-title">How Long to Beat</h3>
+    <form id="beat-time-form">
+      <p class="backup-hint">Enter estimates in hours. Leave a field blank to clear it.</p>
+      <div class="beat-time-fields">
+        <div class="field-group"><label for="beat-main">Main Story (hours)</label><input id="beat-main" type="number" min="0.01" step="any" placeholder="Optional"></div>
+        <div class="field-group"><label for="beat-extra">Main + Extra (hours)</label><input id="beat-extra" type="number" min="0.01" step="any" placeholder="Optional"></div>
+        <div class="field-group beat-played-field">
+          <label for="beat-played">Already played (hours)</label>
+          <input id="beat-played" type="number" min="0" step="any" placeholder="Optional" aria-describedby="beat-played-hint">
+          <small class="backup-hint" id="beat-played-hint">Enter time played outside PlayDex. Logged sessions are added automatically.</small>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-ghost" type="button" id="beat-time-cancel">Cancel</button>
+        <button class="btn-primary" type="submit">Save estimates</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Startup session sync review -->
 <div class="modal-overlay" id="startup-sync-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="startup-sync-title" style="width:min(580px,100%);max-width:580px;">
@@ -6664,6 +6696,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
       const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform), milestones: normalizeGameMilestones(g.milestones) };
+      for (const key of ['mainStoryHours', 'mainExtraHours', 'beatAlreadyPlayedHours']) {
+        if (Number.isFinite(g[key]) && g[key] > 0) o[key] = g[key];
+      }
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -10603,7 +10638,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
-    html = '<div class="milestone-dashboard-summary">' + html + '</div>' + gameMilestonesHtml(game) + '<div class="milestone-dashboard-history">';
+    html = '<div class="milestone-dashboard-summary">' + html + '</div><div class="dashboard-milestone-column">' +
+      gameMilestonesHtml(game) + beatTimeSection(game, totalMs) + '</div><div class="milestone-dashboard-history">';
 
     if (completed.length > 0) {
       html += '<div class="modal-subheader">Last 6 months</div>' +
@@ -12242,6 +12278,52 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   let milestoneEditorGame=null,milestoneEditorId=null,milestoneDeleteId=null;
   const milestoneDateField=createCalField('milestone-date');
+  function beatProgressRows(game, loggedMs) {
+    const playedMs = loggedMs + (game.beatAlreadyPlayedHours || 0) * 3600000;
+    return [['Main Story', game.mainStoryHours], ['Main + Extra', game.mainExtraHours]].map(([label, hours]) => {
+      const heading = '<div class="beat-progress-label"><strong>' + label + '</strong>';
+      if (!hours) return '<div class="beat-progress-row">' + heading + '<span>Not set</span></div></div>';
+      const percent = Math.min(100, Math.floor(playedMs / (hours * 3600000) * 100));
+      const value = fmtDurationShort(playedMs) + ' / ' + hours + 'h · ' + percent + '%';
+      return '<div class="beat-progress-row">' + heading + '<span>' + value + '</span></div>' +
+        '<div class="progress-track" role="progressbar" aria-label="' + label + ' playtime progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + percent + '"><div class="progress-fill" style="width:' + percent + '%"></div></div></div>';
+    }).join('');
+  }
+  function beatTimeSection(game, loggedMs) {
+    const hasEstimates = game.mainStoryHours || game.mainExtraHours || game.beatAlreadyPlayedHours;
+    return '<section class="game-milestones beat-time-section"><div class="game-milestones-heading"><div><h4>How Long to Beat</h4><p>Estimated playtime</p></div>' +
+      '<button class="btn-ghost" type="button" data-edit-beat-time>' + (hasEstimates ? 'Edit estimates' : '+ Add estimates') + '</button></div>' +
+      beatProgressRows(game, loggedMs) + '</section>';
+  }
+  const beatTimeModal = document.getElementById('beat-time-modal');
+  const beatTimeFields = [
+    ['mainStoryHours', document.getElementById('beat-main')],
+    ['mainExtraHours', document.getElementById('beat-extra')],
+    ['beatAlreadyPlayedHours', document.getElementById('beat-played')]
+  ];
+  function closeBeatTimeEditor() {
+    beatTimeModal.classList.remove('open');
+    document.querySelector('#dashboard-body [data-edit-beat-time]')?.focus();
+  }
+  document.getElementById('beat-time-cancel').onclick = closeBeatTimeEditor;
+  beatTimeModal.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    event.stopPropagation();
+    closeBeatTimeEditor();
+  });
+  document.getElementById('beat-time-form').addEventListener('submit', event => {
+    event.preventDefault();
+    checkStorageFresh();
+    const game = games.find(g => g.id === beatTimeModal.dataset.gameId);
+    if (!game) return;
+    for (const [key, field] of beatTimeFields) {
+      if (field.value) game[key] = field.valueAsNumber;
+      else delete game[key];
+    }
+    saveGames(games);
+    renderDashboardBody(game);
+    closeBeatTimeEditor();
+  });
   function refreshMilestoneDashboard(game){renderDashboardBody(game);}
   function openMilestoneEditor(game,id){
     milestoneEditorGame=game.id;milestoneEditorId=id||null;
@@ -12258,6 +12340,15 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     setTimeout(()=>document.getElementById('milestone-name').focus(),50);
   }
   document.getElementById('dashboard-body').addEventListener('click',event=>{
+    if (event.target.closest('[data-edit-beat-time]')) {
+      const game = games.find(g => g.id === document.getElementById('dashboard-modal').dataset.gameId);
+      if (!game) return;
+      beatTimeModal.dataset.gameId = game.id;
+      for (const [key, field] of beatTimeFields) field.value = game[key] ?? '';
+      beatTimeModal.classList.add('open');
+      beatTimeFields[0][1].focus();
+      return;
+    }
     const control=event.target.closest('[data-milestone-action]');
     if(!control)return;
     const game=games.find(g=>g.id===document.getElementById('dashboard-modal').dataset.gameId);
@@ -12332,7 +12423,13 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const progress = rotationWeekProgress([session.gameId]).games[session.gameId].ms;
       rows.push(['Weekly rotation', fmtDurationMinutes(progress) + ' / ' + fmtDurationMinutes(target * 60000)]);
     }
-    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + label + '</span><strong>' + value + '</strong></p>').join('');
+    const game = games.find(entry => entry.id === session.gameId);
+    let beatProgress = '';
+    if (game?.mainStoryHours || game?.mainExtraHours) {
+      const loggedMs = sessions.reduce((total, entry) => entry.gameId === game.id && entry.stop !== null ? total + (entry.durationMs || 0) : total, 0);
+      beatProgress = '<section class="finish-beat-progress"><h4>How Long to Beat</h4>' + beatProgressRows(game, loggedMs) + '</section>';
+    }
+    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + label + '</span><strong>' + value + '</strong></p>').join('') + beatProgress;
     const button = document.getElementById('session-finish-sync');
     button.disabled = !!session.synced;
     finishReview.classList.add('open');
@@ -12534,7 +12631,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.8.2';
+    const APP_VERSION = '1.8.3';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {

@@ -1,8 +1,9 @@
 PlayDex - Changelog
 ====================
 
-Unreleased
+Version 1.8.3
 -------------------
+- Added optional How Long to Beat estimates for Main Story and Main + Extra with optional previously played hours and progress bars in the game dashboard and Session saved popup.
 - Assign weekly rotation games to weekdays or Any day and review planned hours by day against the weekly budget. Today shows only games planned for the current day and Any day games. The rotation editor is wider on larger screens.
 - Estimate unfinished milestone dates from optional hours remaining and the last four full weeks of playtime.
 - Review active and paused time, goal progress, and sync status immediately after stopping a session. Marking it synced keeps the review buttons in place.
