@@ -1386,6 +1386,11 @@ opacity: 0.18;
   .playtime-game-heading span,.playtime-session-row span:last-child { flex-shrink:0; font-variant-numeric:tabular-nums; }
   .playtime-session-list { list-style:none; padding:0; margin:4px 0 0; }
   .playtime-session-row { padding:4px 0; color:var(--text2); font-size:.75rem; }
+  #session-finish-review .modal-actions { flex-wrap:wrap; }
+  #session-finish-sync { display:inline-grid; place-items:center; }
+  #session-finish-sync span { grid-area:1 / 1; }
+  #session-finish-sync:not(:disabled) .finish-synced-label,
+  #session-finish-sync:disabled .finish-sync-label { visibility:hidden; }
   #startup-sync-list .session-item {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -6411,6 +6416,18 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div class="modal-overlay" id="milestone-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-modal-title"><h3 id="milestone-modal-title">Add milestone</h3><div class="field-group"><label for="milestone-name">Milestone name</label><input id="milestone-name" type="text" maxlength="80" placeholder="e.g. Finish Chapter 1" autocomplete="off"></div><div class="field-group" id="milestone-estimate-field"><label for="milestone-hours-remaining">Hours remaining (optional)</label><input type="number" min="0.25" step="0.25" id="milestone-hours-remaining"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Completed</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
 <div class="modal-overlay" id="milestone-delete-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-delete-title"><h3 id="milestone-delete-title">Delete milestone?</h3><p id="milestone-delete-message" class="backup-hint"></p><div class="modal-actions"><button class="btn-ghost" id="milestone-delete-cancel" type="button">Cancel</button><button class="btn-danger" id="milestone-delete-confirm" type="button">Delete</button></div></div></div>
 
+<div class="modal-overlay" id="session-finish-review">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="session-finish-title">
+    <h3 id="session-finish-title">Session saved</h3>
+    <div id="session-finish-details" aria-live="polite"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" id="session-finish-edit">Edit session</button>
+      <button type="button" class="btn-ghost" id="session-finish-sync"><span class="finish-sync-label">Mark synced</span><span class="finish-synced-label">Synced</span></button>
+      <button type="button" class="btn-primary" id="session-finish-close">Done</button>
+    </div>
+  </div>
+</div>
+
 <!-- Startup session sync review -->
 <div class="modal-overlay" id="startup-sync-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="startup-sync-title" style="width:min(580px,100%);max-width:580px;">
@@ -8259,10 +8276,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       activeSession.pausedAt = null;
     }
     saveSessions(sessions);
+    const stoppedId = activeSession.id;
     activeSession = null;
-    toast('Session saved');
     render();
     celebrate();
+    showFinishReview(stoppedId);
   }
 
   // --- Pause helpers ---
@@ -8912,9 +8930,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         btn.addEventListener('click', () => {
           const s = sessions.find(x => x.id === btn.dataset.id);
           if (!s) return;
-          s.synced = !s.synced;
-          saveSessions(sessions);
-          toast(s.synced ? 'Marked as synced' : 'Unmarked as sync');
+          const synced = !s.synced;
+          setSessionSynced(s, synced);
+          toast(synced ? 'Marked as synced' : 'Unmarked as sync');
           renderSessionsTab(false);
         });
       });
@@ -12289,6 +12307,69 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const game=games.find(g=>g.id===milestoneEditorGame);if(!game)return;
     game.milestones=normalizeGameMilestones(game.milestones).filter(m=>m.id!==milestoneDeleteId);
     saveGames(games);document.getElementById('milestone-delete-modal').classList.remove('open');refreshMilestoneDashboard(game);
+  };
+
+  const finishReview = document.getElementById('session-finish-review');
+  let finishReviewId = null;
+  let returnToFinishReview = false;
+  function setSessionSynced(session, synced) {
+    const next = sessions.map(entry => entry === session ? { ...entry, synced } : entry);
+    saveSessions(next);
+    sessions = next;
+  }
+  function showFinishReview(id) {
+    const session = sessions.find(entry => entry.id === id && entry.stop !== null);
+    if (!session) return;
+    finishReviewId = id;
+    const rows = [
+      ['Active playtime', fmtDuration(session.durationMs || 0)],
+      ['Paused time', fmtDuration(totalPausedMs(session, Date.parse(session.stop)))]
+    ];
+    const goal = effectiveDailyGoalMinutes();
+    if (goal > 0) rows.push(['Today’s goal', fmtDurationMinutes(totalMsForDate(todayStr())) + ' / ' + fmtDurationMinutes(goal * 60000)]);
+    const target = rotationTargetMinutes(session.gameId);
+    if (target && rotationGameIds().includes(session.gameId)) {
+      const progress = rotationWeekProgress([session.gameId]).games[session.gameId].ms;
+      rows.push(['Weekly rotation', fmtDurationMinutes(progress) + ' / ' + fmtDurationMinutes(target * 60000)]);
+    }
+    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + label + '</span><strong>' + value + '</strong></p>').join('');
+    const button = document.getElementById('session-finish-sync');
+    button.disabled = !!session.synced;
+    finishReview.classList.add('open');
+    document.getElementById('session-finish-close').focus();
+  }
+  const finishReviewEditor = document.getElementById('edit-session-modal');
+  new MutationObserver(() => {
+    if (!returnToFinishReview || finishReviewEditor.classList.contains('open')) return;
+    returnToFinishReview = false;
+    showFinishReview(finishReviewId);
+  }).observe(finishReviewEditor, {attributes:true, attributeFilter:['class']});
+  document.getElementById('session-finish-close').onclick = () => finishReview.classList.remove('open');
+  finishReview.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      event.stopPropagation();
+      finishReview.classList.remove('open');
+    }
+    if (event.key !== 'Tab') return;
+    const buttons = [...finishReview.querySelectorAll('button:not(:disabled)')];
+    const first = buttons[0], last = buttons.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  document.getElementById('session-finish-edit').onclick = () => {
+    const session = sessions.find(entry => entry.id === finishReviewId);
+    if (!session) return;
+    finishReview.classList.remove('open');
+    returnToFinishReview = true;
+    openEditSessionModal(session);
+  };
+  document.getElementById('session-finish-sync').onclick = () => {
+    const session = sessions.find(entry => entry.id === finishReviewId);
+    if (!session || session.synced) return;
+    setSessionSynced(session, true);
+    renderSessionsTab(false);
+    renderTodayTab();
+    showFinishReview(session.id);
   };
 
   // Review the session status flags once per launch, after other startup dialogs.
