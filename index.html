@@ -5852,7 +5852,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <div id="games-filter-body">
       <div class="field-group"><label for="games-platform-filter">Platform</label><select id="games-platform-filter"></select></div>
       <div class="field-group"><label for="games-archive-filter">Library</label><select id="games-archive-filter"><option value="all">All games</option><option value="active">Active games</option><option value="archived">Archived games</option></select></div>
-      <label class="games-pinned-filter"><input type="checkbox" id="games-pinned-only">Pinned games only</label>
+      <div id="games-attribute-filters"></div>
       <div class="games-filter-label">Tags</div>
       <div class="game-tag-filters" id="game-tag-filters"></div>
       <p class="backup-hint" id="games-filter-count" aria-live="polite"></p>
@@ -6775,7 +6775,15 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   let gamesTagFilter = [];
   let gamesPlatformFilter = '';
   let gamesArchiveFilter = 'all';
-  let gamesPinnedOnly = false;
+  const gameAttributeFilters = {
+    pinned: ['Pin status', { yes:'Pinned games', no:'Unpinned games' }],
+    cover: ['Cover', { yes:'Has cover', no:'No cover' }],
+    hltb: ['HLTB', { set:'Estimates set', missing:'HLTB not set', unavailable:'HLTB not available', exempt:'HLTB not needed' }],
+    milestones: ['Personal milestones', { none:'No milestones', open:'Has unfinished milestones', done:'All milestones completed' }],
+    rotation: ['Weekly rotation', { yes:'In rotation', no:'Not in rotation' }],
+    played: ['Play history', { yes:'Played', no:'Never played' }]
+  };
+  const gameAttributeSelections = {};
   let pendingTargetMin = 0;
   let targetToastShown = false;
   let pendingDeleteGameId = null;
@@ -10389,13 +10397,27 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const tagMatch = g => !gamesTagFilter.length || (g.tags || []).some(t => gamesTagFilter.some(sel => sel.toLowerCase() === t.toLowerCase()));
     const textMatch = g => !q || g.name.toLowerCase().includes(q) || (g.tags || []).some(t => t.toLowerCase().includes(q));
     const platformMatch = g => !gamesPlatformFilter || (gamesPlatformFilter==='missing' ? !normalizePlatform(g.platform) : normalizePlatform(g.platform)===gamesPlatformFilter);
-    const matches = g => textMatch(g) && tagMatch(g) && platformMatch(g) && (gamesArchiveFilter==='all' || (gamesArchiveFilter==='archived' ? g.archived : !g.archived)) && (!gamesPinnedOnly || g.pinned);
+    const rotationIds = new Set(rotationGameIds());
+    const playedIds = new Set(sessions.filter(session => session.stop !== null).map(session => session.gameId));
+    const attributesMatch = g => {
+      const milestones = g.milestones || [];
+      const values = {
+        pinned: g.pinned ? 'yes' : 'no',
+        cover: g.image ? 'yes' : 'no',
+        hltb: g.beatNotNeeded ? 'exempt' : g.beatUnavailable ? 'unavailable' : g.mainStoryHours || g.mainExtraHours ? 'set' : 'missing',
+        milestones: !milestones.length ? 'none' : milestones.every(item => item.completedAt) ? 'done' : 'open',
+        rotation: rotationIds.has(g.id) ? 'yes' : 'no',
+        played: playedIds.has(g.id) ? 'yes' : 'no'
+      };
+      return Object.entries(gameAttributeSelections).every(([key, value]) => values[key] === value);
+    };
+    const matches = g => textMatch(g) && tagMatch(g) && platformMatch(g) && attributesMatch(g) && (gamesArchiveFilter==='all' || (gamesArchiveFilter==='archived' ? g.archived : !g.archived));
     const platformFilter=document.getElementById('games-platform-filter');
     const platforms=[...new Set([...PLATFORM_CHOICES,...games.map(g=>normalizePlatform(g.platform)).filter(Boolean)])];
     platformFilter.innerHTML='<option value="">All platforms</option><option value="missing">No platform selected ('+games.filter(g=>!normalizePlatform(g.platform)).length+')</option>'+platforms.map(name=>'<option value="'+escHtml(name)+'">'+escHtml(name)+'</option>').join('');
     platformFilter.value=gamesPlatformFilter;
     document.getElementById('games-archive-filter').value=gamesArchiveFilter;
-    document.getElementById('games-pinned-only').checked=gamesPinnedOnly;
+    document.querySelectorAll('#games-attribute-filters select').forEach(select => { select.value = gameAttributeSelections[select.dataset.attribute] || ''; });
 
     const filterBox = document.getElementById('game-tag-filters');
     if (filterBox) {
@@ -10766,9 +10788,20 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   });
   document.getElementById('games-platform-filter').addEventListener('change',event=>{gamesPlatformFilter=event.target.value;renderGamesTab();});
   document.getElementById('games-archive-filter').addEventListener('change',event=>{gamesArchiveFilter=event.target.value;renderGamesTab();});
-  document.getElementById('games-pinned-only').addEventListener('change',event=>{gamesPinnedOnly=event.target.checked;renderGamesTab();});
+  const attributeFilters = document.getElementById('games-attribute-filters');
+  attributeFilters.innerHTML = Object.entries(gameAttributeFilters).map(([key, [label, options]]) =>
+    '<div class="field-group"><label for="games-filter-' + key + '">' + label + '</label><select id="games-filter-' + key + '" data-attribute="' + key +
+    '"><option value="">Any</option>' + Object.entries(options).map(([value, text]) => '<option value="' + value + '">' + text + '</option>').join('') + '</select></div>').join('');
+  attributeFilters.addEventListener('change', event => {
+    const key = event.target.dataset.attribute;
+    if (!key) return;
+    if (event.target.value) gameAttributeSelections[key] = event.target.value;
+    else delete gameAttributeSelections[key];
+    renderGamesTab();
+  });
   document.getElementById('games-clear-filters').addEventListener('click',()=>{
-    gamesPlatformFilter='';gamesArchiveFilter='all';gamesPinnedOnly=false;gamesTagFilter=[];gamesSearch='';
+    gamesPlatformFilter='';gamesArchiveFilter='all';gamesTagFilter=[];gamesSearch='';
+    Object.keys(gameAttributeSelections).forEach(key => delete gameAttributeSelections[key]);
     document.getElementById('game-search-input').value='';renderGamesTab();
   });
 
@@ -11904,7 +11937,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(gamesSearch.trim()) items.push(['search','Search: '+gamesSearch]);
     if(gamesPlatformFilter) items.push(['platform',gamesPlatformFilter==='missing'?'No platform selected':gamesPlatformFilter]);
     if(gamesArchiveFilter!=='all') items.push(['archive',gamesArchiveFilter==='active'?'Active games':'Archived games']);
-    if(gamesPinnedOnly) items.push(['pinned','Pinned only']);
+    Object.entries(gameAttributeSelections).forEach(([key, value]) => items.push([key, gameAttributeFilters[key][1][value]]));
     gamesTagFilter.forEach(tag=>items.push(['tag',tag]));
     document.getElementById('games-filter-chips').innerHTML=items.map(([kind,label])=>'<button class="game-tag-filter on" type="button" data-filter-kind="'+kind+'" data-filter-value="'+escHtml(label)+'" aria-label="Remove '+escHtml(label)+' filter">'+escHtml(label)+' <span aria-hidden="true">&#215;</span></button>').join('');
     document.getElementById('games-filter-toggle').textContent='Filters'+(items.length?' \u00b7 '+items.length+' active':'');
@@ -11923,7 +11956,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(kind==='search'){gamesSearch='';document.getElementById('game-search-input').value='';}
     if(kind==='platform')gamesPlatformFilter='';
     if(kind==='archive')gamesArchiveFilter='all';
-    if(kind==='pinned')gamesPinnedOnly=false;
+    if(kind==='pinned')
+    if(Object.hasOwn(gameAttributeFilters,kind)) delete gameAttributeSelections[kind];
     if(kind==='tag')gamesTagFilter=gamesTagFilter.filter(tag=>tag!==button.dataset.filterValue);
     renderGamesTab();
   });
