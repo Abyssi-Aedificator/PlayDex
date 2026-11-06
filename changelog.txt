@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 1.8.4
+-------------------
+- Renamed How Long to Beat to HLTB and added Games badges for missing or unavailable estimates. Set HLTB to Not needed for this game to hide the missing-estimate badge.
+
 Version 1.8.3
 -------------------
 - Added Games dropdown filters for pin status, cover art, HLTB status, personal milestones, weekly rotation, and play history.

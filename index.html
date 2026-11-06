@@ -5487,7 +5487,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.8.3</span>
+    <span class="version-badge">1.8.4</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -6440,8 +6440,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
 <div class="modal-overlay" id="beat-time-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="beat-time-title">
-    <h3 id="beat-time-title">How Long to Beat</h3>
+    <h3 id="beat-time-title">HLTB</h3>
     <form id="beat-time-form">
+      <div class="field-group"><label for="beat-status">HLTB status</label><select id="beat-status"><option value="estimates">Use estimates</option><option value="not-needed">Not needed for this game</option><option value="unavailable">Not available</option></select></div>
       <p class="backup-hint">Enter estimates in hours. Leave a field blank to clear it.</p>
       <div class="beat-time-fields">
         <div class="field-group"><label for="beat-main">Main Story (hours)</label><input id="beat-main" type="number" min="0.01" step="any" placeholder="Optional"></div>
@@ -6699,6 +6700,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       for (const key of ['mainStoryHours', 'mainExtraHours', 'beatAlreadyPlayedHours']) {
         if (Number.isFinite(g[key]) && g[key] > 0) o[key] = g[key];
       }
+      if (g.beatNotNeeded === true) o.beatNotNeeded = true;
+      else if (g.beatUnavailable === true) o.beatUnavailable = true;
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -10498,7 +10501,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
-            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' +
+            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' + missingBeatTimeBadge(g) +
             tagsHtml(g) +
             gameMeta(count, e, staleIds.has(g.id)) +
           '</div></div>' +
@@ -10522,7 +10525,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span><span class="classic-archived-label">Archived</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
-            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' +
+            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' + missingBeatTimeBadge(g) +
             tagsHtml(g) +
             gameMeta(count, e) +
           '</div></div>' +
@@ -12325,9 +12328,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function beatTimeSection(game, loggedMs) {
     const hasEstimates = game.mainStoryHours || game.mainExtraHours || game.beatAlreadyPlayedHours;
-    return '<section class="game-milestones beat-time-section"><div class="game-milestones-heading"><div><h4>How Long to Beat</h4><p>Estimated playtime</p></div>' +
-      '<button class="btn-ghost" type="button" data-edit-beat-time>' + (hasEstimates ? 'Edit estimates' : '+ Add estimates') + '</button></div>' +
-      beatProgressRows(game, loggedMs) + '</section>';
+    return '<section class="game-milestones beat-time-section"><div class="game-milestones-heading"><div><h4>HLTB</h4><p>Estimated playtime</p></div>' +
+      '<button class="btn-ghost" type="button" data-edit-beat-time>' + (hasEstimates || game.beatNotNeeded || game.beatUnavailable ? 'Edit estimates' : '+ Add estimates') + '</button></div>' +
+      (game.beatNotNeeded ? '<p class="backup-hint">Not needed for this game.</p>' : game.beatUnavailable ? '<p class="backup-hint">HLTB not available.</p>' : beatProgressRows(game, loggedMs)) + '</section>';
+  }
+  function missingBeatTimeBadge(game) {
+    if (game.beatUnavailable) return ' <span class="game-platform-badge">HLTB not available</span>';
+    return !game.beatNotNeeded && !game.mainStoryHours && !game.mainExtraHours
+      ? ' <span class="game-platform-badge">HLTB not set</span>' : '';
   }
   const beatTimeModal = document.getElementById('beat-time-modal');
   const beatTimeFields = [
@@ -12335,6 +12343,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     ['mainExtraHours', document.getElementById('beat-extra')],
     ['beatAlreadyPlayedHours', document.getElementById('beat-played')]
   ];
+  const beatStatus = document.getElementById('beat-status');
+  function updateBeatTimeFields() {
+    beatTimeFields.forEach(([, field]) => { field.disabled = beatStatus.value !== 'estimates'; });
+  }
+  beatStatus.addEventListener('change', updateBeatTimeFields);
   function closeBeatTimeEditor() {
     beatTimeModal.classList.remove('open');
     document.querySelector('#dashboard-body [data-edit-beat-time]')?.focus();
@@ -12350,11 +12363,18 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     checkStorageFresh();
     const game = games.find(g => g.id === beatTimeModal.dataset.gameId);
     if (!game) return;
-    for (const [key, field] of beatTimeFields) {
-      if (field.value) game[key] = field.valueAsNumber;
-      else delete game[key];
+    delete game.beatNotNeeded;
+    delete game.beatUnavailable;
+    if (beatStatus.value === 'not-needed') game.beatNotNeeded = true;
+    else if (beatStatus.value === 'unavailable') game.beatUnavailable = true;
+    else {
+      for (const [key, field] of beatTimeFields) {
+        if (field.value) game[key] = field.valueAsNumber;
+        else delete game[key];
+      }
     }
     saveGames(games);
+    renderGamesTab();
     renderDashboardBody(game);
     closeBeatTimeEditor();
   });
@@ -12379,8 +12399,10 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if (!game) return;
       beatTimeModal.dataset.gameId = game.id;
       for (const [key, field] of beatTimeFields) field.value = game[key] ?? '';
+      beatStatus.value = game.beatNotNeeded ? 'not-needed' : game.beatUnavailable ? 'unavailable' : 'estimates';
+      updateBeatTimeFields();
       beatTimeModal.classList.add('open');
-      beatTimeFields[0][1].focus();
+      if (beatStatus.value === 'estimates') beatTimeFields[0][1].focus();
       return;
     }
     const control=event.target.closest('[data-milestone-action]');
@@ -12459,9 +12481,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
     const game = games.find(entry => entry.id === session.gameId);
     let beatProgress = '';
-    if (game?.mainStoryHours || game?.mainExtraHours) {
+    if (game && !game.beatNotNeeded && !game.beatUnavailable && (game.mainStoryHours || game.mainExtraHours)) {
       const loggedMs = sessions.reduce((total, entry) => entry.gameId === game.id && entry.stop !== null ? total + (entry.durationMs || 0) : total, 0);
-      beatProgress = '<section class="finish-beat-progress"><h4>How Long to Beat</h4>' + beatProgressRows(game, loggedMs) + '</section>';
+      beatProgress = '<section class="finish-beat-progress"><h4>HLTB</h4>' + beatProgressRows(game, loggedMs) + '</section>';
     }
     document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + label + '</span><strong>' + value + '</strong></p>').join('') + beatProgress;
     const button = document.getElementById('session-finish-sync');
@@ -12665,7 +12687,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.8.3';
+    const APP_VERSION = '1.8.4';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
