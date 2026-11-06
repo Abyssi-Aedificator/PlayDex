@@ -333,6 +333,7 @@
   .platform-summary-row span:first-child { min-width:0; overflow-wrap:anywhere; }
   .session-filter-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
   .session-filter-heading .card-header { margin:0; }
+  .session-heading-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
   .session-filter-heading #btn-add-session { padding:9px 13px; font-size:.8rem; white-space:nowrap; }
   .session-filters { container-type:inline-size; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border); }
   .session-filter-fields { display:grid; grid-template-columns:minmax(0,1.3fr) repeat(2,minmax(0,1fr)); gap:12px; align-items:end; }
@@ -1366,6 +1367,25 @@ opacity: 0.18;
   }
 
   .session-item:last-child { border-bottom: none; }
+
+  #startup-sync-list .session-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding-inline: 6px;
+  }
+  #startup-sync-list .session-item:hover { transform: none; }
+  .startup-sync-actions { display:flex; flex-direction:column; align-items:stretch; gap:4px; }
+  .startup-sync-day-total {
+    display:inline-block;
+    margin-top:4px;
+    padding:2px 7px;
+    border-radius:999px;
+    background:var(--accent-dim);
+    color:var(--accent);
+    font-size:.72rem;
+    font-variant-numeric:tabular-nums;
+  }
 
   .session-info { flex: 1; min-width: 0; }
 
@@ -5534,7 +5554,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <!-- SESSIONS TAB -->
   <div id="tab-sessions" class="tab-panel">
     <div class="card">
-      <div class="session-filter-heading"><div class="card-header">Sessions</div><button class="btn-ghost btn-accent" id="btn-add-session" type="button">&#43; Add session</button></div>
+      <div class="session-filter-heading">
+        <div class="card-header">Sessions</div>
+        <div class="session-heading-actions">
+          <button class="btn-ghost" id="btn-review-unsynced" type="button" aria-haspopup="dialog" aria-controls="startup-sync-modal">Review unsynced</button>
+          <button class="btn-ghost btn-accent" id="btn-add-session" type="button">&#43; Add session</button>
+        </div>
+      </div>
       <div class="session-filters">
         <div class="session-filter-fields">
           <div class="session-filter-field session-filter-game"><label for="session-game-filter">Game</label><select id="session-game-filter"><option value="">All games</option></select></div>
@@ -6355,6 +6381,20 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
 <div class="modal-overlay" id="milestone-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-modal-title"><h3 id="milestone-modal-title">Add milestone</h3><div class="field-group"><label for="milestone-name">Milestone name</label><input id="milestone-name" type="text" maxlength="80" placeholder="e.g. Finish Chapter 1" autocomplete="off"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Completed</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
 <div class="modal-overlay" id="milestone-delete-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-delete-title"><h3 id="milestone-delete-title">Delete milestone?</h3><p id="milestone-delete-message" class="backup-hint"></p><div class="modal-actions"><button class="btn-ghost" id="milestone-delete-cancel" type="button">Cancel</button><button class="btn-danger" id="milestone-delete-confirm" type="button">Delete</button></div></div></div>
+
+<!-- Startup session sync review -->
+<div class="modal-overlay" id="startup-sync-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="startup-sync-title" style="width:min(580px,100%);max-width:580px;">
+    <h3 id="startup-sync-title">Unsynced sessions</h3>
+    <p class="backup-hint">Review completed sessions and mark their sync status when ready.</p>
+    <p id="startup-sync-count" class="backup-hint" aria-live="polite"></p>
+    <div id="startup-sync-list" style="max-height:50dvh;overflow-y:auto;"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" id="startup-sync-close">Close</button>
+      <button type="button" class="btn btn-start" id="startup-sync-all">Mark all synced</button>
+    </div>
+  </div>
+</div>
 
 <!-- Goal modal -->
 <div class="modal-overlay" id="goal-modal">
@@ -12105,6 +12145,123 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     saveGames(games);document.getElementById('milestone-delete-modal').classList.remove('open');refreshMilestoneDashboard(game);
   };
 
+  // Review the session status flags once per launch, after other startup dialogs.
+  const startupSyncModal = document.getElementById('startup-sync-modal');
+  let startupSyncReturnFocus = null;
+  function unsyncedCompletedSessions() {
+    return sessions.filter(session => session.stop !== null && !session.synced)
+      .sort((a, b) => new Date(b.start) - new Date(a.start));
+  }
+  function renderStartupSync() {
+    const pending = unsyncedCompletedSessions();
+    document.getElementById('startup-sync-count').textContent = pending.length + ' unsynced session' + (pending.length === 1 ? '' : 's');
+    document.getElementById('startup-sync-all').disabled = pending.length === 0;
+    const list = document.getElementById('startup-sync-list');
+    list.replaceChildren();
+    const byGame = new Map();
+    pending.forEach(session => {
+      if (!byGame.has(session.gameId)) byGame.set(session.gameId, []);
+      byGame.get(session.gameId).push(session.id);
+    });
+    pending.forEach(session => {
+      const row = document.createElement('div');
+      row.className = 'session-item';
+      const info = document.createElement('div');
+      info.className = 'session-info';
+      const title = document.createElement('div');
+      title.className = 'session-game';
+      title.textContent = session.gameName;
+      const details = document.createElement('div');
+      details.className = 'session-times';
+      details.textContent = fmtDate(session.start) + ' · ' + fmtTime(session.start) + ' · ' + fmtDuration(session.durationMs || 0);
+      const dailyTotal = document.createElement('div');
+      dailyTotal.className = 'startup-sync-day-total';
+      const gameDayTotal = sessions
+        .filter(entry => entry.stop !== null && entry.gameId === session.gameId && dateKey(entry.start) === dateKey(session.start))
+        .reduce((total, entry) => total + (entry.durationMs || 0), 0);
+      dailyTotal.textContent = 'Daily game total: ' + fmtDuration(gameDayTotal);
+      info.append(title, details, dailyTotal);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn-ghost';
+      button.textContent = 'Mark synced';
+      button.setAttribute('aria-label', 'Mark ' + session.gameName + ' on ' + fmtDate(session.start) + ' at ' + fmtTime(session.start) + ' as synced');
+      button.addEventListener('click', () => markStartupSessionsSynced([session.id]));
+      const actions = document.createElement('div');
+      actions.className = 'startup-sync-actions';
+      actions.append(button);
+      const gameIds = byGame.get(session.gameId);
+      if (gameIds.length > 1 && gameIds[0] === session.id) {
+        const gameButton = document.createElement('button');
+        gameButton.type = 'button';
+        gameButton.className = 'btn-ghost';
+        gameButton.textContent = 'Sync this game';
+        gameButton.setAttribute('aria-label', 'Mark all ' + gameIds.length + ' unsynced sessions for ' + session.gameName + ' as synced');
+        gameButton.addEventListener('click', () => markStartupSessionsSynced(gameIds));
+        actions.append(gameButton);
+      }
+      row.append(info, actions);
+      list.append(row);
+    });
+  }
+  function markStartupSessionsSynced(ids) {
+    checkStorageFresh();
+    const selected = new Set(ids);
+    const next = sessions.map(session => selected.has(session.id) && session.stop !== null ? { ...session, synced: true } : session);
+    saveSessions(next);
+    sessions = next;
+    renderSessionsTab(false);
+    renderTodayTab();
+    if (!unsyncedCompletedSessions().length) {
+      closeStartupSync();
+      return;
+    }
+    renderStartupSync();
+    document.getElementById('startup-sync-close').focus();
+  }
+  function closeStartupSync() {
+    startupSyncModal.classList.remove('open');
+    if (startupSyncReturnFocus?.isConnected) startupSyncReturnFocus.focus();
+  }
+  document.getElementById('startup-sync-close').addEventListener('click', closeStartupSync);
+  document.getElementById('startup-sync-all').addEventListener('click', () => {
+    markStartupSessionsSynced(unsyncedCompletedSessions().map(session => session.id));
+  });
+  startupSyncModal.addEventListener('click', event => {
+    if (event.target === startupSyncModal) closeStartupSync();
+  });
+  startupSyncModal.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { event.stopImmediatePropagation(); closeStartupSync(); }
+    if (event.key !== 'Tab') return;
+    const controls = [...startupSyncModal.querySelectorAll('button:not(:disabled)')];
+    const first = controls[0], last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  function openUnsyncedReview() {
+    if (!unsyncedCompletedSessions().length) {
+      toast('No unsynced sessions');
+      return;
+    }
+    startupSyncReturnFocus = document.activeElement;
+    renderStartupSync();
+    startupSyncModal.classList.add('open');
+    document.getElementById('startup-sync-close').focus();
+  }
+  document.getElementById('btn-review-unsynced').addEventListener('click', openUnsyncedReview);
+
+  function queueStartupSyncReview() {
+    const observer = new MutationObserver(showWhenReady);
+    function showWhenReady() {
+      if (document.getElementById('boot-splash') || document.querySelector('.modal-overlay.open, dialog[open]')) return;
+      observer.disconnect();
+      if (!unsyncedCompletedSessions().length) return;
+      openUnsyncedReview();
+    }
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'open'] });
+    showWhenReady();
+  }
+
   // --- Initial render ---
   backfillUnlockDates('gentle');
   applyTheme();
@@ -12115,6 +12272,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     render();
     dropboxCheckForUpdates();
     if (window.hideBootSplash) window.hideBootSplash();
+    queueStartupSyncReview();
   });
 
   // --- PWA install ---
