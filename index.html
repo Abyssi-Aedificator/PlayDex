@@ -5487,7 +5487,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.8.4</span>
+    <span class="version-badge">1.8.5</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5507,7 +5507,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     <div id="active-session-card" class="card active-session" style="display:none">
       <div class="live-label"><span class="live-dot"></span> <span id="live-text">LIVE</span></div>
       <div class="game-name" id="active-game-name"></div>
-      <div class="session-platform" id="active-platform" style="display:none;margin:0 0 8px;"></div>
       <div class="active-session-clock">
         <div class="clock-side side-start">
           <span class="clock-label">Start Time</span>
@@ -6215,7 +6214,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <label for="add-session-game">Game</label>
       <select id="add-session-game"></select>
     </div>
-    <div class="field-group"><label for="add-session-platform">Platform (optional)</label><select id="add-session-platform"></select></div>
     <div class="field-group">
       <label for="add-session-time">Start</label>
       <div class="field-date-grid">
@@ -6321,7 +6319,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div class="modal-overlay" id="edit-session-modal">
   <div class="modal">
     <h3>Edit Session</h3>
-    <div class="field-group"><label for="edit-session-platform">Platform (optional)</label><select id="edit-session-platform"></select></div>
     <div class="field-group">
       <label for="edit-session-time">Start</label>
       <div class="field-date-grid">
@@ -8142,13 +8139,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   const startPlatformField = setupPlatformField('start-platform');
   document.getElementById('start-platform').options[0].textContent = 'All platforms';
   document.getElementById('start-platform').addEventListener('change', () => renderTodayTab());
-  const addSessionPlatformField = setupPlatformField('add-session-platform');
-  const editSessionPlatformField = setupPlatformField('edit-session-platform');
   const gamePlatformField = setupPlatformField('rename-platform');
   function platformTotals(rows) {
     const totals = new Map();
+    const gamePlatforms = new Map(games.map(game => [game.id, normalizePlatform(game.platform)]));
     rows.filter(s => s.stop !== null).forEach(s => {
-      const name = normalizePlatform(s.platform) || 'Unspecified';
+      const name = gamePlatforms.get(s.gameId) || 'Unspecified';
       totals.set(name, (totals.get(name) || 0) + (s.durationMs || 0));
     });
     return [...totals].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
@@ -8165,7 +8161,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       id: uid(),
       gameId: game.id,
       gameName: game.name,
-      platform: normalizePlatform(game.platform),
       start: new Date().toISOString(),
       stop: null,
       durationMs: null,
@@ -8742,9 +8737,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
     if (isActive) {
       document.getElementById('active-game-name').textContent = activeSession.gameName;
-      const activePlatform = document.getElementById('active-platform');
-      activePlatform.textContent = normalizePlatform(activeSession.platform);
-      activePlatform.style.display = activePlatform.textContent ? '' : 'none';
       document.getElementById('active-start').textContent = fmtTime(activeSession.start);
       document.getElementById('target-progress').style.display = activeSession.targetMs ? '' : 'none';
       updateLiveCardPauseState();
@@ -8936,7 +8928,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         const heading=i===0 || dateKey(filtered[i-1].start)!==day ? '<div class="session-day-heading"><strong>'+escHtml(fmtDate(s.start))+'</strong><span>'+fmtDuration(dayTotals[day])+'</span></div>' : '';
         return heading + '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
-            '<div class="session-game">' + escHtml(s.gameName) + (s.platform ? ' <span class="session-platform">' + escHtml(normalizePlatform(s.platform)) + '</span>' : '') + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
+            '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
             '<div class="session-times"><span>' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</span><span class="session-game-total" title="Total recorded playtime for this game on this day">Total: ' + fmtDurationShort(gameTotals.get(JSON.stringify([day,s.gameId])) || 0) + '</span></div>' +
           '</div>' +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + pauseTag + '</span>' +
@@ -10692,7 +10684,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       html += '<div class="modal-subheader">Last 5 sessions</div><ul class="dash-sessions">' +
         recent.map(s =>
           '<li class="dash-session">' +
-            '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + (s.platform ? ' \u00b7 ' + escHtml(normalizePlatform(s.platform)) : '') + '</span>' +
+            '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + '</span>' +
             '<span class="dash-session-dur">' + fmtDuration(s.durationMs) + '</span>' +
           '</li>'
         ).join('') + '</ul>';
@@ -11239,14 +11231,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const now = new Date();
     setCalDateTime(addSessionStartDate, addSessionStartTime, new Date(now.getTime() - 3600000));
     setCalDateTime(addSessionEndDate, addSessionEndTime, now);
-    addSessionPlatformField.value = normalizePlatform(activeGames.find(g => g.id === sel.value)?.platform);
     document.getElementById('add-session-modal').classList.add('open');
   }
 
   document.getElementById('btn-add-session').addEventListener('click', openAddSessionModal);
-  document.getElementById('add-session-game').addEventListener('change', event => {
-    addSessionPlatformField.value = normalizePlatform(games.find(g => g.id === event.target.value)?.platform);
-  });
   document.getElementById('m3-fab-log').addEventListener('click', openAddSessionModal);
 
   document.getElementById('add-session-cancel').addEventListener('click', () => {
@@ -11269,7 +11257,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       id: uid(),
       gameId: game.id,
       gameName: game.name,
-      platform: addSessionPlatformField.value,
       start: new Date(t1).toISOString(),
       stop: new Date(t2).toISOString(),
       durationMs: t2 - t1,
@@ -11285,7 +11272,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   // --- Edit session modal ---
   function openEditSessionModal(s) {
     editSessionId = s.id;
-    editSessionPlatformField.value = s.platform || '';
     setCalDateTime(editSessionStartDate, editSessionStartTime, s.start);
     setCalDateTime(editSessionEndDate, editSessionEndTime, s.stop);
     document.getElementById('edit-session-modal').classList.add('open');
@@ -11319,7 +11305,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     s.start = new Date(t1).toISOString();
     s.stop = new Date(t2).toISOString();
     s.durationMs = t2 - t1 - totalPausedMs(s, t2);
-    s.platform = editSessionPlatformField.value;
     saveSessions(sessions);
     toast('Session updated');
     document.getElementById('edit-session-modal').classList.remove('open');
@@ -11392,6 +11377,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   });
 
   function exportSessionsCsv(rows) {
+    const gamePlatforms = new Map(games.map(game => [game.id, normalizePlatform(game.platform)]));
     const esc = v => '"' + String(v).split('"').join('""') + '"';
     const csv = '\uFEFF' + [
       ['Date', 'Start', 'End', 'Game', 'Platform', 'Duration', 'Minutes', 'Synced'],
@@ -11400,7 +11386,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         fmtTime(s.start),
         s.stop ? fmtTime(s.stop) : '',
         s.gameName,
-        normalizePlatform(s.platform),
+        gamePlatforms.get(s.gameId) || '',
         fmtDuration(s.durationMs),
         Math.round((s.durationMs || 0) / 60000),
         s.synced ? 'yes' : 'no',
@@ -12687,7 +12673,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.8.4';
+    const APP_VERSION = '1.8.5';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {

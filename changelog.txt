@@ -1,6 +1,11 @@
 PlayDex - Changelog
 ====================
 
+Version 1.8.5
+-------------------
+- Fixed Playtime by Platform showing Unspecified for sessions whose games already had a platform assigned.
+- Platform is set per game in Games. Sessions no longer have their own platform, and CSV exports use the game's assigned platform.
+
 Version 1.8.4
 -------------------
 - Renamed How Long to Beat to HLTB and added Games badges for missing or unavailable estimates. Set HLTB to Not needed for this game to hide the missing-estimate badge.
