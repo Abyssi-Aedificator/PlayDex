@@ -1373,6 +1373,9 @@ opacity: 0.18;
   .session-item:last-child { border-bottom: none; }
 
   .playtime-month-controls { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .stats-distribution-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) auto; gap:8px; align-items:center; padding:5px 0; font-size:.8rem; }
+  .stats-distribution-row .progress-track { margin:0; height:6px; }
+  .stats-distribution-value { font-variant-numeric:tabular-nums; text-align:right; }
   .playtime-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; margin:12px 0; text-align:center; }
   .playtime-days > span { font-size:.7rem; color:var(--text2); }
   #playtime-days button.btn-ghost { min-width:0; padding:4px 1px !important; min-height:44px; font-size:.75rem; line-height:1.2; }
@@ -3821,8 +3824,9 @@ opacity: 0.18;
       grid-column: 1 / -1;
     }
     .profile-card { grid-row: 1; }
-    .records-card { grid-column: 1; grid-row: 2 / span 2; }
-    .next-badge-card { grid-column: 2; grid-row: 2; }
+    .records-card { grid-column: 1 / -1; grid-row: 2; }
+    .records-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
+    .next-badge-card { grid-column: 1; grid-row: 3; }
     .favorite-card { grid-column: 2; grid-row: 3; }
     .playstyle-card { grid-row: 4; }
     .weekday-habits-card { grid-row: 5; }
@@ -5487,7 +5491,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.8.5</span>
+    <span class="version-badge">1.8.6</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5693,6 +5697,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
     </div>
+    <div class="card"><div class="card-header">Monthly playtime</div><div id="stats-monthly-playtime"></div></div>
+    <div class="card"><div class="card-header">Session lengths</div><div id="stats-session-lengths"></div></div>
     <div class="card" id="platform-stats-card"><div class="card-header">Playtime by Platform</div><div id="platform-stats"></div></div>
     <div class="card" id="comparison-card">
       <div class="card-header">Compare games</div>
@@ -5721,6 +5727,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       </div>
       <div class="quest-reset" id="quest-reset"></div>
       <div id="quest-board"></div>
+    </div>
+    <div class="card">
+      <div class="field-group"><label for="ach-category-filter">Badge category</label><select id="ach-category-filter"></select></div>
     </div>
     <div id="ach-groups"></div>
   </div>
@@ -5790,6 +5799,61 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         <div class="stat-box">
           <div class="stat-value" id="record-goal-streak">0 days</div>
           <div class="stat-label">Daily goal streak</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-week">0m</div>
+          <div class="stat-label">Busiest week</div>
+          <div class="record-date" id="record-week-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-month">0m</div>
+          <div class="stat-label">Busiest month</div>
+          <div class="record-date" id="record-month-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-variety">0</div>
+          <div class="stat-label">Different games in a day</div>
+          <div class="record-date" id="record-variety-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-week-sessions"></div>
+          <div class="stat-label">Sessions in a week</div>
+          <div class="record-date" id="record-week-sessions-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-month-sessions"></div>
+          <div class="stat-label">Sessions in a month</div>
+          <div class="record-date" id="record-month-sessions-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-week-games"></div>
+          <div class="stat-label">Different games in a week</div>
+          <div class="record-date" id="record-week-games-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-month-games"></div>
+          <div class="stat-label">Different games in a month</div>
+          <div class="record-date" id="record-month-games-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-day-streak"></div>
+          <div class="stat-label">Consecutive days played</div>
+          <div class="record-date" id="record-day-streak-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-game-time"></div>
+          <div class="stat-label">Most time in one game</div>
+          <div class="record-date" id="record-game-time-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-game-sessions"></div>
+          <div class="stat-label">Most sessions in one game</div>
+          <div class="record-date" id="record-game-sessions-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-game-day"></div>
+          <div class="stat-label">Most time in one game in a day</div>
+          <div class="record-date" id="record-game-day-date"></div>
         </div>
       </div>
     </div>
@@ -9142,7 +9206,44 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return '<div class="playtime-game-group"><div class="playtime-game-heading"><strong>' + escHtml(entries[0].gameName) + '</strong><span>' + fmtDuration(total) + '</span></div><ul class="playtime-session-list">' + rows + '</ul></div>';
     }).join('') : '<p class="backup-hint">No completed sessions on this day.</p>');
   }
+  function statsDistributionRow(label, value, percent) {
+    return '<div class="stats-distribution-row"><span>' + escHtml(label) + '</span>' +
+      '<div class="progress-track" aria-hidden="true"><div class="progress-fill" style="width:' + percent + '%"></div></div>' +
+      '<strong class="stats-distribution-value">' + escHtml(value) + '</strong></div>';
+  }
+  function renderPlaytimeDistributions(now = new Date()) {
+    const months = Array.from({length:12}, (_, index) => {
+      const date = new Date(now.getFullYear(), now.getMonth() + index - 11, 1, 12);
+      return { key: dateKey(date).slice(0,7), label: date.toLocaleDateString(undefined, {month:'short', year:'numeric'}), ms:0 };
+    });
+    const monthByKey = new Map(months.map(month => [month.key, month]));
+    const buckets = [
+      { label:'Under 15 min', limit:15 },
+      { label:'15–29 min', limit:30 },
+      { label:'30–59 min', limit:60 },
+      { label:'1 to under 2 hr', limit:120 },
+      { label:'2 hr or more', limit:Infinity }
+    ].map(bucket => ({...bucket, count:0}));
+    let completed = 0, inRange = 0;
+    for (const session of sessions) {
+      if (session.stop === null) continue;
+      const ms = session.durationMs || 0;
+      completed++;
+      buckets.find(bucket => ms / 60000 < bucket.limit).count++;
+      const month = monthByKey.get(dateKey(session.start).slice(0,7));
+      if (month) { month.ms += ms; inRange++; }
+    }
+    const empty = '<p class="backup-hint">No completed sessions.</p>';
+    const maxMs = Math.max(1, ...months.map(month => month.ms));
+    document.getElementById('stats-monthly-playtime').innerHTML = inRange ? months.map((month, index) =>
+      statsDistributionRow(month.label + (index === 11 ? ' · So far' : ''), fmtDuration(month.ms), month.ms / maxMs * 100)).join('') : empty;
+    document.getElementById('stats-session-lengths').innerHTML = completed ? buckets.map(bucket => {
+      const percent = bucket.count / completed * 100;
+      return statsDistributionRow(bucket.label, bucket.count + ' (' + Math.round(percent) + '%)', percent);
+    }).join('') : empty;
+  }
   function renderStatsTab() {
+    renderPlaytimeDistributions();
     renderPlaytimeCalendar();
     renderGameComparison();
     renderGamingRecap();
@@ -9297,11 +9398,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     { id: 'streaks', name: 'Streaks', icon: 'streak' },
     { id: 'variety', name: 'Game Variety', icon: 'star' },
     { id: 'epic', name: 'Epic Sessions', icon: 'zap' },
-    { id: 'dedication', name: 'Dedication', icon: 'sunrise' }
+    { id: 'dedication', name: 'Dedication', icon: 'sunrise' },
+    { id: 'weekly-rhythm', name: 'Weekly Rhythm', icon: 'streak' },
+    { id: 'discovery', name: 'Discovery', icon: 'star' },
+    { id: 'game-progress', name: 'Game Progress', icon: 'medal' }
   ];
 
-  function achDef(id, cat, title, desc, icon, xp, unit, cur, tgt) {
-    return { id: id, cat: cat, title: title, desc: desc, icon: icon, xp: xp, unit: unit, cur: cur, tgt: tgt };
+  function achDef(id, cat, title, desc, icon, xp, unit, cur, tgt, stat) {
+    return { id, cat, title, desc, icon, xp, unit, cur, tgt, ...(stat ? { stat } : {}) };
   }
 
   const ACHIEVEMENTS = [
@@ -9362,7 +9466,65 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     achDef('dd60', 'dedication', 'Steadfast', 'Play on 60 distinct days', 'medal', 250, 'num', M => M.distinctDays, 60),
     achDef('d100', 'dedication', 'Regular Guest', 'Play on 100 distinct days', 'medal', 300, 'num', M => M.distinctDays, 100),
     achDef('dd200', 'dedication', 'Milestone', 'Play on 200 distinct days', 'medal', 450, 'num', M => M.distinctDays, 200),
-    achDef('d365', 'dedication', 'Home Turf', 'Play on 365 distinct days', 'medal', 600, 'num', M => M.distinctDays, 365)
+    achDef('d365', 'dedication', 'Home Turf', 'Play on 365 distinct days', 'medal', 600, 'num', M => M.distinctDays, 365),
+    achDef('extra-daytime-30', 'dedication', 'Daily playtime I', 'Play 30 minutes in one day', 'clock', 75, 'ms', M => M.maxMsDay, 30 * 60000, 'maxMsDay'),
+    achDef('extra-daytime-120', 'dedication', 'Daily playtime II', 'Play 2 hours in one day', 'clock', 125, 'ms', M => M.maxMsDay, 120 * 60000, 'maxMsDay'),
+    achDef('extra-daytime-240', 'dedication', 'Daily playtime III', 'Play 4 hours in one day', 'clock', 175, 'ms', M => M.maxMsDay, 240 * 60000, 'maxMsDay'),
+    achDef('extra-daycount-3', 'dedication', 'Session-packed day I', 'Log 3 completed sessions in one day', 'clock', 75, 'num', M => M.maxSessionsDay, 3, 'maxSessionsDay'),
+    achDef('extra-daycount-7', 'dedication', 'Session-packed day II', 'Log 7 completed sessions in one day', 'clock', 150, 'num', M => M.maxSessionsDay, 7, 'maxSessionsDay'),
+    achDef('extra-daycount-15', 'dedication', 'Session-packed day III', 'Log 15 completed sessions in one day', 'clock', 250, 'num', M => M.maxSessionsDay, 15, 'maxSessionsDay'),
+    achDef('extra-dawn-10', 'dedication', 'Dawn regular I', 'Start 10 completed sessions from 5 AM to before 8 AM', 'sunrise', 200, 'num', M => M.earlyBird, 10, 'early'),
+    achDef('extra-dawn-35', 'dedication', 'Dawn regular II', 'Start 35 completed sessions from 5 AM to before 8 AM', 'sunrise', 375, 'num', M => M.earlyBird, 35, 'early'),
+    achDef('extra-dawn-50', 'dedication', 'Dawn regular III', 'Start 50 completed sessions from 5 AM to before 8 AM', 'sunrise', 475, 'num', M => M.earlyBird, 50, 'early'),
+    achDef('extra-midnight-10', 'dedication', 'Midnight regular I', 'Start 10 completed sessions from midnight to before 5 AM', 'moon', 200, 'num', M => M.nightOwl, 10, 'night'),
+    achDef('extra-midnight-35', 'dedication', 'Midnight regular II', 'Start 35 completed sessions from midnight to before 5 AM', 'moon', 375, 'num', M => M.nightOwl, 35, 'night'),
+    achDef('extra-midnight-50', 'dedication', 'Midnight regular III', 'Start 50 completed sessions from midnight to before 5 AM', 'moon', 475, 'num', M => M.nightOwl, 50, 'night'),
+    achDef('extra-days-7', 'dedication', 'Days played I', 'Play on 7 distinct days', 'medal', 125, 'num', M => M.distinctDays, 7, 'days'),
+    achDef('extra-days-14', 'dedication', 'Days played II', 'Play on 14 distinct days', 'medal', 125, 'num', M => M.distinctDays, 14, 'days'),
+    achDef('extra-days-150', 'dedication', 'Days played III', 'Play on 150 distinct days', 'medal', 375, 'num', M => M.distinctDays, 150, 'days'),
+    achDef('extra-total-120', 'playtime', 'Playtime milestone I', 'Play 2 hours in total', 'trophy', 125, 'ms', M => M.totalMs, 120 * 60000, 'totalMs'),
+    achDef('extra-total-4500', 'playtime', 'Playtime milestone II', 'Play 75 hours in total', 'trophy', 500, 'ms', M => M.totalMs, 4500 * 60000, 'totalMs'),
+    achDef('extra-total-45000', 'playtime', 'Playtime milestone III', 'Play 750 hours in total', 'trophy', 1250, 'ms', M => M.totalMs, 45000 * 60000, 'totalMs'),
+    achDef('extra-sessions-5', 'sessions', 'Session milestone I', 'Log 5 completed sessions', 'clock', 50, 'num', M => M.count, 5, 'count'),
+    achDef('extra-sessions-75', 'sessions', 'Session milestone II', 'Log 75 completed sessions', 'clock', 175, 'num', M => M.count, 75, 'count'),
+    achDef('extra-sessions-750', 'sessions', 'Session milestone III', 'Log 750 completed sessions', 'clock', 500, 'num', M => M.count, 750, 'count'),
+    achDef('extra-daily-2', 'streaks', 'Daily streak I', 'Play 2 days in a row', 'streak', 50, 'num', M => M.longestStreak, 2, 'streak'),
+    achDef('extra-daily-21', 'streaks', 'Daily streak II', 'Play 21 days in a row', 'streak', 325, 'num', M => M.longestStreak, 21, 'streak'),
+    achDef('extra-daily-120', 'streaks', 'Daily streak III', 'Play 120 days in a row', 'streak', 925, 'num', M => M.longestStreak, 120, 'streak'),
+    achDef('extra-variety-2', 'variety', 'Library explorer I', 'Play 2 different games', 'star', 50, 'num', M => M.distinctGames, 2, 'games'),
+    achDef('extra-variety-20', 'variety', 'Library explorer II', 'Play 20 different games', 'star', 400, 'num', M => M.distinctGames, 20, 'games'),
+    achDef('extra-variety-75', 'variety', 'Library explorer III', 'Play 75 different games', 'star', 1250, 'num', M => M.distinctGames, 75, 'games'),
+    achDef('extra-epic-20', 'epic', 'Single-session milestone I', 'Play 20 minutes in a single session', 'zap', 75, 'ms', M => M.longestMs, 20 * 60000, 'longest'),
+    achDef('extra-epic-30', 'epic', 'Single-session milestone II', 'Play 30 minutes in a single session', 'zap', 75, 'ms', M => M.longestMs, 30 * 60000, 'longest'),
+    achDef('extra-epic-90', 'epic', 'Single-session milestone III', 'Play 90 minutes in a single session', 'zap', 125, 'ms', M => M.longestMs, 90 * 60000, 'longest'),
+    achDef('extra-weekly-streak-2', 'weekly-rhythm', 'Weekly streak I', 'Play 2 weeks in a row', 'streak', 75, 'num', M => M.badgeWeeklyStreak, 2, 'badgeWeeklyStreak'),
+    achDef('extra-weekly-streak-4', 'weekly-rhythm', 'Weekly streak II', 'Play 4 weeks in a row', 'streak', 150, 'num', M => M.badgeWeeklyStreak, 4, 'badgeWeeklyStreak'),
+    achDef('extra-weekly-streak-8', 'weekly-rhythm', 'Weekly streak III', 'Play 8 weeks in a row', 'streak', 300, 'num', M => M.badgeWeeklyStreak, 8, 'badgeWeeklyStreak'),
+    achDef('extra-weekly-streak-16', 'weekly-rhythm', 'Weekly streak IV', 'Play 16 weeks in a row', 'streak', 500, 'num', M => M.badgeWeeklyStreak, 16, 'badgeWeeklyStreak'),
+    achDef('extra-weekly-time-120', 'weekly-rhythm', 'Weekly playtime I', 'Play 2 hours in one calendar week', 'clock', 75, 'ms', M => M.badgeWeekMs, 120 * 60000, 'badgeWeekMs'),
+    achDef('extra-weekly-time-300', 'weekly-rhythm', 'Weekly playtime II', 'Play 5 hours in one calendar week', 'clock', 150, 'ms', M => M.badgeWeekMs, 300 * 60000, 'badgeWeekMs'),
+    achDef('extra-weekly-time-600', 'weekly-rhythm', 'Weekly playtime III', 'Play 10 hours in one calendar week', 'clock', 300, 'ms', M => M.badgeWeekMs, 600 * 60000, 'badgeWeekMs'),
+    achDef('extra-weekly-time-1200', 'weekly-rhythm', 'Weekly playtime IV', 'Play 20 hours in one calendar week', 'clock', 500, 'ms', M => M.badgeWeekMs, 1200 * 60000, 'badgeWeekMs'),
+    achDef('extra-weekend-2', 'weekly-rhythm', 'Weekend player I', 'Play on 2 distinct weekend days', 'sunrise', 75, 'num', M => M.badgeWeekendDays, 2, 'badgeWeekendDays'),
+    achDef('extra-weekend-8', 'weekly-rhythm', 'Weekend player II', 'Play on 8 distinct weekend days', 'sunrise', 150, 'num', M => M.badgeWeekendDays, 8, 'badgeWeekendDays'),
+    achDef('extra-weekend-20', 'weekly-rhythm', 'Weekend player III', 'Play on 20 distinct weekend days', 'sunrise', 300, 'num', M => M.badgeWeekendDays, 20, 'badgeWeekendDays'),
+    achDef('extra-weekend-50', 'weekly-rhythm', 'Weekend player IV', 'Play on 50 distinct weekend days', 'sunrise', 500, 'num', M => M.badgeWeekendDays, 50, 'badgeWeekendDays'),
+    achDef('extra-day-games-2', 'discovery', 'Daily discovery I', 'Play 2 different games in one day', 'star', 75, 'num', M => M.badgeDayGames, 2, 'badgeDayGames'),
+    achDef('extra-day-games-3', 'discovery', 'Daily discovery II', 'Play 3 different games in one day', 'star', 150, 'num', M => M.badgeDayGames, 3, 'badgeDayGames'),
+    achDef('extra-day-games-4', 'discovery', 'Daily discovery III', 'Play 4 different games in one day', 'star', 300, 'num', M => M.badgeDayGames, 4, 'badgeDayGames'),
+    achDef('extra-day-games-5', 'discovery', 'Daily discovery IV', 'Play 5 different games in one day', 'star', 500, 'num', M => M.badgeDayGames, 5, 'badgeDayGames'),
+    achDef('extra-month-games-3', 'discovery', 'Monthly discovery I', 'Play 3 different games in one calendar month', 'star', 75, 'num', M => M.badgeMonthGames, 3, 'badgeMonthGames'),
+    achDef('extra-month-games-5', 'discovery', 'Monthly discovery II', 'Play 5 different games in one calendar month', 'star', 150, 'num', M => M.badgeMonthGames, 5, 'badgeMonthGames'),
+    achDef('extra-month-games-8', 'discovery', 'Monthly discovery III', 'Play 8 different games in one calendar month', 'star', 300, 'num', M => M.badgeMonthGames, 8, 'badgeMonthGames'),
+    achDef('extra-month-games-12', 'discovery', 'Monthly discovery IV', 'Play 12 different games in one calendar month', 'star', 500, 'num', M => M.badgeMonthGames, 12, 'badgeMonthGames'),
+    achDef('extra-game-time-300', 'game-progress', 'Game dedication I', 'Play 5 hours in one game', 'trophy', 75, 'ms', M => M.badgeGameMs, 300 * 60000, 'badgeGameMs'),
+    achDef('extra-game-time-900', 'game-progress', 'Game dedication II', 'Play 15 hours in one game', 'trophy', 150, 'ms', M => M.badgeGameMs, 900 * 60000, 'badgeGameMs'),
+    achDef('extra-game-time-1800', 'game-progress', 'Game dedication III', 'Play 30 hours in one game', 'trophy', 300, 'ms', M => M.badgeGameMs, 1800 * 60000, 'badgeGameMs'),
+    achDef('extra-game-time-3600', 'game-progress', 'Game dedication IV', 'Play 60 hours in one game', 'trophy', 500, 'ms', M => M.badgeGameMs, 3600 * 60000, 'badgeGameMs'),
+    achDef('extra-milestones-1', 'game-progress', 'Personal milestones I', 'Complete 1 personal milestone', 'medal', 75, 'num', M => M.badgeMilestones, 1, 'badgeMilestones'),
+    achDef('extra-milestones-5', 'game-progress', 'Personal milestones II', 'Complete 5 personal milestones', 'medal', 150, 'num', M => M.badgeMilestones, 5, 'badgeMilestones'),
+    achDef('extra-milestones-15', 'game-progress', 'Personal milestones III', 'Complete 15 personal milestones', 'medal', 300, 'num', M => M.badgeMilestones, 15, 'badgeMilestones'),
+    achDef('extra-milestones-30', 'game-progress', 'Personal milestones IV', 'Complete 30 personal milestones', 'medal', 500, 'num', M => M.badgeMilestones, 30, 'badgeMilestones')
   ];
 
   function fmtNum(n) {
@@ -9394,6 +9556,69 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const need = 120 + 18 * (level - 1);
     return { level: level, cur: totalXp - spent, need: need, title: levelTitle(level) };
   }
+
+  // Replay complete local days so progress and historical unlock dates use the same rules.
+  function expandedBadgeProgress(rows, library, onDay) {
+    const days = new Map();
+    const getDay = date => {
+      if (!days.has(date)) days.set(date, { sessions: [], milestones: 0 });
+      return days.get(date);
+    };
+    for (const session of rows) {
+      if (session.stop !== null) getDay(dateKey(session.start)).sessions.push(session);
+    }
+    for (const game of library) {
+      for (const milestone of game.milestones || []) {
+        if (milestoneValidDate(milestone.completedAt)) getDay(milestone.completedAt).milestones++;
+      }
+    }
+    const progress = {
+      badgeWeeklyStreak: 0, badgeWeekMs: 0, badgeWeekendDays: 0,
+      badgeDayGames: 0, badgeMonthGames: 0, badgeGameMs: 0, badgeMilestones: 0
+    };
+    const gameTotals = new Map();
+    let lastWeek, weekRun = 0, weekMs = 0;
+    let currentMonth, monthGames = new Set();
+    for (const date of [...days.keys()].sort()) {
+      const day = days.get(date);
+      if (day.sessions.length) {
+        const week = weekKeyFor(date);
+        if (week !== lastWeek) {
+          weekRun = lastWeek && addDays(lastWeek, 7) === week ? weekRun + 1 : 1;
+          lastWeek = week;
+          weekMs = 0;
+          progress.badgeWeeklyStreak = Math.max(progress.badgeWeeklyStreak, weekRun);
+        }
+        const month = date.slice(0, 7);
+        if (month !== currentMonth) {
+          currentMonth = month;
+          monthGames = new Set();
+        }
+        const weekday = new Date(date + 'T12:00:00').getDay();
+        if (weekday === 0 || weekday === 6) progress.badgeWeekendDays++;
+        const dayGames = new Set();
+        for (const session of day.sessions) {
+          const duration = session.durationMs || 0;
+          weekMs += duration;
+          dayGames.add(session.gameId);
+          monthGames.add(session.gameId);
+          const gameMs = (gameTotals.get(session.gameId) || 0) + duration;
+          gameTotals.set(session.gameId, gameMs);
+          progress.badgeGameMs = Math.max(progress.badgeGameMs, gameMs);
+        }
+        progress.badgeWeekMs = Math.max(progress.badgeWeekMs, weekMs);
+        progress.badgeDayGames = Math.max(progress.badgeDayGames, dayGames.size);
+        progress.badgeMonthGames = Math.max(progress.badgeMonthGames, monthGames.size);
+      }
+      progress.badgeMilestones += day.milestones;
+      if (onDay) onDay(date, progress);
+    }
+    return progress;
+  }
+
+  const badgeCategory = document.getElementById('ach-category-filter');
+  badgeCategory.replaceChildren(new Option('All categories', ''), ...ACH_CATS.map(cat => new Option(cat.name, cat.id)));
+  badgeCategory.addEventListener('change', renderAchievementsTab);
 
   function computeAchStats() {
     const completed = sessions.filter(s => s.stop !== null);
@@ -9510,6 +9735,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     });
 
     return {
+      ...expandedBadgeProgress(completed, games),
       totalMs: totalMs,
       count: completed.length,
       distinctGames: gameIds.size,
@@ -9547,6 +9773,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function achStatFor(a) {
+    if (a.stat) return a.stat;
     if (a.cat === 'playtime') return 'totalMs';
     if (a.cat === 'sessions') return 'count';
     if (a.cat === 'streaks') return 'streak';
@@ -9609,7 +9836,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       (byStat[st] = byStat[st] || []).push(a);
     });
     const earned = {};
-    let totalMs = 0, count = 0, games = 0, early = 0, night = 0, distinctDays = 0;
+    let totalMs = 0, count = 0, early = 0, night = 0, distinctDays = 0;
     let run = 0, longestStreak = 0, prevDay = null;
     const seenGames = new Set();
     const noteCrossings = (st, val, d) => {
@@ -9621,7 +9848,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       dayGameSets[d].forEach(g => seenGames.add(g));
       totalMs += dayMs[d];
       count += dayCnt[d];
-      games = seenGames.size;
       early += dayEarly[d] || 0;
       night += dayNight[d] || 0;
       distinctDays++;
@@ -9630,7 +9856,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       if (run > longestStreak) longestStreak = run;
       noteCrossings('totalMs', totalMs, d);
       noteCrossings('count', count, d);
-      noteCrossings('games', games, d);
+      noteCrossings('games', seenGames.size, d);
       noteCrossings('early', early, d);
       noteCrossings('night', night, d);
       noteCrossings('streak', longestStreak, d);
@@ -9638,6 +9864,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       noteCrossings('longest', dayLongest[d], d);
       noteCrossings('maxMsDay', dayMs[d], d);
       noteCrossings('maxSessionsDay', dayCnt[d], d);
+    });
+    expandedBadgeProgress(sessions, games, (date, progress) => {
+      for (const [stat, value] of Object.entries(progress)) noteCrossings(stat, value, date);
     });
     return earned;
   }
@@ -9652,7 +9881,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const instant = new Date(earned[a.id] + 'T12:00:00');
       const prev = unlocks[a.id];
       const prevTime = prev ? new Date(prev).getTime() : NaN;
-      if (mode === 'force' || !prev || isNaN(prevTime) || instant.getTime() < prevTime) {
+      if (mode === 'force' || !prev || isNaN(prevTime) || (a.stat && instant.getTime() < prevTime)) {
         unlocks[a.id] = instant.toISOString();
         changed = true;
       }
@@ -9952,6 +10181,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const groupsEl = document.getElementById('ach-groups');
     let html = '';
     ACH_CATS.forEach(cat => {
+      if (badgeCategory.value && cat.id !== badgeCategory.value) return;
       const items = stats.filter(s => s.def.cat === cat.id).sort((x, y) => (y.unlocked - x.unlocked) || (y.pct - x.pct));
       html += '<div class="ach-section fade-in" style="--i:0ms">' +
         '<div class="ach-section-header">' + iconSvg(cat.icon) + '<span>' + cat.name + '</span>' +
@@ -10093,6 +10323,66 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const g = typeof M.longestDailyGoalStreak === 'number' ? M.longestDailyGoalStreak : 0;
       goalStreakEl.textContent = g + (g === 1 ? ' day' : ' days');
     }
+
+    const gamesByDay = new Map();
+    const weekly = new Map(), monthly = new Map(), byGame = new Map(), gameDays = new Map();
+    const addRecordSession = (groups, key, session) => {
+      if (!groups.has(key)) groups.set(key, { count:0, ms:0, ids:new Set(), name:session.gameName });
+      const row = groups.get(key);
+      row.count++;
+      row.ms += session.durationMs || 0;
+      row.ids.add(session.gameId);
+    };
+    for (const session of sessions) {
+      if (session.stop === null) continue;
+      const day = dateKey(session.start);
+      const week = dateKey(getWeekBounds(new Date(session.start)).start);
+      const month = day.slice(0, 7);
+      if (!gamesByDay.has(day)) gamesByDay.set(day, new Set());
+      gamesByDay.get(day).add(session.gameId);
+      addRecordSession(weekly, week, session);
+      addRecordSession(monthly, month, session);
+      addRecordSession(byGame, session.gameId, session);
+      addRecordSession(gameDays, JSON.stringify([day, session.gameId]), session);
+    }
+    const topEntry = entries => [...entries].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0] || ['', 0];
+    const [week, weekMs] = topEntry([...weekly].map(([key, row]) => [key, row.ms]));
+    const [month, monthMs] = topEntry([...monthly].map(([key, row]) => [key, row.ms]));
+    const [day, gameCount] = topEntry([...gamesByDay].map(([date, ids]) => [date, ids.size]));
+    document.getElementById('record-week').textContent = fmtDurationShort(weekMs);
+    document.getElementById('record-week-date').textContent = weekMs ? fmtDay(week) + ' – ' + fmtDay(addDays(week, 6)) : '';
+    document.getElementById('record-month').textContent = fmtDurationShort(monthMs);
+    document.getElementById('record-month-date').textContent = monthMs ? new Date(month + '-01T12:00:00').toLocaleDateString(undefined, { month:'long', year:'numeric' }) : '';
+    document.getElementById('record-variety').textContent = String(gameCount);
+    document.getElementById('record-variety-date').textContent = day ? fmtDay(day) : '';
+    const monthLabel = key => new Date(key + '-01T12:00:00').toLocaleDateString(undefined, { month:'long', year:'numeric' });
+    const weekLabel = key => fmtDay(key) + ' – ' + fmtDay(addDays(key, 6));
+    const setRecord = (id, value, detail) => {
+      document.getElementById('record-' + id).textContent = value;
+      document.getElementById('record-' + id + '-date').textContent = detail;
+    };
+    const showGroupedRecord = (id, groups, metric, format, detail) => {
+      const [key, value] = topEntry([...groups].map(([key, row]) => [key, metric(row)]));
+      setRecord(id, format(value), key ? detail(key, groups.get(key)) : '');
+    };
+    showGroupedRecord('week-sessions', weekly, row => row.count, String, weekLabel);
+    showGroupedRecord('month-sessions', monthly, row => row.count, String, monthLabel);
+    showGroupedRecord('week-games', weekly, row => row.ids.size, String, weekLabel);
+    showGroupedRecord('month-games', monthly, row => row.ids.size, String, monthLabel);
+    showGroupedRecord('game-time', byGame, row => row.ms, fmtDurationShort, (_, row) => row.name);
+    showGroupedRecord('game-sessions', byGame, row => row.count, String, (_, row) => row.name);
+    showGroupedRecord('game-day', gameDays, row => row.ms, fmtDurationShort, (key, row) => row.name + ' · ' + fmtDay(JSON.parse(key)[0]));
+    let previousDay, streakStart, streak = 0, bestStreak = 0, bestRange = '';
+    for (const date of [...gamesByDay.keys()].sort()) {
+      if (previousDay && addDays(previousDay, 1) === date) streak++;
+      else { streak = 1; streakStart = date; }
+      if (streak > bestStreak) {
+        bestStreak = streak;
+        bestRange = streak === 1 ? fmtDay(date) : fmtDay(streakStart) + ' – ' + fmtDay(date);
+      }
+      previousDay = date;
+    }
+    setRecord('day-streak', bestStreak + (bestStreak === 1 ? ' day' : ' days'), bestRange);
 
     const favBox = document.getElementById('favorite-game-box');
     if (favBox) {
@@ -12410,7 +12700,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(!item)return;
       current.milestones=normalizeGameMilestones(current.milestones);
       current.milestones.find(m=>m.id===id).completedAt=control.checked?todayStr():null;
-      saveGames(games);refreshMilestoneDashboard(current);
+      saveGames(games);backfillUnlockDates('gentle');refreshMilestoneDashboard(current);
     }
   });
   document.getElementById('milestone-completed').addEventListener('change',event=>{document.getElementById('milestone-completion-date').hidden=!event.target.checked;document.getElementById('milestone-estimate-field').hidden=event.target.checked;});
@@ -12432,7 +12722,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const hoursRemaining = completed ? item?.hoursRemaining : Number(hoursField.value) || undefined;
     if(item){item.name=name;item.completedAt=completed?date:null;item.hoursRemaining=hoursRemaining;}
     else game.milestones.push({id:uid(),name,completedAt:completed?date:null,hoursRemaining});
-    saveGames(games);document.getElementById('milestone-modal').classList.remove('open');refreshMilestoneDashboard(game);
+    saveGames(games);backfillUnlockDates('gentle');document.getElementById('milestone-modal').classList.remove('open');refreshMilestoneDashboard(game);
   };
   document.getElementById('milestone-delete-cancel').onclick=()=>document.getElementById('milestone-delete-modal').classList.remove('open');
   document.getElementById('milestone-delete-confirm').onclick=()=>{
@@ -12673,7 +12963,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.8.5';
+    const APP_VERSION = '1.8.6';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
