@@ -1372,6 +1372,20 @@ opacity: 0.18;
 
   .session-item:last-child { border-bottom: none; }
 
+  .playtime-month-controls { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .playtime-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; margin:12px 0; text-align:center; }
+  .playtime-days > span { font-size:.7rem; color:var(--text2); }
+  #playtime-days button.btn-ghost { min-width:0; padding:4px 1px !important; min-height:44px; font-size:.75rem; line-height:1.2; }
+  .playtime-days button[aria-pressed="true"] { background:var(--accent-dim); color:var(--accent); border-color:var(--accent); }
+  .playtime-days button small { display:block; font-size:.65rem; overflow-wrap:anywhere; }
+  #playtime-day-details { margin-bottom:14px; }
+  .playtime-game-group { padding:10px 4px; border-bottom:1px solid var(--border); }
+  .playtime-game-heading,.playtime-session-row { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+  .playtime-game-heading { font-size:.85rem; overflow-wrap:anywhere; }
+  .playtime-game-heading span { color:var(--accent); }
+  .playtime-game-heading span,.playtime-session-row span:last-child { flex-shrink:0; font-variant-numeric:tabular-nums; }
+  .playtime-session-list { list-style:none; padding:0; margin:4px 0 0; }
+  .playtime-session-row { padding:4px 0; color:var(--text2); font-size:.75rem; }
   #startup-sync-list .session-item {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -5629,6 +5643,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   <!-- STATS TAB -->
   <div id="tab-stats" class="tab-panel">
+    <div class="card" id="playtime-calendar">
+      <div class="card-header">Playtime calendar</div>
+      <div class="playtime-month-controls">
+        <button type="button" class="btn-ghost" id="playtime-prev" aria-label="Previous month">&#8249;</button>
+        <strong id="playtime-month" aria-live="polite"></strong>
+        <button type="button" class="btn-ghost" id="playtime-next" aria-label="Next month">&#8250;</button>
+      </div>
+      <div id="playtime-days" class="playtime-days" role="group" aria-label="Days of the month"></div>
+      <div id="playtime-day-details"></div>
+      <button type="button" class="btn-ghost" id="playtime-view-sessions">View in Sessions</button>
+    </div>
     <div class="card">
       <div class="card-header">This Week Review</div>
       <div class="stat-grid">
@@ -9024,7 +9049,45 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     result.innerHTML='<div class="stat-grid">'+stat('Total playtime',fmtDurationShort(m.total))+stat('Sessions',m.count)+stat('Games tried for the first time',m.tried)+stat('Days played',m.days)+'</div><p class="recap-note">'+(m.current?'So far this period; compared with the full previous '+(mode==='year'?'year':'month')+'. ':'Compared with the previous '+(mode==='year'?'year':'month')+'. ')+escHtml(change)+' playtime.</p><div class="modal-subheader">Most played</div><ol class="recap-ranking">'+m.top.slice(0,3).map(([id,ms],i)=>{const game=games.find(g=>g.id===id),sample=sessions.find(s=>s.gameId===id);return '<li><span>'+(i+1)+'. '+escHtml(game?.name||sample?.gameName||'Unknown game')+'</span><span>'+fmtDurationShort(ms)+'</span></li>';}).join('')+'</ol><p class="recap-note">Busiest day: '+escHtml(fmtDateShort(m.busiest[0]+'T00:00:00'))+' ('+fmtDurationShort(m.busiest[1])+').</p>';
   }
 
+  let calendarSelectedDay = todayStr();
+  let calendarMonth = calendarSelectedDay.slice(0,7);
+  function renderPlaytimeCalendar() {
+    const [year, month] = calendarMonth.split('-').map(Number);
+    const first = new Date(year, month - 1, 1, 12);
+    const length = new Date(year, month, 0, 12).getDate();
+    const offset = (first.getDay() + (weekStartsOnMonday() ? 6 : 0)) % 7;
+    const monthSessions = new Map();
+    sessions.forEach(session => {
+      if (session.stop === null) return;
+      const day = dateKey(session.start);
+      if (!day.startsWith(calendarMonth + '-')) return;
+      if (!monthSessions.has(day)) monthSessions.set(day, []);
+      monthSessions.get(day).push(session);
+    });
+    document.getElementById('playtime-month').textContent = first.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    const weekdays = orderedWeekdays().map(day => '<span aria-label="' + day + '">' + day.slice(0,3) + '</span>').join('');
+    const buttons = Array.from({length}, (_, index) => {
+      const day = calendarMonth + '-' + String(index + 1).padStart(2,'0');
+      const total = (monthSessions.get(day) || []).reduce((sum, session) => sum + (session.durationMs || 0), 0);
+      const duration = total ? fmtDurationShort(total) : '0s';
+      return '<button type="button" class="btn-ghost" data-playtime-day="' + day + '" aria-label="' + day + ', ' + duration + ' played" aria-pressed="' + (day === calendarSelectedDay) + '">' + (index + 1) + '<small>' + duration + '</small></button>';
+    }).join('');
+    document.getElementById('playtime-days').innerHTML = weekdays + '<span aria-hidden="true"></span>'.repeat(offset) + buttons;
+    const groups = new Map();
+    (monthSessions.get(calendarSelectedDay) || []).slice().sort((a,b) => new Date(a.start)-new Date(b.start)).forEach(session => {
+      if (!groups.has(session.gameId)) groups.set(session.gameId, []);
+      groups.get(session.gameId).push(session);
+    });
+    const dayTotal = (monthSessions.get(calendarSelectedDay) || []).reduce((sum, session) => sum + (session.durationMs || 0), 0);
+    const heading = '<div class="session-day-heading"><strong>' + calendarSelectedDay + '</strong><span>' + fmtDuration(dayTotal) + ' total</span></div>';
+    document.getElementById('playtime-day-details').innerHTML = heading + (groups.size ? [...groups.values()].map(entries => {
+      const total = entries.reduce((sum, session) => sum + (session.durationMs || 0), 0);
+      const rows = entries.map(session => '<li class="playtime-session-row"><span>' + fmtTime(session.start) + ' &ndash; ' + fmtTime(session.stop) + '</span><span>' + fmtDuration(session.durationMs || 0) + '</span></li>').join('');
+      return '<div class="playtime-game-group"><div class="playtime-game-heading"><strong>' + escHtml(entries[0].gameName) + '</strong><span>' + fmtDuration(total) + '</span></div><ul class="playtime-session-list">' + rows + '</ul></div>';
+    }).join('') : '<p class="backup-hint">No completed sessions on this day.</p>');
+  }
   function renderStatsTab() {
+    renderPlaytimeCalendar();
     renderGameComparison();
     renderGamingRecap();
     const completed = sessions.filter(s => s.stop !== null);
@@ -10701,6 +10764,31 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.querySelectorAll('#sync-filter button').forEach(b => b.classList.toggle('active', b.dataset.sync === 'all'));
     renderSessionsTab(false);
   });
+
+  function changePlaytimeMonth(delta) {
+    const [year, month] = calendarMonth.split('-').map(Number);
+    calendarMonth = dateKey(new Date(year, month - 1 + delta, 1, 12)).slice(0,7);
+    const today = todayStr();
+    calendarSelectedDay = today.startsWith(calendarMonth + '-') ? today : calendarMonth + '-01';
+    renderPlaytimeCalendar();
+  }
+  document.getElementById('playtime-prev').onclick = () => changePlaytimeMonth(-1);
+  document.getElementById('playtime-next').onclick = () => changePlaytimeMonth(1);
+  document.getElementById('playtime-days').onclick = event => {
+    const button = event.target.closest('[data-playtime-day]');
+    if (!button) return;
+    calendarSelectedDay = button.dataset.playtimeDay;
+    renderPlaytimeCalendar();
+    document.querySelector('#playtime-days [aria-pressed="true"]')?.focus();
+  };
+  document.getElementById('playtime-view-sessions').onclick = () => {
+    sessionGameFilter = '';
+    syncFilter = 'all';
+    filterDate = filterDateEnd = calendarSelectedDay;
+    filterDateField.value = filterDateEndField.value = calendarSelectedDay;
+    document.querySelectorAll('#sync-filter button').forEach(button => button.classList.toggle('active', button.dataset.sync === 'all'));
+    goTab('sessions');
+  };
 
   // --- Session sync filter ---
   document.querySelectorAll('#sync-filter button').forEach(btn => {

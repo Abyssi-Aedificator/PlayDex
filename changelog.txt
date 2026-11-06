@@ -4,6 +4,7 @@ PlayDex - Changelog
 Unreleased
 -------------------
 - Assign weekly rotation games to weekdays or Any day and review planned hours by day against the weekly budget. Today shows only games planned for the current day and Any day games. The rotation editor is wider on larger screens.
+- Browse daily playtime in a Stats calendar with a daily total, grouped game and session rows, and a shortcut to open the selected date in Sessions.
 - Added a wider startup review of unsynced completed sessions with individual, per-game, and Mark all synced actions, with a compact theme-coloured badge showing each game's daily total across synced and unsynced sessions.
 - Kept Mark synced buttons inside the startup review list when hovering, preventing a horizontal scrollbar.
 - Added a Review unsynced button in Sessions. The popup closes automatically after the last session is marked synced.
