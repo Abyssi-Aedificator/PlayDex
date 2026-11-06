@@ -6408,7 +6408,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
-<div class="modal-overlay" id="milestone-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-modal-title"><h3 id="milestone-modal-title">Add milestone</h3><div class="field-group"><label for="milestone-name">Milestone name</label><input id="milestone-name" type="text" maxlength="80" placeholder="e.g. Finish Chapter 1" autocomplete="off"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Completed</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
+<div class="modal-overlay" id="milestone-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-modal-title"><h3 id="milestone-modal-title">Add milestone</h3><div class="field-group"><label for="milestone-name">Milestone name</label><input id="milestone-name" type="text" maxlength="80" placeholder="e.g. Finish Chapter 1" autocomplete="off"></div><div class="field-group" id="milestone-estimate-field"><label for="milestone-hours-remaining">Hours remaining (optional)</label><input type="number" min="0.25" step="0.25" id="milestone-hours-remaining"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Completed</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
 <div class="modal-overlay" id="milestone-delete-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-delete-title"><h3 id="milestone-delete-title">Delete milestone?</h3><p id="milestone-delete-message" class="backup-hint"></p><div class="modal-actions"><button class="btn-ghost" id="milestone-delete-cancel" type="button">Cancel</button><button class="btn-danger" id="milestone-delete-confirm" type="button">Delete</button></div></div></div>
 
 <!-- Startup session sync review -->
@@ -12191,7 +12191,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
 
   function normalizeGameMilestones(items) {
     const seen = new Set();
-    return (Array.isArray(items) ? items : []).filter(m => m && typeof m.id === 'string' && typeof m.name === 'string' && m.name.trim() && !seen.has(m.id) && seen.add(m.id)).map(m => ({id:m.id,name:m.name.trim().slice(0,80),completedAt:milestoneValidDate(m.completedAt)?m.completedAt:null}));
+    return (Array.isArray(items) ? items : []).filter(m => m && typeof m.id === 'string' && typeof m.name === 'string' && m.name.trim() && !seen.has(m.id) && seen.add(m.id)).map(m => ({id:m.id,name:m.name.trim().slice(0,80),completedAt:milestoneValidDate(m.completedAt)?m.completedAt:null,hoursRemaining:Number.isFinite(m.hoursRemaining)&&m.hoursRemaining>0?m.hoursRemaining:undefined}));
   }
   function milestoneValidDate(value) {
     if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
@@ -12199,12 +12199,28 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     return !isNaN(date.getTime())&&date.toISOString().slice(0,10)===value;
   }
   function milestoneAttr(value){return escHtml(String(value)).replace(/"/g,'&quot;');}
+  function milestoneFinishEstimate(gameId, hours) {
+    if (!hours) return '';
+    const start = dateKey(getWeekBounds().start);
+    const dates = new Map(Array.from({length:28}, (_, i) => [addDays(start, -i-1), Math.floor(i/7)]));
+    const weeks = [0, 0, 0, 0];
+    sessions.forEach(session => {
+      if (session.stop === null || session.gameId !== gameId) return;
+      const week = dates.get(dateKey(session.start));
+      if (week !== undefined) weeks[week] += session.durationMs || 0;
+    });
+    if (weeks.filter(ms => ms > 0).length < 2) return ' · Not enough play history';
+    const dailyHours = weeks.reduce((total, ms) => total + ms, 0) / 3600000 / 28;
+    const days = Math.ceil(hours / dailyHours);
+    if (days > 36500) return ' · Estimate beyond 100 years';
+    return ' · Estimated finish: ' + addDays(todayStr(), days);
+  }
   function gameMilestonesHtml(game) {
     const items=normalizeGameMilestones(game.milestones);
     const done=items.filter(m=>m.completedAt).length;
     const rows=items.slice().sort((a,b)=>!!a.completedAt-!!b.completedAt||(b.completedAt||'').localeCompare(a.completedAt||''));
     return '<section class="game-milestones"><div class="game-milestones-heading"><div><h4>Personal milestones</h4><p>'+done+' of '+items.length+' completed</p></div><button class="btn-ghost" data-milestone-action="add">+ Add milestone</button></div><div class="classic-milestone-progress" role="progressbar" aria-label="Personal milestones completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+(items.length?done/items.length*100:0)+'" aria-valuetext="'+done+' of '+items.length+' completed"><span class="classic-milestone-fill" style="width:'+(items.length?done/items.length*100:0)+'%"></span></div>'+
-      (rows.length?rows.map(m=>'<div class="game-milestone-row'+(m.completedAt?' completed':'')+'"><label><input type="checkbox" data-milestone-action="toggle" data-milestone-id="'+milestoneAttr(m.id)+'" '+(m.completedAt?'checked':'')+'><span class="game-milestone-copy"><span class="game-milestone-name">'+escHtml(m.name)+'</span><span class="game-milestone-date">'+(m.completedAt?'Completed '+escHtml(m.completedAt):'Not completed')+'</span></span></label><div class="game-milestone-actions"><button class="btn-ghost" data-milestone-action="edit" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Edit milestone">Edit</button><button class="btn-ghost" data-milestone-action="delete" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Delete milestone">Delete</button></div></div>').join(''):'<p class="backup-hint">Add a checkpoint, a challenge, or a personal goal for this game.</p>')+'</section>';
+      (rows.length?rows.map(m=>'<div class="game-milestone-row'+(m.completedAt?' completed':'')+'"><label><input type="checkbox" data-milestone-action="toggle" data-milestone-id="'+milestoneAttr(m.id)+'" '+(m.completedAt?'checked':'')+'><span class="game-milestone-copy"><span class="game-milestone-name">'+escHtml(m.name)+'</span><span class="game-milestone-date">'+(m.completedAt?'Completed '+escHtml(m.completedAt):'Not completed'+milestoneFinishEstimate(game.id,m.hoursRemaining))+'</span></span></label><div class="game-milestone-actions"><button class="btn-ghost" data-milestone-action="edit" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Edit milestone">Edit</button><button class="btn-ghost" data-milestone-action="delete" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Delete milestone">Delete</button></div></div>').join(''):'<p class="backup-hint">Add a checkpoint, a challenge, or a personal goal for this game.</p>')+'</section>';
   }
   let milestoneEditorGame=null,milestoneEditorId=null,milestoneDeleteId=null;
   const milestoneDateField=createCalField('milestone-date');
@@ -12214,6 +12230,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const item=(game.milestones||[]).find(m=>m.id===id);
     document.getElementById('milestone-modal-title').textContent=item?'Edit milestone':'Add milestone';
     document.getElementById('milestone-name').value=item?item.name:'';
+    document.getElementById('milestone-hours-remaining').value = item?.hoursRemaining ?? '';
+    document.getElementById('milestone-estimate-field').hidden = !!item?.completedAt;
     document.getElementById('milestone-completed').checked=!!(item&&item.completedAt);
     milestoneDateField.value=item&&item.completedAt?item.completedAt:todayStr();
     document.getElementById('milestone-completion-date').hidden=!(item&&item.completedAt);
@@ -12244,7 +12262,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       saveGames(games);refreshMilestoneDashboard(current);
     }
   });
-  document.getElementById('milestone-completed').addEventListener('change',event=>{document.getElementById('milestone-completion-date').hidden=!event.target.checked;});
+  document.getElementById('milestone-completed').addEventListener('change',event=>{document.getElementById('milestone-completion-date').hidden=!event.target.checked;document.getElementById('milestone-estimate-field').hidden=event.target.checked;});
   document.getElementById('milestone-cancel').onclick=()=>document.getElementById('milestone-modal').classList.remove('open');
   document.getElementById('milestone-save').onclick=()=>{
     const name=document.getElementById('milestone-name').value.trim();
@@ -12252,14 +12270,17 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const date=milestoneDateField.value;
     const error=document.getElementById('milestone-error');
     let message=!name?'Enter a milestone name.':completed&&(!milestoneValidDate(date)||date>todayStr())?'Choose a completion date on or before today.':'';
+    const hoursField = document.getElementById('milestone-hours-remaining');
+    if (!completed && !hoursField.reportValidity()) return;
     if(message){error.textContent=message;error.hidden=false;return;}
     checkStorageFresh();
     const game=games.find(g=>g.id===milestoneEditorGame);if(!game)return;
     game.milestones=normalizeGameMilestones(game.milestones);
     const item=game.milestones.find(m=>m.id===milestoneEditorId);
     if(milestoneEditorId&&!item)return;
-    if(item){item.name=name;item.completedAt=completed?date:null;}
-    else game.milestones.push({id:uid(),name:name,completedAt:completed?date:null});
+    const hoursRemaining = completed ? item?.hoursRemaining : Number(hoursField.value) || undefined;
+    if(item){item.name=name;item.completedAt=completed?date:null;item.hoursRemaining=hoursRemaining;}
+    else game.milestones.push({id:uid(),name,completedAt:completed?date:null,hoursRemaining});
     saveGames(games);document.getElementById('milestone-modal').classList.remove('open');refreshMilestoneDashboard(game);
   };
   document.getElementById('milestone-delete-cancel').onclick=()=>document.getElementById('milestone-delete-modal').classList.remove('open');
