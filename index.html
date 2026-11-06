@@ -3821,8 +3821,9 @@ opacity: 0.18;
       grid-column: 1 / -1;
     }
     .profile-card { grid-row: 1; }
-    .records-card { grid-column: 1; grid-row: 2 / span 2; }
-    .next-badge-card { grid-column: 2; grid-row: 2; }
+    .records-card { grid-column: 1 / -1; grid-row: 2; }
+    .records-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
+    .next-badge-card { grid-column: 1; grid-row: 3; }
     .favorite-card { grid-column: 2; grid-row: 3; }
     .playstyle-card { grid-row: 4; }
     .weekday-habits-card { grid-row: 5; }
@@ -5790,6 +5791,61 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         <div class="stat-box">
           <div class="stat-value" id="record-goal-streak">0 days</div>
           <div class="stat-label">Daily goal streak</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-week">0m</div>
+          <div class="stat-label">Busiest week</div>
+          <div class="record-date" id="record-week-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-month">0m</div>
+          <div class="stat-label">Busiest month</div>
+          <div class="record-date" id="record-month-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-variety">0</div>
+          <div class="stat-label">Different games in a day</div>
+          <div class="record-date" id="record-variety-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-week-sessions"></div>
+          <div class="stat-label">Sessions in a week</div>
+          <div class="record-date" id="record-week-sessions-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-month-sessions"></div>
+          <div class="stat-label">Sessions in a month</div>
+          <div class="record-date" id="record-month-sessions-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-week-games"></div>
+          <div class="stat-label">Different games in a week</div>
+          <div class="record-date" id="record-week-games-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-month-games"></div>
+          <div class="stat-label">Different games in a month</div>
+          <div class="record-date" id="record-month-games-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-day-streak"></div>
+          <div class="stat-label">Consecutive days played</div>
+          <div class="record-date" id="record-day-streak-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-game-time"></div>
+          <div class="stat-label">Most time in one game</div>
+          <div class="record-date" id="record-game-time-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-game-sessions"></div>
+          <div class="stat-label">Most sessions in one game</div>
+          <div class="record-date" id="record-game-sessions-date"></div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="record-game-day"></div>
+          <div class="stat-label">Most time in one game in a day</div>
+          <div class="record-date" id="record-game-day-date"></div>
         </div>
       </div>
     </div>
@@ -10093,6 +10149,66 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const g = typeof M.longestDailyGoalStreak === 'number' ? M.longestDailyGoalStreak : 0;
       goalStreakEl.textContent = g + (g === 1 ? ' day' : ' days');
     }
+
+    const gamesByDay = new Map();
+    const weekly = new Map(), monthly = new Map(), byGame = new Map(), gameDays = new Map();
+    const addRecordSession = (groups, key, session) => {
+      if (!groups.has(key)) groups.set(key, { count:0, ms:0, ids:new Set(), name:session.gameName });
+      const row = groups.get(key);
+      row.count++;
+      row.ms += session.durationMs || 0;
+      row.ids.add(session.gameId);
+    };
+    for (const session of sessions) {
+      if (session.stop === null) continue;
+      const day = dateKey(session.start);
+      const week = dateKey(getWeekBounds(new Date(session.start)).start);
+      const month = day.slice(0, 7);
+      if (!gamesByDay.has(day)) gamesByDay.set(day, new Set());
+      gamesByDay.get(day).add(session.gameId);
+      addRecordSession(weekly, week, session);
+      addRecordSession(monthly, month, session);
+      addRecordSession(byGame, session.gameId, session);
+      addRecordSession(gameDays, JSON.stringify([day, session.gameId]), session);
+    }
+    const topEntry = entries => [...entries].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0] || ['', 0];
+    const [week, weekMs] = topEntry([...weekly].map(([key, row]) => [key, row.ms]));
+    const [month, monthMs] = topEntry([...monthly].map(([key, row]) => [key, row.ms]));
+    const [day, gameCount] = topEntry([...gamesByDay].map(([date, ids]) => [date, ids.size]));
+    document.getElementById('record-week').textContent = fmtDurationShort(weekMs);
+    document.getElementById('record-week-date').textContent = weekMs ? fmtDay(week) + ' – ' + fmtDay(addDays(week, 6)) : '';
+    document.getElementById('record-month').textContent = fmtDurationShort(monthMs);
+    document.getElementById('record-month-date').textContent = monthMs ? new Date(month + '-01T12:00:00').toLocaleDateString(undefined, { month:'long', year:'numeric' }) : '';
+    document.getElementById('record-variety').textContent = String(gameCount);
+    document.getElementById('record-variety-date').textContent = day ? fmtDay(day) : '';
+    const monthLabel = key => new Date(key + '-01T12:00:00').toLocaleDateString(undefined, { month:'long', year:'numeric' });
+    const weekLabel = key => fmtDay(key) + ' – ' + fmtDay(addDays(key, 6));
+    const setRecord = (id, value, detail) => {
+      document.getElementById('record-' + id).textContent = value;
+      document.getElementById('record-' + id + '-date').textContent = detail;
+    };
+    const showGroupedRecord = (id, groups, metric, format, detail) => {
+      const [key, value] = topEntry([...groups].map(([key, row]) => [key, metric(row)]));
+      setRecord(id, format(value), key ? detail(key, groups.get(key)) : '');
+    };
+    showGroupedRecord('week-sessions', weekly, row => row.count, String, weekLabel);
+    showGroupedRecord('month-sessions', monthly, row => row.count, String, monthLabel);
+    showGroupedRecord('week-games', weekly, row => row.ids.size, String, weekLabel);
+    showGroupedRecord('month-games', monthly, row => row.ids.size, String, monthLabel);
+    showGroupedRecord('game-time', byGame, row => row.ms, fmtDurationShort, (_, row) => row.name);
+    showGroupedRecord('game-sessions', byGame, row => row.count, String, (_, row) => row.name);
+    showGroupedRecord('game-day', gameDays, row => row.ms, fmtDurationShort, (key, row) => row.name + ' · ' + fmtDay(JSON.parse(key)[0]));
+    let previousDay, streakStart, streak = 0, bestStreak = 0, bestRange = '';
+    for (const date of [...gamesByDay.keys()].sort()) {
+      if (previousDay && addDays(previousDay, 1) === date) streak++;
+      else { streak = 1; streakStart = date; }
+      if (streak > bestStreak) {
+        bestStreak = streak;
+        bestRange = streak === 1 ? fmtDay(date) : fmtDay(streakStart) + ' – ' + fmtDay(date);
+      }
+      previousDay = date;
+    }
+    setRecord('day-streak', bestStreak + (bestStreak === 1 ? ' day' : ' days'), bestRange);
 
     const favBox = document.getElementById('favorite-game-box');
     if (favBox) {

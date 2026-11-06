@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Unreleased
+-------------------
+- Personal Records now shows your busiest week, busiest month, and most different games played in one day, plus eight more records for session counts, game variety, daily streaks, and single-game playtime. The expanded grid sits above Next Badge to Unlock and Favorite Game.
+
 Version 1.8.5
 -------------------
 - Fixed Playtime by Platform showing Unspecified for sessions whose games already had a platform assigned.
