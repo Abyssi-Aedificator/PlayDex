@@ -8,3 +8,6 @@ Session enjoyment rating
 
 Session notes
 - Optional session notes and the Continue where I left off note previews beside start actions.
+
+Backlog picks
+- A Want to play list and a From my backlog option in What should I play?

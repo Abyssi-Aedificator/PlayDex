@@ -333,6 +333,7 @@
   .platform-summary-row span:first-child { min-width:0; overflow-wrap:anywhere; }
   .session-filter-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
   .session-filter-heading .card-header { margin:0; }
+  .session-heading-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
   .session-filter-heading #btn-add-session { padding:9px 13px; font-size:.8rem; white-space:nowrap; }
   .session-filters { container-type:inline-size; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border); }
   .session-filter-fields { display:grid; grid-template-columns:minmax(0,1.3fr) repeat(2,minmax(0,1fr)); gap:12px; align-items:end; }
@@ -808,13 +809,17 @@ opacity: 0.18;
   .rotation-choice span { overflow-wrap:anywhere; }
   .rotation-choice > label { display:flex; align-items:center; gap:10px; flex:1; min-width:0; cursor:pointer; }
   .rotation-choice .rotation-target-label { flex:0 0 100px; display:block; color:var(--text2); font-size:.7rem; }
+  .rotation-choice .rotation-day-label { flex:0 1 110px; display:block; font-size:.7rem; color:var(--text2); }
+  .rotation-day { width:100%; margin-top:4px; }
+  .rotation-day-summary { display:flex; flex-wrap:wrap; gap:4px 14px; }
+  @media(max-width:480px) { .rotation-choice { flex-wrap:wrap; } .rotation-choice > label:first-child { flex-basis:100%; } }
   .rotation-choice input.rotation-target { width:100%; height:auto; margin-top:4px; padding:8px; font-size:.8rem; }
   .rotation-target:disabled { opacity:.4; }
   .rotation-game { flex:1; }
   .rotation-game .progress-track { margin-top:7px; height:5px; }
   .rotation-target-status { display:block; margin-top:5px; color:var(--text2); font-size:.7rem; line-height:1.5; }
   .rotation-target-status.reached { color:var(--accent); font-weight:600; }
-  #rotation-modal .modal { max-width:540px; }
+  #rotation-modal .modal { width:100%; max-width:580px; }
   #rotation-choices { padding-right:8px; }
   @media(min-width:600px) {
     .rotation-choice { gap:20px; }
@@ -1366,6 +1371,53 @@ opacity: 0.18;
   }
 
   .session-item:last-child { border-bottom: none; }
+
+  .playtime-month-controls { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .playtime-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; margin:12px 0; text-align:center; }
+  .playtime-days > span { font-size:.7rem; color:var(--text2); }
+  #playtime-days button.btn-ghost { min-width:0; padding:4px 1px !important; min-height:44px; font-size:.75rem; line-height:1.2; }
+  .playtime-days button[aria-pressed="true"] { background:var(--accent-dim); color:var(--accent); border-color:var(--accent); }
+  .playtime-days button small { display:block; font-size:.65rem; overflow-wrap:anywhere; }
+  #playtime-day-details { margin-bottom:14px; }
+  .playtime-game-group { padding:10px 4px; border-bottom:1px solid var(--border); }
+  .playtime-game-heading,.playtime-session-row { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+  .playtime-game-heading { font-size:.85rem; overflow-wrap:anywhere; }
+  .playtime-game-heading span { color:var(--accent); }
+  .playtime-game-heading span,.playtime-session-row span:last-child { flex-shrink:0; font-variant-numeric:tabular-nums; }
+  .playtime-session-list { list-style:none; padding:0; margin:4px 0 0; }
+  .playtime-session-row { padding:4px 0; color:var(--text2); font-size:.75rem; }
+  #session-finish-review .modal-actions { flex-wrap:wrap; }
+  .beat-time-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:10px; }
+  .beat-time-fields input { min-width:0; }
+  .beat-time-fields .beat-played-field { grid-column:1 / -1; }
+  .beat-progress-row { padding:10px 0; border-top:1px solid var(--border); }
+  .beat-progress-label { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; font-size:.8rem; }
+  .beat-progress-label > span { color:var(--text2); font-variant-numeric:tabular-nums; }
+  .beat-progress-row .progress-track { height:6px; margin:6px 0 0; }
+  .finish-beat-progress { margin-top:12px; }
+  .dashboard-milestone-column { display:grid; gap:18px; }
+  #session-finish-sync { display:inline-grid; place-items:center; }
+  #session-finish-sync span { grid-area:1 / 1; }
+  #session-finish-sync:not(:disabled) .finish-synced-label,
+  #session-finish-sync:disabled .finish-sync-label { visibility:hidden; }
+  #startup-sync-list .session-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding-inline: 6px;
+  }
+  #startup-sync-list .session-item:hover { transform: none; }
+  .startup-sync-actions { display:flex; flex-direction:column; align-items:stretch; gap:4px; }
+  .startup-sync-day-total {
+    display:inline-block;
+    margin-top:4px;
+    padding:2px 7px;
+    border-radius:999px;
+    background:var(--accent-dim);
+    color:var(--accent);
+    font-size:.72rem;
+    font-variant-numeric:tabular-nums;
+  }
 
   .session-info { flex: 1; min-width: 0; }
 
@@ -4768,7 +4820,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
   .game-milestone-actions { display:flex; flex-wrap:wrap; gap:4px; }
   .game-milestone-actions button { min-height:40px; min-width:40px; padding:8px; }
   .milestone-complete-toggle { display:flex; align-items:center; gap:10px; min-height:48px; margin:0 0 16px; color:var(--text2); font-size:.85rem; cursor:pointer; }
-  #milestone-modal,#milestone-delete-modal { z-index:250; }
+  #milestone-modal,#milestone-delete-modal,#beat-time-modal { z-index:250; }
   #milestone-completion-date[hidden],#milestone-error[hidden] { display:none!important; }
   #milestone-error { color:var(--red); }
   :root[data-ui=material] .game-milestones { border:0; background:var(--md-surface-container); border-radius:20px; padding:20px; }
@@ -4784,7 +4836,8 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
  #dashboard-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"summary milestones" "history milestones"; column-gap:28px; align-items:start; }
  .milestone-dashboard-summary { grid-area:summary; }
  .milestone-dashboard-history { grid-area:history; }
- #dashboard-body .game-milestones { grid-area:milestones; margin:0; }
+ #dashboard-body .dashboard-milestone-column { grid-area:milestones; }
+ #dashboard-body .game-milestones { margin:0; }
  #dashboard-modal .dash-cover { height:200px; }
 }
 
@@ -5434,7 +5487,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.8.2</span>
+    <span class="version-badge">1.8.3</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5534,7 +5587,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <!-- SESSIONS TAB -->
   <div id="tab-sessions" class="tab-panel">
     <div class="card">
-      <div class="session-filter-heading"><div class="card-header">Sessions</div><button class="btn-ghost btn-accent" id="btn-add-session" type="button">&#43; Add session</button></div>
+      <div class="session-filter-heading">
+        <div class="card-header">Sessions</div>
+        <div class="session-heading-actions">
+          <button class="btn-ghost" id="btn-review-unsynced" type="button" aria-haspopup="dialog" aria-controls="startup-sync-modal">Review unsynced</button>
+          <button class="btn-ghost btn-accent" id="btn-add-session" type="button">&#43; Add session</button>
+        </div>
+      </div>
       <div class="session-filters">
         <div class="session-filter-fields">
           <div class="session-filter-field session-filter-game"><label for="session-game-filter">Game</label><select id="session-game-filter"><option value="">All games</option></select></div>
@@ -5599,6 +5658,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   <!-- STATS TAB -->
   <div id="tab-stats" class="tab-panel">
+    <div class="card" id="playtime-calendar">
+      <div class="card-header">Playtime calendar</div>
+      <div class="playtime-month-controls">
+        <button type="button" class="btn-ghost" id="playtime-prev" aria-label="Previous month">&#8249;</button>
+        <strong id="playtime-month" aria-live="polite"></strong>
+        <button type="button" class="btn-ghost" id="playtime-next" aria-label="Next month">&#8250;</button>
+      </div>
+      <div id="playtime-days" class="playtime-days" role="group" aria-label="Days of the month"></div>
+      <div id="playtime-day-details"></div>
+      <button type="button" class="btn-ghost" id="playtime-view-sessions">View in Sessions</button>
+    </div>
     <div class="card">
       <div class="card-header">This Week Review</div>
       <div class="stat-grid">
@@ -6353,8 +6423,56 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
-<div class="modal-overlay" id="milestone-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-modal-title"><h3 id="milestone-modal-title">Add milestone</h3><div class="field-group"><label for="milestone-name">Milestone name</label><input id="milestone-name" type="text" maxlength="80" placeholder="e.g. Finish Chapter 1" autocomplete="off"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Completed</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
+<div class="modal-overlay" id="milestone-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-modal-title"><h3 id="milestone-modal-title">Add milestone</h3><div class="field-group"><label for="milestone-name">Milestone name</label><input id="milestone-name" type="text" maxlength="80" placeholder="e.g. Finish Chapter 1" autocomplete="off"></div><div class="field-group" id="milestone-estimate-field"><label for="milestone-hours-remaining">Hours remaining (optional)</label><input type="number" min="0.25" step="0.25" id="milestone-hours-remaining"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Completed</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
 <div class="modal-overlay" id="milestone-delete-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-delete-title"><h3 id="milestone-delete-title">Delete milestone?</h3><p id="milestone-delete-message" class="backup-hint"></p><div class="modal-actions"><button class="btn-ghost" id="milestone-delete-cancel" type="button">Cancel</button><button class="btn-danger" id="milestone-delete-confirm" type="button">Delete</button></div></div></div>
+
+<div class="modal-overlay" id="session-finish-review">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="session-finish-title">
+    <h3 id="session-finish-title">Session saved</h3>
+    <div id="session-finish-details" aria-live="polite"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" id="session-finish-edit">Edit session</button>
+      <button type="button" class="btn-ghost" id="session-finish-sync"><span class="finish-sync-label">Mark synced</span><span class="finish-synced-label">Synced</span></button>
+      <button type="button" class="btn-primary" id="session-finish-close">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="beat-time-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="beat-time-title">
+    <h3 id="beat-time-title">How Long to Beat</h3>
+    <form id="beat-time-form">
+      <p class="backup-hint">Enter estimates in hours. Leave a field blank to clear it.</p>
+      <div class="beat-time-fields">
+        <div class="field-group"><label for="beat-main">Main Story (hours)</label><input id="beat-main" type="number" min="0.01" step="any" placeholder="Optional"></div>
+        <div class="field-group"><label for="beat-extra">Main + Extra (hours)</label><input id="beat-extra" type="number" min="0.01" step="any" placeholder="Optional"></div>
+        <div class="field-group beat-played-field">
+          <label for="beat-played">Already played (hours)</label>
+          <input id="beat-played" type="number" min="0" step="any" placeholder="Optional" aria-describedby="beat-played-hint">
+          <small class="backup-hint" id="beat-played-hint">Enter time played outside PlayDex. Logged sessions are added automatically.</small>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-ghost" type="button" id="beat-time-cancel">Cancel</button>
+        <button class="btn-primary" type="submit">Save estimates</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Startup session sync review -->
+<div class="modal-overlay" id="startup-sync-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="startup-sync-title" style="width:min(580px,100%);max-width:580px;">
+    <h3 id="startup-sync-title">Unsynced sessions</h3>
+    <p class="backup-hint">Review completed sessions and mark their sync status when ready.</p>
+    <p id="startup-sync-count" class="backup-hint" aria-live="polite"></p>
+    <div id="startup-sync-list" style="max-height:50dvh;overflow-y:auto;"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" id="startup-sync-close">Close</button>
+      <button type="button" class="btn btn-start" id="startup-sync-all">Mark all synced</button>
+    </div>
+  </div>
+</div>
 
 <!-- Goal modal -->
 <div class="modal-overlay" id="goal-modal">
@@ -6474,7 +6592,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
-<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose any number of games to focus on. Set optional weekly targets in whole hours. Leave a target blank to keep it unset. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
+<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose any number of games to focus on. Set optional weekly targets in whole hours. Leave a target blank to keep it unset. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><div id="rotation-day-summary" class="rotation-day-summary backup-hint" aria-live="polite"></div><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
 
 <!-- What should I play? picker -->
 <div class="modal-overlay" id="pick-modal">
@@ -6578,6 +6696,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
       const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform), milestones: normalizeGameMilestones(g.milestones) };
+      for (const key of ['mainStoryHours', 'mainExtraHours', 'beatAlreadyPlayedHours']) {
+        if (Number.isFinite(g[key]) && g[key] > 0) o[key] = g[key];
+      }
       if (typeof g.image === 'string' && /^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(g.image)) {
         o.image = g.image;
       }
@@ -8190,10 +8311,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       activeSession.pausedAt = null;
     }
     saveSessions(sessions);
+    const stoppedId = activeSession.id;
     activeSession = null;
-    toast('Session saved');
     render();
     celebrate();
+    showFinishReview(stoppedId);
   }
 
   // --- Pause helpers ---
@@ -8524,13 +8646,24 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if(activeSession)document.getElementById('rotation-budget-meter').hidden=true;
     budgetEl.classList.toggle('over-budget',(!!weeklyRotationBudgetMinutes() || !!settings.autoDailyGoal) && planned>weeklyRotationBudgetMinutes());
     const list=document.getElementById('rotation-list');
-    const visible=activeSession?ids.filter(id=>id===activeSession.gameId):remaining;
-    const empty=activeSession?'<p class="backup-hint">Your current game is not in this week\'s rotation.</p>':ids.length && !remaining.length?'<p class="backup-hint">All weekly targets reached! Your games return next week.</p>':'';
+    const today = plannedWeekdays[new Date().getDay()];
+    const candidates = activeSession ? ids.filter(id => id === activeSession.gameId) : remaining;
+    const visible = candidates.filter(id => {
+      const day = settings.weeklyRotationDays?.[id];
+      return !plannedWeekdays.includes(day) || day === today;
+    });
+    const empty = candidates.length
+      ? '<p class="backup-hint">No rotation games planned for today.</p>'
+      : ids.length && !remaining.length && !activeSession
+        ? '<p class="backup-hint">All weekly targets reached! Your games return next week.</p>'
+        : '';
     list.innerHTML=!visible.length ? empty : visible.map(id=>{
       const game=games.find(g=>g.id===id),entry=progress.games[id];
       const target=rotationTargetMinutes(id),pct=target?Math.min(100,Math.floor(entry.ms/(target*60000)*100)):0;
       const targetHtml=target?'<div class="rotation-metrics" data-rotation-target-text><span class="rotation-time"><span class="rotation-elapsed" data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span><span class="rotation-target-text">/ '+fmtDurationMinutes(target*60000)+'</span></span><span class="rotation-percent" data-rotation-percent>'+(pct===100?'Target reached':pct+'%')+'</span></div><div class="progress-track" data-rotation-progress role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'<small><span data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span> this week</small>';
-      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+targetHtml+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'">Start</button>')+'</div>';
+      const day = settings.weeklyRotationDays?.[id];
+      const dayLabel = plannedWeekdays.includes(day) ? '<small>Planned day: ' + day + '</small>' : '';
+      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+dayLabel+targetHtml+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'">Start</button>')+'</div>';
     }).join('');
   }
   function rotationSelectionCount() {
@@ -8547,6 +8680,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const error=document.getElementById('rotation-budget-error');
     error.hidden=true;error.textContent='';
 
+    renderRotationDaySummary();
     updateRotationTargetStatuses();
   }
   function updateRotationTargetStatuses() {
@@ -8561,10 +8695,28 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       status.textContent=valid?(reached?'\u2713 Target reached \u00b7 ':'')+fmtDurationMinutes(played)+' / '+fmtDurationMinutes(target*60000)+(reached?'':' this week'):'';
     });
   }
+  const plannedWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  function orderedWeekdays() {
+    return weekStartsOnMonday() ? plannedWeekdays.slice(1).concat(plannedWeekdays[0]) : plannedWeekdays;
+  }
+  function renderRotationDaySummary() {
+    const totals = new Map([...orderedWeekdays(), 'Any day'].map(day => [day, 0]));
+    document.querySelectorAll('#rotation-choices .rotation-choice').forEach(row => {
+      if (!row.querySelector('input[type="checkbox"]').checked) return;
+      const day = row.querySelector('.rotation-day').value;
+      totals.set(day, totals.get(day) + rotationHoursToMinutes(row.querySelector('.rotation-target').value));
+    });
+    document.getElementById('rotation-day-summary').innerHTML = [...totals].map(([day, minutes]) =>
+      '<span>' + day + ': ' + fmtDurationMinutes(minutes * 60000) + '</span>').join('');
+  }
+  function rotationDayOptions(id) {
+    const selected = settings.weeklyRotationDays?.[id] || 'Any day';
+    return ['Any day', ...orderedWeekdays()].map(day => '<option' + (day === selected ? ' selected' : '') + '>' + day + '</option>').join('');
+  }
   function openRotationEditor() {
     const ids=new Set(rotationGameIds()),active=games.filter(g=>!g.archived).sort((a,b)=>a.name.localeCompare(b.name));
     if(!active.length){toast('Add a game first');return;}
-    document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (hours)<input class="rotation-target" type="number" min="1" max="168" step="1" placeholder="Optional" value="'+(Math.ceil(rotationTargetMinutes(g.id)/60)||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label></div>').join('');
+    document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (hours)<input class="rotation-target" type="number" min="1" max="168" step="1" placeholder="Optional" value="'+(Math.ceil(rotationTargetMinutes(g.id)/60)||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label><label class="rotation-day-label">Planned day<select class="rotation-day" aria-label="Planned day"'+(ids.has(g.id)?'':' disabled')+'>'+rotationDayOptions(g.id)+'</select></label></div>').join('');
     rotationSelectionCount();document.getElementById('rotation-modal').classList.add('open');
   }
 
@@ -8813,9 +8965,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         btn.addEventListener('click', () => {
           const s = sessions.find(x => x.id === btn.dataset.id);
           if (!s) return;
-          s.synced = !s.synced;
-          saveSessions(sessions);
-          toast(s.synced ? 'Marked as synced' : 'Unmarked as sync');
+          const synced = !s.synced;
+          setSessionSynced(s, synced);
+          toast(synced ? 'Marked as synced' : 'Unmarked as sync');
           renderSessionsTab(false);
         });
       });
@@ -8950,7 +9102,45 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     result.innerHTML='<div class="stat-grid">'+stat('Total playtime',fmtDurationShort(m.total))+stat('Sessions',m.count)+stat('Games tried for the first time',m.tried)+stat('Days played',m.days)+'</div><p class="recap-note">'+(m.current?'So far this period; compared with the full previous '+(mode==='year'?'year':'month')+'. ':'Compared with the previous '+(mode==='year'?'year':'month')+'. ')+escHtml(change)+' playtime.</p><div class="modal-subheader">Most played</div><ol class="recap-ranking">'+m.top.slice(0,3).map(([id,ms],i)=>{const game=games.find(g=>g.id===id),sample=sessions.find(s=>s.gameId===id);return '<li><span>'+(i+1)+'. '+escHtml(game?.name||sample?.gameName||'Unknown game')+'</span><span>'+fmtDurationShort(ms)+'</span></li>';}).join('')+'</ol><p class="recap-note">Busiest day: '+escHtml(fmtDateShort(m.busiest[0]+'T00:00:00'))+' ('+fmtDurationShort(m.busiest[1])+').</p>';
   }
 
+  let calendarSelectedDay = todayStr();
+  let calendarMonth = calendarSelectedDay.slice(0,7);
+  function renderPlaytimeCalendar() {
+    const [year, month] = calendarMonth.split('-').map(Number);
+    const first = new Date(year, month - 1, 1, 12);
+    const length = new Date(year, month, 0, 12).getDate();
+    const offset = (first.getDay() + (weekStartsOnMonday() ? 6 : 0)) % 7;
+    const monthSessions = new Map();
+    sessions.forEach(session => {
+      if (session.stop === null) return;
+      const day = dateKey(session.start);
+      if (!day.startsWith(calendarMonth + '-')) return;
+      if (!monthSessions.has(day)) monthSessions.set(day, []);
+      monthSessions.get(day).push(session);
+    });
+    document.getElementById('playtime-month').textContent = first.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    const weekdays = orderedWeekdays().map(day => '<span aria-label="' + day + '">' + day.slice(0,3) + '</span>').join('');
+    const buttons = Array.from({length}, (_, index) => {
+      const day = calendarMonth + '-' + String(index + 1).padStart(2,'0');
+      const total = (monthSessions.get(day) || []).reduce((sum, session) => sum + (session.durationMs || 0), 0);
+      const duration = total ? fmtDurationShort(total) : '0s';
+      return '<button type="button" class="btn-ghost" data-playtime-day="' + day + '" aria-label="' + day + ', ' + duration + ' played" aria-pressed="' + (day === calendarSelectedDay) + '">' + (index + 1) + '<small>' + duration + '</small></button>';
+    }).join('');
+    document.getElementById('playtime-days').innerHTML = weekdays + '<span aria-hidden="true"></span>'.repeat(offset) + buttons;
+    const groups = new Map();
+    (monthSessions.get(calendarSelectedDay) || []).slice().sort((a,b) => new Date(a.start)-new Date(b.start)).forEach(session => {
+      if (!groups.has(session.gameId)) groups.set(session.gameId, []);
+      groups.get(session.gameId).push(session);
+    });
+    const dayTotal = (monthSessions.get(calendarSelectedDay) || []).reduce((sum, session) => sum + (session.durationMs || 0), 0);
+    const heading = '<div class="session-day-heading"><strong>' + calendarSelectedDay + '</strong><span>' + fmtDuration(dayTotal) + ' total</span></div>';
+    document.getElementById('playtime-day-details').innerHTML = heading + (groups.size ? [...groups.values()].map(entries => {
+      const total = entries.reduce((sum, session) => sum + (session.durationMs || 0), 0);
+      const rows = entries.map(session => '<li class="playtime-session-row"><span>' + fmtTime(session.start) + ' &ndash; ' + fmtTime(session.stop) + '</span><span>' + fmtDuration(session.durationMs || 0) + '</span></li>').join('');
+      return '<div class="playtime-game-group"><div class="playtime-game-heading"><strong>' + escHtml(entries[0].gameName) + '</strong><span>' + fmtDuration(total) + '</span></div><ul class="playtime-session-list">' + rows + '</ul></div>';
+    }).join('') : '<p class="backup-hint">No completed sessions on this day.</p>');
+  }
   function renderStatsTab() {
+    renderPlaytimeCalendar();
     renderGameComparison();
     renderGamingRecap();
     const completed = sessions.filter(s => s.stop !== null);
@@ -10448,7 +10638,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
-    html = '<div class="milestone-dashboard-summary">' + html + '</div>' + gameMilestonesHtml(game) + '<div class="milestone-dashboard-history">';
+    html = '<div class="milestone-dashboard-summary">' + html + '</div><div class="dashboard-milestone-column">' +
+      gameMilestonesHtml(game) + beatTimeSection(game, totalMs) + '</div><div class="milestone-dashboard-history">';
 
     if (completed.length > 0) {
       html += '<div class="modal-subheader">Last 6 months</div>' +
@@ -10627,6 +10818,31 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.querySelectorAll('#sync-filter button').forEach(b => b.classList.toggle('active', b.dataset.sync === 'all'));
     renderSessionsTab(false);
   });
+
+  function changePlaytimeMonth(delta) {
+    const [year, month] = calendarMonth.split('-').map(Number);
+    calendarMonth = dateKey(new Date(year, month - 1 + delta, 1, 12)).slice(0,7);
+    const today = todayStr();
+    calendarSelectedDay = today.startsWith(calendarMonth + '-') ? today : calendarMonth + '-01';
+    renderPlaytimeCalendar();
+  }
+  document.getElementById('playtime-prev').onclick = () => changePlaytimeMonth(-1);
+  document.getElementById('playtime-next').onclick = () => changePlaytimeMonth(1);
+  document.getElementById('playtime-days').onclick = event => {
+    const button = event.target.closest('[data-playtime-day]');
+    if (!button) return;
+    calendarSelectedDay = button.dataset.playtimeDay;
+    renderPlaytimeCalendar();
+    document.querySelector('#playtime-days [aria-pressed="true"]')?.focus();
+  };
+  document.getElementById('playtime-view-sessions').onclick = () => {
+    sessionGameFilter = '';
+    syncFilter = 'all';
+    filterDate = filterDateEnd = calendarSelectedDay;
+    filterDateField.value = filterDateEndField.value = calendarSelectedDay;
+    document.querySelectorAll('#sync-filter button').forEach(button => button.classList.toggle('active', button.dataset.sync === 'all'));
+    goTab('sessions');
+  };
 
   // --- Session sync filter ---
   document.querySelectorAll('#sync-filter button').forEach(btn => {
@@ -11647,7 +11863,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('rotation-choices').addEventListener('input',rotationSelectionCount);
   document.getElementById('rotation-choices').addEventListener('change',event=>{
     if(event.target.type==='checkbox') {
-      event.target.closest('.rotation-choice').querySelector('.rotation-target').disabled=!event.target.checked;
+      event.target.closest('.rotation-choice').querySelectorAll('.rotation-target,.rotation-day').forEach(field => { field.disabled = !event.target.checked; });
     }
     rotationSelectionCount();
   });
@@ -11673,6 +11889,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     archivedIds.forEach(id=>{ const target=rotationTargetMinutes(id); if(target)targets[id]=target; });
     settings.weeklyRotation=chosen.map(input=>input.value).concat(archivedIds);
     settings.weeklyRotationTargets=targets;
+    const days = Object.fromEntries(chosen.map(input => [input.value, input.closest('.rotation-choice').querySelector('.rotation-day').value]));
+    archivedIds.forEach(id => { days[id] = settings.weeklyRotationDays?.[id] || 'Any day'; });
+    settings.weeklyRotationDays = days;
     saveSettings(settings);renderTodayTab();document.getElementById('rotation-modal').classList.remove('open');toast('Weekly rotation saved');
   });
   document.getElementById('rotation-list').addEventListener('click',event=>{
@@ -12026,7 +12245,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
 
   function normalizeGameMilestones(items) {
     const seen = new Set();
-    return (Array.isArray(items) ? items : []).filter(m => m && typeof m.id === 'string' && typeof m.name === 'string' && m.name.trim() && !seen.has(m.id) && seen.add(m.id)).map(m => ({id:m.id,name:m.name.trim().slice(0,80),completedAt:milestoneValidDate(m.completedAt)?m.completedAt:null}));
+    return (Array.isArray(items) ? items : []).filter(m => m && typeof m.id === 'string' && typeof m.name === 'string' && m.name.trim() && !seen.has(m.id) && seen.add(m.id)).map(m => ({id:m.id,name:m.name.trim().slice(0,80),completedAt:milestoneValidDate(m.completedAt)?m.completedAt:null,hoursRemaining:Number.isFinite(m.hoursRemaining)&&m.hoursRemaining>0?m.hoursRemaining:undefined}));
   }
   function milestoneValidDate(value) {
     if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
@@ -12034,21 +12253,85 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     return !isNaN(date.getTime())&&date.toISOString().slice(0,10)===value;
   }
   function milestoneAttr(value){return escHtml(String(value)).replace(/"/g,'&quot;');}
+  function milestoneFinishEstimate(gameId, hours) {
+    if (!hours) return '';
+    const start = dateKey(getWeekBounds().start);
+    const dates = new Map(Array.from({length:28}, (_, i) => [addDays(start, -i-1), Math.floor(i/7)]));
+    const weeks = [0, 0, 0, 0];
+    sessions.forEach(session => {
+      if (session.stop === null || session.gameId !== gameId) return;
+      const week = dates.get(dateKey(session.start));
+      if (week !== undefined) weeks[week] += session.durationMs || 0;
+    });
+    if (weeks.filter(ms => ms > 0).length < 2) return ' · Not enough play history';
+    const dailyHours = weeks.reduce((total, ms) => total + ms, 0) / 3600000 / 28;
+    const days = Math.ceil(hours / dailyHours);
+    if (days > 36500) return ' · Estimate beyond 100 years';
+    return ' · Estimated finish: ' + addDays(todayStr(), days);
+  }
   function gameMilestonesHtml(game) {
     const items=normalizeGameMilestones(game.milestones);
     const done=items.filter(m=>m.completedAt).length;
     const rows=items.slice().sort((a,b)=>!!a.completedAt-!!b.completedAt||(b.completedAt||'').localeCompare(a.completedAt||''));
     return '<section class="game-milestones"><div class="game-milestones-heading"><div><h4>Personal milestones</h4><p>'+done+' of '+items.length+' completed</p></div><button class="btn-ghost" data-milestone-action="add">+ Add milestone</button></div><div class="classic-milestone-progress" role="progressbar" aria-label="Personal milestones completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+(items.length?done/items.length*100:0)+'" aria-valuetext="'+done+' of '+items.length+' completed"><span class="classic-milestone-fill" style="width:'+(items.length?done/items.length*100:0)+'%"></span></div>'+
-      (rows.length?rows.map(m=>'<div class="game-milestone-row'+(m.completedAt?' completed':'')+'"><label><input type="checkbox" data-milestone-action="toggle" data-milestone-id="'+milestoneAttr(m.id)+'" '+(m.completedAt?'checked':'')+'><span class="game-milestone-copy"><span class="game-milestone-name">'+escHtml(m.name)+'</span><span class="game-milestone-date">'+(m.completedAt?'Completed '+escHtml(m.completedAt):'Not completed')+'</span></span></label><div class="game-milestone-actions"><button class="btn-ghost" data-milestone-action="edit" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Edit milestone">Edit</button><button class="btn-ghost" data-milestone-action="delete" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Delete milestone">Delete</button></div></div>').join(''):'<p class="backup-hint">Add a checkpoint, a challenge, or a personal goal for this game.</p>')+'</section>';
+      (rows.length?rows.map(m=>'<div class="game-milestone-row'+(m.completedAt?' completed':'')+'"><label><input type="checkbox" data-milestone-action="toggle" data-milestone-id="'+milestoneAttr(m.id)+'" '+(m.completedAt?'checked':'')+'><span class="game-milestone-copy"><span class="game-milestone-name">'+escHtml(m.name)+'</span><span class="game-milestone-date">'+(m.completedAt?'Completed '+escHtml(m.completedAt):'Not completed'+milestoneFinishEstimate(game.id,m.hoursRemaining))+'</span></span></label><div class="game-milestone-actions"><button class="btn-ghost" data-milestone-action="edit" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Edit milestone">Edit</button><button class="btn-ghost" data-milestone-action="delete" data-milestone-id="'+milestoneAttr(m.id)+'" aria-label="Delete milestone">Delete</button></div></div>').join(''):'<p class="backup-hint">Add a checkpoint, a challenge, or a personal goal for this game.</p>')+'</section>';
   }
   let milestoneEditorGame=null,milestoneEditorId=null,milestoneDeleteId=null;
   const milestoneDateField=createCalField('milestone-date');
+  function beatProgressRows(game, loggedMs) {
+    const playedMs = loggedMs + (game.beatAlreadyPlayedHours || 0) * 3600000;
+    return [['Main Story', game.mainStoryHours], ['Main + Extra', game.mainExtraHours]].map(([label, hours]) => {
+      const heading = '<div class="beat-progress-label"><strong>' + label + '</strong>';
+      if (!hours) return '<div class="beat-progress-row">' + heading + '<span>Not set</span></div></div>';
+      const percent = Math.min(100, Math.floor(playedMs / (hours * 3600000) * 100));
+      const value = fmtDurationShort(playedMs) + ' / ' + hours + 'h · ' + percent + '%';
+      return '<div class="beat-progress-row">' + heading + '<span>' + value + '</span></div>' +
+        '<div class="progress-track" role="progressbar" aria-label="' + label + ' playtime progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + percent + '"><div class="progress-fill" style="width:' + percent + '%"></div></div></div>';
+    }).join('');
+  }
+  function beatTimeSection(game, loggedMs) {
+    const hasEstimates = game.mainStoryHours || game.mainExtraHours || game.beatAlreadyPlayedHours;
+    return '<section class="game-milestones beat-time-section"><div class="game-milestones-heading"><div><h4>How Long to Beat</h4><p>Estimated playtime</p></div>' +
+      '<button class="btn-ghost" type="button" data-edit-beat-time>' + (hasEstimates ? 'Edit estimates' : '+ Add estimates') + '</button></div>' +
+      beatProgressRows(game, loggedMs) + '</section>';
+  }
+  const beatTimeModal = document.getElementById('beat-time-modal');
+  const beatTimeFields = [
+    ['mainStoryHours', document.getElementById('beat-main')],
+    ['mainExtraHours', document.getElementById('beat-extra')],
+    ['beatAlreadyPlayedHours', document.getElementById('beat-played')]
+  ];
+  function closeBeatTimeEditor() {
+    beatTimeModal.classList.remove('open');
+    document.querySelector('#dashboard-body [data-edit-beat-time]')?.focus();
+  }
+  document.getElementById('beat-time-cancel').onclick = closeBeatTimeEditor;
+  beatTimeModal.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    event.stopPropagation();
+    closeBeatTimeEditor();
+  });
+  document.getElementById('beat-time-form').addEventListener('submit', event => {
+    event.preventDefault();
+    checkStorageFresh();
+    const game = games.find(g => g.id === beatTimeModal.dataset.gameId);
+    if (!game) return;
+    for (const [key, field] of beatTimeFields) {
+      if (field.value) game[key] = field.valueAsNumber;
+      else delete game[key];
+    }
+    saveGames(games);
+    renderDashboardBody(game);
+    closeBeatTimeEditor();
+  });
   function refreshMilestoneDashboard(game){renderDashboardBody(game);}
   function openMilestoneEditor(game,id){
     milestoneEditorGame=game.id;milestoneEditorId=id||null;
     const item=(game.milestones||[]).find(m=>m.id===id);
     document.getElementById('milestone-modal-title').textContent=item?'Edit milestone':'Add milestone';
     document.getElementById('milestone-name').value=item?item.name:'';
+    document.getElementById('milestone-hours-remaining').value = item?.hoursRemaining ?? '';
+    document.getElementById('milestone-estimate-field').hidden = !!item?.completedAt;
     document.getElementById('milestone-completed').checked=!!(item&&item.completedAt);
     milestoneDateField.value=item&&item.completedAt?item.completedAt:todayStr();
     document.getElementById('milestone-completion-date').hidden=!(item&&item.completedAt);
@@ -12057,6 +12340,15 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     setTimeout(()=>document.getElementById('milestone-name').focus(),50);
   }
   document.getElementById('dashboard-body').addEventListener('click',event=>{
+    if (event.target.closest('[data-edit-beat-time]')) {
+      const game = games.find(g => g.id === document.getElementById('dashboard-modal').dataset.gameId);
+      if (!game) return;
+      beatTimeModal.dataset.gameId = game.id;
+      for (const [key, field] of beatTimeFields) field.value = game[key] ?? '';
+      beatTimeModal.classList.add('open');
+      beatTimeFields[0][1].focus();
+      return;
+    }
     const control=event.target.closest('[data-milestone-action]');
     if(!control)return;
     const game=games.find(g=>g.id===document.getElementById('dashboard-modal').dataset.gameId);
@@ -12079,7 +12371,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       saveGames(games);refreshMilestoneDashboard(current);
     }
   });
-  document.getElementById('milestone-completed').addEventListener('change',event=>{document.getElementById('milestone-completion-date').hidden=!event.target.checked;});
+  document.getElementById('milestone-completed').addEventListener('change',event=>{document.getElementById('milestone-completion-date').hidden=!event.target.checked;document.getElementById('milestone-estimate-field').hidden=event.target.checked;});
   document.getElementById('milestone-cancel').onclick=()=>document.getElementById('milestone-modal').classList.remove('open');
   document.getElementById('milestone-save').onclick=()=>{
     const name=document.getElementById('milestone-name').value.trim();
@@ -12087,14 +12379,17 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const date=milestoneDateField.value;
     const error=document.getElementById('milestone-error');
     let message=!name?'Enter a milestone name.':completed&&(!milestoneValidDate(date)||date>todayStr())?'Choose a completion date on or before today.':'';
+    const hoursField = document.getElementById('milestone-hours-remaining');
+    if (!completed && !hoursField.reportValidity()) return;
     if(message){error.textContent=message;error.hidden=false;return;}
     checkStorageFresh();
     const game=games.find(g=>g.id===milestoneEditorGame);if(!game)return;
     game.milestones=normalizeGameMilestones(game.milestones);
     const item=game.milestones.find(m=>m.id===milestoneEditorId);
     if(milestoneEditorId&&!item)return;
-    if(item){item.name=name;item.completedAt=completed?date:null;}
-    else game.milestones.push({id:uid(),name:name,completedAt:completed?date:null});
+    const hoursRemaining = completed ? item?.hoursRemaining : Number(hoursField.value) || undefined;
+    if(item){item.name=name;item.completedAt=completed?date:null;item.hoursRemaining=hoursRemaining;}
+    else game.milestones.push({id:uid(),name,completedAt:completed?date:null,hoursRemaining});
     saveGames(games);document.getElementById('milestone-modal').classList.remove('open');refreshMilestoneDashboard(game);
   };
   document.getElementById('milestone-delete-cancel').onclick=()=>document.getElementById('milestone-delete-modal').classList.remove('open');
@@ -12104,6 +12399,192 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     game.milestones=normalizeGameMilestones(game.milestones).filter(m=>m.id!==milestoneDeleteId);
     saveGames(games);document.getElementById('milestone-delete-modal').classList.remove('open');refreshMilestoneDashboard(game);
   };
+
+  const finishReview = document.getElementById('session-finish-review');
+  let finishReviewId = null;
+  let returnToFinishReview = false;
+  function setSessionSynced(session, synced) {
+    const next = sessions.map(entry => entry === session ? { ...entry, synced } : entry);
+    saveSessions(next);
+    sessions = next;
+  }
+  function showFinishReview(id) {
+    const session = sessions.find(entry => entry.id === id && entry.stop !== null);
+    if (!session) return;
+    finishReviewId = id;
+    const rows = [
+      ['Active playtime', fmtDuration(session.durationMs || 0)],
+      ['Paused time', fmtDuration(totalPausedMs(session, Date.parse(session.stop)))]
+    ];
+    const goal = effectiveDailyGoalMinutes();
+    if (goal > 0) rows.push(['Today’s goal', fmtDurationMinutes(totalMsForDate(todayStr())) + ' / ' + fmtDurationMinutes(goal * 60000)]);
+    const target = rotationTargetMinutes(session.gameId);
+    if (target && rotationGameIds().includes(session.gameId)) {
+      const progress = rotationWeekProgress([session.gameId]).games[session.gameId].ms;
+      rows.push(['Weekly rotation', fmtDurationMinutes(progress) + ' / ' + fmtDurationMinutes(target * 60000)]);
+    }
+    const game = games.find(entry => entry.id === session.gameId);
+    let beatProgress = '';
+    if (game?.mainStoryHours || game?.mainExtraHours) {
+      const loggedMs = sessions.reduce((total, entry) => entry.gameId === game.id && entry.stop !== null ? total + (entry.durationMs || 0) : total, 0);
+      beatProgress = '<section class="finish-beat-progress"><h4>How Long to Beat</h4>' + beatProgressRows(game, loggedMs) + '</section>';
+    }
+    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + label + '</span><strong>' + value + '</strong></p>').join('') + beatProgress;
+    const button = document.getElementById('session-finish-sync');
+    button.disabled = !!session.synced;
+    finishReview.classList.add('open');
+    document.getElementById('session-finish-close').focus();
+  }
+  const finishReviewEditor = document.getElementById('edit-session-modal');
+  new MutationObserver(() => {
+    if (!returnToFinishReview || finishReviewEditor.classList.contains('open')) return;
+    returnToFinishReview = false;
+    showFinishReview(finishReviewId);
+  }).observe(finishReviewEditor, {attributes:true, attributeFilter:['class']});
+  document.getElementById('session-finish-close').onclick = () => finishReview.classList.remove('open');
+  finishReview.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      event.stopPropagation();
+      finishReview.classList.remove('open');
+    }
+    if (event.key !== 'Tab') return;
+    const buttons = [...finishReview.querySelectorAll('button:not(:disabled)')];
+    const first = buttons[0], last = buttons.at(-1);
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  document.getElementById('session-finish-edit').onclick = () => {
+    const session = sessions.find(entry => entry.id === finishReviewId);
+    if (!session) return;
+    finishReview.classList.remove('open');
+    returnToFinishReview = true;
+    openEditSessionModal(session);
+  };
+  document.getElementById('session-finish-sync').onclick = () => {
+    const session = sessions.find(entry => entry.id === finishReviewId);
+    if (!session || session.synced) return;
+    setSessionSynced(session, true);
+    renderSessionsTab(false);
+    renderTodayTab();
+    showFinishReview(session.id);
+  };
+
+  // Review the session status flags once per launch, after other startup dialogs.
+  const startupSyncModal = document.getElementById('startup-sync-modal');
+  let startupSyncReturnFocus = null;
+  function unsyncedCompletedSessions() {
+    return sessions.filter(session => session.stop !== null && !session.synced)
+      .sort((a, b) => new Date(b.start) - new Date(a.start));
+  }
+  function renderStartupSync() {
+    const pending = unsyncedCompletedSessions();
+    document.getElementById('startup-sync-count').textContent = pending.length + ' unsynced session' + (pending.length === 1 ? '' : 's');
+    document.getElementById('startup-sync-all').disabled = pending.length === 0;
+    const list = document.getElementById('startup-sync-list');
+    list.replaceChildren();
+    const byGame = new Map();
+    pending.forEach(session => {
+      if (!byGame.has(session.gameId)) byGame.set(session.gameId, []);
+      byGame.get(session.gameId).push(session.id);
+    });
+    pending.forEach(session => {
+      const row = document.createElement('div');
+      row.className = 'session-item';
+      const info = document.createElement('div');
+      info.className = 'session-info';
+      const title = document.createElement('div');
+      title.className = 'session-game';
+      title.textContent = session.gameName;
+      const details = document.createElement('div');
+      details.className = 'session-times';
+      details.textContent = fmtDate(session.start) + ' · ' + fmtTime(session.start) + ' · ' + fmtDuration(session.durationMs || 0);
+      const dailyTotal = document.createElement('div');
+      dailyTotal.className = 'startup-sync-day-total';
+      const gameDayTotal = sessions
+        .filter(entry => entry.stop !== null && entry.gameId === session.gameId && dateKey(entry.start) === dateKey(session.start))
+        .reduce((total, entry) => total + (entry.durationMs || 0), 0);
+      dailyTotal.textContent = 'Daily game total: ' + fmtDuration(gameDayTotal);
+      info.append(title, details, dailyTotal);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn-ghost';
+      button.textContent = 'Mark synced';
+      button.setAttribute('aria-label', 'Mark ' + session.gameName + ' on ' + fmtDate(session.start) + ' at ' + fmtTime(session.start) + ' as synced');
+      button.addEventListener('click', () => markStartupSessionsSynced([session.id]));
+      const actions = document.createElement('div');
+      actions.className = 'startup-sync-actions';
+      actions.append(button);
+      const gameIds = byGame.get(session.gameId);
+      if (gameIds.length > 1 && gameIds[0] === session.id) {
+        const gameButton = document.createElement('button');
+        gameButton.type = 'button';
+        gameButton.className = 'btn-ghost';
+        gameButton.textContent = 'Sync this game';
+        gameButton.setAttribute('aria-label', 'Mark all ' + gameIds.length + ' unsynced sessions for ' + session.gameName + ' as synced');
+        gameButton.addEventListener('click', () => markStartupSessionsSynced(gameIds));
+        actions.append(gameButton);
+      }
+      row.append(info, actions);
+      list.append(row);
+    });
+  }
+  function markStartupSessionsSynced(ids) {
+    checkStorageFresh();
+    const selected = new Set(ids);
+    const next = sessions.map(session => selected.has(session.id) && session.stop !== null ? { ...session, synced: true } : session);
+    saveSessions(next);
+    sessions = next;
+    renderSessionsTab(false);
+    renderTodayTab();
+    if (!unsyncedCompletedSessions().length) {
+      closeStartupSync();
+      return;
+    }
+    renderStartupSync();
+    document.getElementById('startup-sync-close').focus();
+  }
+  function closeStartupSync() {
+    startupSyncModal.classList.remove('open');
+    if (startupSyncReturnFocus?.isConnected) startupSyncReturnFocus.focus();
+  }
+  document.getElementById('startup-sync-close').addEventListener('click', closeStartupSync);
+  document.getElementById('startup-sync-all').addEventListener('click', () => {
+    markStartupSessionsSynced(unsyncedCompletedSessions().map(session => session.id));
+  });
+  startupSyncModal.addEventListener('click', event => {
+    if (event.target === startupSyncModal) closeStartupSync();
+  });
+  startupSyncModal.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { event.stopImmediatePropagation(); closeStartupSync(); }
+    if (event.key !== 'Tab') return;
+    const controls = [...startupSyncModal.querySelectorAll('button:not(:disabled)')];
+    const first = controls[0], last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  function openUnsyncedReview() {
+    if (!unsyncedCompletedSessions().length) {
+      toast('No unsynced sessions');
+      return;
+    }
+    startupSyncReturnFocus = document.activeElement;
+    renderStartupSync();
+    startupSyncModal.classList.add('open');
+    document.getElementById('startup-sync-close').focus();
+  }
+  document.getElementById('btn-review-unsynced').addEventListener('click', openUnsyncedReview);
+
+  function queueStartupSyncReview() {
+    const observer = new MutationObserver(showWhenReady);
+    function showWhenReady() {
+      if (document.getElementById('boot-splash') || document.querySelector('.modal-overlay.open, dialog[open]')) return;
+      observer.disconnect();
+      if (!unsyncedCompletedSessions().length) return;
+      openUnsyncedReview();
+    }
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'open'] });
+    showWhenReady();
+  }
 
   // --- Initial render ---
   backfillUnlockDates('gentle');
@@ -12115,6 +12596,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     render();
     dropboxCheckForUpdates();
     if (window.hideBootSplash) window.hideBootSplash();
+    queueStartupSyncReview();
   });
 
   // --- PWA install ---
@@ -12149,7 +12631,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.8.2';
+    const APP_VERSION = '1.8.3';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
