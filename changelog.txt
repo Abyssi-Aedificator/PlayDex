@@ -1,8 +1,9 @@
 PlayDex - Changelog
 ====================
 
-Unreleased
+Version 1.8.6
 -------------------
+- Stats now charts the last 12 calendar months of playtime and the distribution of completed session lengths.
 - Doubled the catalog to 116 badges and Dedication to 30. Added Weekly Rhythm, Discovery, and Game Progress, with category filtering and unlocks from existing history.
 - Personal Records now shows your busiest week, busiest month, and most different games played in one day, plus eight more records for session counts, game variety, daily streaks, and single-game playtime. The expanded grid sits above Next Badge to Unlock and Favorite Game.
 

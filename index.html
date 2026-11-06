@@ -1373,6 +1373,9 @@ opacity: 0.18;
   .session-item:last-child { border-bottom: none; }
 
   .playtime-month-controls { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .stats-distribution-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) auto; gap:8px; align-items:center; padding:5px 0; font-size:.8rem; }
+  .stats-distribution-row .progress-track { margin:0; height:6px; }
+  .stats-distribution-value { font-variant-numeric:tabular-nums; text-align:right; }
   .playtime-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; margin:12px 0; text-align:center; }
   .playtime-days > span { font-size:.7rem; color:var(--text2); }
   #playtime-days button.btn-ghost { min-width:0; padding:4px 1px !important; min-height:44px; font-size:.75rem; line-height:1.2; }
@@ -5488,7 +5491,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.8.5</span>
+    <span class="version-badge">1.8.6</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5694,6 +5697,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
     </div>
+    <div class="card"><div class="card-header">Monthly playtime</div><div id="stats-monthly-playtime"></div></div>
+    <div class="card"><div class="card-header">Session lengths</div><div id="stats-session-lengths"></div></div>
     <div class="card" id="platform-stats-card"><div class="card-header">Playtime by Platform</div><div id="platform-stats"></div></div>
     <div class="card" id="comparison-card">
       <div class="card-header">Compare games</div>
@@ -9201,7 +9206,44 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return '<div class="playtime-game-group"><div class="playtime-game-heading"><strong>' + escHtml(entries[0].gameName) + '</strong><span>' + fmtDuration(total) + '</span></div><ul class="playtime-session-list">' + rows + '</ul></div>';
     }).join('') : '<p class="backup-hint">No completed sessions on this day.</p>');
   }
+  function statsDistributionRow(label, value, percent) {
+    return '<div class="stats-distribution-row"><span>' + escHtml(label) + '</span>' +
+      '<div class="progress-track" aria-hidden="true"><div class="progress-fill" style="width:' + percent + '%"></div></div>' +
+      '<strong class="stats-distribution-value">' + escHtml(value) + '</strong></div>';
+  }
+  function renderPlaytimeDistributions(now = new Date()) {
+    const months = Array.from({length:12}, (_, index) => {
+      const date = new Date(now.getFullYear(), now.getMonth() + index - 11, 1, 12);
+      return { key: dateKey(date).slice(0,7), label: date.toLocaleDateString(undefined, {month:'short', year:'numeric'}), ms:0 };
+    });
+    const monthByKey = new Map(months.map(month => [month.key, month]));
+    const buckets = [
+      { label:'Under 15 min', limit:15 },
+      { label:'15–29 min', limit:30 },
+      { label:'30–59 min', limit:60 },
+      { label:'1 to under 2 hr', limit:120 },
+      { label:'2 hr or more', limit:Infinity }
+    ].map(bucket => ({...bucket, count:0}));
+    let completed = 0, inRange = 0;
+    for (const session of sessions) {
+      if (session.stop === null) continue;
+      const ms = session.durationMs || 0;
+      completed++;
+      buckets.find(bucket => ms / 60000 < bucket.limit).count++;
+      const month = monthByKey.get(dateKey(session.start).slice(0,7));
+      if (month) { month.ms += ms; inRange++; }
+    }
+    const empty = '<p class="backup-hint">No completed sessions.</p>';
+    const maxMs = Math.max(1, ...months.map(month => month.ms));
+    document.getElementById('stats-monthly-playtime').innerHTML = inRange ? months.map((month, index) =>
+      statsDistributionRow(month.label + (index === 11 ? ' · So far' : ''), fmtDuration(month.ms), month.ms / maxMs * 100)).join('') : empty;
+    document.getElementById('stats-session-lengths').innerHTML = completed ? buckets.map(bucket => {
+      const percent = bucket.count / completed * 100;
+      return statsDistributionRow(bucket.label, bucket.count + ' (' + Math.round(percent) + '%)', percent);
+    }).join('') : empty;
+  }
   function renderStatsTab() {
+    renderPlaytimeDistributions();
     renderPlaytimeCalendar();
     renderGameComparison();
     renderGamingRecap();
@@ -12921,7 +12963,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.8.5';
+    const APP_VERSION = '1.8.6';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
