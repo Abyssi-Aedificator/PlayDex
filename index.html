@@ -5670,7 +5670,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       </div>
       <div id="playtime-days" class="playtime-days" role="group" aria-label="Days of the month"></div>
       <div id="playtime-day-details"></div>
-      <button type="button" class="btn-ghost" id="playtime-view-sessions">View in Sessions</button>
     </div>
     <div class="card">
       <div class="card-header">This Week Review</div>
@@ -11152,14 +11151,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     calendarSelectedDay = button.dataset.playtimeDay;
     renderPlaytimeCalendar();
     document.querySelector('#playtime-days [aria-pressed="true"]')?.focus();
-  };
-  document.getElementById('playtime-view-sessions').onclick = () => {
-    sessionGameFilter = '';
-    syncFilter = 'all';
-    filterDate = filterDateEnd = calendarSelectedDay;
-    filterDateField.value = filterDateEndField.value = calendarSelectedDay;
-    document.querySelectorAll('#sync-filter button').forEach(button => button.classList.toggle('active', button.dataset.sync === 'all'));
-    goTab('sessions');
   };
 
   // --- Session sync filter ---
