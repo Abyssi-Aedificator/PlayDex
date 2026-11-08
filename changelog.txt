@@ -1,6 +1,15 @@
 PlayDex - Changelog
 ====================
 
+Version 1.8.7
+-------------------
+- Added child DLC libraries with text-style dashboard links, independent covers, HLTB estimates, milestones, and archive controls. The DLC editor matches Edit Game with a cover preview and themed image controls.
+- Switch between Base game and DLCs within one session when DLC is available, hiding content labels for games without DLC, preserving pauses and timer targets, with a theme-coloured live time breakdown; edit content allocation in session forms.
+- DLC playtime has separate rotation targets and suggestions while parent rankings, platform totals, and session counts remain combined.
+- DLC metadata and content segments are included in validated backups, Dropbox history, recovery, and CSV breakdowns.
+- Review unsynced is hidden when there are no completed unsynced sessions.
+- Session saved shows Day total for tracked content, with shorter Base game labels and no daily goal row.
+
 Version 1.8.6
 -------------------
 - Removed the View in Sessions button from the Playtime calendar.

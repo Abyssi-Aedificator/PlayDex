@@ -20,6 +20,8 @@ A lightweight, installable web app that tracks your game sessions, playtime by g
 
 The Liquid Glass interface follows [Apple's Liquid Glass material guidance](https://developer.apple.com/design/human-interface-guidelines/materials): stronger optical glass effects belong to navigation and temporary controls, while content panels use a softer translucent material over a Theme Colour background. It follows supported system display preferences and offers additional Reduce transparency and Increase contrast controls. Increased contrast follows the chosen Theme Colour, while reduced-motion support follows the system preference automatically. The theme-coloured backdrop drifts gently while the app is visible and stays static when the system requests reduced motion. This is a browser implementation with progressive blur and edge-refraction effects; Apple's native platform renderer is not part of this PWA.
 
+DLCs can be added from a game's dashboard. Each has its own cover, HLTB estimates, milestones, and rotation target. Switch content during play to split one session into Base game and DLC time. Parent rankings include all content, while HLTB and rotation targets track each content item separately. Session editors include chronological content allocation, and deleting a DLC can move its tracked time back to Base game.
+
 ## Getting started
 
 PlayDex is a static, self-contained app. No build step or server is required to develop it.
