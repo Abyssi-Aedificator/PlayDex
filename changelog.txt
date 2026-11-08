@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Unreleased
+-------------------
+- Review unsynced is hidden when there are no completed unsynced sessions.
+
 Version 1.8.6
 -------------------
 - Removed the View in Sessions button from the Playtime calendar.

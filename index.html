@@ -334,6 +334,7 @@
   .session-filter-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
   .session-filter-heading .card-header { margin:0; }
   .session-heading-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
+  #btn-review-unsynced[hidden] { display:none; }
   .session-filter-heading #btn-add-session { padding:9px 13px; font-size:.8rem; white-space:nowrap; }
   .session-filters { container-type:inline-size; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border); }
   .session-filter-fields { display:grid; grid-template-columns:minmax(0,1.3fr) repeat(2,minmax(0,1fr)); gap:12px; align-items:end; }
@@ -5593,7 +5594,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <div class="session-filter-heading">
         <div class="card-header">Sessions</div>
         <div class="session-heading-actions">
-          <button class="btn-ghost" id="btn-review-unsynced" type="button" aria-haspopup="dialog" aria-controls="startup-sync-modal">Review unsynced</button>
+          <button class="btn-ghost" id="btn-review-unsynced" type="button" aria-haspopup="dialog" aria-controls="startup-sync-modal" hidden>Review unsynced</button>
           <button class="btn-ghost btn-accent" id="btn-add-session" type="button">&#43; Add session</button>
         </div>
       </div>
@@ -8927,6 +8928,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function renderSessionsTab(animate = true) {
+    document.getElementById('btn-review-unsynced').hidden = !sessions.some(session => session.stop !== null && !session.synced);
     const container = document.getElementById('sessions-list');
     const gameSelect = document.getElementById('session-game-filter');
     if (sessionGameFilter && !games.some(g => g.id === sessionGameFilter)) sessionGameFilter = '';
