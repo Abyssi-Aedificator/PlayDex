@@ -181,3 +181,10 @@ stays on `dev`. Pushing `dev` when asked is fine.
 ## Workflow conventions
 
 - This repo is served via GitHub Pages under `/PlayDex/`; asset links are relative so they work at any subpath.
+
+## DLC content tracking
+
+- Child DLCs live in game.dlcs. Sessions retain the parent gameId and optional contiguous segments with dlcId, start, and stop. Legacy sessions are Base game only.
+- Reuse allocatedPlaytime/contentMs for content durations. Pauses remain session-level and must be subtracted only where they intersect a segment.
+- Parent rankings and session counts are combined. HLTB, milestone estimates, and rotation targets use Base game or DLC allocations. Resolve compound rotation/dashboard IDs with contentEntry/contentData, never games.find alone.
+- Preserve DLC metadata and segments in normalization, exports, Dropbox history, and recovery. validateDlcData rejects discontinuous boundaries and invalid child references.

@@ -334,6 +334,29 @@
   .session-filter-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
   .session-filter-heading .card-header { margin:0; }
   .session-heading-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
+  #live-content[hidden],[data-library-parent][hidden],[data-allocation-error][hidden],#dlc-editor-error[hidden] { display:none; }
+  #switch-content[hidden] { display:none; }
+  #live-content { margin:8px 0; text-align:center; }
+  #live-content-times { overflow-wrap:anywhere; color:var(--accent); }
+  .dlc-section { grid-column:1 / -1; padding-top:18px; margin-top:18px; border-top:1px solid var(--border); }
+  .dlc-actions { display:flex; flex-wrap:wrap; gap:6px; }
+  .dlc-dashboard-row,.dlc-library-row { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); }
+  .dlc-dashboard-row > div:first-child { flex:1; min-width:0; display:grid; gap:5px; }
+  .dlc-dashboard-row { display:grid; grid-template-columns:minmax(0,1fr); }
+  .dlc-dashboard-row > div:first-child > button { justify-self:start; max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+  .dlc-library-row .session-info > button { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+  .dlc-name-link { color:var(--text); font-size:.85rem; font-weight:600; text-decoration:none; overflow-wrap:anywhere; }
+  .dlc-name-link:hover { color:var(--accent); text-decoration:underline; }
+  .library-dlcs { margin:0 0 14px 16px; padding:8px 12px; border-left:2px solid var(--accent); }
+  .library-dlcs summary { cursor:pointer; font-size:.85rem; color:var(--text2); padding:8px 0; }
+  .dlc-library-row .game-cover { flex-shrink:0; }
+  .allocation-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto; align-items:end; gap:8px; padding:10px 0; }
+  .allocation-row label { display:grid; gap:4px; min-width:0; font-size:.75rem; color:var(--text2); }
+  .allocation-row :is(input,select) { min-width:0; width:100%; box-sizing:border-box; padding:8px; }
+  .allocation-row input[type="datetime-local"] { color:var(--text); background:var(--surface2); border:1px solid var(--border); border-radius:10px; font:inherit; }
+  .content-allocation { margin:12px 0; }
+  #dlc-editor,#dlc-delete,#content-chooser { z-index:270; }
+  @media(max-width:600px) { .allocation-row { grid-template-columns:minmax(0,1fr); } .dlc-library-row .dlc-actions { flex-basis:100%; } }
   #btn-review-unsynced[hidden] { display:none; }
   .session-filter-heading #btn-add-session { padding:9px 13px; font-size:.8rem; white-space:nowrap; }
   .session-filters { container-type:inline-size; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border); }
@@ -5492,7 +5515,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.8.6</span>
+    <span class="version-badge">1.8.7</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5512,6 +5535,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     <div id="active-session-card" class="card active-session" style="display:none">
       <div class="live-label"><span class="live-dot"></span> <span id="live-text">LIVE</span></div>
       <div class="game-name" id="active-game-name"></div>
+      <div id="live-content" hidden><strong id="live-content-name"></strong><div id="live-content-times" class="backup-hint"></div><button class="btn-ghost" id="switch-content" type="button">Switch content</button></div>
       <div class="active-session-clock">
         <div class="clock-side side-start">
           <span class="clock-label">Start Time</span>
@@ -6274,6 +6298,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div class="modal-overlay" id="add-session-modal">
   <div class="modal">
     <h3>Add Session</h3>
+    <section class="content-allocation" id="add-content-allocation"></section>
     <div class="field-group">
       <label for="add-session-game">Game</label>
       <select id="add-session-game"></select>
@@ -6383,6 +6408,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div class="modal-overlay" id="edit-session-modal">
   <div class="modal">
     <h3>Edit Session</h3>
+    <section class="content-allocation" id="edit-content-allocation"></section>
     <div class="field-group">
       <label for="edit-session-time">Start</label>
       <div class="field-date-grid">
@@ -6535,6 +6561,33 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     </div>
   </div>
 </div>
+
+<div class="modal-overlay" id="content-chooser"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="content-chooser-title">
+  <h3 id="content-chooser-title">Choose content</h3>
+  <div class="field-group"><label for="content-chooser-select">Content</label><select id="content-chooser-select"></select></div>
+  <div class="modal-actions"><button class="btn-ghost" id="content-chooser-cancel">Cancel</button><button class="btn-primary" id="content-chooser-confirm">Continue</button></div>
+</div></div>
+<div class="modal-overlay" id="dlc-editor"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="dlc-editor-title">
+  <h3 id="dlc-editor-title">DLC</h3>
+  <form id="dlc-editor-form">
+    <div class="dash-cover" id="dlc-cover-preview"></div>
+    <div class="dash-cover-actions">
+      <button type="button" class="btn-ghost" id="dlc-upload-btn" style="padding:6px 10px;font-size:0.75rem;">Upload</button>
+      <input id="dlc-upload" type="file" accept="image/jpeg,image/png,image/webp" style="display:none">
+      <input id="dlc-image" class="cover-url" type="text" placeholder="https://image url" autocomplete="off" maxlength="500" aria-label="DLC cover URL">
+      <button type="button" class="btn-ghost" id="dlc-set-url" style="padding:6px 10px;font-size:0.75rem;">Set URL</button>
+      <button type="button" class="btn-ghost btn-danger" id="dlc-clear-cover" style="padding:6px 10px;font-size:0.75rem;">Remove</button>
+    </div>
+    <p class="backup-hint" id="dlc-inherited-platform"></p>
+    <div class="m3-field"><input id="dlc-name" type="text" maxlength="80" placeholder="DLC name" required><label for="dlc-name">Name</label></div>
+    <p id="dlc-editor-error" class="backup-hint" role="alert" hidden></p>
+    <div class="modal-actions"><button type="button" class="btn-ghost" id="dlc-editor-cancel">Cancel</button><button class="btn btn-start" type="submit" style="padding:8px 16px;font-size:0.85rem;">Save</button></div>
+  </form>
+</div></div>
+<div class="modal-overlay" id="dlc-delete"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="dlc-delete-title">
+  <h3 id="dlc-delete-title">Delete DLC?</h3><p id="dlc-delete-message"></p><p class="backup-hint">Tracked time will move to Base game. The DLC cover, estimates, and milestones will be removed.</p>
+  <div class="modal-actions"><button class="btn-ghost" id="dlc-delete-cancel">Cancel</button><button class="btn-ghost" id="dlc-delete-archive">Archive instead</button><button class="btn-danger" id="dlc-delete-confirm">Move time and delete</button></div>
+</div></div>
 
 <!-- Goal modal -->
 <div class="modal-overlay" id="goal-modal">
@@ -6758,6 +6811,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
       const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform), milestones: normalizeGameMilestones(g.milestones) };
+      if (Array.isArray(g.dlcs)) o.dlcs = normalizeGames(g.dlcs.map(({dlcs, ...dlc}) => dlc));
       for (const key of ['mainStoryHours', 'mainExtraHours', 'beatAlreadyPlayedHours']) {
         if (Number.isFinite(g[key]) && g[key] > 0) o[key] = g[key];
       }
@@ -6841,6 +6895,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   let gamesArchiveFilter = 'all';
   const gameAttributeFilters = {
     pinned: ['Pin status', { yes:'Pinned games', no:'Unpinned games' }],
+    dlc: ['Content', { parents:'Games only', children:'DLC only', with:'Games with DLC', without:'Games without DLC' }],
     cover: ['Cover', { yes:'Has cover', no:'No cover' }],
     hltb: ['HLTB', { set:'Estimates set', missing:'HLTB not set', unavailable:'HLTB not available', exempt:'HLTB not needed' }],
     milestones: ['Personal milestones', { none:'No milestones', open:'Has unfinished milestones', done:'All milestones completed' }],
@@ -7447,6 +7502,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       if (session.pausedAt!=null && !date(session.pausedAt)) throw new Error('Invalid pause date');
       if (session.targetMs!=null && (!Number.isFinite(session.targetMs) || session.targetMs<0)) throw new Error('Invalid session target');
     });
+    validateDlcData(data);
     return data;
   }
   function dbxValidateFile(data) {
@@ -8217,10 +8273,519 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const totals = platformTotals(rows);
     return totals.length ? totals.map(([name, ms]) => '<div class="platform-summary-row"><span>' + escHtml(name) + '</span><strong>' + fmtDurationShort(ms) + '</strong></div>').join('') : '<p class="backup-hint">No completed sessions yet.</p>';
   }
-  function startGame(gameId) {
+  // DLC entries inherit their parent platform and retain the parent session identity.
+  function validateDlcData(data) {
+    const allIds = new Set(data.games.map(game => game.id));
+    for (const parent of data.games) {
+      if (parent.dlcs === undefined) continue;
+      if (!Array.isArray(parent.dlcs)) throw new Error('Invalid DLC list');
+      const names = new Set();
+      for (const dlc of parent.dlcs) {
+        if (!dlc || typeof dlc.id !== 'string' || !dlc.id.trim() || allIds.has(dlc.id) || typeof dlc.name !== 'string' || !dlc.name.trim() || dlc.dlcs !== undefined) throw new Error('Invalid or duplicate DLC');
+        if (dlc.archived !== undefined && typeof dlc.archived !== 'boolean') throw new Error('Invalid DLC archive state');
+        if (dlc.image != null && (typeof dlc.image !== 'string' || !/^(https?:\/\/|data:image\/(jpeg|png|webp);base64,)/i.test(dlc.image))) throw new Error('Invalid DLC cover');
+        for (const key of ['mainStoryHours','mainExtraHours','beatAlreadyPlayedHours']) {
+          if (dlc[key] !== undefined && (!Number.isFinite(dlc[key]) || dlc[key] < 0 || dlc[key] === 0 && key !== 'beatAlreadyPlayedHours')) throw new Error('Invalid DLC time estimate');
+        }
+        for (const key of ['beatNotNeeded','beatUnavailable']) {
+          if (dlc[key] !== undefined && typeof dlc[key] !== 'boolean') throw new Error('Invalid DLC HLTB status');
+        }
+        if (dlc.milestones !== undefined) {
+          if (!Array.isArray(dlc.milestones)) throw new Error('Invalid DLC milestones');
+          const milestones = new Set();
+          for (const item of dlc.milestones) {
+            if (!item || typeof item.id !== 'string' || !item.id || milestones.has(item.id) || typeof item.name !== 'string' || !item.name.trim() ||
+                item.completedAt != null && !milestoneValidDate(item.completedAt) ||
+                item.hoursRemaining != null && (!Number.isFinite(item.hoursRemaining) || item.hoursRemaining <= 0)) throw new Error('Invalid DLC milestone');
+            milestones.add(item.id);
+          }
+        }
+        const name = dlc.name.trim().toLocaleLowerCase();
+        if (names.has(name)) throw new Error('Duplicate DLC name');
+        names.add(name); allIds.add(dlc.id);
+      }
+    }
+    const parents = new Map(data.games.map(game => [game.id, game]));
+    const segmentIds = new Set();
+    for (const session of data.sessions) {
+      if (session.segments === undefined) continue;
+      if (!Array.isArray(session.segments) || !session.segments.length) throw new Error('Invalid content segments');
+      const parent = parents.get(session.gameId);
+      let boundary = Date.parse(session.start);
+      session.segments.forEach((segment, index) => {
+        if (!segment || typeof segment.id !== 'string' || !segment.id || segmentIds.has(segment.id)) throw new Error('Invalid or duplicate segment');
+        segmentIds.add(segment.id);
+        if (segment.dlcId !== null && (typeof segment.dlcId !== 'string' || !parent?.dlcs?.some(dlc => dlc.id === segment.dlcId))) throw new Error('DLC does not belong to this game');
+        const start = Date.parse(segment.start);
+        if (!Number.isFinite(start) || start !== boundary) throw new Error('Content segments must cover the session continuously');
+        const final = index === session.segments.length - 1;
+        if (segment.stop === null) {
+          if (!final || session.stop !== null) throw new Error('Only the current segment can be running');
+          boundary = null;
+        } else {
+          const stop = Date.parse(segment.stop);
+          if (!Number.isFinite(stop) || stop < start || (stop === start && session.durationMs !== 0)) throw new Error('Invalid segment times');
+          boundary = stop;
+        }
+      });
+      if (session.stop === null ? boundary !== null : boundary !== Date.parse(session.stop)) throw new Error('Content segments must match the session end');
+      if (session.stop !== null) {
+        const allocated = [...allocatedPlaytime(session)].reduce((sum,[,ms]) => sum + ms,0);
+        if (Math.abs(allocated - session.durationMs) > 1) throw new Error('Content duration does not match session playtime');
+      }
+    }
+  }
+  function dlcKey(parentId, dlcId) {
+    return 'dlc:' + encodeURIComponent(parentId) + ':' + encodeURIComponent(dlcId);
+  }
+  function dlcEntry(parent, dlc) {
+    return {
+      ...dlc, id:dlcKey(parent.id, dlc.id), parentId:parent.id, dlcId:dlc.id,
+      name:parent.name + ' / ' + dlc.name, contentName:dlc.name,
+      archived:parent.archived || dlc.archived, platform:parent.platform, tags:parent.tags || []
+    };
+  }
+  function contentEntries() {
+    return games.flatMap(parent => [
+      parent,
+      ...(parent.dlcs || []).map(dlc => dlcEntry(parent, dlc))
+    ]);
+  }
+  function contentEntry(key) {
+    const parent = games.find(game => game.id === key);
+    if (parent) return parent;
+    if (typeof key !== 'string' || !key.startsWith('dlc:')) return null;
+    try {
+      const [parentId, dlcId] = key.slice(4).split(':').map(decodeURIComponent);
+      const game = games.find(game => game.id === parentId);
+      const dlc = game?.dlcs?.find(entry => entry.id === dlcId);
+      return dlc ? dlcEntry(game, dlc) : null;
+    } catch { return null; }
+  }
+  function contentData(key) {
+    const entry = contentEntry(key);
+    if (!entry) return null;
+    return entry.parentId ? games.find(game => game.id === entry.parentId).dlcs.find(dlc => dlc.id === entry.dlcId) : games.find(game => game.id === key);
+  }
+  function sessionSegments(session) {
+    return session.segments || [{id:session.id, dlcId:null, start:session.start, stop:session.stop}];
+  }
+  function sessionContentKey(session) {
+    const dlcId = sessionSegments(session).at(-1)?.dlcId;
+    return dlcId ? dlcKey(session.gameId, dlcId) : session.gameId;
+  }
+  function contentName(parentId, dlcId) {
+    return dlcId ? games.find(game => game.id === parentId)?.dlcs?.find(dlc => dlc.id === dlcId)?.name || 'Missing DLC' : 'Base game';
+  }
+  function allocatedPlaytime(session, now = Date.now()) {
+    if (!session.segments) {
+      const ms = session.stop === null ? Math.max(0, activeElapsedMs(session, now)) : session.durationMs || 0;
+      return new Map([[null, ms]]);
+    }
+    const totals = new Map();
+    const pauses = (session.pauses || []).map(pause => [Date.parse(pause.from), Date.parse(pause.to)]);
+    if (session.pausedAt) pauses.push([Date.parse(session.pausedAt), now]);
+    pauses.sort((a,b) => a[0] - b[0]);
+    const merged = [];
+    for (const pause of pauses) {
+      const previous = merged.at(-1);
+      if (previous && pause[0] <= previous[1]) previous[1] = Math.max(previous[1], pause[1]);
+      else merged.push([...pause]);
+    }
+    for (const segment of session.segments) {
+      const start = Date.parse(segment.start), end = segment.stop === null ? now : Date.parse(segment.stop);
+      let ms = Math.max(0, end - start);
+      for (const [from, to] of merged) ms -= Math.max(0, Math.min(end, to) - Math.max(start, from));
+      totals.set(segment.dlcId, (totals.get(segment.dlcId) || 0) + Math.max(0, ms));
+    }
+    return totals;
+  }
+  function contentMs(session, key, now = Date.now()) {
+    const entry = contentEntry(key);
+    if (!entry || session.gameId !== (entry.parentId || entry.id)) return 0;
+    return allocatedPlaytime(session, now).get(entry.dlcId || null) || 0;
+  }
+  function contentSessions(key) {
+    const entry = contentEntry(key);
+    if (!entry) return [];
+    const parentId = entry.parentId || entry.id;
+    return sessions.filter(session => session.gameId === parentId && sessionSegments(session).some(segment => segment.dlcId === (entry.dlcId || null)))
+      .map(session => {
+        const pauses = [];
+        for (const segment of sessionSegments(session).filter(segment => segment.dlcId === (entry.dlcId || null))) {
+          for (const pause of session.pauses || []) {
+            const from = Math.max(Date.parse(segment.start), Date.parse(pause.from));
+            const to = Math.min(segment.stop === null ? Date.now() : Date.parse(segment.stop), Date.parse(pause.to));
+            if (to > from) pauses.push({from:new Date(from).toISOString(),to:new Date(to).toISOString()});
+          }
+        }
+        return {...session, pauses, durationMs:allocatedPlaytime(session).get(entry.dlcId || null) || 0};
+      });
+  }
+  function contentBreakdown(session, now = Date.now()) {
+    return [...allocatedPlaytime(session, now)].map(([id, ms]) => contentName(session.gameId, id) + ': ' + fmtDuration(ms)).join(' · ');
+  }
+  function dlcDashboardSection(game) {
+    const parent = games.find(entry => entry.id === (game.parentId || game.id));
+    if (!parent) return '';
+    const all = sessions.filter(session => session.gameId === parent.id && session.stop !== null);
+    const totals = new Map();
+    for (const session of all) {
+      for (const [id, ms] of allocatedPlaytime(session)) totals.set(id, (totals.get(id) || 0) + ms);
+    }
+    if (game.parentId) {
+      return '<section class="dlc-section"><button class="btn-ghost" type="button" data-content-dashboard="' + milestoneAttr(parent.id) + '">Back to ' + escHtml(parent.name) + '</button>' +
+        '<p class="backup-hint">DLC · Platform: ' + escHtml(parent.platform || 'Unspecified') + '</p>' +
+        dlcActionButtons(game) + '</section>';
+    }
+    return '<section class="dlc-section"><div class="game-milestones-heading"><h4>DLCs</h4><button class="btn-ghost" type="button" data-dlc-add="' + milestoneAttr(parent.id) + '">+ Add DLC</button></div>' +
+      '<div class="dash-row"><button class="btn-ghost" type="button" data-content-dashboard="' + milestoneAttr(parent.id) + '" data-base-only>Base game</button><strong>' + fmtDuration(totals.get(null) || 0) + '</strong></div>' +
+      '<div class="dash-row"><span>DLC total</span><strong>' + fmtDuration([...totals].reduce((sum,[id,ms]) => sum + (id ? ms : 0),0)) + '</strong></div>' +
+      '<button class="btn-ghost" type="button" data-content-dashboard="' + milestoneAttr(parent.id) + '">Combined history</button>' +
+      (parent.dlcs || []).map(dlc => {
+        const entry = contentEntry(dlcKey(parent.id, dlc.id));
+        return '<div class="dlc-dashboard-row"><div><button class="btn-ghost" type="button" data-content-dashboard="' + milestoneAttr(entry.id) + '">' + escHtml(dlc.name) + '</button>' +
+          '<span class="backup-hint">' + (dlc.archived ? 'Archived · ' : '') + fmtDuration(totals.get(dlc.id) || 0) + '</span></div>' + dlcActionButtons(entry) + '</div>';
+      }).join('') + '</section>';
+  }
+  function dlcActionButtons(entry) {
+    return '<div class="dlc-actions">' + (!entry.archived ? '<button type="button" class="btn-ghost" data-dlc-start="' + milestoneAttr(entry.id) + '">Start</button>' : '') +
+      '<button type="button" class="btn-ghost" data-dlc-edit="' + milestoneAttr(entry.id) + '">Edit</button>' +
+      '<button type="button" class="btn-ghost" data-dlc-archive="' + milestoneAttr(entry.id) + '">' + (contentData(entry.id)?.archived ? 'Restore' : 'Archive') + '</button>' +
+      '<button type="button" class="btn-ghost btn-danger" data-dlc-delete="' + milestoneAttr(entry.id) + '">Delete</button></div>';
+  }
+  function openDlcEditor(parentId, key = null) {
+    const modal = document.getElementById('dlc-editor');
+    rememberContentFocus(modal);
+    const dlc = key ? contentData(key) : null;
+    modal.dataset.parentId = parentId;
+    modal.dataset.contentKey = key || '';
+    modal.dataset.cover = dlc?.image || '';
+    document.getElementById('dlc-name').value = dlc?.name || '';
+    document.getElementById('dlc-image').value = dlc?.image?.startsWith('http') ? dlc.image : '';
+    document.getElementById('dlc-upload').value = '';
+    paintCover(document.getElementById('dlc-cover-preview'), dlc, 'Add a cover');
+    document.getElementById('dlc-inherited-platform').textContent = 'Platform: ' + (games.find(game => game.id === parentId)?.platform || 'Unspecified') + ' (from game)';
+    document.getElementById('dlc-editor-error').hidden = true;
+    document.getElementById('dlc-editor-title').textContent = dlc ? 'Edit DLC' : 'Add DLC';
+    modal.classList.add('open');
+    document.getElementById('dlc-name').focus();
+  }
+  function refreshContentViews() {
+    render();
+    const key = document.getElementById('dashboard-modal').dataset.gameId;
+    const entry = contentEntry(key);
+    if (entry) {
+      document.getElementById('dashboard-title').textContent = entry.name;
+      paintCover(document.getElementById('dashboard-cover'), entry, 'No cover');
+      renderDashboardBody(entry);
+    }
+  }
+  function restoredContentFitsBudget(keys) {
+    const selected = keys.filter(key => archivedRotationIds().includes(key));
+    const progress = rotationWeekProgress(selected);
+    const additional = selected.reduce((sum,key) => {
+      const target = rotationTargetMinutes(key);
+      return sum + target - Math.min(target, Math.floor(progress.games[key].ms / 60000));
+    },0);
+    const budget = weeklyRotationBudgetMinutes();
+    return !(budget || settings.autoDailyGoal) || rotationCommittedMinutes() + additional <= budget;
+  }
+  function setDlcArchived(key, archived) {
+    const entry = contentEntry(key), dlc = contentData(key);
+    if (!entry?.parentId || !dlc) return false;
+    if (activeSession && sessionContentKey(activeSession) === key) { toast('Stop or switch content before archiving this DLC.'); return false; }
+    const parent = games.find(game => game.id === entry.parentId);
+    if (!archived && !parent.archived && !restoredContentFitsBudget([key])) { toast('Restoring this DLC would exceed the weekly rotation budget.'); return false; }
+    checkStorageFresh();
+    const nextGames = structuredClone(games);
+    nextGames.find(game => game.id === entry.parentId).dlcs.find(item => item.id === entry.dlcId).archived = archived;
+    saveGames(nextGames);
+    games = nextGames;
+    refreshContentViews();
+    return true;
+  }
+  document.getElementById('dlc-editor-cancel').onclick = () => document.getElementById('dlc-editor').classList.remove('open');
+  document.getElementById('dlc-upload-btn').onclick = () => document.getElementById('dlc-upload').click();
+  document.getElementById('dlc-set-url').onclick = () => {
+    const image = document.getElementById('dlc-image').value.trim();
+    const error = document.getElementById('dlc-editor-error');
+    if (!/^https?:\/\//i.test(image)) { error.textContent = 'Enter an HTTP(S) image URL.'; error.hidden = false; return; }
+    error.hidden = true;
+    document.getElementById('dlc-editor').dataset.cover = image;
+    paintCover(document.getElementById('dlc-cover-preview'), {image}, 'Add a cover');
+  };
+  document.getElementById('dlc-clear-cover').onclick = () => {
+    document.getElementById('dlc-editor').dataset.cover = '';
+    document.getElementById('dlc-image').value = '';
+    document.getElementById('dlc-upload').value = '';
+    paintCover(document.getElementById('dlc-cover-preview'), null, 'Add a cover');
+  };
+  document.getElementById('dlc-upload').onchange = event => {
+    const file = event.target.files[0];
+    if (!file) return;
+    fileToThumb(file, image => {
+      document.getElementById('dlc-editor').dataset.cover = image;
+      document.getElementById('dlc-image').value = '';
+      paintCover(document.getElementById('dlc-cover-preview'), {image}, 'Add a cover');
+    });
+  };
+  document.getElementById('dlc-editor-form').onsubmit = event => {
+    event.preventDefault();
+    checkStorageFresh();
+    const modal = document.getElementById('dlc-editor');
+    const parent = games.find(game => game.id === modal.dataset.parentId);
+    if (!parent) return;
+    const name = document.getElementById('dlc-name').value.trim();
+    const error = document.getElementById('dlc-editor-error');
+    const existing = contentData(modal.dataset.contentKey);
+    if (!name || (parent.dlcs || []).some(dlc => dlc.id !== existing?.id && dlc.name.toLocaleLowerCase() === name.toLocaleLowerCase())) {
+      error.textContent = 'Enter a unique DLC name for this game.'; error.hidden = false; return;
+    }
+    const image = document.getElementById('dlc-image').value.trim() || modal.dataset.cover || null;
+    if (image && !/^(https?:\/\/|data:image\/(jpeg|png|webp);base64,)/i.test(image)) { error.textContent = 'Use an HTTP(S) image URL or upload a cover.'; error.hidden = false; return; }
+    const nextGames = structuredClone(games);
+    const updated = nextGames.find(game => game.id === parent.id);
+    updated.dlcs = updated.dlcs || [];
+    if (existing) {
+      const dlc = updated.dlcs.find(item => item.id === existing.id);
+      dlc.name = name; dlc.image = image;
+    } else updated.dlcs.push({id:uid(),name,image,archived:false,milestones:[]});
+    saveGames(nextGames);
+    games = nextGames;
+    modal.classList.remove('open');
+    refreshContentViews();
+  };
+  document.addEventListener('click', event => {
+    const button = event.target.closest('[data-content-dashboard],[data-dlc-add],[data-dlc-edit],[data-dlc-archive],[data-dlc-delete],[data-dlc-start]');
+    if (!button) return;
+    if (button.hasAttribute('data-content-dashboard')) { event.preventDefault(); openDashboard(button.dataset.contentDashboard, button.hasAttribute('data-base-only')); return; }
+    if (button.hasAttribute('data-dlc-add')) { openDlcEditor(button.dataset.dlcAdd); return; }
+    if (button.hasAttribute('data-dlc-start')) { startGameFromList(button.dataset.dlcStart); return; }
+    const key = button.dataset.dlcEdit || button.dataset.dlcArchive || button.dataset.dlcDelete;
+    const entry = contentEntry(key), dlc = contentData(key);
+    if (!entry?.parentId || !dlc) return;
+    if (button.hasAttribute('data-dlc-edit')) { openDlcEditor(entry.parentId, key); return; }
+    if (button.hasAttribute('data-dlc-archive')) { setDlcArchived(key, !dlc.archived); return; }
+    if (activeSession && sessionContentKey(activeSession) === key) { toast('Stop or switch content before deleting this DLC.'); return; }
+    const modal = document.getElementById('dlc-delete');
+    rememberContentFocus(modal);
+    modal.dataset.contentKey = key;
+    const count = sessions.filter(session => session.gameId === entry.parentId && sessionSegments(session).some(segment => segment.dlcId === entry.dlcId)).length;
+    document.getElementById('dlc-delete-message').textContent = 'Delete ' + dlc.name + '? ' + count + ' sessions contain this DLC.';
+    modal.classList.add('open');
+  });
+  document.getElementById('dlc-delete-cancel').onclick = () => document.getElementById('dlc-delete').classList.remove('open');
+  document.getElementById('dlc-delete-archive').onclick = () => {
+    const modal = document.getElementById('dlc-delete');
+    if (setDlcArchived(modal.dataset.contentKey, true)) modal.classList.remove('open');
+  };
+  document.getElementById('dlc-delete-confirm').onclick = () => {
+    checkStorageFresh();
+    const modal = document.getElementById('dlc-delete'), entry = contentEntry(modal.dataset.contentKey);
+    if (!entry) return;
+    if (activeSession && sessionContentKey(activeSession) === entry.id) { toast('Stop or switch content first.'); return; }
+    const nextGames = structuredClone(games), nextSessions = structuredClone(sessions), nextSettings = structuredClone(settings);
+    nextGames.find(game => game.id === entry.parentId).dlcs = nextGames.find(game => game.id === entry.parentId).dlcs.filter(dlc => dlc.id !== entry.dlcId);
+    nextSessions.forEach(session => {
+      if (session.gameId === entry.parentId) session.segments?.forEach(segment => { if (segment.dlcId === entry.dlcId) segment.dlcId = null; });
+    });
+    nextSettings.weeklyRotation = (nextSettings.weeklyRotation || []).filter(key => key !== entry.id);
+    if (nextSettings.weeklyRotationTargets) delete nextSettings.weeklyRotationTargets[entry.id];
+    if (nextSettings.weeklyRotationDays) delete nextSettings.weeklyRotationDays[entry.id];
+    const oldGames = localStorage.getItem(KEYS.games), oldSessions = localStorage.getItem(KEYS.sessions), oldSettings = localStorage.getItem(KEYS.settings);
+    try { writeLocalData(KEYS.games, nextGames); writeLocalData(KEYS.sessions, nextSessions); writeLocalData(KEYS.settings, nextSettings); }
+    catch (error) {
+      for (const [key, value] of [[KEYS.games,oldGames],[KEYS.sessions,oldSessions],[KEYS.settings,oldSettings]]) {
+        if (value === null) localStorage.removeItem(key); else localStorage.setItem(key,value);
+        storageBaseline[key] = value;
+      }
+      toast('DLC deletion could not be saved.'); return;
+    }
+    games = nextGames; sessions = nextSessions; settings = nextSettings; activeSession = sessions.find(session => session.stop === null) || null;
+    scheduleAutoUpload();
+    modal.classList.remove('open');
+    openDashboard(entry.parentId);
+    refreshContentViews();
+  };
+  function contentOptions(parentId, selected = null, archived = false) {
+    const game = games.find(entry => entry.id === parentId);
+    return '<option value="">Base game</option>' + (game?.dlcs || []).filter(dlc => archived || !dlc.archived).map(dlc =>
+      '<option value="' + milestoneAttr(dlc.id) + '"' + (dlc.id === selected ? ' selected' : '') + '>' + escHtml(dlc.name) + (dlc.archived ? ' (archived)' : '') + '</option>').join('');
+  }
+  function persistSessionReplacement(next) {
+    saveSessions(next);
+    sessions = next;
+    activeSession = sessions.find(session => session.stop === null) || null;
+  }
+  function openContentChooser(parentId, switching = false) {
+    const game = games.find(entry => entry.id === parentId);
+    if (!game || game.archived) return;
+    const modal = document.getElementById('content-chooser');
+    rememberContentFocus(modal);
+    modal.dataset.parentId = parentId;
+    modal.dataset.switching = String(switching);
+    document.getElementById('content-chooser-title').textContent = switching ? 'Switch content' : 'Choose content';
+    document.getElementById('content-chooser-select').innerHTML = contentOptions(parentId, switching && activeSession ? sessionSegments(activeSession).at(-1).dlcId : null);
+    document.getElementById('content-chooser-confirm').textContent = switching ? 'Switch content' : 'Start session';
+    modal.classList.add('open');
+    document.getElementById('content-chooser-select').focus();
+  }
+  function switchContent(dlcId) {
+    checkStorageFresh();
+    if (!activeSession) return;
+    const parent = games.find(game => game.id === activeSession.gameId);
+    if (parent?.archived || dlcId && !parent?.dlcs?.some(dlc => dlc.id === dlcId && !dlc.archived)) return;
+    const next = structuredClone(activeSession);
+    const segments = structuredClone(sessionSegments(next));
+    if (segments.at(-1).dlcId === dlcId) return;
+    const now = new Date().toISOString();
+    segments.at(-1).stop = now;
+    next.segments = segments.filter(segment => Date.parse(segment.stop) > Date.parse(segment.start));
+    next.segments.push({id:uid(), dlcId, start:now, stop:null});
+    persistSessionReplacement(sessions.map(session => session.id === next.id ? next : session));
+    render();
+    explainDlcRotation();
+  }
+  function explainDlcRotation() {
+    if (settings.dlcRotationExplained) return;
+    const rotation = new Set(settings.weeklyRotation || []);
+    if (!sessions.some(session => rotation.has(session.gameId) && session.segments?.some(segment => segment.dlcId))) return;
+    settings.dlcRotationExplained = true;
+    saveSettings(settings);
+    toast('Rotation game targets now count Base game time only. Add separate DLC targets in Choose games.', null, null, 10000);
+  }
+  const contentDialogFocus = new Map();
+  function rememberContentFocus(overlay) {
+    contentDialogFocus.set(overlay.id, document.activeElement);
+  }
+  for (const id of ['content-chooser','dlc-editor','dlc-delete']) {
+    const overlay = document.getElementById(id);
+    new MutationObserver(() => {
+      if (overlay.classList.contains('open')) return;
+      const previous = contentDialogFocus.get(id);
+      contentDialogFocus.delete(id);
+      requestAnimationFrame(() => {
+        if (document.querySelector('#content-chooser.open,#dlc-editor.open,#dlc-delete.open')) return;
+        if (previous?.isConnected && previous.getClientRects().length) previous.focus();
+        else if (document.getElementById('dashboard-modal').classList.contains('open')) document.querySelector('#dashboard-body button')?.focus();
+      });
+    }).observe(overlay,{attributes:true,attributeFilter:['class']});
+    overlay.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        event.stopPropagation();
+        overlay.classList.remove('open');
+      }
+      if (event.key !== 'Tab') return;
+      const fields = [...overlay.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled)')].filter(field => field.getClientRects().length);
+      const first = fields[0], last = fields.at(-1);
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    });
+  }
+  document.getElementById('content-chooser-cancel').onclick = () => document.getElementById('content-chooser').classList.remove('open');
+  document.getElementById('content-chooser-confirm').onclick = () => {
+    const modal = document.getElementById('content-chooser');
+    const dlcId = document.getElementById('content-chooser-select').value || null;
+    const parentId = modal.dataset.parentId;
+    modal.classList.remove('open');
+    if (modal.dataset.switching === 'true') switchContent(dlcId);
+    else startGame(parentId, dlcId);
+  };
+  document.getElementById('switch-content').onclick = () => {
+    if (activeSession) openContentChooser(activeSession.gameId, true);
+  };
+  function refreshLiveContent() {
+    const panel = document.getElementById('live-content');
+    panel.hidden = !activeSession;
+    if (!activeSession) return;
+    const game = games.find(entry => entry.id === activeSession.gameId);
+    panel.hidden = !game?.dlcs?.length;
+    document.getElementById('switch-content').hidden = !game?.dlcs?.some(dlc => !dlc.archived);
+    document.getElementById('live-content-name').textContent = contentName(activeSession.gameId, sessionSegments(activeSession).at(-1).dlcId);
+    document.getElementById('live-content-times').textContent = contentBreakdown(activeSession);
+  }
+  function localDateTime(iso) {
+    const date = new Date(iso);
+    return dateKey(iso) + 'T' + [date.getHours(),date.getMinutes(),date.getSeconds()].map(value => String(value).padStart(2,'0')).join(':') + '.' + String(date.getMilliseconds()).padStart(3,'0');
+  }
+  function paintAllocationEditor(panel, segments) {
+    panel.innerHTML = '<h4>Content allocation</h4><p class="backup-hint">Each row continues from the previous boundary. The session start and end follow the time fields below.</p>' +
+      segments.map((segment, index) => '<div class="allocation-row" data-segment-id="' + milestoneAttr(segment.id) + '"><label>Content<select>' +
+        contentOptions(panel.dataset.gameId, segment.dlcId, true) + '</select></label>' +
+        (index < segments.length - 1 ? '<label>Until<input type="datetime-local" step="0.001" value="' + localDateTime(segment.stop) + '" data-original-stop="' + milestoneAttr(segment.stop) + '" required></label>' : '<span class="backup-hint">Until session end</span>') +
+        (segments.length > 1 ? '<button type="button" class="btn-ghost" data-remove-segment="' + index + '">Remove</button>' : '') + '</div>').join('') +
+      '<button type="button" class="btn-ghost" data-add-segment>Add content segment</button><p class="backup-hint" role="alert" data-allocation-error hidden></p>';
+  }
+  function setupAllocationEditor(panel, session) {
+    panel.dataset.gameId = session.gameId;
+    panel.dataset.start = session.start;
+    panel.dataset.stop = session.stop;
+    paintAllocationEditor(panel, structuredClone(sessionSegments(session)));
+  }
+  function readAllocation(panel, start, stop) {
+    const rows = [...panel.querySelectorAll('.allocation-row')];
+    let previous = start;
+    const segments = rows.map((row, index) => {
+      const input = row.querySelector('input');
+      const end = index === rows.length - 1 ? stop :
+        Date.parse(input.value) === Date.parse(localDateTime(input.dataset.originalStop)) ? Date.parse(input.dataset.originalStop) : Date.parse(input.value);
+      if (!Number.isFinite(end) || end <= previous || end > stop) throw new Error('Content boundaries must be inside the session, in chronological order. Edit or remove internal boundaries before changing these times.');
+      const dlcId = row.querySelector('select').value || null;
+      const parent = games.find(game => game.id === panel.dataset.gameId);
+      if (dlcId && !parent?.dlcs?.some(dlc => dlc.id === dlcId)) throw new Error('This DLC no longer exists.');
+      const segment = {id:row.dataset.segmentId, dlcId, start:new Date(previous).toISOString(), stop:new Date(end).toISOString()};
+      previous = end;
+      return segment;
+    });
+    return segments;
+  }
+  function allocationForSave(panel, start, stop) {
+    try { return readAllocation(panel, start, stop); }
+    catch (error) {
+      const label = panel.querySelector('[data-allocation-error]');
+      label.hidden = false;
+      label.textContent = error.message;
+      label.scrollIntoView({block:'nearest'});
+      return null;
+    }
+  }
+  document.querySelectorAll('.content-allocation').forEach(panel => {
+    panel.addEventListener('click', event => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      let segments;
+      const adding = panel.id === 'add-content-allocation';
+      const from = getCalDateTime(adding ? addSessionStartDate : editSessionStartDate, adding ? addSessionStartTime : editSessionStartTime);
+      const to = getCalDateTime(adding ? addSessionEndDate : editSessionEndDate, adding ? addSessionEndTime : editSessionEndTime);
+      const preserveSeconds = (value, initial) => value.slice(0,16) === localDateTime(initial).slice(0,16) ? Date.parse(initial) : Date.parse(value);
+      const startTime = preserveSeconds(from, panel.dataset.start), stopTime = preserveSeconds(to, panel.dataset.stop);
+      try { segments = readAllocation(panel, startTime, stopTime); }
+      catch (error) { allocationForSave(panel, startTime, stopTime); return; }
+      if (button.hasAttribute('data-add-segment')) {
+        const last = segments.at(-1), start = Date.parse(last.start), stop = Date.parse(last.stop);
+        if (stop - start < 2) return;
+        const boundary = new Date(Math.floor((start + stop) / 2)).toISOString();
+        last.stop = boundary;
+        segments.push({id:uid(), dlcId:null, start:boundary, stop:new Date(stop).toISOString()});
+      } else if (button.hasAttribute('data-remove-segment')) {
+        const index = Number(button.dataset.removeSegment);
+        if (index) segments[index - 1].stop = segments[index].stop;
+        else segments[1].start = segments[0].start;
+        segments.splice(index, 1);
+      }
+      paintAllocationEditor(panel, segments);
+    });
+  });
+
+  function startGame(gameId, dlcId) {
     if (activeSession) { toast('Stop the current session first'); return; }
+    const entry = contentEntry(gameId);
+    if (entry?.parentId) { dlcId = entry.dlcId; gameId = entry.parentId; }
     const game = games.find(g => g.id === gameId);
-    if (!game) return;
+    if (!game || game.archived) return;
+    if (dlcId === undefined && game.dlcs?.some(dlc => !dlc.archived)) { openContentChooser(game.id); return; }
+    if (dlcId && !game.dlcs?.some(dlc => dlc.id === dlcId && !dlc.archived)) return;
     const session = {
       id: uid(),
       gameId: game.id,
@@ -8234,9 +8799,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       targetMs: pendingTargetMin * 60000 || 0
     };
     targetToastShown = false;
-    sessions.push(session);
-    activeSession = session;
-    saveSessions(sessions);
+    session.segments = [{id:uid(), dlcId:dlcId || null, start:session.start, stop:null}];
+    persistSessionReplacement([...sessions, session]);
     pendingTargetMin = 0;
     document.querySelectorAll('.target-opt').forEach(button => button.classList.toggle('on', button.dataset.target === '0'));
     document.getElementById('target-custom').value = '';
@@ -8256,12 +8820,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   let pickMode = 'random';
   let pickLastId = null;
 
-  function pickCount(g) { return sessions.filter(s => s.gameId === g.id && s.stop !== null).length; }
+  function pickCount(g) { return contentSessions(g.id).filter(s => s.stop !== null).length; }
 
   function pickLastPlayed(g) {
     let last = 0;
-    sessions.forEach(s => {
-      if (s.gameId === g.id && s.stop !== null) {
+    contentSessions(g.id).forEach(s => {
+      if (s.stop !== null) {
         const t = new Date(s.start).getTime();
         if (t > last) last = t;
       }
@@ -8275,7 +8839,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return [15,30,60].includes(minutes)?minutes:0;
   }
   function typicalSessionMs(gameId) {
-    const recent=sessions.filter(s=>s.gameId===gameId && s.stop!==null && Number.isFinite(s.durationMs) && s.durationMs>0)
+    const recent=contentSessions(gameId).filter(s=>s.stop!==null && Number.isFinite(s.durationMs) && s.durationMs>0)
       .sort((a,b)=>new Date(b.start)-new Date(a.start)).slice(0,20).map(s=>s.durationMs).sort((a,b)=>a-b);
     if(!recent.length)return null;
     const middle=Math.floor(recent.length/2);
@@ -8283,7 +8847,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function pickPool() {
     const minutes=availablePickMinutes();
-    const list=games.filter(g=>!g.archived && (!minutes || (typicalSessionMs(g.id)!==null && typicalSessionMs(g.id)<=minutes*60000)));
+    const list=contentEntries().filter(g=>!g.archived && (!minutes || (typicalSessionMs(g.id)!==null && typicalSessionMs(g.id)<=minutes*60000)));
     if (pickMode === 'least' && list.length) {
       let min = Infinity;
       list.forEach(g => { const c = pickCount(g); if (c < min) min = c; });
@@ -8346,9 +8910,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function pickStart() {
     if (activeSession) { toast('Stop the current session first'); return; }
-    const g = games.find(x => x.id === pickLastId);
+    const g = contentEntry(pickLastId);
     document.getElementById('pick-modal').classList.remove('open');
-    if (g) startGameFromList(g.id);
+    if (g) { startGame(g.id, null); goTab('today'); }
   }
 
   ['pick-game-btn', 'pick-game-btn-today'].forEach(id => {
@@ -8371,18 +8935,25 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   // --- Stop session ---
   function stopSession() {
     if (!activeSession) return;
+    checkStorageFresh();
     const now = new Date();
     const nowMs = now.getTime();
-    activeSession.stop = now.toISOString();
-    activeSession.durationMs = nowMs - new Date(activeSession.start).getTime() - totalPausedMs(activeSession, nowMs);
-    if (activeSession.pausedAt) {
-      activeSession.pauses = activeSession.pauses || [];
-      activeSession.pauses.push({ from: activeSession.pausedAt, to: now.toISOString() });
-      activeSession.pausedAt = null;
+    const stopped = structuredClone(activeSession);
+    stopped.stop = now.toISOString();
+    stopped.durationMs = nowMs - new Date(stopped.start).getTime() - totalPausedMs(stopped, nowMs);
+    if (stopped.pausedAt) {
+      stopped.pauses = stopped.pauses || [];
+      stopped.pauses.push({ from: stopped.pausedAt, to: now.toISOString() });
+      stopped.pausedAt = null;
     }
-    saveSessions(sessions);
-    const stoppedId = activeSession.id;
-    activeSession = null;
+    if (stopped.segments) {
+      stopped.segments.at(-1).stop = now.toISOString();
+      stopped.segments = stopped.segments.filter(segment => Date.parse(segment.stop) > Date.parse(segment.start));
+      if (!stopped.segments.length) stopped.segments = [{id:uid(), dlcId:null, start:stopped.start, stop:stopped.stop}];
+      stopped.durationMs = [...allocatedPlaytime(stopped)].reduce((total,[,ms]) => total + ms,0);
+    }
+    const stoppedId = stopped.id;
+    persistSessionReplacement(sessions.map(session => session.id === stoppedId ? stopped : session));
     render();
     celebrate();
     showFinishReview(stoppedId);
@@ -8496,7 +9067,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function stalePromptEntries(limit=3) {
-    const stale=staleGameEntries(),rotationIds=new Set(rotationGameIds());
+    const stale=staleGameEntries(),rotationIds=new Set(rotationGameIds().map(id => contentEntry(id)?.parentId || id));
     const entries=stale.filter(entry=>!rotationIds.has(entry.game.id)).slice(0,limit);
     if(entries.length<limit && stale.some(entry=>rotationIds.has(entry.game.id))) {
       const selected=new Set(entries.map(entry=>entry.game.id)),lastStop=new Map();
@@ -8627,20 +9198,28 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function rotationGameIds() {
     const selected=Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[];
-    const available=new Set(games.filter(g=>!g.archived).map(g=>g.id));
+    const available=new Set(contentEntries().filter(g=>!g.archived).map(g=>g.id));
     return [...new Set(selected)].filter(id=>available.has(id));
   }
   function rotationWeekProgress(ids,now=new Date()) {
     const bounds=getWeekBounds(now),result={};ids.forEach(id=>result[id]={count:0,ms:0});
+    const entries = ids.map(id => [id, contentEntry(id)]);
     sessions.forEach(session=>{
       const start=new Date(session.start);
-      if(result[session.gameId] && session.stop!==null && session.durationMs>0 && start>=bounds.start && start<=bounds.end && start<=now){result[session.gameId].count++;result[session.gameId].ms+=session.durationMs;}
+      if(session.stop!==null && start>=bounds.start && start<=bounds.end && start<=now) {
+        const allocation = allocatedPlaytime(session);
+        for (const [id, entry] of entries) {
+          if (!entry || session.gameId !== (entry.parentId || entry.id)) continue;
+          const ms = allocation.get(entry.dlcId || null) || 0;
+          if (ms > 0) { result[id].count++; result[id].ms += ms; }
+        }
+      }
     });
     return {bounds,games:result,played:ids.filter(id=>result[id].count>0).length};
   }
   function archivedRotationIds() {
     const selected=new Set(Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[]);
-    return games.filter(game=>game.archived && selected.has(game.id)).map(game=>game.id);
+    return contentEntries().filter(game=>game.archived && selected.has(game.id)).map(game=>game.id);
   }
   function archivedRotationSpentMinutes(now=new Date()) {
     const ids=archivedRotationIds(),progress=rotationWeekProgress(ids,now);
@@ -8676,9 +9255,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function rotationProgressWithLive(ids,now=new Date()) {
     const progress=rotationWeekProgress(ids,now);
-    if(activeSession && progress.games[activeSession.gameId]) {
+    if(activeSession) {
       const start=new Date(activeSession.start);
-      if(start>=progress.bounds.start && start<=progress.bounds.end && start<=now) progress.games[activeSession.gameId].ms+=Math.max(0,activeElapsedMs(activeSession,now.getTime()));
+      if(start>=progress.bounds.start && start<=progress.bounds.end && start<=now) {
+        for (const id of ids) progress.games[id].ms += contentMs(activeSession,id,now.getTime());
+      }
     }
     Object.values(progress.games).forEach(entry=>entry.ms=Math.floor(Math.max(0,entry.ms)/60000)*60000);
     return progress;
@@ -8690,17 +9271,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function rotationPlayedTime(ms) { return fmtDurationMinutes(ms); }
   function updateActiveRotationProgress() {
     if(!activeSession)return;
-    const row=[...document.querySelectorAll('#rotation-list [data-rotation-game]')].find(row=>row.dataset.rotationGame===activeSession.gameId);
+    const row=[...document.querySelectorAll('#rotation-list [data-rotation-game]')].find(row=>row.dataset.rotationGame===sessionContentKey(activeSession));
     if(!row)return;
-    const entry=rotationProgressWithLive([activeSession.gameId]).games[activeSession.gameId];
+    const entry=rotationProgressWithLive([sessionContentKey(activeSession)]).games[sessionContentKey(activeSession)];
     const elapsed=row.querySelector('[data-rotation-elapsed]');if(elapsed)elapsed.textContent=rotationPlayedTime(entry.ms);
-    const target=rotationTargetMinutes(activeSession.gameId),percent=row.querySelector('[data-rotation-percent]'),bar=row.querySelector('[data-rotation-progress]');
+    const target=rotationTargetMinutes(sessionContentKey(activeSession)),percent=row.querySelector('[data-rotation-percent]'),bar=row.querySelector('[data-rotation-progress]');
     if(target && percent && bar){const pct=Math.min(100,Math.floor(entry.ms/(target*60000)*100));percent.textContent=pct===100?'Target reached':pct+'%';bar.setAttribute('aria-valuenow',String(pct));bar.querySelector('.progress-fill').style.width=pct+'%';}
   }
   function renderWeeklyRotation() {
     const ids=rotationGameIds();
     const card=document.getElementById('weekly-rotation-card');
-    const hidden=!!activeSession && !ids.includes(activeSession.gameId);
+    const hidden=!!activeSession && !ids.includes(sessionContentKey(activeSession));
     card.hidden=hidden;
     if(hidden)return;
     const progress=rotationProgressWithLive(ids);
@@ -8717,7 +9298,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     budgetEl.classList.toggle('over-budget',(!!weeklyRotationBudgetMinutes() || !!settings.autoDailyGoal) && planned>weeklyRotationBudgetMinutes());
     const list=document.getElementById('rotation-list');
     const today = plannedWeekdays[new Date().getDay()];
-    const candidates = activeSession ? ids.filter(id => id === activeSession.gameId) : remaining;
+    const candidates = activeSession ? ids.filter(id => id === sessionContentKey(activeSession)) : remaining;
     const visible = candidates.filter(id => {
       const day = settings.weeklyRotationDays?.[id];
       return !plannedWeekdays.includes(day) || day === today;
@@ -8728,7 +9309,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         ? '<p class="backup-hint">All weekly targets reached! Your games return next week.</p>'
         : '';
     list.innerHTML=!visible.length ? empty : visible.map(id=>{
-      const game=games.find(g=>g.id===id),entry=progress.games[id];
+      const game=contentEntry(id),entry=progress.games[id];
       const target=rotationTargetMinutes(id),pct=target?Math.min(100,Math.floor(entry.ms/(target*60000)*100)):0;
       const targetHtml=target?'<div class="rotation-metrics" data-rotation-target-text><span class="rotation-time"><span class="rotation-elapsed" data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span><span class="rotation-target-text">/ '+fmtDurationMinutes(target*60000)+'</span></span><span class="rotation-percent" data-rotation-percent>'+(pct===100?'Target reached':pct+'%')+'</span></div><div class="progress-track" data-rotation-progress role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'<small><span data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span> this week</small>';
       const day = settings.weeklyRotationDays?.[id];
@@ -8784,7 +9365,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return ['Any day', ...orderedWeekdays()].map(day => '<option' + (day === selected ? ' selected' : '') + '>' + day + '</option>').join('');
   }
   function openRotationEditor() {
-    const ids=new Set(rotationGameIds()),active=games.filter(g=>!g.archived).sort((a,b)=>a.name.localeCompare(b.name));
+    const ids=new Set(rotationGameIds()),active=contentEntries().filter(g=>!g.archived).sort((a,b)=>a.name.localeCompare(b.name));
     if(!active.length){toast('Add a game first');return;}
     document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (hours)<input class="rotation-target" type="number" min="1" max="168" step="1" placeholder="Optional" value="'+(Math.ceil(rotationTargetMinutes(g.id)/60)||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label><label class="rotation-day-label">Planned day<select class="rotation-day" aria-label="Planned day"'+(ids.has(g.id)?'':' disabled')+'>'+rotationDayOptions(g.id)+'</select></label></div>').join('');
     rotationSelectionCount();document.getElementById('rotation-modal').classList.add('open');
@@ -8799,6 +9380,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const startCard = document.getElementById('start-game-card');
     const card = document.getElementById('active-session-card');
 
+    refreshLiveContent();
     if (isActive) {
       document.getElementById('active-game-name').textContent = activeSession.gameName;
       document.getElementById('active-start').textContent = fmtTime(activeSession.start);
@@ -8994,6 +9576,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         return heading + '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
+            (s.segments ? '<div class="backup-hint">' + escHtml(contentBreakdown(s)) + '</div>' : '') +
             '<div class="session-times"><span>' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</span><span class="session-game-total" title="Total recorded playtime for this game on this day">Total: ' + fmtDurationShort(gameTotals.get(JSON.stringify([day,s.gameId])) || 0) + '</span></div>' +
           '</div>' +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + pauseTag + '</span>' +
@@ -9203,7 +9786,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const heading = '<div class="session-day-heading"><strong>' + calendarSelectedDay + '</strong><span>' + fmtDuration(dayTotal) + ' total</span></div>';
     document.getElementById('playtime-day-details').innerHTML = heading + (groups.size ? [...groups.values()].map(entries => {
       const total = entries.reduce((sum, session) => sum + (session.durationMs || 0), 0);
-      const rows = entries.map(session => '<li class="playtime-session-row"><span>' + fmtTime(session.start) + ' &ndash; ' + fmtTime(session.stop) + '</span><span>' + fmtDuration(session.durationMs || 0) + '</span></li>').join('');
+      const rows = entries.map(session => '<li class="playtime-session-row"><span>' + fmtTime(session.start) + ' &ndash; ' + fmtTime(session.stop) + (session.segments ? ' · ' + escHtml(contentBreakdown(session)) : '') + '</span><span>' + fmtDuration(session.durationMs || 0) + '</span></li>').join('');
       return '<div class="playtime-game-group"><div class="playtime-game-heading"><strong>' + escHtml(entries[0].gameName) + '</strong><span>' + fmtDuration(total) + '</span></div><ul class="playtime-session-list">' + rows + '</ul></div>';
     }).join('') : '<p class="backup-hint">No completed sessions on this day.</p>');
   }
@@ -9568,7 +10151,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     for (const session of rows) {
       if (session.stop !== null) getDay(dateKey(session.start)).sessions.push(session);
     }
-    for (const game of library) {
+    for (const game of library.flatMap(parent => [parent, ...(parent.dlcs || [])])) {
       for (const milestone of game.milestones || []) {
         if (milestoneValidDate(milestone.completedAt)) getDay(milestone.completedAt).milestones++;
       }
@@ -10684,18 +11267,21 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const textMatch = g => !q || g.name.toLowerCase().includes(q) || (g.tags || []).some(t => t.toLowerCase().includes(q));
     const platformMatch = g => !gamesPlatformFilter || (gamesPlatformFilter==='missing' ? !normalizePlatform(g.platform) : normalizePlatform(g.platform)===gamesPlatformFilter);
     const rotationIds = new Set(rotationGameIds());
-    const playedIds = new Set(sessions.filter(session => session.stop !== null).map(session => session.gameId));
+    const playedIds = new Set(sessions.filter(session => session.stop !== null).flatMap(session =>
+      [session.gameId, ...sessionSegments(session).filter(segment => segment.dlcId).map(segment => dlcKey(session.gameId,segment.dlcId))]));
     const attributesMatch = g => {
       const milestones = g.milestones || [];
       const values = {
         pinned: g.pinned ? 'yes' : 'no',
+        dlc: g.parentId ? 'children' : 'parents',
         cover: g.image ? 'yes' : 'no',
         hltb: g.beatNotNeeded ? 'exempt' : g.beatUnavailable ? 'unavailable' : g.mainStoryHours || g.mainExtraHours ? 'set' : 'missing',
         milestones: !milestones.length ? 'none' : milestones.every(item => item.completedAt) ? 'done' : 'open',
         rotation: rotationIds.has(g.id) ? 'yes' : 'no',
         played: playedIds.has(g.id) ? 'yes' : 'no'
       };
-      return Object.entries(gameAttributeSelections).every(([key, value]) => values[key] === value);
+      return Object.entries(gameAttributeSelections).every(([key, value]) =>
+        key === 'dlc' && (value === 'with' || value === 'without') ? !g.parentId && (!!g.dlcs?.length === (value === 'with')) : values[key] === value);
     };
     const matches = g => textMatch(g) && tagMatch(g) && platformMatch(g) && attributesMatch(g) && (gamesArchiveFilter==='all' || (gamesArchiveFilter==='archived' ? g.archived : !g.archived));
     const platformFilter=document.getElementById('games-platform-filter');
@@ -10725,8 +11311,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       }
     }
 
-    const filtered = games.filter(matches);
-    document.getElementById('games-filter-count').textContent=filtered.length+' of '+games.length+' games';
+    const matchingEntries = contentEntries().filter(matches);
+    const matchingIds = new Set(matchingEntries.map(entry => entry.id));
+    const filtered = games.filter(game => matchingIds.has(game.id) || (game.dlcs || []).some(dlc => matchingIds.has(dlcKey(game.id,dlc.id))));
+    document.getElementById('games-filter-count').textContent=matchingEntries.length+' of '+contentEntries().length+' games and DLCs';
     const active = filtered.filter(g => !g.archived).sort(pinnedFirst);
     const archived = filtered.filter(g => g.archived).sort(pinnedFirst);
 
@@ -10781,7 +11369,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         const count = sessions.filter(s => s.gameId === g.id).length;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         const running = activeSession && activeSession.gameId === g.id;
-        return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
+        return '<div data-library-parent="' + milestoneAttr(g.id) + '" class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' + missingBeatTimeBadge(g) +
@@ -10805,7 +11393,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       html += archived.map((g, i) => {
         const count = sessions.filter(s => s.gameId === g.id).length;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
-        return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
+        return '<div data-library-parent="' + milestoneAttr(g.id) + '" class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span><span class="classic-archived-label">Archived</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' + missingBeatTimeBadge(g) +
@@ -10824,6 +11412,20 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
 
     container.innerHTML = html;
+    container.querySelectorAll('[data-library-parent]').forEach(row => {
+      const parent = games.find(game => game.id === row.dataset.libraryParent);
+      const children = (parent.dlcs || []).map(dlc => contentEntry(dlcKey(parent.id,dlc.id))).filter(entry => matchingIds.has(entry.id));
+      if (children.length) {
+        const details = document.createElement('details');
+        details.className = 'library-dlcs';
+        details.open = !!q || !!gameAttributeSelections.dlc;
+        details.innerHTML = '<summary>' + children.length + ' DLCs for ' + escHtml(parent.name) + '</summary>' + children.map(entry =>
+          '<div class="dlc-library-row">' + gameCoverHtml(entry) + '<div class="session-info"><a class="dlc-name-link" href="#dlc" data-content-dashboard="' + milestoneAttr(entry.id) + '">' +
+          escHtml(entry.contentName) + '</a>' + (entry.archived ? '<span class="game-platform-badge">Archived</span>' : '') + missingBeatTimeBadge(entry) + '</div>' + dlcActionButtons(entry) + '</div>').join('');
+        row.after(details);
+      }
+      if (!matchingIds.has(parent.id)) row.hidden = true;
+    });
 
     container.querySelectorAll('.btn-icon').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -10839,11 +11441,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     });
   }
 
-  function openDashboard(id) {
-    const game = games.find(g => g.id === id);
+  function openDashboard(id, baseOnly = false) {
+    const game = contentEntry(id);
     if (!game) return;
     document.getElementById('dashboard-modal').dataset.gameId = game.id;
-    document.getElementById('dashboard-title').textContent = game.name;
+    document.getElementById('dashboard-modal').dataset.baseOnly = String(baseOnly);
+    document.getElementById('dashboard-title').textContent = game.name + (baseOnly ? ' / Base game' : '');
     paintCover(document.getElementById('dashboard-cover'), game, 'No cover');
     renderDashboardBody(game);
     document.getElementById('dashboard-modal').classList.add('open');
@@ -10883,7 +11486,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function renderDashboardBody(game) {
-    const gs = sessions.filter(s => s.gameId === game.id);
+    const baseOnly = document.getElementById('dashboard-modal').dataset.baseOnly === 'true';
+    const gs = game.parentId || baseOnly ? contentSessions(game.id) : sessions.filter(s => s.gameId === game.id);
     const completed = gs.filter(s => s.stop !== null);
     const body = document.getElementById('dashboard-body');
     const totalMs = completed.reduce((sum,s) => sum + (s.durationMs || 0), 0);
@@ -10947,7 +11551,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
     html = '<div class="milestone-dashboard-summary">' + html + '</div><div class="dashboard-milestone-column">' +
-      gameMilestonesHtml(game) + beatTimeSection(game, totalMs) + '</div><div class="milestone-dashboard-history">';
+      gameMilestonesHtml(game) + beatTimeSection(game, contentSessions(game.id).filter(s => s.stop !== null).reduce((sum,s) => sum + (s.durationMs || 0),0)) + '</div><div class="milestone-dashboard-history">';
 
     if (completed.length > 0) {
       html += '<div class="modal-subheader">Last 6 months</div>' +
@@ -10975,7 +11579,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       html += '<div class="modal-subheader">Last 5 sessions</div><ul class="dash-sessions">' +
         recent.map(s =>
           '<li class="dash-session">' +
-            '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + '</span>' +
+            '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + (!game.parentId && !baseOnly && s.segments ? '<small class="backup-hint">' + escHtml(contentBreakdown(s)) + '</small>' : '') + '</span>' +
             '<span class="dash-session-dur">' + fmtDuration(s.durationMs) + '</span>' +
           '</li>'
         ).join('') + '</ul>';
@@ -10983,7 +11587,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       html += '<div class="empty-state" style="padding:20px 10px;"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>No sessions recorded for this game yet.</div>';
     }
 
-    body.innerHTML = html + '</div>';
+    body.innerHTML = html + '</div>' + dlcDashboardSection(game);
   }
 
   function escHtml(str) {
@@ -11211,7 +11815,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (!game) return;
     pendingDeleteGameId = id;
     const count = sessions.filter(s => s.gameId === id).length;
-    document.getElementById('delete-msg').textContent = 'Delete "' + game.name + '"?';
+    document.getElementById('delete-msg').textContent = 'Delete "' + game.name + '"?' + (game.dlcs?.length ? ' This also deletes its ' + game.dlcs.length + ' DLCs and their milestones.' : '');
     const warn = document.getElementById('delete-warning');
     if (count > 0) {
       warn.style.display = '';
@@ -11271,16 +11875,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function restoreGame(id) {
     const game = games.find(g => g.id === id);
     if (!game || !game.archived) return;
-    if (archivedRotationIds().includes(id)) {
-      const budget=weeklyRotationBudgetMinutes(),target=rotationTargetMinutes(id);
-      const progress=rotationWeekProgress([id]);
-      const spent=Math.min(target,Math.floor(progress.games[id].ms/60000));
-      const planned=rotationCommittedMinutes()+target-spent;
-      if ((budget || settings.autoDailyGoal) && planned>budget) {
-        toast('Restoring this game would exceed the weekly budget by '+fmtDurationMinutes((planned-budget)*60000)+'. Reduce rotation targets or increase your daily goal first.',null,null,8000);
-        return;
-      }
-    }
+    const restoredKeys = [id, ...(game.dlcs || []).filter(dlc => !dlc.archived).map(dlc => dlcKey(id, dlc.id))];
+    if (!restoredContentFitsBudget(restoredKeys)) { toast('Restoring this game and its DLCs would exceed the weekly rotation budget.'); return; }
     game.archived = false;
     saveGames(games);
     toast('Restored: ' + game.name);
@@ -11514,9 +12110,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const now = new Date();
     setCalDateTime(addSessionStartDate, addSessionStartTime, new Date(now.getTime() - 3600000));
     setCalDateTime(addSessionEndDate, addSessionEndTime, now);
+    setupAllocationEditor(document.getElementById('add-content-allocation'), {id:uid(), gameId:sel.value, start:new Date(now.getTime()-3600000).toISOString(), stop:now.toISOString()});
     document.getElementById('add-session-modal').classList.add('open');
   }
 
+  document.getElementById('add-session-game').addEventListener('change', event => {
+    const panel = document.getElementById('add-content-allocation');
+    setupAllocationEditor(panel, {id:uid(),gameId:event.target.value,start:panel.dataset.start,stop:panel.dataset.stop});
+  });
   document.getElementById('btn-add-session').addEventListener('click', openAddSessionModal);
   document.getElementById('m3-fab-log').addEventListener('click', openAddSessionModal);
 
@@ -11534,6 +12135,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (!(t2 > t1)) { toast('End must be after start'); return; }
     const game = games.find(g => g.id === gameId);
     if (!game) return;
+    const segments = allocationForSave(document.getElementById('add-content-allocation'), t1, t2);
+    if (!segments) return;
     if (!await confirmSessionOverlap(t1,t2)) return;
     checkStorageFresh();
     const session = {
@@ -11543,10 +12146,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       start: new Date(t1).toISOString(),
       stop: new Date(t2).toISOString(),
       durationMs: t2 - t1,
+      segments,
       synced: false
     };
-    sessions.push(session);
-    saveSessions(sessions);
+    persistSessionReplacement([...sessions, session]);
     toast('Session added');
     document.getElementById('add-session-modal').classList.remove('open');
     render();
@@ -11555,6 +12158,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   // --- Edit session modal ---
   function openEditSessionModal(s) {
     editSessionId = s.id;
+    setupAllocationEditor(document.getElementById('edit-content-allocation'), s);
     setCalDateTime(editSessionStartDate, editSessionStartTime, s.start);
     setCalDateTime(editSessionEndDate, editSessionEndTime, s.stop);
     document.getElementById('edit-session-modal').classList.add('open');
@@ -11565,16 +12169,19 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   });
 
   document.getElementById('edit-session-save').addEventListener('click', async () => {
-    const s = sessions.find(x => x.id === editSessionId);
+    const original = sessions.find(x => x.id === editSessionId);
+    const s = original ? structuredClone(original) : null;
     if (!s) { document.getElementById('edit-session-modal').classList.remove('open'); return; }
     const startStr = getCalDateTime(editSessionStartDate, editSessionStartTime);
     const endStr = getCalDateTime(editSessionEndDate, editSessionEndTime);
     if (!startStr || !endStr) { toast('Fill in both times'); return; }
     // Preserve seconds when the minute-precision fields were not changed.
-    const sameMinute = (value, original) => Math.floor(new Date(value).getTime() / 60000) === Math.floor(new Date(original).getTime() / 60000);
+    const sameMinute = (value, original) => value.slice(0,16) === localDateTime(original).slice(0,16);
     const t1 = new Date(sameMinute(startStr, s.start) ? s.start : startStr).getTime();
     const t2 = new Date(sameMinute(endStr, s.stop) ? s.stop : endStr).getTime();
     if (!(t2 > t1)) { toast('End must be after start'); return; }
+    const segments = allocationForSave(document.getElementById('edit-content-allocation'), t1, t2);
+    if (!segments) return;
     if (!await confirmSessionOverlap(t1,t2,s.id)) return;
     checkStorageFresh();
     s.pauses = (s.pauses || []).map(p => ({ from: Math.max(t1, new Date(p.from).getTime()), to: Math.min(t2, new Date(p.to).getTime()) }))
@@ -11588,7 +12195,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     s.start = new Date(t1).toISOString();
     s.stop = new Date(t2).toISOString();
     s.durationMs = t2 - t1 - totalPausedMs(s, t2);
-    saveSessions(sessions);
+    s.segments = segments;
+    persistSessionReplacement(sessions.map(session => session.id === s.id ? s : session));
     toast('Session updated');
     document.getElementById('edit-session-modal').classList.remove('open');
     render();
@@ -11661,18 +12269,23 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function exportSessionsCsv(rows) {
     const gamePlatforms = new Map(games.map(game => [game.id, normalizePlatform(game.platform)]));
+    const exportAt = Date.now();
+    const durationFor = session => session.stop === null ? Math.max(0,activeElapsedMs(session,exportAt)) : session.durationMs || 0;
     const esc = v => '"' + String(v).split('"').join('""') + '"';
     const csv = '\uFEFF' + [
-      ['Date', 'Start', 'End', 'Game', 'Platform', 'Duration', 'Minutes', 'Synced'],
+      ['Date', 'Start', 'End', 'Game', 'Platform', 'Duration', 'Minutes', 'Synced', 'Base game time', 'DLC time', 'Content breakdown'],
       ...rows.map(s => [
         fmtDate(s.start),
         fmtTime(s.start),
         s.stop ? fmtTime(s.stop) : '',
         s.gameName,
         gamePlatforms.get(s.gameId) || '',
-        fmtDuration(s.durationMs),
-        Math.round((s.durationMs || 0) / 60000),
+        fmtDuration(durationFor(s)),
+        Math.round(durationFor(s) / 60000),
         s.synced ? 'yes' : 'no',
+        fmtDuration(allocatedPlaytime(s,exportAt).get(null) || 0),
+        fmtDuration([...allocatedPlaytime(s,exportAt)].reduce((total, [id, ms]) => total + (id ? ms : 0), 0)),
+        contentBreakdown(s,exportAt),
       ])
     ].map(r => r.map(esc).join(',')).join('\r\n');
     triggerDownload('playdex-sessions-' + todayStr() + '.csv', new Blob([csv], { type: 'text/csv;charset=utf-8' }));
@@ -11884,6 +12497,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         void el.offsetWidth;
         el.classList.add('tick');
       }
+      refreshLiveContent();
       const progressMinute=Math.floor(elapsed/60000);
       if(progressMinute!==lastProgressMinute || activeSession.id!==lastProgressSessionId) {
         lastProgressMinute=progressMinute;lastProgressSessionId=activeSession.id;
@@ -12174,7 +12788,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   });
   document.getElementById('rotation-cancel').addEventListener('click',()=>document.getElementById('rotation-modal').classList.remove('open'));
   document.getElementById('rotation-save').addEventListener('click',()=>{
-    const chosen=Array.from(document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')).filter(input=>games.some(g=>g.id===input.value && !g.archived));
+    const chosen=Array.from(document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')).filter(input=>contentEntries().some(g=>g.id===input.value && !g.archived));
     const targets={};
     for(const checkbox of chosen) {
       const input=checkbox.closest('.rotation-choice').querySelector('.rotation-target');
@@ -12564,8 +13178,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const start = dateKey(getWeekBounds().start);
     const dates = new Map(Array.from({length:28}, (_, i) => [addDays(start, -i-1), Math.floor(i/7)]));
     const weeks = [0, 0, 0, 0];
-    sessions.forEach(session => {
-      if (session.stop === null || session.gameId !== gameId) return;
+    contentSessions(gameId).forEach(session => {
+      if (session.stop === null) return;
       const week = dates.get(dateKey(session.start));
       if (week !== undefined) weeks[week] += session.durationMs || 0;
     });
@@ -12630,7 +13244,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('beat-time-form').addEventListener('submit', event => {
     event.preventDefault();
     checkStorageFresh();
-    const game = games.find(g => g.id === beatTimeModal.dataset.gameId);
+    const game = contentData(beatTimeModal.dataset.gameId);
     if (!game) return;
     delete game.beatNotNeeded;
     delete game.beatUnavailable;
@@ -12644,10 +13258,10 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
     saveGames(games);
     renderGamesTab();
-    renderDashboardBody(game);
+    renderDashboardBody(contentEntry(beatTimeModal.dataset.gameId));
     closeBeatTimeEditor();
   });
-  function refreshMilestoneDashboard(game){renderDashboardBody(game);}
+  function refreshMilestoneDashboard(){renderDashboardBody(contentEntry(document.getElementById('dashboard-modal').dataset.gameId));}
   function openMilestoneEditor(game,id){
     milestoneEditorGame=game.id;milestoneEditorId=id||null;
     const item=(game.milestones||[]).find(m=>m.id===id);
@@ -12664,7 +13278,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   document.getElementById('dashboard-body').addEventListener('click',event=>{
     if (event.target.closest('[data-edit-beat-time]')) {
-      const game = games.find(g => g.id === document.getElementById('dashboard-modal').dataset.gameId);
+      const game = contentEntry(document.getElementById('dashboard-modal').dataset.gameId);
       if (!game) return;
       beatTimeModal.dataset.gameId = game.id;
       for (const [key, field] of beatTimeFields) field.value = game[key] ?? '';
@@ -12676,7 +13290,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
     const control=event.target.closest('[data-milestone-action]');
     if(!control)return;
-    const game=games.find(g=>g.id===document.getElementById('dashboard-modal').dataset.gameId);
+    const game=contentEntry(document.getElementById('dashboard-modal').dataset.gameId);
     if(!game)return;
     const id=control.dataset.milestoneId,action=control.dataset.milestoneAction;
     if(action==='add'||action==='edit'){openMilestoneEditor(game,id);return;}
@@ -12688,7 +13302,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
     if(action==='toggle'){
       checkStorageFresh();
-      const current=games.find(g=>g.id===game.id);
+      const current=contentData(game.id);
       const item=current&&normalizeGameMilestones(current.milestones).find(m=>m.id===id);
       if(!item)return;
       current.milestones=normalizeGameMilestones(current.milestones);
@@ -12708,7 +13322,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if (!completed && !hoursField.reportValidity()) return;
     if(message){error.textContent=message;error.hidden=false;return;}
     checkStorageFresh();
-    const game=games.find(g=>g.id===milestoneEditorGame);if(!game)return;
+    const game=contentData(milestoneEditorGame);if(!game)return;
     game.milestones=normalizeGameMilestones(game.milestones);
     const item=game.milestones.find(m=>m.id===milestoneEditorId);
     if(milestoneEditorId&&!item)return;
@@ -12720,7 +13334,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('milestone-delete-cancel').onclick=()=>document.getElementById('milestone-delete-modal').classList.remove('open');
   document.getElementById('milestone-delete-confirm').onclick=()=>{
     checkStorageFresh();
-    const game=games.find(g=>g.id===milestoneEditorGame);if(!game)return;
+    const game=contentData(milestoneEditorGame);if(!game)return;
     game.milestones=normalizeGameMilestones(game.milestones).filter(m=>m.id!==milestoneDeleteId);
     saveGames(games);document.getElementById('milestone-delete-modal').classList.remove('open');refreshMilestoneDashboard(game);
   };
@@ -12737,22 +13351,30 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const session = sessions.find(entry => entry.id === id && entry.stop !== null);
     if (!session) return;
     finishReviewId = id;
+    const sessionDay = dateKey(session.start);
     const rows = [
       ['Active playtime', fmtDuration(session.durationMs || 0)],
       ['Paused time', fmtDuration(totalPausedMs(session, Date.parse(session.stop)))]
     ];
-    const goal = effectiveDailyGoalMinutes();
-    if (goal > 0) rows.push(['Today’s goal', fmtDurationMinutes(totalMsForDate(todayStr())) + ' / ' + fmtDurationMinutes(goal * 60000)]);
-    const target = rotationTargetMinutes(session.gameId);
-    if (target && rotationGameIds().includes(session.gameId)) {
-      const progress = rotationWeekProgress([session.gameId]).games[session.gameId].ms;
-      rows.push(['Weekly rotation', fmtDurationMinutes(progress) + ' / ' + fmtDurationMinutes(target * 60000)]);
-    }
-    const game = games.find(entry => entry.id === session.gameId);
     let beatProgress = '';
-    if (game && !game.beatNotNeeded && !game.beatUnavailable && (game.mainStoryHours || game.mainExtraHours)) {
-      const loggedMs = sessions.reduce((total, entry) => entry.gameId === game.id && entry.stop !== null ? total + (entry.durationMs || 0) : total, 0);
-      beatProgress = '<section class="finish-beat-progress"><h4>HLTB</h4>' + beatProgressRows(game, loggedMs) + '</section>';
+    const contents = [...allocatedPlaytime(session).keys()];
+    for (const dlcId of contents) {
+      const key = dlcId ? dlcKey(session.gameId, dlcId) : session.gameId;
+      const entry = contentEntry(key);
+      if (!entry) continue;
+      const dayMs = sessions.filter(row => row.stop !== null && row.gameId === session.gameId && dateKey(row.start) === sessionDay)
+        .reduce((sum,row) => sum + contentMs(row,key),0);
+      const prefix = dlcId ? contentName(session.gameId,dlcId) + ' - ' : '';
+      rows.push([prefix + 'Day total', fmtDuration(dayMs)]);
+      const target = rotationTargetMinutes(key);
+      if (target && rotationGameIds().includes(key)) {
+        const progress = rotationWeekProgress([key]).games[key].ms;
+        rows.push([contentName(session.gameId,dlcId) + ' - weekly rotation', fmtDurationMinutes(progress) + ' / ' + fmtDurationMinutes(target*60000)]);
+      }
+      if (!entry.beatNotNeeded && !entry.beatUnavailable && (entry.mainStoryHours || entry.mainExtraHours)) {
+        const loggedMs = contentSessions(key).filter(row => row.stop !== null).reduce((sum,row) => sum + (row.durationMs || 0),0);
+        beatProgress += '<section class="finish-beat-progress"><h4>' + escHtml(contentName(session.gameId,dlcId)) + ' - HLTB</h4>' + beatProgressRows(entry,loggedMs) + '</section>';
+      }
     }
     document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + label + '</span><strong>' + value + '</strong></p>').join('') + beatProgress;
     const button = document.getElementById('session-finish-sync');
@@ -12922,6 +13544,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     dropboxCheckForUpdates();
     if (window.hideBootSplash) window.hideBootSplash();
     queueStartupSyncReview();
+    setTimeout(explainDlcRotation, 5500);
   });
 
   // --- PWA install ---
@@ -12956,7 +13579,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.8.6';
+    const APP_VERSION = '1.8.7';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
