@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.8.7
 -------------------
+- Archived games use a clearer archive-and-up-arrow Restore icon with a descriptive label.
 - Added child DLC libraries with text-style dashboard links, independent covers, HLTB estimates, milestones, and archive controls. The DLC editor matches Edit Game with a cover preview and themed image controls.
 - Switch between Base game and DLCs within one session when DLC is available, hiding content labels for games without DLC, preserving pauses and timer targets, with a theme-coloured live time breakdown; edit content allocation in session forms.
 - DLC playtime has separate rotation targets and suggestions while parent rankings, platform totals, and session counts remain combined.
