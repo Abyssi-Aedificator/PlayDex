@@ -188,3 +188,11 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - Reuse allocatedPlaytime/contentMs for content durations. Pauses remain session-level and must be subtracted only where they intersect a segment.
 - Parent rankings and session counts are combined. HLTB, milestone estimates, and rotation targets use Base game or DLC allocations. Resolve compound rotation/dashboard IDs with contentEntry/contentData, never games.find alone.
 - Preserve DLC metadata and segments in normalization, exports, Dropbox history, and recovery. validateDlcData rejects discontinuous boundaries and invalid child references.
+
+## Personal milestone progression
+
+- Milestones belong to Base game or DLC content. Missing type migrates to manual; manualDone stores intent separately from completedAt. Preserve IDs, creation timestamps, and valid completion dates.
+- Reuse milestoneProgress and reconcileMilestoneLibrary for completion, dependencies, and reopening. saveGames/saveSessions reconcile before writing; session saves roll back both records on failure. Never trigger recursive saves from reconciliation.
+- milestoneTrackedMs uses recorded content allocations and clips segments and overlapping pauses for since-creation goals. Running sessions are provisional and must not save completion. HLTB already-played hours do not count.
+- Group names/order live on milestones; prerequisites resolve only within the same content. validateMilestoneRecords rejects cycles and invalid progress before imports.
+- settings.milestoneTemplates sync through Dropbox and are restored by JSON import without replacing other local preferences. Template application remaps milestone/checklist IDs and dependencies and resets manual progress, pins, and dates.

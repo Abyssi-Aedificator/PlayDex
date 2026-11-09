@@ -1,64 +1,37 @@
 PlayDex - Changelog
 ====================
 
-Version 1.8.7
+Version 1.9.0
 -------------------
-- Archived games use a clearer archive-and-up-arrow Restore icon with a descriptive label.
-- Added child DLC libraries with text-style dashboard links, independent covers, HLTB estimates, milestones, and archive controls. The DLC editor matches Edit Game with a cover preview and themed image controls.
-- Switch between Base game and DLCs within one session when DLC is available, hiding content labels for games without DLC, preserving pauses and timer targets, with a theme-coloured live time breakdown; edit content allocation in session forms.
-- DLC playtime has separate rotation targets and suggestions while parent rankings, platform totals, and session counts remain combined.
-- DLC metadata and content segments are included in validated backups, Dropbox history, recovery, and CSV breakdowns.
-- Review unsynced is hidden when there are no completed unsynced sessions.
-- Session saved shows Day total for tracked content, with shorter Base game labels and no daily goal row.
-
-Version 1.8.6
--------------------
-- Removed the View in Sessions button from the Playtime calendar.
-- Stats now charts the last 12 calendar months of playtime and the distribution of completed session lengths.
-- Doubled the catalog to 116 badges and Dedication to 30. Added Weekly Rhythm, Discovery, and Game Progress, with category filtering and unlocks from existing history.
-- Personal Records now shows your busiest week, busiest month, and most different games played in one day, plus eight more records for session counts, game variety, daily streaks, and single-game playtime. The expanded grid sits above Next Badge to Unlock and Favorite Game.
-
-Version 1.8.5
--------------------
-- Fixed Playtime by Platform showing Unspecified for sessions whose games already had a platform assigned.
-- Platform is set per game in Games. Sessions no longer have their own platform, and CSV exports use the game's assigned platform.
-
-Version 1.8.4
--------------------
-- Renamed How Long to Beat to HLTB and added Games badges for missing or unavailable estimates. Set HLTB to Not needed for this game to hide the missing-estimate badge.
-
-Version 1.8.3
--------------------
-- Added Games dropdown filters for pin status, cover art, HLTB status, personal milestones, weekly rotation, and play history.
-- Added optional How Long to Beat estimates for Main Story and Main + Extra with optional previously played hours and progress bars in the game dashboard and Session saved popup.
-- Assign weekly rotation games to weekdays or Any day and review planned hours by day against the weekly budget. Today shows only games planned for the current day and Any day games. The rotation editor is wider on larger screens.
-- Estimate unfinished milestone dates from optional hours remaining and the last four full weeks of playtime.
-- Review active and paused time, goal progress, and sync status immediately after stopping a session. Marking it synced keeps the review buttons in place.
-- Browse daily playtime in a Stats calendar with a daily total, grouped game and session rows, and a shortcut to open the selected date in Sessions.
-- Added a wider startup review of unsynced completed sessions with individual, per-game, and Mark all synced actions, with a compact theme-coloured badge showing each game's daily total across synced and unsynced sessions.
-- Kept Mark synced buttons inside the startup review list when hovering, preventing a horizontal scrollbar.
-- Added a Review unsynced button in Sessions. The popup closes automatically after the last session is marked synced.
-
-Version 1.8.2
--------------------
-- Dropbox now syncs settings including weekly rotation games and targets, while Theme, Interface, and Theme Colour stay on each device.
-
-Version 1.8.1
--------------------
-- Added Settings > Playtime goal > Automatically use last week's daily average; the daily goal updates automatically and the weekly rotation budget is seven times that goal.
-- Fixed Liquid Glass session sync filters so the Unsynced label fits inside its segment.
-- Liquid Glass panels are more translucent, with stronger backdrop blur, soft reflective highlights, and brighter glass edges while preserving accessibility fallbacks.
-- Renamed the Apple interface option to Liquid Glass.
-- Liquid Glass theme-coloured backgrounds drift gently in a 24-second loop, pause while the app is hidden, and stay static when the system requests reduced motion.
-- Today's Goal shows Daily average (last week) for the previous calendar week, rounded to the nearest whole hour, following Week starts on and including days with no sessions.
-- Automatic goals disable manual editing; turning the option off restores the saved manual goal, and changes that would put the weekly rotation over budget are blocked.
-- Liquid Glass uses a background drawn from the selected Theme Colour and semi-transparent frosted panels, with opaque fallbacks for Reduce transparency and Increase contrast.
-- Liquid Glass Increase contrast uses the selected Theme Colour for stronger borders and the selected navigation item, with readable contrasting text.
-- Removed the Liquid Glass Reduce motion switch; system reduced-motion preferences continue to apply automatically.
-- Refined the Liquid Glass interface around Liquid Glass principles: neutral glass navigation with layered highlights and progressive edge refraction, a moving selection lens, scroll-edge separation, capsule controls, and adaptive sheets and popovers.
-- Liquid Glass display options follow system accessibility preferences and provide additional Reduce transparency and Increase contrast controls.
-- Added an Apple-inspired Liquid Glass interface with grouped light and dark surfaces, system typography, translucent floating navigation, rounded controls, and accessible theme-colour accents.
+- Added the Liquid Glass interface with grouped light and dark surfaces, system typography, capsule controls, translucent navigation, adaptive sheets and popovers, and theme-colour accents.
+- Liquid Glass uses neutral glass navigation with a moving selection lens, reflective highlights, progressive edge refraction, scroll-edge separation, and more translucent frosted panels.
+- Liquid Glass backgrounds use both Theme Colours and drift in a 24-second loop, pause while the app is hidden, and stay static when the system requests reduced motion.
+- Liquid Glass follows system accessibility preferences and offers Reduce transparency and Increase contrast, with opaque fallbacks and theme-coloured high-contrast borders and navigation; reduced motion follows the system without a separate app switch.
 - Interface selection persists across launches; switching among Classic, Material 3, and Liquid Glass keeps the selected theme colour and existing data.
+- Fixed Liquid Glass session sync filters so the Unsynced label fits inside its segment.
+- Today's Goal shows the previous calendar week's daily average rounded to whole hours, following Week starts on and including days with no sessions.
+- Settings can automatically use last week's daily average as the daily goal and seven times that goal as the weekly rotation budget; automatic goals disable manual editing, retain the saved manual goal, and block changes that would exceed the rotation budget.
+- Dropbox syncs settings including weekly rotation games and targets, while Theme, Interface, and Theme Colour stay on each device.
+- Added Games dropdown filters for pin status, cover art, HLTB status, personal milestones, weekly rotation, and play history.
+- Added HLTB estimates for Main Story and Main + Extra, optional previously played hours, and progress bars in game dashboards and Session saved; Games badges identify missing or unavailable estimates, with a Not needed option.
+- Assign weekly rotation games to weekdays or Any day and review planned hours by day against the weekly budget; Today shows only entries planned for the current day or Any day, and the editor is wider on larger screens.
+- Estimate unfinished milestone dates from optional hours remaining and playtime over the last four full calendar weeks.
+- Review active and paused time, sync status, rotation targets, HLTB progress, and tracked-content Day total after stopping a session; marking it synced keeps the review buttons in place.
+- Browse daily playtime in a Stats calendar with daily totals and grouped game and session rows; removed its View in Sessions button.
+- Added a wider startup review of unsynced completed sessions with individual, per-game, and Mark all synced actions, plus compact theme-coloured badges showing each game's daily total across synced and unsynced sessions.
+- Kept Mark synced buttons inside the startup review list when hovering, preventing a horizontal scrollbar.
+- Added Review unsynced in Sessions; the button is hidden when no completed sessions need syncing, and the popup closes after the last session is marked synced.
+- Platform is assigned per game in Games, sessions no longer have separate platforms, and CSV exports use the game's platform; fixed Playtime by Platform showing Unspecified for games with an assigned platform.
+- Expanded Personal Records with busiest week and month, daily game variety, and eight more records covering session counts, game variety, daily streaks, and single-game playtime; the grid sits above Next Badge to Unlock and Favorite Game.
+- Doubled the catalog to 116 badges and Dedication to 30, adding Weekly Rhythm, Discovery, and Game Progress categories, category filtering, and unlocks from existing history.
+- Stats charts the last 12 calendar months of playtime and the distribution of completed session lengths.
+- Added child DLC libraries with text-style dashboard links, independent covers, HLTB estimates, milestones, and archive controls; the DLC editor matches Edit Game with a cover preview and themed image controls.
+- Switch between Base game and DLCs within one session while preserving pauses and timer targets, with a theme-coloured live breakdown and editable session content allocation; games without DLC hide content labels and Switch content.
+- DLCs have separate rotation targets and suggestions while parent rankings, platform totals, and session counts remain combined.
+- DLC metadata and content segments are preserved in validated backups, Dropbox history, recovery, and CSV breakdowns.
+- Archived games use a clearer archive-and-up-arrow Restore icon with a descriptive label.
+- Personal milestones support checklists, counters, tracked playtime, prerequisites, groups, ordering, target dates, pinned progress, and reusable synced templates for Base games and DLCs.
+- Milestone completion and reopening follow corrected progress and session allocations while preserving existing completion dates and finish estimates.
 
 Version 1.8.0
 -------------------

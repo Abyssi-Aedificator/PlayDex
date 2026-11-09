@@ -22,6 +22,9 @@ The Liquid Glass interface follows [Apple's Liquid Glass material guidance](http
 
 DLCs can be added from a game's dashboard. Each has its own cover, HLTB estimates, milestones, and rotation target. Switch content during play to split one session into Base game and DLC time. Parent rankings include all content, while HLTB and rotation targets track each content item separately. Session editors include chronological content allocation, and deleting a DLC can move its tracked time back to Base game.
 
+Personal milestones support manual objectives, checklists, counters, and recorded-playtime goals for each Base game or DLC. Use Advanced options for groups, prerequisites, target dates, and a pinned objective. Progress updates can reopen dependent milestones after corrections. Save milestone sets as templates to reuse them with fresh checklists and counts; templates are included in Dropbox sync and JSON backups.
+
+
 ## Getting started
 
 PlayDex is a static, self-contained app. No build step or server is required to develop it.
