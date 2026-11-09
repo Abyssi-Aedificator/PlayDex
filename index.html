@@ -894,6 +894,8 @@ opacity: 0.18;
   .rotation-target-status { display:block; margin-top:5px; color:var(--text2); font-size:.7rem; line-height:1.5; }
   .rotation-target-status.reached { color:var(--accent); font-weight:600; }
   #rotation-modal .modal { width:100%; max-width:580px; }
+  #rotation-modal #rotation-load-last-week { display:block; margin:16px 0 12px; }
+  #rotation-modal #rotation-history-hint { margin:0 0 16px; }
   #rotation-choices { padding-right:8px; }
   @media(min-width:600px) {
     .rotation-choice { gap:20px; }
@@ -5565,7 +5567,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.9.0</span>
+    <span class="version-badge">1.9.1</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -6762,7 +6764,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
-<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose any number of games to focus on. Set optional weekly targets in whole hours. Leave a target blank to keep it unset. Selections and targets stay until you change them; progress counts completed sessions and resets each week using Week starts on.</p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><div id="rotation-day-summary" class="rotation-day-summary backup-hint" aria-live="polite"></div><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
+<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose any number of games to focus on. Set optional weekly targets in whole hours. Leave a target blank to keep it unset. Each new week starts with an empty rotation using Week starts on. Load last week to reuse its games, targets, and planned days; progress counts only the current week.</p><button type="button" class="btn-ghost" id="rotation-load-last-week">Load last week</button><p class="backup-hint" id="rotation-history-hint" aria-live="polite"></p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><div id="rotation-day-summary" class="rotation-day-summary backup-hint" aria-live="polite"></div><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
 
 <!-- What should I play? picker -->
 <div class="modal-overlay" id="pick-modal">
@@ -6929,6 +6931,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function saveSettings(settings) {
+    checkStorageFresh();
+    rollWeeklyRotation(settings);
     const previous = JSON.stringify(syncSettings(loadSettings()));
     writeLocalData(KEYS.settings, settings);
     if (previous !== JSON.stringify(syncSettings(settings))) scheduleAutoUpload();
@@ -7573,6 +7577,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     });
     validateDlcData(data);
     validateMilestoneData(data);
+    validateRotationHistory(data.settings);
     return data;
   }
   function dbxValidateFile(data) {
@@ -9276,7 +9281,63 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     setTimeout(cleanup, 350);
   }
 
+  function validateRotationHistory(state) {
+    if(!state)return;
+    if(state.weeklyRotationWeek!==undefined&&!milestoneValidDate(state.weeklyRotationWeek))throw Error('Invalid rotation week');
+    if(state.weeklyRotationWeekStartsOn!==undefined&&!['sunday','monday'].includes(state.weeklyRotationWeekStartsOn))throw Error('Invalid rotation week start');
+    const saved=state.weeklyRotationLastWeek;if(saved===undefined)return;
+    const record=value=>value&&typeof value==='object'&&!Array.isArray(value);
+    if(!record(saved)||!milestoneValidDate(saved.weekStart)||!['sunday','monday'].includes(saved.weekStartsOn)||!Array.isArray(saved.ids)||saved.ids.some(id=>typeof id!=='string'||!id)||new Set(saved.ids).size!==saved.ids.length||!record(saved.targets)||!record(saved.days))throw Error('Invalid previous rotation');
+    for(const [id,value] of Object.entries(saved.targets))if(!saved.ids.includes(id)||!Number.isInteger(value)||value<=0||value>10080)throw Error('Invalid previous rotation target');
+    for(const [id,value] of Object.entries(saved.days))if(!saved.ids.includes(id)||!['Any day','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].includes(value))throw Error('Invalid previous rotation day');
+  }
+  function rotationWeekKey(now=new Date(),first='monday') {
+    const day=new Date(now);day.setHours(12,0,0,0);
+    day.setDate(day.getDate()-(day.getDay()-(first==='sunday'?0:1)+7)%7);
+    return day.getFullYear()+'-'+String(day.getMonth()+1).padStart(2,'0')+'-'+String(day.getDate()).padStart(2,'0');
+  }
+  function rollWeeklyRotation(state,now=new Date()) {
+    const first=state.weekStartsOn==='sunday'?'sunday':'monday',week=rotationWeekKey(now,first),previous=state.weeklyRotationWeek;
+    // Adopt existing selections on first upgrade; older data has no reliable week stamp.
+    if(!milestoneValidDate(previous)){
+      state.weeklyRotationWeek=week;state.weeklyRotationWeekStartsOn=first;return true;
+    }
+    if(state.weeklyRotationWeekStartsOn!==first){
+      if(state.weeklyRotationLastWeek?.weekStart===addDays(previous,-7))state.weeklyRotationLastWeek={...state.weeklyRotationLastWeek,weekStart:addDays(week,-7),weekStartsOn:first};
+      state.weeklyRotationWeek=week;state.weeklyRotationWeekStartsOn=first;return true;
+    }
+    // A backward device-clock change must not clear the current plan.
+    if(previous>=week)return false;
+    const last=addDays(week,-7),ids=previous===last&&Array.isArray(state.weeklyRotation)?[...new Set(state.weeklyRotation.filter(id=>typeof id==='string'))]:[];
+    const targets={},days={};
+    for(const id of ids){
+      const target=state.weeklyRotationTargets?.[id];if(Number.isInteger(target)&&target>0&&target<=10080)targets[id]=target;
+      const day=state.weeklyRotationDays?.[id];days[id]=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].includes(day)?day:'Any day';
+    }
+    state.weeklyRotationLastWeek={weekStart:last,weekStartsOn:first,ids,targets,days};
+    state.weeklyRotation=[];state.weeklyRotationTargets={};state.weeklyRotationDays={};
+    state.weeklyRotationWeek=week;state.weeklyRotationWeekStartsOn=first;
+    return true;
+  }
+  function ensureRotationWeek() {
+    const first=settings.weekStartsOn==='sunday'?'sunday':'monday';
+    if(settings.weeklyRotationWeekStartsOn===first && milestoneValidDate(settings.weeklyRotationWeek) && settings.weeklyRotationWeek>=rotationWeekKey(new Date(),first))return false;
+    const next=structuredClone(settings);
+    if(!rollWeeklyRotation(next))return false;
+    saveSettings(next);settings=next;return true;
+  }
+  function lastWeekRotation() {
+    const snapshot=settings.weeklyRotationLastWeek;
+    const first=settings.weekStartsOn==='sunday'?'sunday':'monday';
+    return snapshot&&snapshot.weekStart===addDays(rotationWeekKey(new Date(),first),-7)&&Array.isArray(snapshot.ids)?snapshot:null;
+  }
+  function rotationHistoryHint() {
+    const snapshot=lastWeekRotation(),ids=snapshot?.ids||[],available=ids.filter(id=>{const entry=contentEntry(id);return entry&&!entry.archived;});
+    document.getElementById('rotation-load-last-week').disabled=!available.length;
+    document.getElementById('rotation-history-hint').textContent=ids.length?'Last week: '+snapshot.weekStart+' - '+addDays(snapshot.weekStart,6)+'. Loading replaces the editor selection; review targets, then Save rotation. Archived or removed content is skipped.':'No rotation saved for last week yet. New weeks start empty.';
+  }
   function rotationGameIds() {
+    ensureRotationWeek();
     const selected=Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[];
     const available=new Set(contentEntries().filter(g=>!g.archived).map(g=>g.id));
     return [...new Set(selected)].filter(id=>available.has(id));
@@ -9298,6 +9359,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return {bounds,games:result,played:ids.filter(id=>result[id].count>0).length};
   }
   function archivedRotationIds() {
+    ensureRotationWeek();
     const selected=new Set(Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[]);
     return contentEntries().filter(game=>game.archived && selected.has(game.id)).map(game=>game.id);
   }
@@ -9448,6 +9510,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return ['Any day', ...orderedWeekdays()].map(day => '<option' + (day === selected ? ' selected' : '') + '>' + day + '</option>').join('');
   }
   function openRotationEditor() {
+    ensureRotationWeek();
+    document.getElementById('rotation-modal').dataset.week=settings.weeklyRotationWeek;
+    rotationHistoryHint();
     const ids=new Set(rotationGameIds()),active=contentEntries().filter(g=>!g.archived).sort((a,b)=>a.name.localeCompare(b.name));
     if(!active.length){toast('Add a game first');return;}
     document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (hours)<input class="rotation-target" type="number" min="1" max="168" step="1" placeholder="Optional" value="'+(Math.ceil(rotationTargetMinutes(g.id)/60)||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label><label class="rotation-day-label">Planned day<select class="rotation-day" aria-label="Planned day"'+(ids.has(g.id)?'':' disabled')+'>'+rotationDayOptions(g.id)+'</select></label></div>').join('');
@@ -12564,6 +12629,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       refreshQuestCountdown();
       if (todayStr() !== lastQuestDay) {
         lastQuestDay = todayStr();
+        if(ensureRotationWeek()){renderTodayTab();renderGamesTab();}
         renderWeeklyRotation();
         renderAchievementsTab();
         renderGoal();
@@ -12751,6 +12817,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   const weekStartPresetBtns = Array.prototype.slice.call(document.querySelectorAll('#week-start-presets .target-opt'));
   const applyWeekStart = v => {
     if (v !== 'sunday' && v !== 'monday') return;
+    ensureRotationWeek();
     settings.weekStartsOn = v;
     saveSettings(settings);
     weekStartPresetBtns.forEach(b => b.classList.toggle('on', b.dataset.weekstart === v));
@@ -12871,7 +12938,27 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     rotationSelectionCount();
   });
   document.getElementById('rotation-cancel').addEventListener('click',()=>document.getElementById('rotation-modal').classList.remove('open'));
+  document.getElementById('rotation-load-last-week').addEventListener('click',()=>{
+    ensureRotationWeek();
+    const modal=document.getElementById('rotation-modal');
+    if(modal.dataset.week!==settings.weeklyRotationWeek)openRotationEditor();
+    const snapshot=lastWeekRotation();if(!snapshot)return;
+    const selected=new Set(snapshot.ids);
+    let loaded=0;
+    document.querySelectorAll('#rotation-choices .rotation-choice').forEach(row=>{
+      const checkbox=row.querySelector('input[type="checkbox"]'),target=row.querySelector('.rotation-target'),day=row.querySelector('.rotation-day');
+      checkbox.checked=selected.has(checkbox.value);target.disabled=day.disabled=!checkbox.checked;
+      const minutes=Number(snapshot.targets?.[checkbox.value]);target.value=checkbox.checked&&Number.isInteger(minutes)&&minutes>0&&minutes<=10080?Math.ceil(minutes/60):'';
+      const planned=snapshot.days?.[checkbox.value];day.value=[...day.options].some(option=>option.value===planned)?planned:'Any day';
+      if(checkbox.checked)loaded++;
+    });
+    rotationSelectionCount();
+    document.getElementById('rotation-history-hint').textContent='Loaded '+loaded+' game'+(loaded===1?'':'s')+' from last week. Review the targets and planned days, then Save rotation. '+(snapshot.ids.length>loaded?'Archived or removed content was skipped.':'');
+  });
   document.getElementById('rotation-save').addEventListener('click',()=>{
+    ensureRotationWeek();
+    if(document.getElementById('rotation-modal').dataset.week!==settings.weeklyRotationWeek){openRotationEditor();toast('A new week started. The rotation is empty; load last week or choose new games.');return;}
+
     const chosen=Array.from(document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')).filter(input=>contentEntries().some(g=>g.id===input.value && !g.archived));
     const targets={};
     for(const checkbox of chosen) {
@@ -13897,7 +13984,10 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     showWhenReady();
   }
 
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&ensureRotationWeek()){renderTodayTab();renderGamesTab();}});
+
   // --- Initial render ---
+  ensureRotationWeek();
   const initialMilestoneState=reconcileMilestoneLibrary(games,sessions);
   const milestoneMigration=games.length>0 && JSON.stringify(games)!==JSON.stringify(JSON.parse(localStorage.getItem(KEYS.games)||'[]'));
   if(initialMilestoneState.changed||milestoneMigration)saveGames(games);
@@ -13947,7 +14037,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.9.0';
+    const APP_VERSION = '1.9.1';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {

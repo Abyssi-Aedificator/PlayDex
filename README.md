@@ -24,6 +24,9 @@ DLCs can be added from a game's dashboard. Each has its own cover, HLTB estimate
 
 Personal milestones support manual objectives, checklists, counters, and recorded-playtime goals for each Base game or DLC. Use Advanced options for groups, prerequisites, target dates, and a pinned objective. Progress updates can reopen dependent milestones after corrections. Save milestone sets as templates to reuse them with fresh checklists and counts; templates are included in Dropbox sync and JSON backups.
 
+Weekly rotations start empty each calendar week, following Week starts on. Choose games, then use Load last week to reuse the previous week's games, DLCs, targets, and planned days. Review the loaded plan and save it within the current weekly budget; archived and deleted content is skipped.
+
+
 
 ## Getting started
 

@@ -1,6 +1,11 @@
 PlayDex - Changelog
 ====================
 
+Version 1.9.1
+-------------------
+- Added space around Load last week in the rotation editor so the button is clearly separated from its explanatory text.
+- Weekly rotations now start empty each calendar week, following Week starts on, with Load last week to review and restore the previous week's active games, DLCs, targets, and planned days before saving.
+
 Version 1.9.0
 -------------------
 - Added the Liquid Glass interface with grouped light and dark surfaces, system typography, capsule controls, translucent navigation, adaptive sheets and popovers, and theme-colour accents.
