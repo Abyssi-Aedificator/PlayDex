@@ -196,3 +196,9 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - milestoneTrackedMs uses recorded content allocations and clips segments and overlapping pauses for since-creation goals. Running sessions are provisional and must not save completion. HLTB already-played hours do not count.
 - Group names/order live on milestones; prerequisites resolve only within the same content. validateMilestoneRecords rejects cycles and invalid progress before imports.
 - settings.milestoneTemplates sync through Dropbox and are restored by JSON import without replacing other local preferences. Template application remaps milestone/checklist IDs and dependencies and resets manual progress, pins, and dates.
+
+## Weekly rotation reset
+
+- weeklyRotationWeek and weeklyRotationWeekStartsOn tag the current plan. rollWeeklyRotation clears games, targets, and days on a new calendar week and keeps weeklyRotationLastWeek as a synced snapshot. First-upgrade data adopts the current week without discarding selections.
+- ensureRotationWeek guards rendering, settings saves, midnight, and resume. Rebase when Week starts on changes; never clear a plan because the device clock moved backward.
+- Load last week populates the rotation editor only, skips unavailable content, and retains Save rotation budget checks. Check the editor week before saving so a draft from an expired week cannot silently repopulate a reset rotation.

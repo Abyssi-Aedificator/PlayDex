@@ -1,6 +1,6 @@
 /* PlayDex service worker */
 const SW_VERSION = '1.9.0';
-const CACHE_NAME = 'playdex-v0190';
+const CACHE_NAME = 'playdex-v0191';
 const UPDATE_CACHE = 'playdex-update-control';
 const APPROVED_KEY = new URL('./__approved-version__', self.registration.scope).href;
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './icon-maskable-512.png', './assets/material/RobotoFlex.ttf'];

@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.9.0
 -------------------
+- Weekly rotations now start empty each calendar week, following Week starts on, with Load last week to review and restore the previous week's active games, DLCs, targets, and planned days before saving.
 - Added the Liquid Glass interface with grouped light and dark surfaces, system typography, capsule controls, translucent navigation, adaptive sheets and popovers, and theme-colour accents.
 - Liquid Glass uses neutral glass navigation with a moving selection lens, reflective highlights, progressive edge refraction, scroll-edge separation, and more translucent frosted panels.
 - Liquid Glass backgrounds use both Theme Colours and drift in a 24-second loop, pause while the app is hidden, and stay static when the system requests reduced motion.
