@@ -4,6 +4,8 @@ PlayDex - Changelog
 Version 1.9.1
 -------------------
 - Top's current and previous 7-day ranges stay at seven local calendar days across daylight-saving changes.
+- Failed JSON imports restore the original library, sessions, and settings instead of leaving partially replaced data; the import can be retried.
+- Dropbox downloads and rollbacks restore local data if any replacement write fails, and keep the original in-memory session state intact.
 - Overlapping pause records are counted once and clipped to the session bounds, keeping live timers, pause summaries, DLC allocations, and milestone progress consistent.
 - Archiving or restoring a DLC accounts for time already played in the running session, preventing its weekly budget from changing unexpectedly when the session stops.
 - DLC names containing markup characters display as plain text in the Session saved review.

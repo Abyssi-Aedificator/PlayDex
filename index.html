@@ -6915,6 +6915,29 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     scheduleAutoUpload();
   }
 
+  function persistLibraryReplacement(library,history,preferences) {
+    checkStorageFresh();
+    const nextGames=normalizeGames(library),nextSessions=structuredClone(history),nextSettings=structuredClone(preferences);
+    rollWeeklyRotation(nextSettings);
+    const result=reconcileMilestoneLibrary(nextGames,nextSessions);
+    const records=[[KEYS.games,nextGames],[KEYS.sessions,nextSessions],[KEYS.settings,nextSettings]];
+    // Serialize before changing storage, and publish in-memory state only after every write succeeds.
+    const prepared=records.map(([key,value])=>({key,value,previous:localStorage.getItem(key),text:JSON.stringify(value)})),written=[];
+    try{
+      for(const entry of prepared){writeLocalData(entry.key,entry.value);written.push(entry);}
+    }catch(error){
+      // Free successful replacement records first so restoration also works near the storage limit.
+      const restore=written.filter(entry=>localStorage.getItem(entry.key)===entry.text);
+      for(const entry of restore)localStorage.removeItem(entry.key);
+      for(const entry of restore)if(entry.previous!==null)localStorage.setItem(entry.key,entry.previous);
+      for(const entry of prepared)storageBaseline[entry.key]=localStorage.getItem(entry.key);
+      throw error;
+    }
+    games=nextGames;sessions=nextSessions;settings=nextSettings;
+    activeSession=sessions.find(session=>session.stop===null)||null;
+    milestoneCompletionNotice(result.completed);
+    scheduleAutoUpload();
+  }
   function defaultSettings() {
     return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' };
   }
@@ -7740,17 +7763,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     clearTimeout(dbxSyncTimer);
     dbxSkipAutoUpload = true;
     try {
-      games = normalizeGames(parsed.games);
-      sessions = parsed.sessions;
-      if (parsed.settings) {
-        const nextSettings = Object.assign(defaultSettings(), syncSettings(parsed.settings));
-        DEVICE_SETTINGS.forEach(key => { nextSettings[key] = settings[key]; });
-        settings = nextSettings;
-        saveSettings(settings);
-        refreshSyncedSettingsControls();
-      }
-      saveGames(games);
-      saveSessions(sessions);
+      const nextSettings=parsed.settings?Object.assign(defaultSettings(),syncSettings(parsed.settings)):structuredClone(settings);
+      DEVICE_SETTINGS.forEach(key=>{nextSettings[key]=settings[key];});
+      persistLibraryReplacement(parsed.games,parsed.sessions,nextSettings);
+      if(parsed.settings)refreshSyncedSettingsControls();
       backfillUnlockDates('gentle');
       activeSession = sessions.find(s => s.stop === null) || null;
       applyTheme();
@@ -12501,15 +12517,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       try { validateBackupData(importData); }
       catch (error) { importData=null; toast('Invalid backup: '+error.message); document.getElementById('import-modal').classList.remove('open'); return; }
       checkStorageFresh();
-      const localSettings = JSON.parse(JSON.stringify(settings));
-      games = normalizeGames(importData.games);
-      sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
+      const localSettings=structuredClone(settings);
       // Templates are portable backup data; other local preferences remain unchanged.
-      settings = localSettings;
-      if(importData.settings?.milestoneTemplates !== undefined)settings.milestoneTemplates=structuredClone(importData.settings.milestoneTemplates);
-      saveGames(games);
-      saveSessions(sessions);
-      saveSettings(settings);
+      if(importData.settings?.milestoneTemplates!==undefined)localSettings.milestoneTemplates=structuredClone(importData.settings.milestoneTemplates);
+      try{persistLibraryReplacement(importData.games,importData.sessions,localSettings);}
+      catch(error){toast('Backup could not be imported: '+error.message);return;}
       backfillUnlockDates('gentle');
       activeSession = sessions.find(s => s.stop === null) || null;
       importData = null;
