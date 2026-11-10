@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.9.1
 -------------------
+- Unchanged edits preserve legacy sessions' recorded playtime; changing their timing or content allocation still recalculates active duration.
 - Removing a Games attribute-filter chip now clears that filter, including cover, HLTB, DLC, milestones, rotation, and play-history filters.
 - Tags containing quotation marks can be selected and removed as filters correctly.
 - Week-start, stale-game, idle-reminder, and session-target selections no longer clear one another when clicking presets, entering a custom target, or starting a game.
