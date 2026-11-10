@@ -8541,6 +8541,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function openDlcEditor(parentId, key = null) {
     const modal = document.getElementById('dlc-editor');
+    advanceCoverRevision(modal);
     rememberContentFocus(modal);
     const dlc = key ? contentData(key) : null;
     modal.dataset.parentId = parentId;
@@ -8597,28 +8598,33 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const error = document.getElementById('dlc-editor-error');
     if (!/^https?:\/\//i.test(image)) { error.textContent = 'Enter an HTTP(S) image URL.'; error.hidden = false; return; }
     error.hidden = true;
+    advanceCoverRevision(document.getElementById('dlc-editor'));
     document.getElementById('dlc-editor').dataset.cover = image;
     paintCover(document.getElementById('dlc-cover-preview'), {image}, 'Add a cover');
   };
+  document.getElementById('dlc-image').addEventListener('input',()=>advanceCoverRevision(document.getElementById('dlc-editor')));
   document.getElementById('dlc-clear-cover').onclick = () => {
+    advanceCoverRevision(document.getElementById('dlc-editor'));
     document.getElementById('dlc-editor').dataset.cover = '';
     document.getElementById('dlc-image').value = '';
     document.getElementById('dlc-upload').value = '';
     paintCover(document.getElementById('dlc-cover-preview'), null, 'Add a cover');
   };
   document.getElementById('dlc-upload').onchange = event => {
-    const file = event.target.files[0];
-    if (!file) return;
-    fileToThumb(file, image => {
-      document.getElementById('dlc-editor').dataset.cover = image;
-      document.getElementById('dlc-image').value = '';
-      paintCover(document.getElementById('dlc-cover-preview'), {image}, 'Add a cover');
-    });
+    const file=event.target.files[0];event.target.value='';if(!file)return;
+    if(!file.type.startsWith('image/')){toast('Please pick an image file');return;}
+    const modal=document.getElementById('dlc-editor'),revision=advanceCoverRevision(modal,true);
+    fileToThumb(file,image=>{
+      if(!currentCoverUpload(modal,revision))return;
+      modal.dataset.cover=image;document.getElementById('dlc-image').value='';
+      advanceCoverRevision(modal);paintCover(document.getElementById('dlc-cover-preview'),{image},'Add a cover');
+    },()=>{if(!currentCoverUpload(modal,revision))return false;advanceCoverRevision(modal);return true;});
   };
   document.getElementById('dlc-editor-form').onsubmit = event => {
     event.preventDefault();
     checkStorageFresh();
     const modal = document.getElementById('dlc-editor');
+    if(modal.dataset.coverLoading==='true'){toast('Wait for the cover upload to finish.');return;}
     const parent = games.find(game => game.id === modal.dataset.parentId);
     if (!parent) return;
     const name = document.getElementById('dlc-name').value.trim();
@@ -11646,10 +11652,23 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
   }
 
-  function fileToThumb(file, cb) {
+  function advanceCoverRevision(modal,busy=false) {
+    const revision=String((Number(modal.dataset.coverRevision)||0)+1);
+    modal.dataset.coverRevision=revision;modal.dataset.coverLoading=String(busy);
+    const save=modal.querySelector('#rename-save,button[type="submit"]');if(save)save.disabled=busy;
+    const upload=modal.querySelector('#cover-upload-btn,#dlc-upload-btn');
+    if(upload){upload.textContent=busy?'Loading...':'Upload';upload.setAttribute('aria-busy',String(busy));}
+    return revision;
+  }
+  function currentCoverUpload(modal,revision) {
+    return modal.classList.contains('open')&&modal.dataset.coverRevision===revision;
+  }
+  function fileToThumb(file, cb, onError) {
     const img = new Image();
     const url = URL.createObjectURL(file);
+    const failed=()=>{URL.revokeObjectURL(url);if(!onError||onError()!==false)toast('Could not read that image');};
     img.onload = () => {
+      try{
       const max = 400;
       let w = img.width, h = img.height;
       const scale = Math.min(1, max / Math.max(w, h));
@@ -11661,8 +11680,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       cv.getContext('2d').drawImage(img, 0, 0, w, h);
       URL.revokeObjectURL(url);
       cb(cv.toDataURL('image/jpeg', 0.72));
+      }catch(error){failed();}
     };
-    img.onerror = () => { URL.revokeObjectURL(url); toast('Could not read that image'); };
+    img.onerror = failed;
     img.src = url;
   }
 
@@ -11953,6 +11973,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const game = games.find(g => g.id === id);
     if (!game) return;
     pendingRenameGameId = id;
+    advanceCoverRevision(document.getElementById('rename-modal'));
     document.getElementById('rename-input').value = game.name;
     document.getElementById('rename-tags').value = (game.tags || []).join(', ');
     gamePlatformField.value = game.platform || '';
@@ -12547,11 +12568,13 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   const setGameCover = (gameId, img) => {
     const game = games.find(g => g.id === gameId);
     if (!game) return;
-    game.image = img;
-    saveGames(games);
+    advanceCoverRevision(document.getElementById('rename-modal'));
+    const previous=game.image;game.image=img;
+    try{saveGames(games);}catch(error){game.image=previous;toast('Cover could not be saved: '+error.message);return false;}
     paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
     render();
     toast(img ? 'Cover saved' : 'Cover removed');
+    return true;
   };
 
   document.getElementById('cover-upload-btn').addEventListener('click', () => {
@@ -12562,15 +12585,19 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     e.target.value = '';
     if (!file) return;
     if (!/^image\//.test(file.type)) { toast('Please pick an image file'); return; }
-    fileToThumb(file, dataUrl => setGameCover(pendingRenameGameId, dataUrl));
+    const modal=document.getElementById('rename-modal'),gameId=pendingRenameGameId,revision=advanceCoverRevision(modal,true);
+    fileToThumb(file,dataUrl=>{
+      if(!currentCoverUpload(modal,revision)||pendingRenameGameId!==gameId)return;
+      advanceCoverRevision(modal);setGameCover(gameId,dataUrl);
+    },()=>{if(!currentCoverUpload(modal,revision))return false;advanceCoverRevision(modal);return true;});
   });
   document.getElementById('cover-url-btn').addEventListener('click', () => {
     const v = document.getElementById('cover-url').value.trim().replace(/[\x22\x27]/g, '');
     if (!v) return;
     if (!/^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(v)) { toast('Enter a valid image URL'); return; }
-    document.getElementById('cover-url').value = '';
-    setGameCover(pendingRenameGameId, v);
+    if(setGameCover(pendingRenameGameId,v))document.getElementById('cover-url').value='';
   });
+  document.getElementById('cover-url').addEventListener('input',()=>advanceCoverRevision(document.getElementById('rename-modal')));
   document.getElementById('cover-url').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('cover-url-btn').click();
   });
