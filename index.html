@@ -8458,15 +8458,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return new Map([[null, ms]]);
     }
     const totals = new Map();
-    const pauses = (session.pauses || []).map(pause => [Date.parse(pause.from), Date.parse(pause.to)]);
-    if (session.pausedAt) pauses.push([Date.parse(session.pausedAt), now]);
-    pauses.sort((a,b) => a[0] - b[0]);
-    const merged = [];
-    for (const pause of pauses) {
-      const previous = merged.at(-1);
-      if (previous && pause[0] <= previous[1]) previous[1] = Math.max(previous[1], pause[1]);
-      else merged.push([...pause]);
-    }
+    const merged = sessionPauseIntervals(session,now);
     for (const segment of session.segments) {
       const start = Date.parse(segment.start), end = segment.stop === null ? now : Date.parse(segment.stop);
       let ms = Math.max(0, end - start);
@@ -9062,10 +9054,20 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   // --- Pause helpers ---
+  function sessionPauseIntervals(session,nowMs=Date.now()) {
+    const start=Date.parse(session.start),end=session.stop==null?nowMs:Date.parse(session.stop);
+    if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start)return [];
+    const pauses=(session.pauses||[]).map(pause=>[Math.max(start,Date.parse(pause.from)),Math.min(end,Date.parse(pause.to))]);
+    if(session.pausedAt)pauses.push([Math.max(start,Date.parse(session.pausedAt)),end]);
+    const merged=[];
+    for(const pause of pauses.filter(([from,to])=>Number.isFinite(from)&&Number.isFinite(to)&&to>from).sort((a,b)=>a[0]-b[0])){
+      const last=merged.at(-1);
+      if(last&&pause[0]<=last[1])last[1]=Math.max(last[1],pause[1]);else merged.push(pause);
+    }
+    return merged;
+  }
   function totalPausedMs(s, nowMs) {
-    let ms = (s.pauses || []).reduce((a, p) => a + (new Date(p.to) - new Date(p.from)), 0);
-    if (s.pausedAt) ms += nowMs - new Date(s.pausedAt).getTime();
-    return ms;
+    return sessionPauseIntervals(s,nowMs).reduce((total,[from,to])=>total+to-from,0);
   }
 
   function activeElapsedMs(s, nowMs) {
@@ -13385,11 +13387,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(!since){total+=allocatedPlaytime(session,now).get(dlcId)||0;continue;}
       const floor=Date.parse(since),end=session.stop===null?now:Date.parse(session.stop);
       if(end<=floor)continue;
-      const pauses=[...(session.pauses||[])];
-      if(session.pausedAt)pauses.push({from:session.pausedAt,to:new Date(end).toISOString()});
-      const union=pauses.map(p=>[Date.parse(p.from),Date.parse(p.to)]).sort((a,b)=>a[0]-b[0]).reduce((list,p)=>{
-        const previous=list.at(-1);if(previous&&p[0]<=previous[1])previous[1]=Math.max(previous[1],p[1]);else list.push(p.slice());return list;
-      },[]);
+      const union=sessionPauseIntervals(session,end);
       const active=(a,b)=>Math.max(0,b-a-union.reduce((sum,[from,to])=>sum+Math.max(0,Math.min(b,to)-Math.max(a,from)),0));
       if(!session.segments?.length){
         if(dlcId!==null)continue;
