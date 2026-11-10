@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.9.1
 -------------------
+- Invalid custom session targets must be corrected before starting a game instead of being silently rounded or clamped; clearing the field selects Off again.
 - Top's current and previous 7-day ranges stay at seven local calendar days across daylight-saving changes.
 - Failed JSON imports restore the original library, sessions, and settings instead of leaving partially replaced data; the import can be retried.
 - Dropbox downloads and rollbacks restore local data if any replacement write fails, and keep the original in-memory session state intact.
