@@ -6,6 +6,7 @@ Version 1.9.1
 - Overlapping pause records are counted once and clipped to the session bounds, keeping live timers, pause summaries, DLC allocations, and milestone progress consistent.
 - Archiving or restoring a DLC accounts for time already played in the running session, preventing its weekly budget from changing unexpectedly when the session stops.
 - DLC names containing markup characters display as plain text in the Session saved review.
+- Cover URLs containing quotes remain intact in library thumbnails, the Top podium, and dashboard and live-session cover backgrounds.
 - Unchanged edits preserve legacy sessions' recorded playtime; changing their timing or content allocation still recalculates active duration.
 - Removing a Games attribute-filter chip now clears that filter, including cover, HLTB, DLC, milestones, rotation, and play-history filters.
 - Tags containing quotation marks can be selected and removed as filters correctly.

@@ -8075,7 +8075,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.getElementById('top-podium').innerHTML=list(data.ranked.slice(0,3),(g)=>{
       const rank=data.ranked.indexOf(g)+1;
       const medal=['&#129351;','&#129352;','&#129353;'][rank-1];
-      const cover=g.image?'<img class="top-podium-cover" src="'+escHtml(g.image)+'" alt="" loading="lazy">':'<span class="top-podium-cover top-podium-fallback" aria-hidden="true">'+escHtml(g.name.slice(0,1).toUpperCase())+'</span>';
+      const cover=g.image?'<img class="top-podium-cover" src="'+milestoneAttr(g.image)+'" alt="" loading="lazy">':'<span class="top-podium-cover top-podium-fallback" aria-hidden="true">'+escHtml(g.name.slice(0,1).toUpperCase())+'</span>';
       return '<li class="top-podium-item">'+cover+'<div class="top-podium-details">'+link(g)+'<small>'+medal+' #'+rank+' &middot; '+fmtDurationShort(data.total[g.id])+'</small></div></li>';
     },'Play a game to build your podium.');
     const discoveryNote=data.discoveries.length>5?'<p class="top-insight-note">Showing the five most recent of '+data.discoveries.length+' discoveries.</p>':period==='all'?'<p class="top-insight-note">Your most recently discovered games across all history.</p>':'';
@@ -9558,7 +9558,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const cover = activeGame && activeGame.image;
       if (cover) {
         card.classList.add('has-cover');
-        card.style.setProperty('--cover', 'url("' + cover + '")');
+        card.style.setProperty('--cover', 'url(' + JSON.stringify(cover) + ')');
         card.style.background = 'linear-gradient(180deg, var(--live-tint-top), rgba(10,10,18,0.42))';
       } else {
         card.classList.remove('has-cover');
@@ -11415,7 +11415,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function gameCoverHtml(game) {
-    return '<span class="library-game-cover">'+(game.image?'<img src="'+escHtml(game.image)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<span aria-hidden="true">&#127918;</span></span>';
+    return '<span class="library-game-cover">'+(game.image?'<img src="'+milestoneAttr(game.image)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<span aria-hidden="true">&#127918;</span></span>';
   }
   function renderGamesTab() {
     const container = document.getElementById('games-list');
@@ -11624,7 +11624,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const img = game && game.image;
     if (img) {
       coverEl.className = 'dash-cover';
-      coverEl.style.backgroundImage = 'url("' + img + '")';
+      coverEl.style.backgroundImage = 'url(' + JSON.stringify(img) + ')';
       coverEl.innerHTML = '';
     } else {
       coverEl.className = 'dash-cover empty';
