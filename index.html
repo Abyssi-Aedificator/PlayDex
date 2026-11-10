@@ -5567,7 +5567,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.9.1</span>
+    <span class="version-badge">1.9.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -6915,6 +6915,29 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     scheduleAutoUpload();
   }
 
+  function persistLibraryReplacement(library,history,preferences) {
+    checkStorageFresh();
+    const nextGames=normalizeGames(library),nextSessions=structuredClone(history),nextSettings=structuredClone(preferences);
+    rollWeeklyRotation(nextSettings);
+    const result=reconcileMilestoneLibrary(nextGames,nextSessions);
+    const records=[[KEYS.games,nextGames],[KEYS.sessions,nextSessions],[KEYS.settings,nextSettings]];
+    // Serialize before changing storage, and publish in-memory state only after every write succeeds.
+    const prepared=records.map(([key,value])=>({key,value,previous:localStorage.getItem(key),text:JSON.stringify(value)})),written=[];
+    try{
+      for(const entry of prepared){writeLocalData(entry.key,entry.value);written.push(entry);}
+    }catch(error){
+      // Free successful replacement records first so restoration also works near the storage limit.
+      const restore=written.filter(entry=>localStorage.getItem(entry.key)===entry.text);
+      for(const entry of restore)localStorage.removeItem(entry.key);
+      for(const entry of restore)if(entry.previous!==null)localStorage.setItem(entry.key,entry.previous);
+      for(const entry of prepared)storageBaseline[entry.key]=localStorage.getItem(entry.key);
+      throw error;
+    }
+    games=nextGames;sessions=nextSessions;settings=nextSettings;
+    activeSession=sessions.find(session=>session.stop===null)||null;
+    milestoneCompletionNotice(result.completed);
+    scheduleAutoUpload();
+  }
   function defaultSettings() {
     return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' };
   }
@@ -7740,17 +7763,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     clearTimeout(dbxSyncTimer);
     dbxSkipAutoUpload = true;
     try {
-      games = normalizeGames(parsed.games);
-      sessions = parsed.sessions;
-      if (parsed.settings) {
-        const nextSettings = Object.assign(defaultSettings(), syncSettings(parsed.settings));
-        DEVICE_SETTINGS.forEach(key => { nextSettings[key] = settings[key]; });
-        settings = nextSettings;
-        saveSettings(settings);
-        refreshSyncedSettingsControls();
-      }
-      saveGames(games);
-      saveSessions(sessions);
+      const nextSettings=parsed.settings?Object.assign(defaultSettings(),syncSettings(parsed.settings)):structuredClone(settings);
+      DEVICE_SETTINGS.forEach(key=>{nextSettings[key]=settings[key];});
+      persistLibraryReplacement(parsed.games,parsed.sessions,nextSettings);
+      if(parsed.settings)refreshSyncedSettingsControls();
       backfillUnlockDates('gentle');
       activeSession = sessions.find(s => s.stop === null) || null;
       applyTheme();
@@ -7897,7 +7913,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return dates ? { start: new Date(dates.from + 'T00:00:00'), end: new Date(dates.to + 'T23:59:59.999') } : { start:null, end:null };
     }
     if (period === 'rolling7') {
-      return { start: startOfDay(new Date(now.getTime() - 6 * 86400000)), end: endOfDay(now) };
+      const start=startOfDay(now);start.setDate(start.getDate()-6);
+      return { start, end:endOfDay(now) };
     }
     if (period === 'month') {
       return {
@@ -7924,7 +7941,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return { start: new Date(y, m - 1, 1, 0, 0, 0, 0), end: new Date(y, m, 0, 23, 59, 59, 999) };
     }
     if (period === 'rolling7') {
-      return { start: startOfDay(new Date(cur.start.getTime() - 7 * 86400000)), end: endOfDay(new Date(cur.start.getTime() - 1)) };
+      const start=new Date(cur.start);start.setDate(start.getDate()-7);
+      return { start, end:endOfDay(new Date(cur.start.getTime()-1)) };
     }
     return getWeekBounds(new Date(cur.start.getTime() - 1));
   }
@@ -8075,7 +8093,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.getElementById('top-podium').innerHTML=list(data.ranked.slice(0,3),(g)=>{
       const rank=data.ranked.indexOf(g)+1;
       const medal=['&#129351;','&#129352;','&#129353;'][rank-1];
-      const cover=g.image?'<img class="top-podium-cover" src="'+escHtml(g.image)+'" alt="" loading="lazy">':'<span class="top-podium-cover top-podium-fallback" aria-hidden="true">'+escHtml(g.name.slice(0,1).toUpperCase())+'</span>';
+      const cover=g.image?'<img class="top-podium-cover" src="'+milestoneAttr(g.image)+'" alt="" loading="lazy">':'<span class="top-podium-cover top-podium-fallback" aria-hidden="true">'+escHtml(g.name.slice(0,1).toUpperCase())+'</span>';
       return '<li class="top-podium-item">'+cover+'<div class="top-podium-details">'+link(g)+'<small>'+medal+' #'+rank+' &middot; '+fmtDurationShort(data.total[g.id])+'</small></div></li>';
     },'Play a game to build your podium.');
     const discoveryNote=data.discoveries.length>5?'<p class="top-insight-note">Showing the five most recent of '+data.discoveries.length+' discoveries.</p>':period==='all'?'<p class="top-insight-note">Your most recently discovered games across all history.</p>':'';
@@ -8458,15 +8476,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return new Map([[null, ms]]);
     }
     const totals = new Map();
-    const pauses = (session.pauses || []).map(pause => [Date.parse(pause.from), Date.parse(pause.to)]);
-    if (session.pausedAt) pauses.push([Date.parse(session.pausedAt), now]);
-    pauses.sort((a,b) => a[0] - b[0]);
-    const merged = [];
-    for (const pause of pauses) {
-      const previous = merged.at(-1);
-      if (previous && pause[0] <= previous[1]) previous[1] = Math.max(previous[1], pause[1]);
-      else merged.push([...pause]);
-    }
+    const merged = sessionPauseIntervals(session,now);
     for (const segment of session.segments) {
       const start = Date.parse(segment.start), end = segment.stop === null ? now : Date.parse(segment.stop);
       let ms = Math.max(0, end - start);
@@ -8531,6 +8541,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function openDlcEditor(parentId, key = null) {
     const modal = document.getElementById('dlc-editor');
+    advanceCoverRevision(modal);
     rememberContentFocus(modal);
     const dlc = key ? contentData(key) : null;
     modal.dataset.parentId = parentId;
@@ -8558,7 +8569,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function restoredContentFitsBudget(keys) {
     const selected = keys.filter(key => archivedRotationIds().includes(key));
-    const progress = rotationWeekProgress(selected);
+    const progress = rotationProgressWithLive(selected);
     const additional = selected.reduce((sum,key) => {
       const target = rotationTargetMinutes(key);
       return sum + target - Math.min(target, Math.floor(progress.games[key].ms / 60000));
@@ -8587,28 +8598,33 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const error = document.getElementById('dlc-editor-error');
     if (!/^https?:\/\//i.test(image)) { error.textContent = 'Enter an HTTP(S) image URL.'; error.hidden = false; return; }
     error.hidden = true;
+    advanceCoverRevision(document.getElementById('dlc-editor'));
     document.getElementById('dlc-editor').dataset.cover = image;
     paintCover(document.getElementById('dlc-cover-preview'), {image}, 'Add a cover');
   };
+  document.getElementById('dlc-image').addEventListener('input',()=>advanceCoverRevision(document.getElementById('dlc-editor')));
   document.getElementById('dlc-clear-cover').onclick = () => {
+    advanceCoverRevision(document.getElementById('dlc-editor'));
     document.getElementById('dlc-editor').dataset.cover = '';
     document.getElementById('dlc-image').value = '';
     document.getElementById('dlc-upload').value = '';
     paintCover(document.getElementById('dlc-cover-preview'), null, 'Add a cover');
   };
   document.getElementById('dlc-upload').onchange = event => {
-    const file = event.target.files[0];
-    if (!file) return;
-    fileToThumb(file, image => {
-      document.getElementById('dlc-editor').dataset.cover = image;
-      document.getElementById('dlc-image').value = '';
-      paintCover(document.getElementById('dlc-cover-preview'), {image}, 'Add a cover');
-    });
+    const file=event.target.files[0];event.target.value='';if(!file)return;
+    if(!file.type.startsWith('image/')){toast('Please pick an image file');return;}
+    const modal=document.getElementById('dlc-editor'),revision=advanceCoverRevision(modal,true);
+    fileToThumb(file,image=>{
+      if(!currentCoverUpload(modal,revision))return;
+      modal.dataset.cover=image;document.getElementById('dlc-image').value='';
+      advanceCoverRevision(modal);paintCover(document.getElementById('dlc-cover-preview'),{image},'Add a cover');
+    },()=>{if(!currentCoverUpload(modal,revision))return false;advanceCoverRevision(modal);return true;});
   };
   document.getElementById('dlc-editor-form').onsubmit = event => {
     event.preventDefault();
     checkStorageFresh();
     const modal = document.getElementById('dlc-editor');
+    if(modal.dataset.coverLoading==='true'){toast('Wait for the cover upload to finish.');return;}
     const parent = games.find(game => game.id === modal.dataset.parentId);
     if (!parent) return;
     const name = document.getElementById('dlc-name').value.trim();
@@ -8668,18 +8684,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     nextSettings.weeklyRotation = (nextSettings.weeklyRotation || []).filter(key => key !== entry.id);
     if (nextSettings.weeklyRotationTargets) delete nextSettings.weeklyRotationTargets[entry.id];
     if (nextSettings.weeklyRotationDays) delete nextSettings.weeklyRotationDays[entry.id];
-    reconcileMilestoneLibrary(nextGames,nextSessions);
-    const oldGames = localStorage.getItem(KEYS.games), oldSessions = localStorage.getItem(KEYS.sessions), oldSettings = localStorage.getItem(KEYS.settings);
-    try { writeLocalData(KEYS.games, nextGames); writeLocalData(KEYS.sessions, nextSessions); writeLocalData(KEYS.settings, nextSettings); }
-    catch (error) {
-      for (const [key, value] of [[KEYS.games,oldGames],[KEYS.sessions,oldSessions],[KEYS.settings,oldSettings]]) {
-        if (value === null) localStorage.removeItem(key); else localStorage.setItem(key,value);
-        storageBaseline[key] = value;
-      }
-      toast('DLC deletion could not be saved.'); return;
-    }
-    games = nextGames; sessions = nextSessions; settings = nextSettings; activeSession = sessions.find(session => session.stop === null) || null;
-    scheduleAutoUpload();
+    try{persistLibraryReplacement(nextGames,nextSessions,nextSettings);}
+    catch(error){toast('DLC deletion could not be saved: '+error.message);return;}
     modal.classList.remove('open');
     openDashboard(entry.parentId);
     refreshContentViews();
@@ -8835,9 +8841,30 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return null;
     }
   }
+  function removeAllocationRow(panel,index,start,stop) {
+    const rows=[...panel.querySelectorAll('.allocation-row')];
+    if(rows.length<=1||!Number.isInteger(index)||index<0||index>=rows.length)return;
+    if(index>0){
+      const previous=rows[index-1],boundary=previous.querySelector('input'),following=rows[index].querySelector('input');
+      if(following){
+        boundary.value=following.value;
+        boundary.dataset.originalStop=following.dataset.originalStop;
+      }else{
+        boundary.closest('label').remove();
+        const until=document.createElement('span');until.className='backup-hint';until.textContent='Until session end';
+        previous.querySelector('[data-remove-segment]').before(until);
+      }
+    }
+    rows[index].remove();
+    const remaining=[...panel.querySelectorAll('.allocation-row')];
+    remaining.forEach((row,i)=>{const button=row.querySelector('[data-remove-segment]');if(remaining.length===1)button?.remove();else if(button)button.dataset.removeSegment=String(i);});
+    panel.querySelector('[data-allocation-error]').hidden=true;
+    // Other invalid boundaries stay editable; removing one never requires it to be valid first.
+    try{readAllocation(panel,start,stop);}catch(error){allocationForSave(panel,start,stop);}
+  }
   document.querySelectorAll('.content-allocation').forEach(panel => {
     panel.addEventListener('click', event => {
-      const button = event.target.closest('button');
+      const button = event.target.closest('button[data-add-segment],button[data-remove-segment]');
       if (!button) return;
       let segments;
       const adding = panel.id === 'add-content-allocation';
@@ -8845,6 +8872,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const to = getCalDateTime(adding ? addSessionEndDate : editSessionEndDate, adding ? addSessionEndTime : editSessionEndTime);
       const preserveSeconds = (value, initial) => value.slice(0,16) === localDateTime(initial).slice(0,16) ? Date.parse(initial) : Date.parse(value);
       const startTime = preserveSeconds(from, panel.dataset.start), stopTime = preserveSeconds(to, panel.dataset.stop);
+      if(button.hasAttribute('data-remove-segment')){removeAllocationRow(panel,Number(button.dataset.removeSegment),startTime,stopTime);return;}
       try { segments = readAllocation(panel, startTime, stopTime); }
       catch (error) { allocationForSave(panel, startTime, stopTime); return; }
       if (button.hasAttribute('data-add-segment')) {
@@ -8853,11 +8881,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         const boundary = new Date(Math.floor((start + stop) / 2)).toISOString();
         last.stop = boundary;
         segments.push({id:uid(), dlcId:null, start:boundary, stop:new Date(stop).toISOString()});
-      } else if (button.hasAttribute('data-remove-segment')) {
-        const index = Number(button.dataset.removeSegment);
-        if (index) segments[index - 1].stop = segments[index].stop;
-        else segments[1].start = segments[0].start;
-        segments.splice(index, 1);
       }
       paintAllocationEditor(panel, segments);
     });
@@ -8865,6 +8888,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function startGame(gameId, dlcId) {
     if (activeSession) { toast('Stop the current session first'); return; }
+    const customTarget=document.getElementById('target-custom');
+    if(!customTarget.checkValidity()){
+      goTab('today');customTarget.reportValidity();
+      toast('Enter a whole-minute target from 1 to 1440, or choose Off.');return;
+    }
     const entry = contentEntry(gameId);
     if (entry?.parentId) { dlcId = entry.dlcId; gameId = entry.parentId; }
     const game = games.find(g => g.id === gameId);
@@ -8887,7 +8915,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     session.segments = [{id:uid(), dlcId:dlcId || null, start:session.start, stop:null}];
     persistSessionReplacement([...sessions, session]);
     pendingTargetMin = 0;
-    document.querySelectorAll('.target-opt').forEach(button => button.classList.toggle('on', button.dataset.target === '0'));
+    document.querySelectorAll('#target-presets .target-opt').forEach(button => button.classList.toggle('on', button.dataset.target === '0'));
     document.getElementById('target-custom').value = '';
     toast('Started: ' + game.name);
     render();
@@ -9045,10 +9073,20 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   // --- Pause helpers ---
+  function sessionPauseIntervals(session,nowMs=Date.now()) {
+    const start=Date.parse(session.start),end=session.stop==null?nowMs:Date.parse(session.stop);
+    if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start)return [];
+    const pauses=(session.pauses||[]).map(pause=>[Math.max(start,Date.parse(pause.from)),Math.min(end,Date.parse(pause.to))]);
+    if(session.pausedAt)pauses.push([Math.max(start,Date.parse(session.pausedAt)),end]);
+    const merged=[];
+    for(const pause of pauses.filter(([from,to])=>Number.isFinite(from)&&Number.isFinite(to)&&to>from).sort((a,b)=>a[0]-b[0])){
+      const last=merged.at(-1);
+      if(last&&pause[0]<=last[1])last[1]=Math.max(last[1],pause[1]);else merged.push(pause);
+    }
+    return merged;
+  }
   function totalPausedMs(s, nowMs) {
-    let ms = (s.pauses || []).reduce((a, p) => a + (new Date(p.to) - new Date(p.from)), 0);
-    if (s.pausedAt) ms += nowMs - new Date(s.pausedAt).getTime();
-    return ms;
+    return sessionPauseIntervals(s,nowMs).reduce((total,[from,to])=>total+to-from,0);
   }
 
   function activeElapsedMs(s, nowMs) {
@@ -9157,7 +9195,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if(entries.length<limit && stale.some(entry=>rotationIds.has(entry.game.id))) {
       const selected=new Set(entries.map(entry=>entry.game.id)),lastStop=new Map();
       sessions.forEach(session=>{if(session.stop===null)return;const time=Date.parse(session.stop);if(Number.isFinite(time))lastStop.set(session.gameId,Math.max(lastStop.get(session.gameId)||0,time));});
-      const replacements=games.filter(game=>!game.archived && !rotationIds.has(game.id) && !selected.has(game.id)).map(game=>({game,lastMs:lastStop.get(game.id)||null})).sort((a,b)=>(a.lastMs||0)-(b.lastMs||0)||a.game.name.localeCompare(b.game.name));
+      const cutoff=staleCutoffMs();
+      const replacements=games.filter(game=>!game.archived && !rotationIds.has(game.id) && !selected.has(game.id) && (!lastStop.has(game.id) || lastStop.get(game.id)<cutoff)).map(game=>({game,lastMs:lastStop.get(game.id)||null})).sort((a,b)=>(a.lastMs||0)-(b.lastMs||0)||a.game.name.localeCompare(b.game.name));
       entries.push(...replacements.slice(0,limit-entries.length));
     }
     return entries;
@@ -9364,7 +9403,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return contentEntries().filter(game=>game.archived && selected.has(game.id)).map(game=>game.id);
   }
   function archivedRotationSpentMinutes(now=new Date()) {
-    const ids=archivedRotationIds(),progress=rotationWeekProgress(ids,now);
+    const ids=archivedRotationIds(),progress=rotationProgressWithLive(ids,now);
     return ids.reduce((sum,id)=>sum+Math.min(rotationTargetMinutes(id),Math.floor(progress.games[id].ms/60000)),0);
   }
   function rotationCommittedMinutes() {
@@ -9538,7 +9577,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const cover = activeGame && activeGame.image;
       if (cover) {
         card.classList.add('has-cover');
-        card.style.setProperty('--cover', 'url("' + cover + '")');
+        card.style.setProperty('--cover', 'url(' + JSON.stringify(cover) + ')');
         card.style.background = 'linear-gradient(180deg, var(--live-tint-top), rgba(10,10,18,0.42))';
       } else {
         card.classList.remove('has-cover');
@@ -11395,7 +11434,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function gameCoverHtml(game) {
-    return '<span class="library-game-cover">'+(game.image?'<img src="'+escHtml(game.image)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<span aria-hidden="true">&#127918;</span></span>';
+    return '<span class="library-game-cover">'+(game.image?'<img src="'+milestoneAttr(game.image)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<span aria-hidden="true">&#127918;</span></span>';
   }
   function renderGamesTab() {
     const container = document.getElementById('games-list');
@@ -11443,7 +11482,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (filterBox) {
       if (allTags.length) {
         filterBox.innerHTML = allTags.map(t =>
-          '<button type="button" class="game-tag-filter' + (gamesTagFilter.some(sel => sel.toLowerCase() === t.toLowerCase()) ? ' on' : '') + '" data-tag="' + escHtml(t) + '">' + escHtml(t) + '</button>'
+          '<button type="button" class="game-tag-filter' + (gamesTagFilter.some(sel => sel.toLowerCase() === t.toLowerCase()) ? ' on' : '') + '" data-tag="' + milestoneAttr(t) + '">' + escHtml(t) + '</button>'
         ).join('');
         filterBox.querySelectorAll('.game-tag-filter').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -11604,7 +11643,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const img = game && game.image;
     if (img) {
       coverEl.className = 'dash-cover';
-      coverEl.style.backgroundImage = 'url("' + img + '")';
+      coverEl.style.backgroundImage = 'url(' + JSON.stringify(img) + ')';
       coverEl.innerHTML = '';
     } else {
       coverEl.className = 'dash-cover empty';
@@ -11613,10 +11652,23 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
   }
 
-  function fileToThumb(file, cb) {
+  function advanceCoverRevision(modal,busy=false) {
+    const revision=String((Number(modal.dataset.coverRevision)||0)+1);
+    modal.dataset.coverRevision=revision;modal.dataset.coverLoading=String(busy);
+    const save=modal.querySelector('#rename-save,button[type="submit"]');if(save)save.disabled=busy;
+    const upload=modal.querySelector('#cover-upload-btn,#dlc-upload-btn');
+    if(upload){upload.textContent=busy?'Loading...':'Upload';upload.setAttribute('aria-busy',String(busy));}
+    return revision;
+  }
+  function currentCoverUpload(modal,revision) {
+    return modal.classList.contains('open')&&modal.dataset.coverRevision===revision;
+  }
+  function fileToThumb(file, cb, onError) {
     const img = new Image();
     const url = URL.createObjectURL(file);
+    const failed=()=>{URL.revokeObjectURL(url);if(!onError||onError()!==false)toast('Could not read that image');};
     img.onload = () => {
+      try{
       const max = 400;
       let w = img.width, h = img.height;
       const scale = Math.min(1, max / Math.max(w, h));
@@ -11628,8 +11680,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       cv.getContext('2d').drawImage(img, 0, 0, w, h);
       URL.revokeObjectURL(url);
       cb(cv.toDataURL('image/jpeg', 0.72));
+      }catch(error){failed();}
     };
-    img.onerror = () => { URL.revokeObjectURL(url); toast('Could not read that image'); };
+    img.onerror = failed;
     img.src = url;
   }
 
@@ -11848,22 +11901,20 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   document.getElementById('btn-pause').addEventListener('click', togglePause);
 
   // --- Session target picker ---
-  document.querySelectorAll('.target-opt').forEach(btn => {
+  document.querySelectorAll('#target-presets .target-opt').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.target-opt').forEach(b => b.classList.toggle('on', b === btn));
+      document.querySelectorAll('#target-presets .target-opt').forEach(b => b.classList.toggle('on', b === btn));
       pendingTargetMin = Number(btn.dataset.target) || 0;
       document.getElementById('target-custom').value = '';
     });
   });
 
   document.getElementById('target-custom').addEventListener('input', e => {
-    const v = Math.min(1440, Math.max(0, Math.floor(Number(e.target.value) || 0)));
-    pendingTargetMin = v;
-    document.querySelectorAll('.target-opt').forEach(b => b.classList.remove('on'));
-    if (v > 0) {
-      const preset = document.querySelector('.target-opt[data-target="' + v + '"]');
-      if (preset) preset.classList.add('on');
-    }
+    const valid=e.target.checkValidity();
+    pendingTargetMin=valid?Number(e.target.value)||0:0;
+    document.querySelectorAll('#target-presets .target-opt').forEach(button=>button.classList.remove('on'));
+    const preset=valid?document.querySelector('#target-presets .target-opt[data-target="'+pendingTargetMin+'"]'):null;
+    if(preset)preset.classList.add('on');
   });
 
   // --- Filter date ---
@@ -11922,6 +11973,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const game = games.find(g => g.id === id);
     if (!game) return;
     pendingRenameGameId = id;
+    advanceCoverRevision(document.getElementById('rename-modal'));
     document.getElementById('rename-input').value = game.name;
     document.getElementById('rename-tags').value = (game.tags || []).join(', ');
     gamePlatformField.value = game.platform || '';
@@ -11979,30 +12031,23 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   });
 
   document.getElementById('delete-confirm').addEventListener('click', () => {
-    const id = pendingDeleteGameId;
-    const game = games.find(g => g.id === id);
-    if (game) {
-      if (activeSession && activeSession.gameId === id) {
-        toast('Cannot delete: game has an active session');
-        document.getElementById('delete-modal').classList.remove('open');
-        return;
-      }
-      const gameIdx = games.indexOf(game);
-      const removedSessions = [];
-      sessions.forEach((s, i) => { if (s.gameId === id) removedSessions.push({ s, i }); });
-      sessions = sessions.filter(s => s.gameId !== id);
-      saveSessions(sessions);
-      games = games.filter(g => g.id !== id);
-      saveGames(games);
+    const id=pendingDeleteGameId,game=games.find(entry=>entry.id===id);if(!game)return;
+    if(activeSession?.gameId===id){toast('Cannot delete: game has an active session');document.getElementById('delete-modal').classList.remove('open');return;}
+    const gameIdx=games.indexOf(game),savedGame=structuredClone(game);
+    const removedSessions=sessions.map((session,index)=>({session,index})).filter(entry=>entry.session.gameId===id);
+    try{persistLibraryReplacement(games.filter(entry=>entry.id!==id),sessions.filter(entry=>entry.gameId!==id),settings);}
+    catch(error){toast('Game could not be deleted: '+error.message);return;}
+    render();
+    function undoDelete(){
+      if(games.some(entry=>entry.id===id)||removedSessions.some(saved=>sessions.some(entry=>entry.id===saved.session.id))){toast('Cannot undo: these records have changed since deletion.');return;}
+      const restoredGames=structuredClone(games),restoredSessions=structuredClone(sessions);
+      restoredGames.splice(Math.min(gameIdx,restoredGames.length),0,structuredClone(savedGame));
+      removedSessions.forEach(saved=>restoredSessions.splice(Math.min(saved.index,restoredSessions.length),0,structuredClone(saved.session)));
+      try{persistLibraryReplacement(restoredGames,restoredSessions,settings);}
+      catch(error){toast('Game could not be restored: '+error.message,'Retry',undoDelete,6000);return;}
       render();
-      toast('Deleted: ' + game.name, 'Undo', () => {
-        games.splice(Math.min(gameIdx, games.length), 0, game);
-        saveGames(games);
-        removedSessions.forEach(it => sessions.splice(Math.min(it.i, sessions.length), 0, it.s));
-        saveSessions(sessions);
-        render();
-      }, 6000);
     }
+    toast('Deleted: '+game.name,'Undo',undoDelete,6000);
     document.getElementById('delete-modal').classList.remove('open');
   });
 
@@ -12332,18 +12377,22 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (!segments) return;
     if (!await confirmSessionOverlap(t1,t2,s.id)) return;
     checkStorageFresh();
-    s.pauses = (s.pauses || []).map(p => ({ from: Math.max(t1, new Date(p.from).getTime()), to: Math.min(t2, new Date(p.to).getTime()) }))
-      .filter(p => p.to > p.from).sort((a, b) => a.from - b.from)
-      .reduce((out, p) => {
-        const last = out[out.length - 1];
-        if (last && p.from <= last.to) last.to = Math.max(last.to, p.to);
-        else out.push(p);
-        return out;
-      }, []).map(p => ({ from: new Date(p.from).toISOString(), to: new Date(p.to).toISOString() }));
-    s.start = new Date(t1).toISOString();
-    s.stop = new Date(t2).toISOString();
-    s.durationMs = t2 - t1 - totalPausedMs(s, t2);
-    s.segments = segments;
+    const unchangedLegacy=!original.segments && t1===Date.parse(original.start) && t2===Date.parse(original.stop) && segments.length===1 && segments[0].dlcId===null;
+    // An untouched legacy duration may intentionally differ from the wall-clock range.
+    if(!unchangedLegacy){
+      s.pauses = (s.pauses || []).map(p => ({ from: Math.max(t1, new Date(p.from).getTime()), to: Math.min(t2, new Date(p.to).getTime()) }))
+        .filter(p => p.to > p.from).sort((a, b) => a.from - b.from)
+        .reduce((out, p) => {
+          const last = out[out.length - 1];
+          if (last && p.from <= last.to) last.to = Math.max(last.to, p.to);
+          else out.push(p);
+          return out;
+        }, []).map(p => ({ from: new Date(p.from).toISOString(), to: new Date(p.to).toISOString() }));
+      s.start = new Date(t1).toISOString();
+      s.stop = new Date(t2).toISOString();
+      s.durationMs = t2 - t1 - totalPausedMs(s, t2);
+      s.segments = segments;
+    }
     persistSessionReplacement(sessions.map(session => session.id === s.id ? s : session));
     toast('Session updated');
     document.getElementById('edit-session-modal').classList.remove('open');
@@ -12475,15 +12524,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       try { validateBackupData(importData); }
       catch (error) { importData=null; toast('Invalid backup: '+error.message); document.getElementById('import-modal').classList.remove('open'); return; }
       checkStorageFresh();
-      const localSettings = JSON.parse(JSON.stringify(settings));
-      games = normalizeGames(importData.games);
-      sessions = Array.isArray(importData.sessions) ? importData.sessions : [];
+      const localSettings=structuredClone(settings);
       // Templates are portable backup data; other local preferences remain unchanged.
-      settings = localSettings;
-      if(importData.settings?.milestoneTemplates !== undefined)settings.milestoneTemplates=structuredClone(importData.settings.milestoneTemplates);
-      saveGames(games);
-      saveSessions(sessions);
-      saveSettings(settings);
+      if(importData.settings?.milestoneTemplates!==undefined)localSettings.milestoneTemplates=structuredClone(importData.settings.milestoneTemplates);
+      try{persistLibraryReplacement(importData.games,importData.sessions,localSettings);}
+      catch(error){toast('Backup could not be imported: '+error.message);return;}
       backfillUnlockDates('gentle');
       activeSession = sessions.find(s => s.stop === null) || null;
       importData = null;
@@ -12523,11 +12568,13 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   const setGameCover = (gameId, img) => {
     const game = games.find(g => g.id === gameId);
     if (!game) return;
-    game.image = img;
-    saveGames(games);
+    advanceCoverRevision(document.getElementById('rename-modal'));
+    const previous=game.image;game.image=img;
+    try{saveGames(games);}catch(error){game.image=previous;toast('Cover could not be saved: '+error.message);return false;}
     paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
     render();
     toast(img ? 'Cover saved' : 'Cover removed');
+    return true;
   };
 
   document.getElementById('cover-upload-btn').addEventListener('click', () => {
@@ -12538,15 +12585,19 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     e.target.value = '';
     if (!file) return;
     if (!/^image\//.test(file.type)) { toast('Please pick an image file'); return; }
-    fileToThumb(file, dataUrl => setGameCover(pendingRenameGameId, dataUrl));
+    const modal=document.getElementById('rename-modal'),gameId=pendingRenameGameId,revision=advanceCoverRevision(modal,true);
+    fileToThumb(file,dataUrl=>{
+      if(!currentCoverUpload(modal,revision)||pendingRenameGameId!==gameId)return;
+      advanceCoverRevision(modal);setGameCover(gameId,dataUrl);
+    },()=>{if(!currentCoverUpload(modal,revision))return false;advanceCoverRevision(modal);return true;});
   });
   document.getElementById('cover-url-btn').addEventListener('click', () => {
-    const v = document.getElementById('cover-url').value.trim().replace(/[\x22\x27]/g, '');
+    const v = document.getElementById('cover-url').value.trim();
     if (!v) return;
     if (!/^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(v)) { toast('Enter a valid image URL'); return; }
-    document.getElementById('cover-url').value = '';
-    setGameCover(pendingRenameGameId, v);
+    if(setGameCover(pendingRenameGameId,v))document.getElementById('cover-url').value='';
   });
+  document.getElementById('cover-url').addEventListener('input',()=>advanceCoverRevision(document.getElementById('rename-modal')));
   document.getElementById('cover-url').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('cover-url-btn').click();
   });
@@ -12996,7 +13047,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(gamesArchiveFilter!=='all') items.push(['archive',gamesArchiveFilter==='active'?'Active games':'Archived games']);
     Object.entries(gameAttributeSelections).forEach(([key, value]) => items.push([key, gameAttributeFilters[key][1][value]]));
     gamesTagFilter.forEach(tag=>items.push(['tag',tag]));
-    document.getElementById('games-filter-chips').innerHTML=items.map(([kind,label])=>'<button class="game-tag-filter on" type="button" data-filter-kind="'+kind+'" data-filter-value="'+escHtml(label)+'" aria-label="Remove '+escHtml(label)+' filter">'+escHtml(label)+' <span aria-hidden="true">&#215;</span></button>').join('');
+    document.getElementById('games-filter-chips').innerHTML=items.map(([kind,label])=>'<button class="game-tag-filter on" type="button" data-filter-kind="'+kind+'" data-filter-value="'+milestoneAttr(label)+'" aria-label="Remove '+milestoneAttr(label)+' filter">'+escHtml(label)+' <span aria-hidden="true">&#215;</span></button>').join('');
     document.getElementById('games-filter-toggle').textContent='Filters'+(items.length?' \u00b7 '+items.length+' active':'');
   }
   const gamesFilterMedia=window.matchMedia('(min-width:900px)');
@@ -13013,7 +13064,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(kind==='search'){gamesSearch='';document.getElementById('game-search-input').value='';}
     if(kind==='platform')gamesPlatformFilter='';
     if(kind==='archive')gamesArchiveFilter='all';
-    if(kind==='pinned')
     if(Object.hasOwn(gameAttributeFilters,kind)) delete gameAttributeSelections[kind];
     if(kind==='tag')gamesTagFilter=gamesTagFilter.filter(tag=>tag!==button.dataset.filterValue);
     renderGamesTab();
@@ -13364,11 +13414,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(!since){total+=allocatedPlaytime(session,now).get(dlcId)||0;continue;}
       const floor=Date.parse(since),end=session.stop===null?now:Date.parse(session.stop);
       if(end<=floor)continue;
-      const pauses=[...(session.pauses||[])];
-      if(session.pausedAt)pauses.push({from:session.pausedAt,to:new Date(end).toISOString()});
-      const union=pauses.map(p=>[Date.parse(p.from),Date.parse(p.to)]).sort((a,b)=>a[0]-b[0]).reduce((list,p)=>{
-        const previous=list.at(-1);if(previous&&p[0]<=previous[1])previous[1]=Math.max(previous[1],p[1]);else list.push(p.slice());return list;
-      },[]);
+      const union=sessionPauseIntervals(session,end);
       const active=(a,b)=>Math.max(0,b-a-union.reduce((sum,[from,to])=>sum+Math.max(0,Math.min(b,to)-Math.max(a,from)),0));
       if(!session.segments?.length){
         if(dlcId!==null)continue;
@@ -13827,7 +13873,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         beatProgress += '<section class="finish-beat-progress"><h4>' + escHtml(contentName(session.gameId,dlcId)) + ' - HLTB</h4>' + beatProgressRows(entry,loggedMs) + '</section>';
       }
     }
-    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + label + '</span><strong>' + value + '</strong></p>').join('') + beatProgress;
+    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + escHtml(label) + '</span><strong>' + escHtml(value) + '</strong></p>').join('') + beatProgress;
     const button = document.getElementById('session-finish-sync');
     button.disabled = !!session.synced;
     finishReview.classList.add('open');
@@ -14037,7 +14083,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.9.1';
+    const APP_VERSION = '1.9.2';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {
