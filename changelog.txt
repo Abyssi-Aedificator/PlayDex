@@ -6,6 +6,7 @@ Version 1.9.1
 - Unchanged edits preserve legacy sessions' recorded playtime; changing their timing or content allocation still recalculates active duration.
 - Removing a Games attribute-filter chip now clears that filter, including cover, HLTB, DLC, milestones, rotation, and play-history filters.
 - Tags containing quotation marks can be selected and removed as filters correctly.
+- DLC allocation rows can be removed even when a boundary is invalid, preserving other edits and content choices; Material content menus no longer rebuild the allocation editor when opened.
 - Week-start, stale-game, idle-reminder, and session-target selections no longer clear one another when clicking presets, entering a custom target, or starting a game.
 - Games you haven't played in a while now respects the selected inactivity threshold when replacing weekly-rotation exclusions, keeping recently played games out of the suggestions.
 - Added space around Load last week in the rotation editor so the button is clearly separated from its explanatory text.

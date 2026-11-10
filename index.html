@@ -8835,9 +8835,30 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return null;
     }
   }
+  function removeAllocationRow(panel,index,start,stop) {
+    const rows=[...panel.querySelectorAll('.allocation-row')];
+    if(rows.length<=1||!Number.isInteger(index)||index<0||index>=rows.length)return;
+    if(index>0){
+      const previous=rows[index-1],boundary=previous.querySelector('input'),following=rows[index].querySelector('input');
+      if(following){
+        boundary.value=following.value;
+        boundary.dataset.originalStop=following.dataset.originalStop;
+      }else{
+        boundary.closest('label').remove();
+        const until=document.createElement('span');until.className='backup-hint';until.textContent='Until session end';
+        previous.querySelector('[data-remove-segment]').before(until);
+      }
+    }
+    rows[index].remove();
+    const remaining=[...panel.querySelectorAll('.allocation-row')];
+    remaining.forEach((row,i)=>{const button=row.querySelector('[data-remove-segment]');if(remaining.length===1)button?.remove();else if(button)button.dataset.removeSegment=String(i);});
+    panel.querySelector('[data-allocation-error]').hidden=true;
+    // Other invalid boundaries stay editable; removing one never requires it to be valid first.
+    try{readAllocation(panel,start,stop);}catch(error){allocationForSave(panel,start,stop);}
+  }
   document.querySelectorAll('.content-allocation').forEach(panel => {
     panel.addEventListener('click', event => {
-      const button = event.target.closest('button');
+      const button = event.target.closest('button[data-add-segment],button[data-remove-segment]');
       if (!button) return;
       let segments;
       const adding = panel.id === 'add-content-allocation';
@@ -8845,6 +8866,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const to = getCalDateTime(adding ? addSessionEndDate : editSessionEndDate, adding ? addSessionEndTime : editSessionEndTime);
       const preserveSeconds = (value, initial) => value.slice(0,16) === localDateTime(initial).slice(0,16) ? Date.parse(initial) : Date.parse(value);
       const startTime = preserveSeconds(from, panel.dataset.start), stopTime = preserveSeconds(to, panel.dataset.stop);
+      if(button.hasAttribute('data-remove-segment')){removeAllocationRow(panel,Number(button.dataset.removeSegment),startTime,stopTime);return;}
       try { segments = readAllocation(panel, startTime, stopTime); }
       catch (error) { allocationForSave(panel, startTime, stopTime); return; }
       if (button.hasAttribute('data-add-segment')) {
@@ -8853,11 +8875,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         const boundary = new Date(Math.floor((start + stop) / 2)).toISOString();
         last.stop = boundary;
         segments.push({id:uid(), dlcId:null, start:boundary, stop:new Date(stop).toISOString()});
-      } else if (button.hasAttribute('data-remove-segment')) {
-        const index = Number(button.dataset.removeSegment);
-        if (index) segments[index - 1].stop = segments[index].stop;
-        else segments[1].start = segments[0].start;
-        segments.splice(index, 1);
       }
       paintAllocationEditor(panel, segments);
     });
