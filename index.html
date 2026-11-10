@@ -8550,7 +8550,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function restoredContentFitsBudget(keys) {
     const selected = keys.filter(key => archivedRotationIds().includes(key));
-    const progress = rotationWeekProgress(selected);
+    const progress = rotationProgressWithLive(selected);
     const additional = selected.reduce((sum,key) => {
       const target = rotationTargetMinutes(key);
       return sum + target - Math.min(target, Math.floor(progress.games[key].ms / 60000));
@@ -9384,7 +9384,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return contentEntries().filter(game=>game.archived && selected.has(game.id)).map(game=>game.id);
   }
   function archivedRotationSpentMinutes(now=new Date()) {
-    const ids=archivedRotationIds(),progress=rotationWeekProgress(ids,now);
+    const ids=archivedRotationIds(),progress=rotationProgressWithLive(ids,now);
     return ids.reduce((sum,id)=>sum+Math.min(rotationTargetMinutes(id),Math.floor(progress.games[id].ms/60000)),0);
   }
   function rotationCommittedMinutes() {
