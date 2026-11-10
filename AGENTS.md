@@ -202,3 +202,10 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - weeklyRotationWeek and weeklyRotationWeekStartsOn tag the current plan. rollWeeklyRotation clears games, targets, and days on a new calendar week and keeps weeklyRotationLastWeek as a synced snapshot. First-upgrade data adopts the current week without discarding selections.
 - ensureRotationWeek guards rendering, settings saves, midnight, and resume. Rebase when Week starts on changes; never clear a plan because the device clock moved backward.
 - Load last week populates the rotation editor only, skips unavailable content, and retains Save rotation budget checks. Check the editor week before saving so a draft from an expired week cannot silently repopulate a reset rotation.
+
+## Backup replacement safety
+
+- Use persistLibraryReplacement for JSON imports, game/DLC deletion and Undo, and Dropbox download/rollback application. Prepare and reconcile cloned data first, restore successful storage writes on failure, and replace games/sessions/settings/activeSession only after all records are saved. Keep failed manual imports available for retry.
+- Top rolling-day ranges use local calendar date arithmetic (setDate), not fixed 24-hour offsets, so DST does not change the number of included dates.
+
+- Cover uploads use editor revision guards and capture their original game identity. Ignore canceled/superseded callbacks, keep Save disabled during image processing, and re-enable it when decoding fails. URL fields preserve quotes; escape at rendering instead of stripping URL characters.

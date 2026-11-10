@@ -5567,7 +5567,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.9.1</span>
+    <span class="version-badge">1.9.2</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -12592,7 +12592,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     },()=>{if(!currentCoverUpload(modal,revision))return false;advanceCoverRevision(modal);return true;});
   });
   document.getElementById('cover-url-btn').addEventListener('click', () => {
-    const v = document.getElementById('cover-url').value.trim().replace(/[\x22\x27]/g, '');
+    const v = document.getElementById('cover-url').value.trim();
     if (!v) return;
     if (!/^(data:image\/(jpeg|png|webp);base64,|https?:\/\/)/i.test(v)) { toast('Enter a valid image URL'); return; }
     if(setGameCover(pendingRenameGameId,v))document.getElementById('cover-url').value='';
@@ -14083,7 +14083,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.9.1';
+    const APP_VERSION = '1.9.2';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {

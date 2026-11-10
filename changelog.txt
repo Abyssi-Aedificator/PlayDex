@@ -1,10 +1,11 @@
 PlayDex - Changelog
 ====================
 
-Version 1.9.1
+Version 1.9.2
 -------------------
 - Deleting games and DLCs restores the original library and sessions if saving fails, and Undo restores a deleted game and its history together without changing milestone completion dates.
 - Cover uploads are tied to the editor and image choice that started them; canceled or superseded uploads cannot overwrite another game or DLC, and saving waits for image processing.
+- Game cover URLs retain apostrophes and quotation marks instead of silently removing them.
 - Invalid custom session targets must be corrected before starting a game instead of being silently rounded or clamped; clearing the field selects Off again.
 - Top's current and previous 7-day ranges stay at seven local calendar days across daylight-saving changes.
 - Failed JSON imports restore the original library, sessions, and settings instead of leaving partially replaced data; the import can be retried.
@@ -19,6 +20,9 @@ Version 1.9.1
 - DLC allocation rows can be removed even when a boundary is invalid, preserving other edits and content choices; Material content menus no longer rebuild the allocation editor when opened.
 - Week-start, stale-game, idle-reminder, and session-target selections no longer clear one another when clicking presets, entering a custom target, or starting a game.
 - Games you haven't played in a while now respects the selected inactivity threshold when replacing weekly-rotation exclusions, keeping recently played games out of the suggestions.
+
+Version 1.9.1
+-------------------
 - Added space around Load last week in the rotation editor so the button is clearly separated from its explanatory text.
 - Weekly rotations now start empty each calendar week, following Week starts on, with Load last week to review and restore the previous week's active games, DLCs, targets, and planned days before saving.
 
