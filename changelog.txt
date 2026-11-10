@@ -4,6 +4,7 @@ PlayDex - Changelog
 Version 1.9.1
 -------------------
 - Removing a Games attribute-filter chip now clears that filter, including cover, HLTB, DLC, milestones, rotation, and play-history filters.
+- Tags containing quotation marks can be selected and removed as filters correctly.
 - Week-start, stale-game, idle-reminder, and session-target selections no longer clear one another when clicking presets, entering a custom target, or starting a game.
 - Games you haven't played in a while now respects the selected inactivity threshold when replacing weekly-rotation exclusions, keeping recently played games out of the suggestions.
 - Added space around Load last week in the rotation editor so the button is clearly separated from its explanatory text.

@@ -11444,7 +11444,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (filterBox) {
       if (allTags.length) {
         filterBox.innerHTML = allTags.map(t =>
-          '<button type="button" class="game-tag-filter' + (gamesTagFilter.some(sel => sel.toLowerCase() === t.toLowerCase()) ? ' on' : '') + '" data-tag="' + escHtml(t) + '">' + escHtml(t) + '</button>'
+          '<button type="button" class="game-tag-filter' + (gamesTagFilter.some(sel => sel.toLowerCase() === t.toLowerCase()) ? ' on' : '') + '" data-tag="' + milestoneAttr(t) + '">' + escHtml(t) + '</button>'
         ).join('');
         filterBox.querySelectorAll('.game-tag-filter').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -12997,7 +12997,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(gamesArchiveFilter!=='all') items.push(['archive',gamesArchiveFilter==='active'?'Active games':'Archived games']);
     Object.entries(gameAttributeSelections).forEach(([key, value]) => items.push([key, gameAttributeFilters[key][1][value]]));
     gamesTagFilter.forEach(tag=>items.push(['tag',tag]));
-    document.getElementById('games-filter-chips').innerHTML=items.map(([kind,label])=>'<button class="game-tag-filter on" type="button" data-filter-kind="'+kind+'" data-filter-value="'+escHtml(label)+'" aria-label="Remove '+escHtml(label)+' filter">'+escHtml(label)+' <span aria-hidden="true">&#215;</span></button>').join('');
+    document.getElementById('games-filter-chips').innerHTML=items.map(([kind,label])=>'<button class="game-tag-filter on" type="button" data-filter-kind="'+kind+'" data-filter-value="'+milestoneAttr(label)+'" aria-label="Remove '+milestoneAttr(label)+' filter">'+escHtml(label)+' <span aria-hidden="true">&#215;</span></button>').join('');
     document.getElementById('games-filter-toggle').textContent='Filters'+(items.length?' \u00b7 '+items.length+' active':'');
   }
   const gamesFilterMedia=window.matchMedia('(min-width:900px)');
