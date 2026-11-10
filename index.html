@@ -13846,7 +13846,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         beatProgress += '<section class="finish-beat-progress"><h4>' + escHtml(contentName(session.gameId,dlcId)) + ' - HLTB</h4>' + beatProgressRows(entry,loggedMs) + '</section>';
       }
     }
-    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + label + '</span><strong>' + value + '</strong></p>').join('') + beatProgress;
+    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + escHtml(label) + '</span><strong>' + escHtml(value) + '</strong></p>').join('') + beatProgress;
     const button = document.getElementById('session-finish-sync');
     button.disabled = !!session.synced;
     finishReview.classList.add('open');
