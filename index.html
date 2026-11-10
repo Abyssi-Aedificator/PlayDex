@@ -7897,7 +7897,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return dates ? { start: new Date(dates.from + 'T00:00:00'), end: new Date(dates.to + 'T23:59:59.999') } : { start:null, end:null };
     }
     if (period === 'rolling7') {
-      return { start: startOfDay(new Date(now.getTime() - 6 * 86400000)), end: endOfDay(now) };
+      const start=startOfDay(now);start.setDate(start.getDate()-6);
+      return { start, end:endOfDay(now) };
     }
     if (period === 'month') {
       return {
@@ -7924,7 +7925,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return { start: new Date(y, m - 1, 1, 0, 0, 0, 0), end: new Date(y, m, 0, 23, 59, 59, 999) };
     }
     if (period === 'rolling7') {
-      return { start: startOfDay(new Date(cur.start.getTime() - 7 * 86400000)), end: endOfDay(new Date(cur.start.getTime() - 1)) };
+      const start=new Date(cur.start);start.setDate(start.getDate()-7);
+      return { start, end:endOfDay(new Date(cur.start.getTime()-1)) };
     }
     return getWeekBounds(new Date(cur.start.getTime() - 1));
   }
