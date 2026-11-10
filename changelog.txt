@@ -1,9 +1,13 @@
 PlayDex - Changelog
 ====================
 
+Version 1.9.3
+-------------------
+- Start a Game excludes games already selected in the weekly rotation, including games with a selected DLC, while retaining platform filtering and explaining when all matching games are in the rotation.
+- Games you haven't played in a while only shows previously played games past the selected inactivity threshold, excluding never-played games even when rotation entries are hidden.
+
 Version 1.9.2
 -------------------
-- Games you haven't played in a while only shows previously played games past the selected inactivity threshold, excluding never-played games even when rotation entries are hidden.
 - Deleting games and DLCs restores the original library and sessions if saving fails, and Undo restores a deleted game and its history together without changing milestone completion dates.
 - Cover uploads are tied to the editor and image choice that started them; canceled or superseded uploads cannot overwrite another game or DLC, and saving waits for image processing.
 - Game cover URLs retain apostrophes and quotation marks instead of silently removing them.
