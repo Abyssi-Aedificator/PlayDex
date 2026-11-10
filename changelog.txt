@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 1.9.1
 -------------------
+- Deleting games and DLCs restores the original library and sessions if saving fails, and Undo restores a deleted game and its history together without changing milestone completion dates.
 - Invalid custom session targets must be corrected before starting a game instead of being silently rounded or clamped; clearing the field selects Off again.
 - Top's current and previous 7-day ranges stay at seven local calendar days across daylight-saving changes.
 - Failed JSON imports restore the original library, sessions, and settings instead of leaving partially replaced data; the import can be retried.

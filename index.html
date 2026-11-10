@@ -8678,18 +8678,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     nextSettings.weeklyRotation = (nextSettings.weeklyRotation || []).filter(key => key !== entry.id);
     if (nextSettings.weeklyRotationTargets) delete nextSettings.weeklyRotationTargets[entry.id];
     if (nextSettings.weeklyRotationDays) delete nextSettings.weeklyRotationDays[entry.id];
-    reconcileMilestoneLibrary(nextGames,nextSessions);
-    const oldGames = localStorage.getItem(KEYS.games), oldSessions = localStorage.getItem(KEYS.sessions), oldSettings = localStorage.getItem(KEYS.settings);
-    try { writeLocalData(KEYS.games, nextGames); writeLocalData(KEYS.sessions, nextSessions); writeLocalData(KEYS.settings, nextSettings); }
-    catch (error) {
-      for (const [key, value] of [[KEYS.games,oldGames],[KEYS.sessions,oldSessions],[KEYS.settings,oldSettings]]) {
-        if (value === null) localStorage.removeItem(key); else localStorage.setItem(key,value);
-        storageBaseline[key] = value;
-      }
-      toast('DLC deletion could not be saved.'); return;
-    }
-    games = nextGames; sessions = nextSessions; settings = nextSettings; activeSession = sessions.find(session => session.stop === null) || null;
-    scheduleAutoUpload();
+    try{persistLibraryReplacement(nextGames,nextSessions,nextSettings);}
+    catch(error){toast('DLC deletion could not be saved: '+error.message);return;}
     modal.classList.remove('open');
     openDashboard(entry.parentId);
     refreshContentViews();
@@ -12020,30 +12010,23 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   });
 
   document.getElementById('delete-confirm').addEventListener('click', () => {
-    const id = pendingDeleteGameId;
-    const game = games.find(g => g.id === id);
-    if (game) {
-      if (activeSession && activeSession.gameId === id) {
-        toast('Cannot delete: game has an active session');
-        document.getElementById('delete-modal').classList.remove('open');
-        return;
-      }
-      const gameIdx = games.indexOf(game);
-      const removedSessions = [];
-      sessions.forEach((s, i) => { if (s.gameId === id) removedSessions.push({ s, i }); });
-      sessions = sessions.filter(s => s.gameId !== id);
-      saveSessions(sessions);
-      games = games.filter(g => g.id !== id);
-      saveGames(games);
+    const id=pendingDeleteGameId,game=games.find(entry=>entry.id===id);if(!game)return;
+    if(activeSession?.gameId===id){toast('Cannot delete: game has an active session');document.getElementById('delete-modal').classList.remove('open');return;}
+    const gameIdx=games.indexOf(game),savedGame=structuredClone(game);
+    const removedSessions=sessions.map((session,index)=>({session,index})).filter(entry=>entry.session.gameId===id);
+    try{persistLibraryReplacement(games.filter(entry=>entry.id!==id),sessions.filter(entry=>entry.gameId!==id),settings);}
+    catch(error){toast('Game could not be deleted: '+error.message);return;}
+    render();
+    function undoDelete(){
+      if(games.some(entry=>entry.id===id)||removedSessions.some(saved=>sessions.some(entry=>entry.id===saved.session.id))){toast('Cannot undo: these records have changed since deletion.');return;}
+      const restoredGames=structuredClone(games),restoredSessions=structuredClone(sessions);
+      restoredGames.splice(Math.min(gameIdx,restoredGames.length),0,structuredClone(savedGame));
+      removedSessions.forEach(saved=>restoredSessions.splice(Math.min(saved.index,restoredSessions.length),0,structuredClone(saved.session)));
+      try{persistLibraryReplacement(restoredGames,restoredSessions,settings);}
+      catch(error){toast('Game could not be restored: '+error.message,'Retry',undoDelete,6000);return;}
       render();
-      toast('Deleted: ' + game.name, 'Undo', () => {
-        games.splice(Math.min(gameIdx, games.length), 0, game);
-        saveGames(games);
-        removedSessions.forEach(it => sessions.splice(Math.min(it.i, sessions.length), 0, it.s));
-        saveSessions(sessions);
-        render();
-      }, 6000);
     }
+    toast('Deleted: '+game.name,'Undo',undoDelete,6000);
     document.getElementById('delete-modal').classList.remove('open');
   });
 
