@@ -9157,7 +9157,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if(entries.length<limit && stale.some(entry=>rotationIds.has(entry.game.id))) {
       const selected=new Set(entries.map(entry=>entry.game.id)),lastStop=new Map();
       sessions.forEach(session=>{if(session.stop===null)return;const time=Date.parse(session.stop);if(Number.isFinite(time))lastStop.set(session.gameId,Math.max(lastStop.get(session.gameId)||0,time));});
-      const replacements=games.filter(game=>!game.archived && !rotationIds.has(game.id) && !selected.has(game.id)).map(game=>({game,lastMs:lastStop.get(game.id)||null})).sort((a,b)=>(a.lastMs||0)-(b.lastMs||0)||a.game.name.localeCompare(b.game.name));
+      const cutoff=staleCutoffMs();
+      const replacements=games.filter(game=>!game.archived && !rotationIds.has(game.id) && !selected.has(game.id) && (!lastStop.has(game.id) || lastStop.get(game.id)<cutoff)).map(game=>({game,lastMs:lastStop.get(game.id)||null})).sort((a,b)=>(a.lastMs||0)-(b.lastMs||0)||a.game.name.localeCompare(b.game.name));
       entries.push(...replacements.slice(0,limit-entries.length));
     }
     return entries;
