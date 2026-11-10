@@ -13014,7 +13014,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(kind==='search'){gamesSearch='';document.getElementById('game-search-input').value='';}
     if(kind==='platform')gamesPlatformFilter='';
     if(kind==='archive')gamesArchiveFilter='all';
-    if(kind==='pinned')
     if(Object.hasOwn(gameAttributeFilters,kind)) delete gameAttributeSelections[kind];
     if(kind==='tag')gamesTagFilter=gamesTagFilter.filter(tag=>tag!==button.dataset.filterValue);
     renderGamesTab();
