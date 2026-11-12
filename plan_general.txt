@@ -6,9 +6,6 @@ Session splitting
 - Divide paused intervals correctly, preserve notes and total active duration, and offer Undo.
 - Validate the split lies strictly inside the original session; preserve backup/export compatibility.
 
-Weekly rotation presets
-- Save named rotations, such as Main games or Weekend co-op, including weekly targets; switching presets must still respect the weekly budget.
-
 Merge duplicate games
 - Combine two library entries while preserving sessions and personal milestones; show a preview before merging.
 
@@ -17,6 +14,3 @@ Bulk library editing
 
 Automatic playtime milestones
 - Extend personal milestones with optional hour targets, such as Reach 50 hours; update progress automatically and record when the target is reached.
-
-Session history health check
-- Add a Settings tool to find existing overlaps, unusually long sessions, and sessions referencing missing games; review each issue before making corrections.

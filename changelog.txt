@@ -1,35 +1,46 @@
 PlayDex - Changelog
 ====================
 
-Version 1.9.3
+Version 2.0.0
 -------------------
-- Start a Game excludes games already selected in the weekly rotation, including games with a selected DLC, while retaining platform filtering and explaining when all matching games are in the rotation.
-- Games you haven't played in a while only shows previously played games past the selected inactivity threshold, excluding never-played games even when rotation entries are hidden.
-
-Version 1.9.2
--------------------
-- Deleting games and DLCs restores the original library and sessions if saving fails, and Undo restores a deleted game and its history together without changing milestone completion dates.
-- Cover uploads are tied to the editor and image choice that started them; canceled or superseded uploads cannot overwrite another game or DLC, and saving waits for image processing.
-- Game cover URLs retain apostrophes and quotation marks instead of silently removing them.
-- Invalid custom session targets must be corrected before starting a game instead of being silently rounded or clamped; clearing the field selects Off again.
-- Top's current and previous 7-day ranges stay at seven local calendar days across daylight-saving changes.
-- Failed JSON imports restore the original library, sessions, and settings instead of leaving partially replaced data; the import can be retried.
-- Dropbox downloads and rollbacks restore local data if any replacement write fails, and keep the original in-memory session state intact.
-- Overlapping pause records are counted once and clipped to the session bounds, keeping live timers, pause summaries, DLC allocations, and milestone progress consistent.
-- Archiving or restoring a DLC accounts for time already played in the running session, preventing its weekly budget from changing unexpectedly when the session stops.
-- DLC names containing markup characters display as plain text in the Session saved review.
-- Cover URLs containing quotes remain intact in library thumbnails, the Top podium, and dashboard and live-session cover backgrounds.
-- Unchanged edits preserve legacy sessions' recorded playtime; changing their timing or content allocation still recalculates active duration.
-- Removing a Games attribute-filter chip now clears that filter, including cover, HLTB, DLC, milestones, rotation, and play-history filters.
-- Tags containing quotation marks can be selected and removed as filters correctly.
-- DLC allocation rows can be removed even when a boundary is invalid, preserving other edits and content choices; Material content menus no longer rebuild the allocation editor when opened.
-- Week-start, stale-game, idle-reminder, and session-target selections no longer clear one another when clicking presets, entering a custom target, or starting a game.
-- Games you haven't played in a while now respects the selected inactivity threshold when replacing weekly-rotation exclusions, keeping recently played games out of the suggestions.
-
-Version 1.9.1
--------------------
-- Added space around Load last week in the rotation editor so the button is clearly separated from its explanatory text.
 - Weekly rotations now start empty each calendar week, following Week starts on, with Load last week to review and restore the previous week's active games, DLCs, targets, and planned days before saving.
+- Added space around Load last week in the rotation editor so the button is clearly separated from its explanatory text.
+- Games you haven't played in a while now respects the selected inactivity threshold when replacing weekly-rotation exclusions, keeping recently played games out of the suggestions.
+- Week-start, stale-game, idle-reminder, and session-target selections no longer clear one another when clicking presets, entering a custom target, or starting a game.
+- DLC allocation rows can be removed even when a boundary is invalid, preserving other edits and content choices; Material content menus no longer rebuild the allocation editor when opened.
+- Tags containing quotation marks can be selected and removed as filters correctly.
+- Removing a Games attribute-filter chip now clears that filter, including cover, HLTB, DLC, milestones, rotation, and play-history filters.
+- Unchanged edits preserve legacy sessions' recorded playtime; changing their timing or content allocation still recalculates active duration.
+- Game cover URLs retain apostrophes and quotation marks in editors, library thumbnails, the Top podium, and dashboard and live-session backgrounds.
+- DLC names containing markup characters display as plain text in the Session saved review.
+- Archiving or restoring a DLC accounts for time already played in the running session, preventing its weekly budget from changing unexpectedly when the session stops.
+- Overlapping pause records are counted once and clipped to the session bounds, keeping live timers, pause summaries, DLC allocations, and milestone progress consistent.
+- Dropbox downloads and rollbacks restore local data if any replacement write fails, and keep the original in-memory session state intact.
+- Failed JSON imports restore the original library, sessions, and settings instead of leaving partially replaced data; the import can be retried.
+- Top's current and previous 7-day ranges stay at seven local calendar days across daylight-saving changes.
+- Invalid custom session targets must be corrected before starting a game instead of being silently rounded or clamped; clearing the field selects Off again.
+- Cover uploads are tied to the editor and image choice that started them; canceled or superseded uploads cannot overwrite another game or DLC, and saving waits for image processing.
+- Deleting games and DLCs restores the original library and sessions if saving fails, and Undo restores a deleted game and its history together without changing milestone completion dates.
+- Games you haven't played in a while only shows previously played games past the selected inactivity threshold, excluding never-played games even when rotation entries are hidden.
+- Start a Game excludes games already selected in the weekly rotation, including games with a selected DLC, while retaining platform filtering and explaining when all matching games are in the rotation.
+- Dropbox skips unchanged uploads, including after reopening the app or saving unchanged data, while preserving conflict checks for real edits and remote-update detection.
+- Added a Settings session history health check to review overlaps, sessions lasting 12 hours or more, and missing game references, with time editing, confirmed game reassignment, and clearly separated explanations and results.
+- Playthrough progress, rotation presets and weekday plans are preserved in JSON backups, Dropbox sync and rollback, and scheduled rest days no longer break daily-goal streaks.
+- Added a live Dropbox Sync & Recovery Centre with device names, per-record conflict choices, revision checks, five-version restore previews and automatic local recovery copies; session Synced flags remain separate from upload status.
+- Added weekly planning with whole-hour weekday targets, daily goals that follow the schedule, flexible Any day assignments, unfinished-target move previews, named rotation presets and previous-week comparisons.
+- Added named playthroughs with separate Base game and DLC milestones, HLTB estimates and previously played hours, session assignments, run comparisons and finish summaries while preserving lifetime totals.
+- Opening Dropbox settings no longer fetches cloud data; automatic transfers pause only during an active sync or restore review and resume after cancellation or completion.
+- Integrated playthroughs into game and DLC dashboards, weekly planning into Today's Plan week action, and sync/recovery into Dropbox settings; removed the shared feature popup and Games shortcuts.
+- Saving weekday plans now preserves automatic goals instead of switching back to the saved manual goal.
+- Weekly capacity stays at the daily goal times seven, with weekday plans and game targets checked as independent allocations against the same budget.
+- Redesigned Weekly rotation around a searchable game and DLC list with stable target editing, optional planned days, compact independent budgets, grouped reuse actions, fixed Save/Cancel controls, and confirmation before discarding drafts; Load last week skips unavailable content and retains weekday hours.
+- Aligned Weekly rotation Remove buttons with the row controls on desktop and the Planned day field on mobile.
+- Added theme-coloured remaining-hours bars to the weekly planner for game targets and weekday allocations, updating immediately as targets change.
+- Kept Weekly rotation capacity, remaining hours, and budget bars visible above the scrolling game list.
+- Added one-hour up/down arrows to game and weekday targets; game targets clear below one hour, while weekdays allow zero-hour rest days.
+- Opening Weekday targets now enables weekday planning directly, replacing the extra checkbox with a Use daily goal instead action.
+- Reordered game dashboard progression panels to HLTB, Personal milestones, then Playthroughs in the right column.
+- Matched unlock-date recalculation and Check session history to Import a backup, with explanations above each maintenance action.
 
 Version 1.9.0
 -------------------
