@@ -407,6 +407,17 @@ button.milestone-remove-step { width:44px; min-width:44px; height:44px; padding:
   .content-allocation { margin:12px 0; }
   #dlc-editor,#dlc-delete,#content-chooser { z-index:270; }
   @media(max-width:600px) { .allocation-row { grid-template-columns:minmax(0,1fr); } .dlc-library-row .dlc-actions { flex-basis:100%; } }
+
+  #history-health-modal .modal { width:100%; max-width:620px; }
+  #history-health-summary { margin:16px 0; }
+  .history-health-list { display:grid; gap:12px; max-height:55vh; overflow-y:auto; overflow-x:hidden; }
+  .history-health-row { padding:14px; border:1px solid var(--border); border-radius:14px; background:var(--surface2); min-width:0; }
+  .history-health-row h4 { margin:0 0 6px; overflow-wrap:anywhere; }
+  .history-health-row p { margin:6px 0; font-size:13px; color:var(--text2); overflow-wrap:anywhere; }
+  .history-health-row ul { padding-left:20px; margin:10px 0; font-size:13px; }
+  .history-health-row li { margin:6px 0; overflow-wrap:anywhere; }
+  .history-health-actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:12px; }
+  .history-health-actions select { min-width:0; width:100%; }
   #btn-review-unsynced[hidden] { display:none; }
   .session-filter-heading #btn-add-session { padding:9px 13px; font-size:.8rem; white-space:nowrap; }
   .session-filters { container-type:inline-size; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border); }
@@ -877,30 +888,8 @@ opacity: 0.18;
   .rotation-game small { display:block; color:var(--text2); font-size:.72rem; margin-top:4px; }
   .rotation-game small.played { color:var(--accent); }
   .rotation-row button { padding:8px 12px; font-size:.76rem; flex-shrink:0; }
-  .rotation-choices { max-height:45dvh; overflow:auto; margin:12px 0; }
-  .rotation-choice { display:flex; gap:10px; align-items:center; padding:11px 0; border-bottom:1px solid var(--border); cursor:pointer; font-size:.85rem; }
-  .rotation-choice input { width:18px; height:18px; accent-color:var(--accent); flex-shrink:0; }
-  .rotation-choice span { overflow-wrap:anywhere; }
-  .rotation-choice > label { display:flex; align-items:center; gap:10px; flex:1; min-width:0; cursor:pointer; }
-  .rotation-choice .rotation-target-label { flex:0 0 100px; display:block; color:var(--text2); font-size:.7rem; }
-  .rotation-choice .rotation-day-label { flex:0 1 110px; display:block; font-size:.7rem; color:var(--text2); }
-  .rotation-day { width:100%; margin-top:4px; }
-  .rotation-day-summary { display:flex; flex-wrap:wrap; gap:4px 14px; }
-  @media(max-width:480px) { .rotation-choice { flex-wrap:wrap; } .rotation-choice > label:first-child { flex-basis:100%; } }
-  .rotation-choice input.rotation-target { width:100%; height:auto; margin-top:4px; padding:8px; font-size:.8rem; }
-  .rotation-target:disabled { opacity:.4; }
   .rotation-game { flex:1; }
   .rotation-game .progress-track { margin-top:7px; height:5px; }
-  .rotation-target-status { display:block; margin-top:5px; color:var(--text2); font-size:.7rem; line-height:1.5; }
-  .rotation-target-status.reached { color:var(--accent); font-weight:600; }
-  #rotation-modal .modal { width:100%; max-width:580px; }
-  #rotation-modal #rotation-load-last-week { display:block; margin:16px 0 12px; }
-  #rotation-modal #rotation-history-hint { margin:0 0 16px; }
-  #rotation-choices { padding-right:8px; }
-  @media(min-width:600px) {
-    .rotation-choice { gap:20px; }
-    .rotation-choice .rotation-target-label { flex-basis:140px; }
-  }
 
   /* What should I play? picker */
   .pick-mode {
@@ -3815,12 +3804,6 @@ opacity: 0.18;
     cursor: pointer;
     flex-shrink: 0;
   }
-  .dbx-history-panel { margin:16px 0; padding:14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); }
-  .dbx-history-heading,.dbx-history-row { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; }
-  .dbx-history-heading { font-size:.85rem; margin-bottom:8px; }
-  .dbx-history-heading button,.dbx-history-row button { padding:8px 10px; font-size:.75rem; }
-  .dbx-history-row { padding:10px 0; border-top:1px solid var(--border); font-size:.8rem; }
-  .dbx-history-row small { display:block; color:var(--text2); margin-top:3px; }
   .dbx-actions {
     display: flex;
     gap: 8px;
@@ -5064,7 +5047,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 :root[data-ui="apple"] .session-pause-info { background:var(--surface2); border:0; color:var(--text2); }
 :root[data-ui="apple"] .session-duration { font-size:15px; font-weight:600; }
 :root[data-ui="apple"] .session-filter-row { gap:12px; }
-:root[data-ui="apple"] :is(.stat-card,.compare-stat,.recap-stat,.game-milestones,.dbx-history-panel) { background:var(--surface2); border:0; border-radius:16px; box-shadow:none; }
+:root[data-ui="apple"] :is(.stat-card,.compare-stat,.recap-stat,.game-milestones) { background:var(--surface2); border:0; border-radius:16px; box-shadow:none; }
 :root[data-ui="apple"] :is(.comparison-table,.dash-row) { font-size:14px; }
 :root[data-ui="apple"] :is(.progress-track,.rotation-game .progress-track,.rotation-budget-meter,.classic-milestone-progress) { height:7px; box-sizing:border-box; border:0; border-radius:999px; background:var(--surface3); overflow:hidden; box-shadow:none; }
 :root[data-ui="apple"] :is(.progress-fill,.rotation-budget-meter-fill,.classic-milestone-fill) { border-radius:inherit; background:var(--apple-tint); }
@@ -5205,7 +5188,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
  height:calc(var(--mx-nav-height,132px) + 38px + env(safe-area-inset-bottom,0px));
  background:linear-gradient(to top,color-mix(in srgb,var(--bg) 76%,transparent),color-mix(in srgb,var(--bg) 25%,transparent) 50%,transparent);
 }
-:root[data-ui="apple"] :is(.card,.game-milestones,.dbx-history-panel) { backdrop-filter:none; -webkit-backdrop-filter:none; }
+:root[data-ui="apple"] :is(.card,.game-milestones) { backdrop-filter:none; -webkit-backdrop-filter:none; }
 :root[data-ui="apple"] :is(.btn-primary,.btn-start,.btn-pause) {
  border-radius:999px; background:var(--apple-tint); color:var(--apple-on-accent);
  border:0; box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -1px 0 rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.1);
@@ -5379,6 +5362,142 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
  :root[data-ui="apple"] .apple-animated-backdrop { display:none; animation:none!important; }
 }
 
+
+
+/* Contextual playthroughs, weekly planning and Dropbox preferences. */
+#weekly-planner-modal { z-index:1100; }
+#weekly-planner-modal .modal { width:100%; max-width:900px; max-height:calc(100dvh - 32px); display:flex; flex-direction:column; overflow:hidden; }
+#weekly-planner-title { flex-shrink:0; }
+#weekly-planner-body { min-height:0; overflow-y:auto; overflow-x:hidden; padding-right:4px; }
+#weekly-planner-modal .modal-actions { flex-shrink:0; padding-top:16px; border-top:1px solid var(--border); }
+
+#d2-planner-error:empty { display:none; }
+.d2-empty-small { padding:8px 0; color:var(--text2); font-size:12px; line-height:1.6; }
+.planner-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:16px 0; }
+#planner-budget { flex-shrink:0; padding:12px 0; border-block:1px solid var(--border); font-size:13px; font-variant-numeric:tabular-nums; }
+.planner-capacity,.planner-allocation { display:flex; justify-content:space-between; gap:8px 20px; flex-wrap:wrap; padding:5px 0; }
+.planner-capacity strong { color:var(--accent); }
+.planner-allocation .d2-error { margin:0; }
+.planner-remaining { flex-basis:100%; display:flex; align-items:center; gap:12px; margin:3px 0 8px; }
+.planner-remaining .progress-track { flex:1; margin:0; height:6px; }
+.planner-remaining small { color:var(--text2); font-size:12px; white-space:nowrap; }
+.planner-remaining.is-over .progress-track { outline:1px solid var(--red); }
+.planner-remaining.is-over small { color:var(--red); }
+.planner-row { display:grid; grid-template-columns:48px minmax(100px,1fr) 110px 145px auto; gap:12px; align-items:center; padding:16px 0; border-bottom:1px solid var(--border); }
+.planner-row .library-game-cover,.planner-pick .library-game-cover { width:48px; height:48px; }
+.planner-identity { min-width:0; overflow-wrap:anywhere; }
+.planner-identity strong,.planner-pick strong { display:block; font-size:14px; }
+.planner-identity small,.planner-pick small,.planner-recorded { display:block; font-size:12px; color:var(--text2); line-height:1.6; }
+.planner-recorded { margin-top:5px; color:var(--accent); }
+.planner-row .d2-field { margin:0; font-size:12px; align-self:end; }
+.planner-row > button { align-self:end; }
+input[data-d2-target] { padding:11px 32px 11px 10px; }
+.planner-hour-control { position:relative; display:block; }
+.planner-hour-arrows { position:absolute; right:3px; top:3px; bottom:3px; display:flex; flex-direction:column; width:26px; }
+#weekly-planner-modal .planner-hour-arrows button { flex:1; min-height:0; padding:0; border:0; border-radius:4px; background:transparent; color:var(--text2); font-size:9px; line-height:1; cursor:pointer; }
+#weekly-planner-modal .planner-hour-arrows button:hover { background:var(--accent-dim); color:var(--accent); }
+input[data-d2-target]::-webkit-inner-spin-button,input[data-d2-target]::-webkit-outer-spin-button { display:none; }
+:root[data-ui="material"] input[data-d2-target] { padding-right:32px; }
+#planner-weekdays { margin-top:20px; border:1px solid var(--border); border-radius:var(--radius); padding:12px; }
+#planner-weekdays summary,.planner-more summary { cursor:pointer; padding:10px 0; font-size:13px; font-weight:600; min-height:44px; box-sizing:border-box; }
+.planner-more { margin-left:auto; }
+.planner-more > div { display:flex; flex-wrap:wrap; gap:8px; padding:8px 0; }
+.planner-more[open] { flex-basis:100%; }
+.planner-empty { padding:24px 12px; text-align:center; color:var(--text2); font-size:13px; line-height:1.7; }
+.planner-pick { display:flex; gap:12px; align-items:center; cursor:pointer; min-width:0; }
+.planner-pick > span:last-child { min-width:0; overflow-wrap:anywhere; }
+.planner-pick[hidden],#planner-weekday-fields[hidden] { display:none; }
+#planner-picker-search { width:100%; box-sizing:border-box; padding:12px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); color:var(--text); font:inherit; }
+@media(max-width:700px) {
+ .planner-row { grid-template-columns:48px minmax(0,1fr) auto; gap:10px; }
+ .planner-row .planner-identity { grid-column:2 / 4; padding-right:0; }
+ .planner-row > .d2-field { grid-row:2; grid-column:1 / 3; }
+ .planner-row > .d2-field + .d2-field { grid-row:3; grid-column:1 / 3; }
+ .planner-row > button { grid-column:3; grid-row:3; }
+ .planner-more { margin-left:0; }
+ .d2-capacities { grid-template-columns:repeat(4,minmax(0,1fr)); }
+}
+
+#feature-editor { z-index:1200; }
+#feature-editor .modal { width:100%; max-width:700px; max-height:calc(100dvh - 32px); overflow:auto; }
+.d2-section-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.d2-section-head h4 { margin:0; font-size:13px; }
+.d2-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.d2-field { display:flex; flex-direction:column; gap:8px; min-width:0; margin:12px 0; color:var(--text2); font-size:13px; }
+.d2-field[hidden] { display:none; }
+.d2-field input,.d2-field select,.d2-field textarea { width:100%; min-width:0; box-sizing:border-box; }
+.d2-field textarea { background:var(--surface2); color:var(--text); font:inherit; border:1px solid var(--border-strong); border-radius:var(--radius); padding:12px; }
+.playthrough-section { margin-top:20px!important; }
+.dashboard-milestone-column > .playthrough-section { margin-top:0!important; }
+.playthrough-section .game-milestones-heading { flex-wrap:wrap; }
+.playthrough-section .game-milestones-heading > div { flex:1; min-width:150px; }
+.playthrough-section .backup-hint,#sync-settings-body .backup-hint,#weekly-planner-body .backup-hint { margin:8px 0 12px; font-size:12px; line-height:1.6; }
+.feature-summary { display:flex; flex-wrap:wrap; gap:10px 24px; margin:14px 0; padding:12px 0; border-block:1px solid var(--border); }
+.feature-summary > div { flex:1; min-width:75px; }
+.feature-summary dt { color:var(--text2); font-size:12px; margin-bottom:5px; }
+.feature-summary dd { margin:0; font-size:15px; font-weight:600; font-variant-numeric:tabular-nums; }
+.playthrough-actions { min-width:0; }
+.playthrough-actions summary,.playthrough-session-history summary { cursor:pointer; font-size:13px; color:var(--text2); padding:10px 0; }
+.playthrough-actions[open] { flex-basis:100%; }
+.playthrough-actions .d2-actions { margin:6px 0 12px; }
+.playthrough-progress { border-top:1px solid var(--border); margin-top:16px; padding-top:16px; }
+.playthrough-progress > h4 { font-size:13px; margin-bottom:12px; }
+.playthrough-milestone-heading { margin-top:20px; }
+.playthrough-session-history { margin-top:16px; border-top:1px solid var(--border); }
+.d2-objective { padding:14px 0; border-bottom:1px solid var(--border); overflow-wrap:anywhere; }
+.d2-objective > strong { font-size:13px; }
+.d2-objective .d2-actions { margin-top:12px; }
+.d2-progress-label { display:flex; justify-content:space-between; gap:12px; font-size:12px; line-height:1.5; margin:10px 0 8px; }
+.d2-progress-label strong { color:var(--accent); white-space:nowrap; }
+.d2-history-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
+.d2-history-row span { min-width:0; overflow-wrap:anywhere; }
+.d2-history-row strong { font-size:13px; }
+.d2-history-row small,.d2-assign-list small { display:block; color:var(--text2); font-size:12px; line-height:1.5; margin-top:4px; }
+.d2-assign-list { max-height:340px; overflow:auto; margin-top:16px; }
+.d2-assign-list > label { padding:12px 0; border-bottom:1px solid var(--border); }
+.d2-assign-list input { flex-shrink:0; }
+.d2-capacities { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; }
+input[data-d2-capacity] { padding:10px 32px 10px 10px; }
+input[data-d2-capacity]::-webkit-inner-spin-button,input[data-d2-capacity]::-webkit-outer-spin-button { display:none; }
+:root[data-ui="material"] input[data-d2-capacity] { padding-right:32px; }
+.d2-error { color:var(--red); line-height:1.5; margin:16px 0; font-size:13px; }
+.d2-warning { color:var(--yellow-ink); font-size:12px; line-height:1.5; margin:8px 0; }
+.d2-content { padding:14px 0; border-top:1px solid var(--border); margin:16px 0; min-width:0; }
+.d2-content h4 { font-size:13px; margin-bottom:10px; }
+.d2-diff { border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; margin:10px 0; min-width:0; }
+.d2-diff summary { cursor:pointer; overflow-wrap:anywhere; font-size:13px; line-height:1.6; }
+.d2-tag { color:var(--accent); background:var(--accent-dim); border-radius:6px; padding:3px 6px; font-size:12px; }
+.d2-diff-values { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; margin-top:12px; }
+.d2-diff-values pre { white-space:pre-wrap; overflow-wrap:anywhere; max-height:280px; overflow:auto; background:var(--surface2); border-radius:8px; padding:12px; font-size:12px; color:var(--text2); }
+.d2-table-wrap { overflow-x:auto; margin:16px 0; }
+.d2-table { width:100%; border-collapse:collapse; font-size:13px; }
+.d2-table th,.d2-table td { padding:12px; text-align:left; border-bottom:1px solid var(--border); }
+.d2-table td { font-variant-numeric:tabular-nums; }
+.d2-metrics { display:flex; flex-wrap:wrap; gap:16px; margin:16px 0; padding:12px 0; border-block:1px solid var(--border); }
+.d2-metrics > div { flex:1; min-width:80px; }
+.d2-metrics strong { display:block; font-size:16px; }
+.d2-metrics small { color:var(--text2); font-size:12px; }
+#sync-settings-body { margin-top:16px; }
+#sync-settings-body .preference-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; border-top:1px solid var(--border); }
+#sync-settings-body .preference-row strong { font-size:13px; }
+#sync-settings-body .preference-row p { margin-bottom:0; }
+.sync-preference-section { padding:16px 0; border-top:1px solid var(--border); }
+.sync-preference-section h4 { font-size:13px; margin:0 0 8px; }
+.sync-differences summary { font-size:13px; cursor:pointer; padding:8px 0; }
+#sync-manual-actions[hidden],#settings-dropbox .settings-risk-actions[hidden] { display:none; }
+.d2-live-run { margin:8px 0; color:var(--accent); font-size:13px; font-weight:600; }
+.d2-session-run { display:block; color:var(--accent); font-size:11px; }
+#weekly-planner-modal button,#feature-editor button,#dashboard-playthroughs button,#sync-settings-body button { min-height:44px; }
+#weekly-planner-modal button:focus-visible,#feature-editor button:focus-visible,#dashboard-playthroughs button:focus-visible,#sync-settings-body button:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+@media(max-width:599px) {
+  #weekly-planner-modal .modal,#feature-editor .modal { padding:18px; max-height:calc(100dvh - 24px); }
+  .d2-diff-values { grid-template-columns:1fr; }
+  .d2-capacities { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .feature-summary { gap:10px 16px; }
+  .d2-history-row { flex-wrap:wrap; }
+}
+:root[data-ui="material"] #weekly-planner-modal .modal,:root[data-ui="material"] #feature-editor .modal { background:var(--md-surface-container-high); border-radius:28px; }
+:root[data-ui="material"] #weekly-planner-modal button,:root[data-ui="material"] #feature-editor button,:root[data-ui="material"] #dashboard-playthroughs button,:root[data-ui="material"] #sync-settings-body button { min-height:48px; }
 
 </style>
 <script>
@@ -5567,7 +5686,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">1.9.3</span>
+    <span class="version-badge">2.0.0</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -5623,7 +5742,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     </div>
 
     <div class="card" id="weekly-rotation-card">
-      <div class="rotation-heading"><div class="card-header">This week's rotation</div><button class="btn-ghost" id="rotation-manage" type="button">Choose games</button></div>
+      <div class="rotation-heading"><div class="card-header">This week's rotation</div><button class="btn-ghost" id="rotation-manage" type="button">Plan week</button></div>
       <p class="rotation-summary" id="rotation-summary"></p><p class="rotation-summary" id="rotation-budget"></p><div class="rotation-budget-meter-panel" id="rotation-budget-meter" hidden></div><div id="rotation-list"></div>
     </div>
     <div class="card">
@@ -6184,6 +6303,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     </div>
     <div class="card">
       <div class="card-header">Dropbox Sync</div>
+      <section id="sync-settings-body" aria-label="Sync and recovery"></section>
       <div id="dbx-disconnected">
         <p class="modal-subheader" style="margin:0 0 10px;">Back up your data to your own Dropbox and keep multiple devices in sync. Your data goes straight from your browser to Dropbox.</p>
         <div class="add-game-form" style="margin-bottom:8px;">
@@ -6212,14 +6332,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
             <span class="dbx-toggle-label">Hide the sync reminder banner</span>
           </label>
         </div>
-        <div class="dbx-history-panel">
-          <div class="dbx-history-heading"><strong>Version history</strong><button class="btn-ghost" id="dbx-history-refresh" type="button">Refresh history</button></div>
-          <p class="backup-hint">The live Dropbox file keeps the five previous changes. Rollback updates the live file and this device; device settings stay unchanged.</p>
-          <div id="dbx-history-list" aria-live="polite">Refresh to load saved versions.</div>
-        </div>
         <div class="dbx-actions">
-          <button class="btn btn-start" id="dbxUploadBtn" style="flex:1;padding:10px 14px;font-size:0.8rem;">Upload</button>
-          <button class="btn-ghost" id="dbxDownloadBtn" style="flex:1;padding:10px 14px;font-size:0.8rem;">Download</button>
+          <button class="btn btn-start" id="dbxUploadBtn" style="flex:1;padding:10px 14px;font-size:0.8rem;">Review changes</button>
+          <button class="btn-ghost" id="dbxDownloadBtn" style="flex:1;padding:10px 14px;font-size:0.8rem;">Preview download</button>
           <button class="btn-ghost btn-danger" id="dbxDisconnectBtn" style="padding:10px 14px;font-size:0.8rem;">Disconnect</button>
         </div>
       </div>
@@ -6232,14 +6347,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         <button class="btn-ghost" id="btn-import" style="flex:1;padding:10px 14px;font-size:0.8rem;">Import</button>
       </div>
       <button class="btn-ghost" id="btn-export-csv" style="width:100%;margin-top:8px;padding:10px 14px;font-size:0.8rem;">Export Sessions as CSV</button>
-      <button class="btn-ghost" id="dbx-recovery-export" style="width:100%;margin-top:8px;display:none;">Export history from before last Dropbox download</button>
+      <button class="btn-ghost" id="dbx-recovery-export" style="width:100%;margin-top:8px;display:none;">Export last recovery copy</button>
       <input type="file" id="import-file" accept=".json,application/json" style="display:none">
       <div class="backup-hint">Data is stored locally in your browser. Export regularly to back it up or move it to another device.</div>
     </div>
     <div class="card">
       <div class="card-header">Achievements</div>
-      <button class="btn-ghost" id="btn-recalc-unlock-dates" style="width:100%;padding:10px 14px;font-size:0.8rem;">Recalculate unlock dates from history</button>
-      <div class="backup-hint" style="margin-top:8px;">Recomputes the earned date of every unlocked badge from your session history, replacing dates that were stamped when the Badges tab first arrived.</div>
+      <div class="backup-hint" style="margin:8px 0;">Recomputes the earned date of every unlocked badge from your session history, replacing dates that were stamped when the Badges tab first arrived.</div>
+      <button class="btn-ghost btn-danger" id="btn-recalc-unlock-dates" style="width:100%;padding:10px 14px;font-size:0.8rem;">Recalculate unlock dates from history</button>
     </div>
     <div class="card">
       <div class="card-header">Keyboard shortcuts</div>
@@ -6453,6 +6568,21 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <button class="btn-ghost" id="add-session-cancel">Cancel</button>
       <button class="btn btn-start" id="add-session-save" style="padding:8px 16px;font-size:0.85rem;">Add</button>
     </div>
+  </div>
+</div>
+
+
+<div class="modal-overlay" id="weekly-planner-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="weekly-planner-title"><h3 id="weekly-planner-title">Weekly rotation</h3><div id="planner-budget" aria-live="polite"></div><div id="weekly-planner-body"></div><div class="modal-actions"><button type="button" class="btn-ghost" id="weekly-planner-cancel">Cancel</button><button type="button" class="btn btn-start" id="weekly-planner-save">Save plan</button></div></div></div>
+<div class="modal-overlay" id="feature-editor"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="d2-editor-title"><h3 id="d2-editor-title"></h3><form id="d2-editor-form"><div id="d2-editor-body"></div><p class="d2-error" role="alert" id="d2-editor-error"></p><div class="modal-actions"><button type="button" class="btn-ghost" id="d2-editor-cancel">Cancel</button><button type="submit" class="btn btn-start" id="d2-editor-save">Save</button></div></form></div></div>
+
+<!-- Session history health check -->
+<div class="modal-overlay" id="history-health-modal">
+  <div class="modal history-health-modal" role="dialog" aria-modal="true" aria-labelledby="history-health-title">
+    <h3 id="history-health-title">Session history health check</h3>
+    <p class="backup-hint">Review overlapping completed sessions, sessions lasting 12 hours or more (elapsed or active), and missing games. Running sessions are excluded. Nothing changes automatically.</p>
+    <p id="history-health-summary" role="status"></p>
+    <div id="history-health-list" class="history-health-list"></div>
+    <div class="modal-actions"><button type="button" class="btn-ghost" id="history-health-rescan">Rescan</button><button type="button" class="btn btn-start" id="history-health-close">Done</button></div>
   </div>
 </div>
 
@@ -6687,7 +6817,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
-<div class="modal-overlay" id="dbx-rollback-modal"><div class="modal"><h3>Roll back Dropbox?</h3><p id="dbx-rollback-message" class="backup-hint"></p><p class="backup-hint">This replaces games and sessions in Dropbox and on this device, and restores synced settings if the selected version includes them. Your current local history is saved as a recovery copy first. The current Dropbox version joins the five-version history.</p><div class="modal-actions"><button class="btn-ghost" id="dbx-rollback-cancel">Cancel</button><button class="btn-danger" id="dbx-rollback-confirm">Roll back</button></div></div></div>
 
 <!-- Dropbox newer-backup prompt -->
 <div class="modal-overlay" id="dbx-sync-modal">
@@ -6764,7 +6893,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
-<div class="modal-overlay" id="rotation-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-title"><h3 id="rotation-title">Your weekly rotation</h3><p class="backup-hint">Choose any number of games to focus on. Set optional weekly targets in whole hours. Leave a target blank to keep it unset. Each new week starts with an empty rotation using Week starts on. Load last week to reuse its games, targets, and planned days; progress counts only the current week.</p><button type="button" class="btn-ghost" id="rotation-load-last-week">Load last week</button><p class="backup-hint" id="rotation-history-hint" aria-live="polite"></p><div class="rotation-choices" id="rotation-choices"></div><p class="rotation-summary" id="rotation-selection-count" aria-live="polite"></p><div id="rotation-day-summary" class="rotation-day-summary backup-hint" aria-live="polite"></div><p class="rotation-summary" id="rotation-editor-budget" aria-live="polite"></p><div class="rotation-budget-meter-panel" id="rotation-editor-budget-meter" hidden></div><p id="rotation-budget-error" class="rotation-summary over-budget" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="rotation-cancel">Cancel</button><button class="btn-primary" id="rotation-save">Save rotation</button></div></div></div>
 
 <!-- What should I play? picker -->
 <div class="modal-overlay" id="pick-modal">
@@ -6868,6 +6996,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
       const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform), milestones: normalizeGameMilestones(g.milestones) };
+      if (Array.isArray(g.playthroughs)) o.playthroughs = structuredClone(g.playthroughs);
       if (Array.isArray(g.dlcs)) o.dlcs = normalizeGames(g.dlcs.map(({dlcs, ...dlc}) => dlc));
       for (const key of ['mainStoryHours', 'mainExtraHours', 'beatAlreadyPlayedHours']) {
         if (Number.isFinite(g[key]) && g[key] > 0) o[key] = g[key];
@@ -6917,6 +7046,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function persistLibraryReplacement(library,history,preferences) {
     checkStorageFresh();
+    validateProgressionData({games:library,sessions:history,settings:preferences});
     const nextGames=normalizeGames(library),nextSessions=structuredClone(history),nextSettings=structuredClone(preferences);
     rollWeeklyRotation(nextSettings);
     const result=reconcileMilestoneLibrary(nextGames,nextSessions);
@@ -7410,8 +7540,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   // --- Dropbox sync ---
   const DBX_KEY = 'playdex.dropbox';
   const DBX_PATH = '/playdex-backup.json';
-  let dbxHistoryView = null, dbxRollbackIndex = null;
-  let dbxHistoryLoading = false, dbxHistoryPending = false;
+  let dbxHistoryView = null;
+
   let dbx;
   try { dbx = JSON.parse(localStorage.getItem(DBX_KEY) || 'null'); } catch {}
   if (!dbx) dbx = { appKey: '', accessToken: '', refreshToken: '', expiresAt: 0, account: '', lastSync: '', lastSyncAt: 0, dismissedRemoteAt: 0, autoSync: false, autoUpload: false, hideSyncBanner: false, mock: false };
@@ -7424,9 +7554,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function dbxSnapshot(data = { games, sessions, settings }) {
     const state = { games: normalizeGames(data.games), sessions: data.sessions };
     if (data.settings) state.settings = syncSettings(data.settings);
-    return JSON.stringify(state);
+    return JSON.stringify(state,(_key,value)=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.keys(value).sort().map(key=>[key,value[key]])):value);
   }
-  let dbxSyncTimer = null, dbxSkipAutoUpload = false, dbxLastUploadedState = '';
+  let dbxSyncTimer = null, dbxSkipAutoUpload = false, dbxLastUploadedState = '', dbxCompareGeneration=0;
   let dbxDirty = !!dbx.dirty, dbxBannerDismissed = false;
   let dbxSyncOps = 0, dbxPendingDownload = null;
   const DBX_RECOVERY_KEY = 'playdex.dropbox.recovery';
@@ -7437,7 +7567,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function dbxConflict() {
     clearTimeout(dbxSyncTimer);
-    toast('Dropbox has changes that are not on this device. Download to review them; export your local history first if you want to keep both.');
+    toast('Dropbox has changes from another device.', 'Review in Settings',()=>{showSyncSettings();runSyncAction('sync-review');},10000);
   }
 
   const isDbxDirty = () => !!dbx.accessToken && dbxDirty;
@@ -7457,10 +7587,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     dbxSyncOps += on ? 1 : -1;
     const syncing = dbxSyncOps > 0;
     document.querySelectorAll('#dbxUploadBtn, #dbxDownloadBtn, #sync-btn').forEach(b => b.classList.toggle('syncing', syncing));
-    if (!syncing && dbxHistoryPending && currentTab === 'settings') {
-      dbxHistoryPending = false;
-      queueMicrotask(() => { if (currentTab === 'settings') void dbxLoadHistory(); });
-    }
   }
 
   function b64url(buf) {
@@ -7489,6 +7615,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       status.innerHTML = iconSvg('dbx') + ' Connected';
     }
     dbxRefreshIndicators();
+    if(document.getElementById('sync-device-row'))renderSyncSettings();
   }
 
   async function dropboxConnect() {
@@ -7505,6 +7632,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return;
     }
     if (!isSecureContext) { toast('\u26A0 Dropbox sync needs HTTPS (or localhost)'); return; }
+    delete dbx.syncedHash;delete dbx.syncedRev;dbxLastUploadedState='';++dbxCompareGeneration;
     dbx.appKey = key; dbxSave();
     const verifier = randomString(64);
     sessionStorage.setItem('playdex.dbx.verifier', verifier);
@@ -7563,16 +7691,33 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     } catch (e) {}
   }
 
-  function dbxMarkSynced() {
+  async function dbxStateHash(state) {
+    try{
+      const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(state));
+      return 'sha256:'+Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
+    }catch{return null;}
+  }
+  function dbxSetDirty(dirty) {
+    dbxDirty=!!dirty;dbx.dirty=!!dirty;
+    if(!dirty){clearTimeout(dbxSyncTimer);dbxBannerDismissed=false;}
+    dbxSave();dbxRefreshIndicators();
+  }
+  async function dbxStateUnchanged(state,connection=dbx) {
+    if(!connection.rev||connection.syncedRev!==connection.rev)return false;
+    if(dbxLastUploadedState===state)return true;
+    const hash=await dbxStateHash(state);
+    return !!hash&&hash===connection.syncedHash;
+  }
+  async function dbxMarkSynced(state=dbxSnapshot()) {
+    const connection=dbx,revision=dbx.rev,hash=await dbxStateHash(state);
+    if(dbx!==connection||dbx.rev!==revision||!dbx.accessToken)return;
+    dbx.syncedHash=hash;dbx.syncedRev=revision;dbxLastUploadedState=state;
     dbx.lastSync = new Date().toLocaleString();
     dbx.lastSyncAt = Date.now();
     dbx.dismissedRemoteAt = 0;
-    dbxDirty = false;
-    dbx.dirty = false;
-    dbxBannerDismissed = false;
-    dbxSave();
+    dbxSetDirty(dbxSnapshot()!==state);
     updateDropboxUI();
-    dbxRefreshIndicators();
+    if(dbxDirty)scheduleAutoUpload();
   }
 
   function validateBackupData(data) {
@@ -7601,90 +7746,39 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     validateDlcData(data);
     validateMilestoneData(data);
     validateRotationHistory(data.settings);
+    validateProgressionData(data);
     return data;
   }
   function dbxValidateFile(data) {
     return validateBackupData(data);
   }
-  function dbxWithHistory(next, previous) {
-    const history = previous ? [{ savedAt: previous.exportedAt || new Date().toISOString(), games: previous.games, sessions: previous.sessions, settings: previous.settings ? syncSettings(previous.settings) : undefined }, ...(Array.isArray(previous.history) ? previous.history : [])].slice(0,5) : [];
-    return Object.assign({}, next, { history });
+  function dbxWithHistory(next, previous, previousRev = null) {
+    const history = previous ? [{ device:previous.device, revision:previousRev, savedAt: previous.exportedAt || new Date().toISOString(), games: previous.games, sessions: previous.sessions, settings: previous.settings ? syncSettings(previous.settings) : undefined }, ...(Array.isArray(previous.history) ? previous.history : [])].slice(0,5) : [];
+    return Object.assign({}, next, { device:d2Device(), history });
   }
   async function dbxReadLive() {
     const res = await fetch('https://content.dropboxapi.com/2/files/download', {
       method:'POST', headers:{ 'Authorization':'Bearer '+dbx.accessToken, 'Dropbox-API-Arg':JSON.stringify({path:DBX_PATH}) }
     });
-    if (!res.ok) throw new Error(res.status === 409 ? 'No live Dropbox file yet. Upload first.' : 'Could not load Dropbox history');
+    if (!res.ok) {let detail=null;try{detail=await res.json();}catch{}const missing=res.status===409&&String(detail?.error_summary||'').startsWith('path/not_found/');const error=new Error(missing?'No live Dropbox file yet. Upload first.':'Could not load Dropbox history ('+res.status+')');if(missing)error.code='not_found';throw error;}
     const metadata = JSON.parse(res.headers.get('Dropbox-API-Result') || '{}');
     if (!metadata.rev) throw new Error('Missing Dropbox revision');
     return { data:dbxValidateFile(await res.json()), rev:metadata.rev };
   }
   function dbxPaintHistory() {
-    const list = document.getElementById('dbx-history-list');
-    if (!dbxHistoryView) { list.textContent='Refresh to load saved versions.'; return; }
-    const history = Array.isArray(dbxHistoryView.data.history) ? dbxHistoryView.data.history.slice(0,5) : [];
-    list.innerHTML = history.length ? history.map((entry,index) => {
-      const date = new Date(entry.savedAt);
-      const label = isNaN(date.getTime()) ? 'Earlier version' : date.toLocaleString();
-      return '<div class="dbx-history-row"><span>'+escHtml(label)+'<small>'+ (Array.isArray(entry.games)?entry.games.length:0)+' games ? '+(Array.isArray(entry.sessions)?entry.sessions.length:0)+' sessions</small></span><button class="btn-ghost" type="button" data-rollback="'+index+'">Roll back</button></div>';
-    }).join('') : '<p class="backup-hint">No previous changes yet. History starts with your next changed upload.</p>';
-  }
-  async function dbxLoadHistory() {
-    if (dbxHistoryLoading) return;
-    if (dbxSyncOps) { dbxHistoryPending = true; return; }
-    const list = document.getElementById('dbx-history-list');
-    list.textContent = 'Loading version history...';
-    dbxHistoryLoading = true;
-    try {
-      if (!await dropboxRefreshIfNeeded()) throw new Error('Dropbox connection expired. Reconnect to load history.');
-      if (dbxSyncOps) { dbxHistoryPending = true; return; }
-      dbxSyncSpinning(true);
-      try { dbxHistoryView = await dbxReadLive(); dbxPaintHistory(); }
-      finally { dbxSyncSpinning(false); }
-    } catch(error) {
-      dbxHistoryView = null;
-      list.textContent = error.message;
-    } finally { dbxHistoryLoading = false; }
-  }
-  async function dbxRollback() {
-    if (dbxSyncOps || dbxRollbackIndex === null || !dbxHistoryView) return;
-    const selected = dbxHistoryView, index=dbxRollbackIndex;
-    if (!await dropboxRefreshIfNeeded()) { toast('Reconnect Dropbox first'); return; }
-    if (dbxSyncOps) return;
-    dbxSyncSpinning(true);
-    clearTimeout(dbxSyncTimer);
-    try {
-      checkStorageFresh();
-      const current=await dbxReadLive();
-      if (current.rev !== selected.rev) throw new Error('Dropbox changed. Refresh history before rolling back.');
-      const entry=dbxValidateFile(current.data.history[index]);
-      dbxRecovery();
-      const localBefore=dbxSnapshot();
-      const currentSettings = entry.settings || current.data.settings;
-      const payload=dbxWithHistory({app:'PlayDex',version:1,exportedAt:new Date().toISOString(),games:entry.games,sessions:entry.sessions,settings:currentSettings ? syncSettings(currentSettings) : undefined},current.data);
-      const res=await fetch('https://content.dropboxapi.com/2/files/upload',{
-        method:'POST',headers:{'Authorization':'Bearer '+dbx.accessToken,'Content-Type':'application/octet-stream','Dropbox-API-Arg':JSON.stringify({path:DBX_PATH,mode:{'.tag':'update',update:current.rev},strict_conflict:true,mute:true})},body:JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error(res.status===409?'Dropbox changed. Refresh history before rolling back.':'Rollback upload failed');
-      const metadata=await res.json();
-      if (!metadata.rev) throw new Error('Missing rollback revision');
-      checkStorageFresh();
-      if (dbxSnapshot() === localBefore) {
-        dbxApplyBackupText({text:JSON.stringify(payload),rev:metadata.rev}); dbxMarkSynced();
-        toast('Dropbox and local history rolled back');
-      } else {
-        dbx.rev=metadata.rev; dbxSave(); scheduleAutoUpload(); clearTimeout(dbxSyncTimer);
-        toast('Dropbox rolled back. New local edits were kept; download to apply the rollback here.');
-      }
-      clearTimeout(dbxSyncTimer);
-      dbxHistoryView={data:payload,rev:metadata.rev}; dbxPaintHistory();
-      document.getElementById('dbx-rollback-modal').classList.remove('open'); dbxRollbackIndex=null;
-    } catch(error) { toast(error.message); }
-    finally { dbxSyncSpinning(false); }
+    if(syncUI.reviewing)return;
+    if(dbxHistoryView){const state=d2SyncState();state.remote=dbxHistoryView.data;state.revision=dbxHistoryView.rev;state.loaded=true;state.error='';}
+    renderSyncSettings();
   }
 
   async function dropboxUpload(auto) {
     if (dbxSyncOps) return;
+    const connection=dbx,hadAccess=!!dbx.accessToken,initialState=dbxSnapshot();
+    const unchanged=await dbxStateUnchanged(initialState,connection);
+    if(dbx!==connection||dbxSyncOps||(hadAccess&&!dbx.accessToken))return;
+    if(dbx.accessToken&&unchanged&&dbxSnapshot()===initialState){
+      dbxSetDirty(false);if(!auto)toast('No changes to sync.');return;
+    }
     const ok = await dropboxRefreshIfNeeded();
     if (!ok) { toast('Dropbox session expired — reconnect'); return; }
     if (dbxSyncOps) return;
@@ -7725,9 +7819,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       if (previous && previous.rev !== rev) { dbxConflict(); return; }
       const uploadedState = dbxSnapshot();
       if (previous && dbxSnapshot(previous.data) === uploadedState) {
-        dbx.rev=previous.rev; dbxMarkSynced(); dbxHistoryView=previous; dbxPaintHistory(); toast('Dropbox is already up to date'); return;
+        dbx.rev=previous.rev; await dbxMarkSynced(uploadedState); dbxHistoryView=previous; dbxPaintHistory(); toast('Dropbox is already up to date'); return;
       }
-      const payload = dbxWithHistory(Object.assign({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString() }, JSON.parse(uploadedState)), previous ? previous.data : null);
+      const payload = dbxWithHistory(Object.assign({ app: 'PlayDex', version: 1, exportedAt: new Date().toISOString() }, JSON.parse(uploadedState)), previous ? previous.data : null, previous?.rev);
       const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
         method: 'POST', headers: {
           'Authorization': 'Bearer ' + dbx.accessToken, 'Content-Type': 'application/octet-stream',
@@ -7738,9 +7832,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       if (!res.ok) throw new Error('Upload failed (' + res.status + ')');
       dbx.rev = (await res.json()).rev;
       dbxHistoryView={data:payload,rev:dbx.rev}; dbxPaintHistory();
-      dbxMarkSynced();
-      dbxLastUploadedState = uploadedState;
-      if (dbxSnapshot() !== uploadedState) scheduleAutoUpload();
+      await dbxMarkSynced(uploadedState);
       toast('Synced to Dropbox');
     } catch (err) { toast('⚠ ' + err.message); }
     finally { dbxSyncSpinning(false); }
@@ -7771,7 +7863,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       activeSession = sessions.find(s => s.stop === null) || null;
       applyTheme();
       render();
-      dbxLastUploadedState = dbxSnapshot();
+      dbxLastUploadedState = dbxSnapshot(parsed);
       dbx.rev = rev;
     } finally { dbxSkipAutoUpload = false; }
     dbxDirty = false;
@@ -7801,7 +7893,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       if (skipConfirm && !dbxDirty && !activeSession && (dbx.rev || (!games.length && !sessions.length))) {
         try {
           dbxApplyBackupText(backup);
-          dbxMarkSynced();
+          await dbxMarkSynced(dbxLastUploadedState);
           toast('Synced from Dropbox');
         } catch (err) { toast('Download could not be applied: ' + err.message); }
       } else {
@@ -7828,6 +7920,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       if (j.rev !== dbx.rev && remoteAt > (dbx.dismissedRemoteAt || 0)) {
         dbx._remoteAt = remoteAt;
         dbxSave();
+        if (syncUI.reviewing) { if(syncUI.state)syncUI.state.error='A newer Dropbox revision is available. Refresh before applying changes.'; return; }
         if (dbx.autoSync) {
           dropboxDownload(true).catch(() => {});
         } else {
@@ -7839,9 +7932,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function dropboxDisconnect() {
-    dbxHistoryView=null; dbxRollbackIndex=null; dbxPaintHistory();
+    dbxHistoryView=null; dbxPaintHistory();
     dbx.appKey = dbx.appKey || '';
     dbx.accessToken = ''; dbx.refreshToken = ''; dbx.expiresAt = 0; dbx.account = '';
+    clearTimeout(dbxSyncTimer);++dbxCompareGeneration;dbxLastUploadedState='';
+    delete dbx.syncedHash;delete dbx.syncedRev;
     dbx.rev = null; dbx.dirty = false;
     dbx.lastSync = ''; dbx.lastSyncAt = 0; dbx.dismissedRemoteAt = 0; dbx.autoSync = false; dbx.autoUpload = false;
     dbx.hideSyncBanner = false;
@@ -7854,15 +7949,16 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function scheduleAutoUpload() {
-    if (!dbx.accessToken) return;
-    if (dbxSkipAutoUpload) return;
-    dbxDirty = true;
-    dbx.dirty = true;
-    dbxSave();
-    dbxRefreshIndicators();
-    if (!dbx.autoUpload) return;
+    if(!dbx.accessToken||dbxSkipAutoUpload)return;
+    const generation=++dbxCompareGeneration,connection=dbx,state=dbxSnapshot();
     clearTimeout(dbxSyncTimer);
-    dbxSyncTimer = setTimeout(() => dropboxUpload(true), 10000);
+    dbxSetDirty(true);
+    void dbxStateUnchanged(state,connection).then(unchanged=>{
+      if(generation!==dbxCompareGeneration||dbx!==connection||!dbx.accessToken)return;
+      dbxSetDirty(!unchanged);
+      if(unchanged){dbxLastUploadedState=state;return;}
+      if(dbx.autoUpload)dbxSyncTimer=setTimeout(()=>dropboxUpload(true),10000);
+    });
   }
 
   // --- Week range helpers ---
@@ -8273,7 +8369,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const fab = document.getElementById('m3-fab-log');
     if (fab) fab.classList.toggle('show', name === 'today');
     render();
-    if (name === 'settings' && (dbx.accessToken || dbx.refreshToken)) void dbxLoadHistory();
+    if(name!=='settings'&&syncUI.reviewing&&!editorUI.busy&&!d2Editor.classList.contains('open'))endSyncReview();
+    if (name === 'settings') renderSyncSettings();
     window.scrollTo({ top: 0, behavior: settings.uiStyle==='apple' && document.documentElement.dataset.appleSystemReduceMotion==='true' ? 'auto' : 'smooth' });
   }
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -8575,7 +8672,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return sum + target - Math.min(target, Math.floor(progress.games[key].ms / 60000));
     },0);
     const budget = weeklyRotationBudgetMinutes();
-    return !(budget || settings.autoDailyGoal) || rotationCommittedMinutes() + additional <= budget;
+    return !(budget || settings.autoDailyGoal || settings.plannerDayBudgets) || rotationCommittedMinutes() + additional <= budget;
   }
   function setDlcArchived(key, archived) {
     const entry = contentEntry(key), dlc = contentData(key);
@@ -8696,6 +8793,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '<option value="' + milestoneAttr(dlc.id) + '"' + (dlc.id === selected ? ' selected' : '') + '>' + escHtml(dlc.name) + (dlc.archived ? ' (archived)' : '') + '</option>').join('');
   }
   function persistSessionReplacement(next) {
+    validateProgressionData({games,sessions:next,settings});
     saveSessions(next);
     sessions = next;
     activeSession = sessions.find(session => session.stop === null) || null;
@@ -8735,7 +8833,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (!sessions.some(session => rotation.has(session.gameId) && session.segments?.some(segment => segment.dlcId))) return;
     settings.dlcRotationExplained = true;
     saveSettings(settings);
-    toast('Rotation game targets now count Base game time only. Add separate DLC targets in Choose games.', null, null, 10000);
+    toast('Rotation game targets now count Base game time only. Add separate DLC targets in Plan week.', null, null, 10000);
   }
   const contentDialogFocus = new Map();
   function rememberContentFocus(overlay) {
@@ -8789,12 +8887,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
     const panel = document.getElementById('live-content');
     panel.hidden = !activeSession;
+    refreshLivePlaythrough();
     if (!activeSession) return;
     const game = games.find(entry => entry.id === activeSession.gameId);
     panel.hidden = !game?.dlcs?.length;
     document.getElementById('switch-content').hidden = !game?.dlcs?.some(dlc => !dlc.archived);
     document.getElementById('live-content-name').textContent = contentName(activeSession.gameId, sessionSegments(activeSession).at(-1).dlcId);
     document.getElementById('live-content-times').textContent = contentBreakdown(activeSession);
+    refreshLivePlaythrough();
   }
   function localDateTime(iso) {
     const date = new Date(iso);
@@ -8807,8 +8907,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         (index < segments.length - 1 ? '<label>Until<input type="datetime-local" step="0.001" value="' + localDateTime(segment.stop) + '" data-original-stop="' + milestoneAttr(segment.stop) + '" required></label>' : '<span class="backup-hint">Until session end</span>') +
         (segments.length > 1 ? '<button type="button" class="btn-ghost" data-remove-segment="' + index + '">Remove</button>' : '') + '</div>').join('') +
       '<button type="button" class="btn-ghost" data-add-segment>Add content segment</button><p class="backup-hint" role="alert" data-allocation-error hidden></p>';
+    addPlaythroughAllocationField(panel);
   }
   function setupAllocationEditor(panel, session) {
+    panel.dataset.playthroughId = session.playthroughId || '';
     panel.dataset.gameId = session.gameId;
     panel.dataset.start = session.start;
     panel.dataset.stop = session.stop;
@@ -8886,7 +8988,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     });
   });
 
-  function startGame(gameId, dlcId) {
+  function startGame(gameId, dlcId, playthroughId) {
     if (activeSession) { toast('Stop the current session first'); return; }
     const customTarget=document.getElementById('target-custom');
     if(!customTarget.checkValidity()){
@@ -8899,8 +9001,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (!game || game.archived) return;
     if (dlcId === undefined && game.dlcs?.some(dlc => !dlc.archived)) { openContentChooser(game.id); return; }
     if (dlcId && !game.dlcs?.some(dlc => dlc.id === dlcId && !dlc.archived)) return;
+    if(playthroughId===undefined && game.playthroughs?.some(run=>!run.finishedAt)){choosePlaythrough(gameId,dlcId);return;}
+    if(playthroughId&&!game.playthroughs?.some(run=>run.id===playthroughId&&!run.finishedAt)){toast('This playthrough is no longer available. Choose an open playthrough or start unassigned.');return;}
     const session = {
       id: uid(),
+      playthroughId: playthroughId || null,
       gameId: game.id,
       gameName: game.name,
       start: new Date().toISOString(),
@@ -9273,14 +9378,21 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       .reduce((sum, s) => sum + (s.durationMs || 0), 0);
   }
 
+  function goalMinutesForDate(key) {
+    if(settings.plannerDayBudgets)return (Number(settings.plannerDayHours?.[plannedWeekdays[new Date(key+'T12:00:00').getDay()]])||0)*60;
+    return effectiveDailyGoalMinutes();
+  }
   function computeStreak() {
-    const goalMin = effectiveDailyGoalMinutes();
-    if (goalMin <= 0) return 0;
-    const goalMs = goalMin * 60000;
-    let streak = 0;
-    let start = todayStr();
-    if (totalMsForDate(start) < goalMs) start = addDays(start, -1);
-    for (let d = start; totalMsForDate(d) >= goalMs; d = addDays(d, -1)) streak++;
+    const dates=sessions.filter(session=>session.stop!==null).map(session=>dateKey(session.start)).sort();
+    if(!dates.length)return 0;
+    const first=dates[0],today=todayStr();let streak=0,day=today;
+    if(!goalMinutesForDate(day)||totalMsForDate(day)<goalMinutesForDate(day)*60000)day=addDays(day,-1);
+    for(;day>=first;day=addDays(day,-1)){
+      const target=goalMinutesForDate(day);
+      if(!target){if(settings.plannerDayBudgets)continue;break;}
+      if(totalMsForDate(day)<target*60000)break;
+      streak++;
+    }
     return streak;
   }
 
@@ -9362,11 +9474,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const first=settings.weekStartsOn==='sunday'?'sunday':'monday';
     return snapshot&&snapshot.weekStart===addDays(rotationWeekKey(new Date(),first),-7)&&Array.isArray(snapshot.ids)?snapshot:null;
   }
-  function rotationHistoryHint() {
-    const snapshot=lastWeekRotation(),ids=snapshot?.ids||[],available=ids.filter(id=>{const entry=contentEntry(id);return entry&&!entry.archived;});
-    document.getElementById('rotation-load-last-week').disabled=!available.length;
-    document.getElementById('rotation-history-hint').textContent=ids.length?'Last week: '+snapshot.weekStart+' - '+addDays(snapshot.weekStart,6)+'. Loading replaces the editor selection; review targets, then Save rotation. Archived or removed content is skipped.':'No rotation saved for last week yet. New weeks start empty.';
-  }
   function rotationGameIds() {
     ensureRotationWeek();
     const selected=Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[];
@@ -9402,8 +9509,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return rotationGameIds().reduce((sum,id)=>sum+rotationTargetMinutes(id),0)+archivedRotationSpentMinutes();
   }
   function weeklyRotationBudgetMinutes() {
-    const daily=effectiveDailyGoalMinutes();
+    const daily=settings.autoDailyGoal?lastWeekAverageHours()*60:Number(settings.dailyGoalMinutes)||0;
     return Number.isFinite(daily) && daily>0 ? Math.min(10080,Math.floor(daily*7)) : 0;
+  }
+  function plannedWeekdayMinutes(hours) {
+    return plannedWeekdays.reduce((sum,day)=>sum+(Number(hours?.[day])||0)*60,0);
+  }
+  function rotationGoalCommitmentMinutes() {
+    return Math.max(rotationCommittedMinutes(),settings.plannerDayBudgets?plannedWeekdayMinutes(settings.plannerDayHours):0);
   }
   function rotationBudgetText(planned) {
     const budget=weeklyRotationBudgetMinutes();
@@ -9417,10 +9530,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if(!budget && !settings.autoDailyGoal) { panel.innerHTML=''; return; }
     const remaining=Math.max(0,budget-planned),pct=Math.max(0,Math.min(100,(budget ? Math.round(remaining/budget*100) : 0)));
     panel.innerHTML='<div class="rotation-budget-meter-label"><span>Available time</span><strong>'+(planned>budget?'Over budget':pct+'% available')+'</strong></div><div class="rotation-budget-meter'+(planned>budget?' over-budget':'')+'" role="progressbar" aria-label="Weekly time still available" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" aria-valuetext="'+escHtml(fmtDurationMinutes(remaining*60000)+' available of '+fmtDurationMinutes(budget*60000))+'"><div class="rotation-budget-meter-fill" style="width:'+pct+'%"></div></div>';
-  }
-  function rotationHoursToMinutes(value) {
-    const hours=Number(value);
-    return Number.isInteger(hours) && hours>0 && hours<=168 ? hours*60 : 0;
   }
   function rotationTargetMinutes(id) {
     const value=Number(settings.weeklyRotationTargets?.[id]);
@@ -9471,7 +9580,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     budgetEl.textContent=rotationBudgetText(planned);
     renderRotationBudgetMeter('rotation-budget',planned);
     if(activeSession)document.getElementById('rotation-budget-meter').hidden=true;
-    budgetEl.classList.toggle('over-budget',(!!weeklyRotationBudgetMinutes() || !!settings.autoDailyGoal) && planned>weeklyRotationBudgetMinutes());
+    budgetEl.classList.toggle('over-budget',(!!weeklyRotationBudgetMinutes() || !!settings.autoDailyGoal || !!settings.plannerDayBudgets) && planned>weeklyRotationBudgetMinutes());
     const list=document.getElementById('rotation-list');
     const today = plannedWeekdays[new Date().getDay()];
     const candidates = activeSession ? ids.filter(id => id === sessionContentKey(activeSession)) : remaining;
@@ -9493,63 +9602,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+dayLabel+targetHtml+pinnedMilestoneHtml(id,!!activeSession)+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'">Start</button>')+'</div>';
     }).join('');
   }
-  function rotationSelectionCount() {
-    const count=document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked').length;
-    document.getElementById('rotation-selection-count').textContent=count+' game'+(count===1?'':'s')+' selected';
-    const planned=[...document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')].reduce((sum,checkbox)=>{
-      const value=rotationHoursToMinutes(checkbox.closest('.rotation-choice').querySelector('.rotation-target').value);
-      return sum+(Number.isFinite(value) && value>0?value:0);
-    },archivedRotationSpentMinutes());
-    const budget=weeklyRotationBudgetMinutes(),over=(!!budget || !!settings.autoDailyGoal) && planned>budget;
-    const budgetEl=document.getElementById('rotation-editor-budget');
-    renderRotationBudgetMeter('rotation-editor-budget',planned);
-    budgetEl.textContent=rotationBudgetText(planned);budgetEl.classList.toggle('over-budget',over);
-    const error=document.getElementById('rotation-budget-error');
-    error.hidden=true;error.textContent='';
-
-    renderRotationDaySummary();
-    updateRotationTargetStatuses();
-  }
-  function updateRotationTargetStatuses() {
-    const rows=[...document.querySelectorAll('#rotation-choices .rotation-choice')];
-    const progress=rotationWeekProgress(rows.map(row=>row.querySelector('input[type="checkbox"]').value));
-    rows.forEach(row=>{
-      const checkbox=row.querySelector('input[type="checkbox"]'),input=row.querySelector('.rotation-target'),status=row.querySelector('.rotation-target-status');
-      const target=rotationHoursToMinutes(input.value),played=progress.games[checkbox.value].ms;
-      const valid=checkbox.checked && Number.isInteger(target) && target>0 && target<=10080;
-      const reached=valid && played>=target*60000;
-      status.classList.toggle('reached',reached);
-      status.textContent=valid?(reached?'\u2713 Target reached \u00b7 ':'')+fmtDurationMinutes(played)+' / '+fmtDurationMinutes(target*60000)+(reached?'':' this week'):'';
-    });
-  }
   const plannedWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   function orderedWeekdays() {
     return weekStartsOnMonday() ? plannedWeekdays.slice(1).concat(plannedWeekdays[0]) : plannedWeekdays;
   }
-  function renderRotationDaySummary() {
-    const totals = new Map([...orderedWeekdays(), 'Any day'].map(day => [day, 0]));
-    document.querySelectorAll('#rotation-choices .rotation-choice').forEach(row => {
-      if (!row.querySelector('input[type="checkbox"]').checked) return;
-      const day = row.querySelector('.rotation-day').value;
-      totals.set(day, totals.get(day) + rotationHoursToMinutes(row.querySelector('.rotation-target').value));
-    });
-    document.getElementById('rotation-day-summary').innerHTML = [...totals].map(([day, minutes]) =>
-      '<span>' + day + ': ' + fmtDurationMinutes(minutes * 60000) + '</span>').join('');
-  }
-  function rotationDayOptions(id) {
-    const selected = settings.weeklyRotationDays?.[id] || 'Any day';
-    return ['Any day', ...orderedWeekdays()].map(day => '<option' + (day === selected ? ' selected' : '') + '>' + day + '</option>').join('');
-  }
-  function openRotationEditor() {
-    ensureRotationWeek();
-    document.getElementById('rotation-modal').dataset.week=settings.weeklyRotationWeek;
-    rotationHistoryHint();
-    const ids=new Set(rotationGameIds()),active=contentEntries().filter(g=>!g.archived).sort((a,b)=>a.name.localeCompare(b.name));
-    if(!active.length){toast('Add a game first');return;}
-    document.getElementById('rotation-choices').innerHTML=active.map(g=>'<div class="rotation-choice"><label><input type="checkbox" value="'+escHtml(g.id)+'"'+(ids.has(g.id)?' checked':'')+'><span>'+escHtml(g.name)+'<small class="rotation-target-status" aria-live="polite"></small></span></label><label class="rotation-target-label">Weekly target (hours)<input class="rotation-target" type="number" min="1" max="168" step="1" placeholder="Optional" value="'+(Math.ceil(rotationTargetMinutes(g.id)/60)||'')+'"'+(ids.has(g.id)?'':' disabled')+'></label><label class="rotation-day-label">Planned day<select class="rotation-day" aria-label="Planned day"'+(ids.has(g.id)?'':' disabled')+'>'+rotationDayOptions(g.id)+'</select></label></div>').join('');
-    rotationSelectionCount();document.getElementById('rotation-modal').classList.add('open');
-  }
-
   function renderTodayTab() {
     renderWeeklyRotation();
     const wasActive = lastHadActiveSession;
@@ -9634,7 +9690,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     });
     if (activeGames.length === 0) {
       container.innerHTML = platformGames.length
-        ? '<div class="no-games-hint">All matching games are in your weekly rotation. Use Choose games to adjust the rotation.</div>'
+        ? '<div class="no-games-hint">All matching games are in your weekly rotation. Use Plan week to adjust the rotation.</div>'
         : platformFilter
         ? '<div class="no-games-hint">No games on this platform. Set a game\'s platform in Edit Game, or choose All platforms.</div>'
         : '<div class="no-games-hint">No games yet. Add one in the Games tab.</div>';
@@ -10334,7 +10390,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     for (const session of rows) {
       if (session.stop !== null) getDay(dateKey(session.start)).sessions.push(session);
     }
-    for (const game of library.flatMap(parent => [parent, ...(parent.dlcs || [])])) {
+    for (const game of library.flatMap(parent => [parent, ...(parent.dlcs || []), ...(parent.playthroughs || []).flatMap(run => Object.values(run.content || {}))])) {
       for (const milestone of game.milestones || []) {
         if (milestoneValidDate(milestone.completedAt)) getDay(milestone.completedAt).milestones++;
       }
@@ -10472,7 +10528,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
     const goalMin = effectiveDailyGoalMinutes();
     let longestDailyGoalStreak = 0;
-    if (goalMin > 0 && completed.length) {
+    if ((goalMin > 0 || settings.plannerDayBudgets) && completed.length) {
       const goalMs = goalMin * 60000;
       const dayKeys = Array.from(new Set(completed.map(s => dateKey(s.start)))).sort();
       if (dayKeys.length) {
@@ -10482,10 +10538,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         let d = first;
         while (d <= last) {
           const ms = totalMsForDate(d);
-          if (ms >= goalMs) {
+          const dayGoal=goalMinutesForDate(d)*60000;
+          if (dayGoal > 0 && ms >= dayGoal) {
             run++;
             if (run > longestDailyGoalStreak) longestDailyGoalStreak = run;
-          } else {
+          } else if (dayGoal > 0 || !settings.plannerDayBudgets) {
             run = 0;
           }
           d = addDays(d, 1);
@@ -11748,7 +11805,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
     html = '<div class="milestone-dashboard-summary">' + html + '</div><div class="dashboard-milestone-column">' +
-      gameMilestonesHtml(game) + beatTimeSection(game, contentSessions(game.id).filter(s => s.stop !== null).reduce((sum,s) => sum + (s.durationMs || 0),0)) + '</div><div class="milestone-dashboard-history">';
+      beatTimeSection(game, contentSessions(game.id).filter(s => s.stop !== null).reduce((sum,s) => sum + (s.durationMs || 0),0)) + gameMilestonesHtml(game) + '</div><div class="milestone-dashboard-history">';
 
     if (completed.length > 0) {
       html += '<div class="modal-subheader">Last 6 months</div>' +
@@ -11785,6 +11842,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
 
     body.innerHTML = html + '</div>' + dlcDashboardSection(game);
+    appendDashboardPlaythroughs(game);
   }
 
   function escHtml(str) {
@@ -12011,7 +12069,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (!game) return;
     pendingDeleteGameId = id;
     const count = sessions.filter(s => s.gameId === id).length;
-    document.getElementById('delete-msg').textContent = 'Delete "' + game.name + '"?' + (game.dlcs?.length ? ' This also deletes its ' + game.dlcs.length + ' DLCs and their milestones.' : '');
+    document.getElementById('delete-msg').textContent = 'Delete "' + game.name + '"?' + (game.dlcs?.length ? ' This also deletes its ' + game.dlcs.length + ' DLCs and their milestones.' : '') + (game.playthroughs?.length?' Its playthroughs and their independent progress will also be removed.':'');
     const warn = document.getElementById('delete-warning');
     if (count > 0) {
       warn.style.display = '';
@@ -12074,7 +12132,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   // Close modals on overlay click (except the target-reached alert, which needs explicit confirmation)
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    if (overlay.id === 'target-reached-modal' || overlay.id === 'idle-reminder-modal') return;
+    if (['target-reached-modal','idle-reminder-modal','weekly-planner-modal','feature-editor'].includes(overlay.id)) return;
     overlay.addEventListener('click', e => {
       if (e.target === overlay) overlay.classList.remove('open');
     });
@@ -12335,6 +12393,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       start: new Date(t1).toISOString(),
       stop: new Date(t2).toISOString(),
       durationMs: t2 - t1,
+      playthroughId: document.querySelector('#add-content-allocation [data-playthrough-choice]')?.value || null,
       segments,
       synced: false
     };
@@ -12373,6 +12432,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (!segments) return;
     if (!await confirmSessionOverlap(t1,t2,s.id)) return;
     checkStorageFresh();
+    s.playthroughId=document.querySelector('#edit-content-allocation [data-playthrough-choice]')?.value || null;
     const unchangedLegacy=!original.segments && t1===Date.parse(original.start) && t2===Date.parse(original.stop) && segments.length===1 && segments[0].dlcId===null;
     // An untouched legacy duration may intentionally differ from the wall-clock range.
     if(!unchangedLegacy){
@@ -12413,7 +12473,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const input = document.getElementById('goal-hours');
     if (!input.checkValidity()) { input.reportValidity(); return; }
     const v = Math.round((Number(input.value) || 0)*60);
-    const planned = rotationCommittedMinutes();
+    const planned = rotationGoalCommitmentMinutes();
     const weekly = v*7;
     if (planned > weekly) {
       const error = document.getElementById('goal-budget-error');
@@ -12498,8 +12558,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     reader.onload = () => {
       try {
         const data = validateBackupData(JSON.parse(reader.result));
-        // Restore portable milestone templates while retaining other device settings.
-        importData = { games: data.games, sessions: data.sessions, settings: data.settings?.milestoneTemplates !== undefined ? {milestoneTemplates:data.settings.milestoneTemplates} : undefined };
+        // Restore progression/planning data without replacing this device's appearance preferences.
+        const portable=['milestoneTemplates','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
+        importData = { games:data.games, sessions:data.sessions, settings:data.settings?Object.fromEntries(portable.filter(key=>data.settings[key]!==undefined).map(key=>[key,data.settings[key]])):undefined };
         document.getElementById('import-modal').classList.add('open');
       } catch (error) {
         importData = null;
@@ -12521,8 +12582,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       catch (error) { importData=null; toast('Invalid backup: '+error.message); document.getElementById('import-modal').classList.remove('open'); return; }
       checkStorageFresh();
       const localSettings=structuredClone(settings);
-      // Templates are portable backup data; other local preferences remain unchanged.
+      // Restore portable progression and planning data; retain other local preferences.
       if(importData.settings?.milestoneTemplates!==undefined)localSettings.milestoneTemplates=structuredClone(importData.settings.milestoneTemplates);
+      for(const key of ['dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
       try{persistLibraryReplacement(importData.games,importData.sessions,localSettings);}
       catch(error){toast('Backup could not be imported: '+error.message);return;}
       backfillUnlockDates('gentle');
@@ -12783,13 +12845,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
 
   // --- Dropbox controls ---
   document.getElementById('dbxConnectBtn').addEventListener('click', dropboxConnect);
-  document.getElementById('dbxUploadBtn').addEventListener('click', () => dropboxUpload(false));
-  document.getElementById('dbxDownloadBtn').addEventListener('click', () => dropboxDownload(false));
+  document.getElementById('dbxUploadBtn').addEventListener('click', () => runSyncAction('sync-review'));
+  document.getElementById('dbxDownloadBtn').addEventListener('click', () => runSyncAction('sync-download'));
   document.getElementById('dbxDisconnectBtn').addEventListener('click', dropboxDisconnect);
 
   document.getElementById('dbxAutoUpload').addEventListener('change', e => {
     dbx.autoUpload = e.target.checked;
     dbxSave();
+    if(dbx.autoUpload)scheduleAutoUpload();else clearTimeout(dbxSyncTimer);
   });
   document.getElementById('dbxAutoSync').addEventListener('change', e => {
     dbx.autoSync = e.target.checked;
@@ -12806,7 +12869,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const enabled = event.target.checked;
     const error = document.getElementById('auto-goal-error');
     const budget = (enabled ? lastWeekAverageHours()*60 : Number(settings.dailyGoalMinutes)||0)*7;
-    if (rotationCommittedMinutes() > budget) {
+    if (rotationGoalCommitmentMinutes() > budget) {
       event.target.checked = !!settings.autoDailyGoal;
       error.textContent = 'Your rotation exceeds this goal\'s weekly budget of '+fmtDurationShort(budget*60000)+'. Reduce your rotation targets before changing this option.';
       error.hidden = false;
@@ -12922,14 +12985,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('dbx-confirm-modal').classList.remove('open');
     dbxPendingDownload = null;
   });
-  document.getElementById('dbx-confirm-download').addEventListener('click', () => {
+  document.getElementById('dbx-confirm-download').addEventListener('click', async () => {
     document.getElementById('dbx-confirm-modal').classList.remove('open');
     const backup = dbxPendingDownload;
     dbxPendingDownload = null;
     if (backup) {
       try {
         dbxApplyBackupText(backup);
-        dbxMarkSynced();
+        await dbxMarkSynced(dbxLastUploadedState);
         toast('Synced from Dropbox');
       } catch (err) { toast('Download could not be applied: ' + err.message); }
     }
@@ -12956,18 +13019,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if (game) openDashboard(game.dataset.topGame);
   });
 
-  document.getElementById('dbx-history-refresh').addEventListener('click',dbxLoadHistory);
-  document.getElementById('dbx-history-list').addEventListener('click',event=>{
-    const button=event.target.closest('button[data-rollback]');
-    if (!button || !dbxHistoryView || dbxSyncOps) return;
-    dbxRollbackIndex=Number(button.dataset.rollback);
-    const entry=dbxHistoryView.data.history[dbxRollbackIndex];
-    document.getElementById('dbx-rollback-message').textContent='Restore '+new Date(entry.savedAt).toLocaleString()+'?';
-    document.getElementById('dbx-rollback-modal').classList.add('open');
-  });
-  document.getElementById('dbx-rollback-cancel').addEventListener('click',()=>{dbxRollbackIndex=null; document.getElementById('dbx-rollback-modal').classList.remove('open');});
-  document.getElementById('dbx-rollback-confirm').addEventListener('click',dbxRollback);
-
   ['compare-game-a','compare-game-b'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{
     settings.compareGameA=document.getElementById('compare-game-a').value;
     settings.compareGameB=document.getElementById('compare-game-b').value;
@@ -12976,61 +13027,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('recap-mode').addEventListener('change',()=>{document.getElementById('recap-period').value='';renderGamingRecap();});
   document.getElementById('recap-period').addEventListener('change',renderGamingRecap);
 
-  document.getElementById('rotation-manage').addEventListener('click',openRotationEditor);
-  document.getElementById('rotation-choices').addEventListener('input',rotationSelectionCount);
-  document.getElementById('rotation-choices').addEventListener('change',event=>{
-    if(event.target.type==='checkbox') {
-      event.target.closest('.rotation-choice').querySelectorAll('.rotation-target,.rotation-day').forEach(field => { field.disabled = !event.target.checked; });
-    }
-    rotationSelectionCount();
-  });
-  document.getElementById('rotation-cancel').addEventListener('click',()=>document.getElementById('rotation-modal').classList.remove('open'));
-  document.getElementById('rotation-load-last-week').addEventListener('click',()=>{
-    ensureRotationWeek();
-    const modal=document.getElementById('rotation-modal');
-    if(modal.dataset.week!==settings.weeklyRotationWeek)openRotationEditor();
-    const snapshot=lastWeekRotation();if(!snapshot)return;
-    const selected=new Set(snapshot.ids);
-    let loaded=0;
-    document.querySelectorAll('#rotation-choices .rotation-choice').forEach(row=>{
-      const checkbox=row.querySelector('input[type="checkbox"]'),target=row.querySelector('.rotation-target'),day=row.querySelector('.rotation-day');
-      checkbox.checked=selected.has(checkbox.value);target.disabled=day.disabled=!checkbox.checked;
-      const minutes=Number(snapshot.targets?.[checkbox.value]);target.value=checkbox.checked&&Number.isInteger(minutes)&&minutes>0&&minutes<=10080?Math.ceil(minutes/60):'';
-      const planned=snapshot.days?.[checkbox.value];day.value=[...day.options].some(option=>option.value===planned)?planned:'Any day';
-      if(checkbox.checked)loaded++;
-    });
-    rotationSelectionCount();
-    document.getElementById('rotation-history-hint').textContent='Loaded '+loaded+' game'+(loaded===1?'':'s')+' from last week. Review the targets and planned days, then Save rotation. '+(snapshot.ids.length>loaded?'Archived or removed content was skipped.':'');
-  });
-  document.getElementById('rotation-save').addEventListener('click',()=>{
-    ensureRotationWeek();
-    if(document.getElementById('rotation-modal').dataset.week!==settings.weeklyRotationWeek){openRotationEditor();toast('A new week started. The rotation is empty; load last week or choose new games.');return;}
-
-    const chosen=Array.from(document.querySelectorAll('#rotation-choices input[type="checkbox"]:checked')).filter(input=>contentEntries().some(g=>g.id===input.value && !g.archived));
-    const targets={};
-    for(const checkbox of chosen) {
-      const input=checkbox.closest('.rotation-choice').querySelector('.rotation-target');
-      if(input.value==='') continue;
-      if(!input.checkValidity()) { input.reportValidity(); return; }
-      targets[checkbox.value]=rotationHoursToMinutes(input.value);
-    }
-    const budget=weeklyRotationBudgetMinutes(),planned=Object.values(targets).reduce((sum,value)=>sum+value,archivedRotationSpentMinutes());
-    if((budget || settings.autoDailyGoal) && planned>budget) {
-      const error=document.getElementById('rotation-budget-error');
-      error.textContent='Over budget by '+fmtDurationShort((planned-budget)*60000)+'. Reduce your targets to '+fmtDurationShort(budget*60000)+' total before saving.';
-      error.hidden=false;
-      error.scrollIntoView({block:'nearest'});
-      return;
-    }
-    const archivedIds=archivedRotationIds();
-    archivedIds.forEach(id=>{ const target=rotationTargetMinutes(id); if(target)targets[id]=target; });
-    settings.weeklyRotation=chosen.map(input=>input.value).concat(archivedIds);
-    settings.weeklyRotationTargets=targets;
-    const days = Object.fromEntries(chosen.map(input => [input.value, input.closest('.rotation-choice').querySelector('.rotation-day').value]));
-    archivedIds.forEach(id => { days[id] = settings.weeklyRotationDays?.[id] || 'Any day'; });
-    settings.weeklyRotationDays = days;
-    saveSettings(settings);renderTodayTab();document.getElementById('rotation-modal').classList.remove('open');toast('Weekly rotation saved');
-  });
   document.getElementById('rotation-list').addEventListener('click',event=>{
     const button=event.target.closest('button[data-rotation-start]');
     if(button)startGame(button.dataset.rotationStart);
@@ -13099,6 +13095,71 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     risk.append(document.getElementById('dbxDisconnectBtn'));document.getElementById('dbx-connected').append(risk);
   }
   organizeSettings();
+
+  // Read-only analysis: recorded durations remain authoritative, including legacy sessions.
+  function sessionHistoryIssues(history, library) {
+    const gameIds=new Set(library.map(game=>game.id));
+    const rows=history.filter(session=>session.stop!==null).map(session=>({session,start:Date.parse(session.start),end:Date.parse(session.stop),reasons:[],overlaps:[]}));
+    for(const row of rows){
+      if(!gameIds.has(row.session.gameId))row.reasons.push('missing');
+      if(row.end-row.start>=12*3600000 || Number(row.session.durationMs)>=12*3600000)row.reasons.push('long');
+    }
+    const sorted=rows.filter(row=>Number.isFinite(row.start)&&Number.isFinite(row.end)&&row.end>row.start).sort((a,b)=>a.start-b.start);
+    let active=[];
+    for(const row of sorted){
+      active=active.filter(other=>other.end>row.start);
+      for(const other of active){row.overlaps.push(other.session);other.overlaps.push(row.session);}
+      active.push(row);
+    }
+    for(const row of rows)if(row.overlaps.length)row.reasons.push('overlap');
+    return rows.filter(row=>row.reasons.length).sort((a,b)=>b.start-a.start);
+  }
+  const healthModal=document.getElementById('history-health-modal');
+  let healthReturnToReview=false,healthReturnFocus=null;
+  function renderHistoryHealth(){
+    const issues=sessionHistoryIssues(sessions,games),list=document.getElementById('history-health-list');
+    document.getElementById('history-health-summary').textContent=issues.length ? issues.length+' session'+(issues.length===1?'':'s')+' to review. Flags are suggestions, not proof of an error.' : 'No issues found in completed sessions.';
+    list.replaceChildren();
+    for(const issue of issues){
+      const session=issue.session,missing=issue.reasons.includes('missing'),row=document.createElement('section');row.className='history-health-row';
+      const name=games.find(game=>game.id===session.gameId)?.name||session.gameName||'Unknown game';
+      row.innerHTML='<h4>'+escHtml(name)+'</h4><p>'+escHtml(fmtDateShort(session.start)+' '+fmtTime(session.start)+' - '+fmtDateShort(session.stop)+' '+fmtTime(session.stop))+'</p><p>Active playtime: '+escHtml(fmtDuration(session.durationMs||0))+'</p>';
+      const reasons=document.createElement('ul');
+      if(missing){const li=document.createElement('li');li.textContent='Missing game: this session references a game no longer in the library.';reasons.append(li);}
+      if(issue.reasons.includes('long')){const li=document.createElement('li');li.textContent='Unusually long: at least 12 hours of elapsed or active time. Elapsed: '+fmtDuration(issue.end-issue.start)+'.';reasons.append(li);}
+      if(issue.overlaps.length){const li=document.createElement('li');li.textContent='Overlaps '+issue.overlaps.length+' other session'+(issue.overlaps.length===1?'':'s')+': '+issue.overlaps.map(other=>(games.find(game=>game.id===other.gameId)?.name||other.gameName||'Unknown game')+' ('+fmtDateShort(other.start)+' '+fmtTime(other.start)+' - '+fmtTime(other.stop)+')').join('; ');reasons.append(li);}
+      row.append(reasons);
+      const actions=document.createElement('div');actions.className='history-health-actions';
+      if(!missing){const edit=document.createElement('button');edit.type='button';edit.className='btn-ghost';edit.textContent='Edit session';edit.onclick=()=>{const current=sessions.find(entry=>entry.id===session.id);if(!current){renderHistoryHealth();return;}healthReturnToReview=true;healthModal.classList.remove('open');openEditSessionModal(current);};actions.append(edit);}
+      else {
+        const select=document.createElement('select');select.setAttribute('aria-label','Assign '+name+' session to game');
+        const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Choose a game to repair reference';select.append(placeholder);
+        for(const game of games.slice().sort((a,b)=>a.name.localeCompare(b.name))){const option=document.createElement('option');option.value=game.id;option.textContent=game.name+(game.archived?' (archived)':'');select.append(option);}
+        const assign=document.createElement('button');assign.type='button';assign.className='btn-ghost';assign.textContent='Reassign to Base game';assign.disabled=true;select.onchange=()=>assign.disabled=!select.value;
+        assign.onclick=()=>{
+          const current=sessions.find(entry=>entry.id===session.id),game=games.find(entry=>entry.id===select.value);
+          if(!current||!game||games.some(entry=>entry.id===current.gameId)){renderHistoryHealth();return;}
+          if(!confirm('Move this session to '+game.name+' (Base game)? All content allocations become Base game. Times, pauses, recorded duration and sync status stay unchanged.'))return;
+          try{checkStorageFresh();const repaired=structuredClone(current);repaired.gameId=game.id;repaired.gameName=game.name;if(repaired.segments)repaired.segments.forEach(segment=>segment.dlcId=null);persistSessionReplacement(sessions.map(entry=>entry.id===current.id?repaired:entry));render();renderHistoryHealth();toast('Session game reference repaired');}catch(error){toast(error.message||'Could not save. No correction was applied.');}
+        };
+        actions.append(select,assign);
+      }
+      row.append(actions);list.append(row);
+    }
+  }
+  const healthButton=document.createElement('button');healthButton.type='button';healthButton.className='btn-ghost btn-danger';healthButton.style.cssText='padding:10px 14px;font-size:0.8rem;';healthButton.id='btn-history-health';healthButton.textContent='Check session history';healthButton.setAttribute('aria-haspopup','dialog');healthButton.setAttribute('aria-controls','history-health-modal');
+  const healthHint=document.createElement('p');healthHint.className='backup-hint';healthHint.style.margin='8px 0';healthHint.textContent='Review overlapping or unusually long completed sessions and sessions with missing games. Nothing changes automatically.';
+  document.querySelector('.settings-maintenance-card').append(healthHint,healthButton);
+  healthButton.onclick=()=>{healthReturnFocus=document.activeElement;renderHistoryHealth();healthModal.classList.add('open');document.getElementById('history-health-close').focus();};
+  document.getElementById('history-health-rescan').onclick=renderHistoryHealth;
+  document.getElementById('history-health-close').onclick=()=>healthModal.classList.remove('open');
+  new MutationObserver(()=>{if(!healthModal.classList.contains('open')&&!healthReturnToReview)healthReturnFocus?.focus();}).observe(healthModal,{attributes:true,attributeFilter:['class']});
+  new MutationObserver(()=>{if(healthReturnToReview&&!document.getElementById('edit-session-modal').classList.contains('open')){healthReturnToReview=false;renderHistoryHealth();healthModal.classList.add('open');document.getElementById('history-health-close').focus();}}).observe(document.getElementById('edit-session-modal'),{attributes:true,attributeFilter:['class']});
+  healthModal.addEventListener('keydown',event=>{
+    if(event.key==='Escape'){event.preventDefault();event.stopPropagation();healthModal.classList.remove('open');}
+    if(event.key==='Tab'){const controls=[...healthModal.querySelectorAll('button,select')].filter(element=>!element.disabled&&element.getClientRects().length);const first=controls[0],last=controls.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
+  });
+
 
   function mxRefreshIcons(){
     function swap(host,name){if(!host)return;if(host._mxOriginal===undefined)host._mxOriginal=host.innerHTML;const skin=mxMaterial()?'material':'classic';if(host.dataset.mxSkin!==skin){host.dataset.mxSkin=skin;host.innerHTML=mxMaterial()?mxSymbol(name):host._mxOriginal;}}
@@ -14028,6 +14089,739 @@ document.getElementById('import-confirm').addEventListener('click', () => {
 
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&ensureRotationWeek()){renderTodayTab();renderGamesTab();}});
 
+  // Progression, weekly planning, and Dropbox review tools.
+  const playthroughUI={gameId:null,runId:null,contentId:null,selection:new Map(),contentSelection:new Map()};
+  const plannerUI={draft:null,draftOriginal:'',returnFocus:null,raw:{},weekdayOpen:false};
+  const syncUI={state:null,merge:null,reviewing:false};
+  const editorUI={save:null,cancel:null,busy:false,onClose:null};
+  const d2Clone = value => structuredClone(value);
+  const d2Attr = value => milestoneAttr(value == null ? '' : value);
+  const d2Json = value => JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.keys(item).sort().map(key=>[key,item[key]])):item);
+  const d2Button = (label,action,extra='') => '<button type="button" class="btn-ghost" data-d2="'+action+'" '+extra+'>'+escHtml(label)+'</button>';
+  const d2Input = (label,id,value='',extra='') => '<label class="d2-field" for="'+id+'">'+escHtml(label)+'<input id="'+id+'" value="'+d2Attr(value)+'" '+extra+'></label>';
+  const d2Progress = (value,target,label) => {const pct=target?Math.min(100,Math.max(0,value/target*100)):0;return '<div class="d2-progress-label"><span>'+escHtml(label)+'</span><strong>'+Math.floor(pct)+'%</strong></div><div class="progress-track" role="progressbar" aria-label="'+d2Attr(label)+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.floor(pct)+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>';};
+  const d2Editor=document.getElementById('feature-editor'),weeklyPlanner=document.getElementById('weekly-planner-modal');
+  let editorReturnFocus=null;
+  function d2Edit(title,html,save,label='Save',cancel=null,options={}){
+    editorReturnFocus=document.activeElement;editorUI.save=save;editorUI.cancel=cancel;editorUI.onClose=options.onClose||null;
+    document.getElementById('d2-editor-title').textContent=title;
+    document.getElementById('d2-editor-body').innerHTML=html;
+    document.getElementById('d2-editor-save').textContent=label;
+    document.getElementById('d2-editor-error').textContent='';d2Editor.classList.add('open');
+    requestAnimationFrame(()=>{if(d2Editor.classList.contains('open'))d2Editor.querySelector('input:not([type=checkbox]),textarea,select,button')?.focus();});
+  }
+  function restoreEditorFocus(){
+    if(editorReturnFocus?.isConnected&&editorReturnFocus.getClientRects().length){editorReturnFocus.focus();return;}
+    if(weeklyPlanner.classList.contains('open'))document.getElementById('weekly-planner-cancel').focus();
+    else if(document.getElementById('dashboard-modal').classList.contains('open'))focusPlaythroughField('playthrough-selector');
+    else if(currentTab==='settings')document.getElementById('dbxUploadBtn')?.focus();
+    else if(activeSession&&currentTab==='today')document.getElementById('btn-pause')?.focus();
+  }
+  function finishFeatureEditor(canceled=false){
+    const callback=editorUI.onClose;editorUI.onClose=null;
+    d2Editor.classList.remove('open');if(canceled)editorUI.cancel?.();editorUI.save=null;editorUI.cancel=null;
+    callback?.();restoreEditorFocus();
+  }
+  function cancelFeatureEditor(){if(!editorUI.busy)finishFeatureEditor(true);}
+  document.getElementById('d2-editor-cancel').onclick=cancelFeatureEditor;
+  document.getElementById('d2-editor-form').onsubmit=async event=>{
+    event.preventDefault();if(editorUI.busy)return;
+    document.getElementById('d2-editor-error').textContent='';editorUI.busy=true;
+    const save=document.getElementById('d2-editor-save'),cancel=document.getElementById('d2-editor-cancel');save.disabled=cancel.disabled=true;
+    try{if(await editorUI.save?.()!==false)finishFeatureEditor();}
+    catch(error){document.getElementById('d2-editor-error').textContent=error.message;}
+    finally{editorUI.busy=false;save.disabled=cancel.disabled=false;}
+  };
+  function openWeeklyPlanner(){
+    if(editorUI.busy)return;plannerUI.returnFocus=document.activeElement;d2LoadDraft();renderWeeklyPlanner();weeklyPlanner.classList.add('open');document.getElementById('weekly-planner-cancel').focus();
+  }
+  function closeWeeklyPlanner(force=false){
+    if(editorUI.busy&&force!==true)return;
+    if(force!==true&&plannerUI.draft&&(d2Json(plannerUI.draft)!==plannerUI.draftOriginal||Object.keys(plannerUI.raw).length>0)){
+      d2Edit('Discard unsaved plan?','<p>Your changes to this week\'s games, targets, days and capacities have not been saved.</p>',()=>closeWeeklyPlanner(true),'Discard changes');return;
+    }
+    weeklyPlanner.classList.remove('open');plannerUI.draft=null;
+    if(plannerUI.returnFocus?.isConnected)plannerUI.returnFocus.focus();
+  }
+  document.getElementById('rotation-manage').addEventListener('click',openWeeklyPlanner);
+  document.getElementById('weekly-planner-cancel').onclick=()=>closeWeeklyPlanner();
+  document.getElementById('weekly-planner-save').onclick=()=>{try{d2SavePlan();}catch(error){const hint=document.getElementById('d2-planner-error');hint.textContent=error.message;hint.scrollIntoView({block:'nearest'});}};
+  weeklyPlanner.addEventListener('click',event=>{if(event.target===weeklyPlanner)closeWeeklyPlanner();});
+  d2Editor.addEventListener('click',event=>{if(event.target===d2Editor)cancelFeatureEditor();});
+  document.addEventListener('keydown',event=>{
+    if(event.key!=='Escape'||document.querySelector('dialog[open]'))return;
+    const top=mxTopOverlay();if(top===d2Editor){event.preventDefault();event.stopImmediatePropagation();cancelFeatureEditor();}
+    else if(top===weeklyPlanner){event.preventDefault();event.stopImmediatePropagation();closeWeeklyPlanner();}
+  },true);
+  for(const overlay of [d2Editor,weeklyPlanner])overlay.addEventListener('keydown',event=>{
+    if(event.key!=='Tab')return;
+    const controls=[...overlay.querySelectorAll('button,input,select,textarea,a[href],[tabindex]')].filter(element=>!element.disabled&&element.tabIndex>=0&&element.getClientRects().length);
+    if(event.shiftKey&&document.activeElement===controls[0]){event.preventDefault();controls.at(-1)?.focus();}
+    else if(!event.shiftKey&&document.activeElement===controls.at(-1)){event.preventDefault();controls[0]?.focus();}
+  });
+  function beginSyncReview(){
+    if(syncUI.reviewing)return null;
+    syncUI.reviewing=true;syncUI.generation=(syncUI.generation||0)+1;clearTimeout(dbxSyncTimer);++dbxCompareGeneration;return syncUI.generation;
+  }
+  function endSyncReview(){
+    if(!syncUI.reviewing)return;
+    syncUI.reviewing=false;syncUI.generation=(syncUI.generation||0)+1;syncUI.merge=null;scheduleAutoUpload();renderSyncSettings();
+  }
+  function showSyncSettings(){goTab('settings');document.getElementById('settings-dropbox').scrollIntoView({block:'start'});}
+  function runSyncAction(action,button){
+    if(editorUI.busy)return;
+    if(d2SyncState().loading){toast('Dropbox is loading. Please wait.');return;}
+    if(syncUI.reviewing&&d2Editor.classList.contains('open')){document.getElementById('d2-editor-save').focus();return;}
+    Promise.resolve(d2SyncAction(action,button)).catch(error=>{endSyncReview();toast(error.message);});
+  }
+  function appendDashboardPlaythroughs(game){
+    const parent=games.find(entry=>entry.id===(game.parentId||game.id));if(!parent)return;
+    playthroughUI.gameId=parent.id;playthroughUI.contentId=game.parentId?game.dlcId:null;playthroughUI.dashboardKey=game.id;
+    const selected=playthroughUI.selection.get(parent.id);
+    playthroughUI.runId=parent.playthroughs?.some(run=>run.id===selected)?selected:parent.playthroughs?.find(run=>!run.finishedAt)?.id||parent.playthroughs?.[0]?.id||null;
+    const section=document.createElement('section');section.id='dashboard-playthroughs';section.className='game-milestones playthrough-section';
+    document.querySelector('#dashboard-body .dashboard-milestone-column').append(section);renderDashboardPlaythroughs();
+  }
+  function renderDashboardPlaythroughs(){
+    const host=document.getElementById('dashboard-playthroughs'),parent=games.find(game=>game.id===playthroughUI.gameId);if(!host||!parent)return;
+    const runs=parent.playthroughs||[];
+    if(!runs.some(run=>run.id===playthroughUI.runId))playthroughUI.runId=runs.find(run=>!run.finishedAt)?.id||runs[0]?.id||null;
+    playthroughUI.selection.set(parent.id,playthroughUI.runId);
+    const run=d2Run(),isDlc=!!playthroughUI.contentId;
+    let html='<div class="game-milestones-heading"><div><h4>Playthroughs</h4><p>'+(isDlc?'Runs for '+escHtml(parent.name):'Separate progress for each run; lifetime totals stay in the game summary.')+'</p></div>'+d2Button('New playthrough','run-new')+'</div>';
+    if(!run){host.innerHTML=html+'<p class="backup-hint">No playthroughs yet. Create a run when you want fresh objectives and HLTB progress. Existing sessions stay unassigned.</p>';return;}
+    html+='<label class="d2-field">Playthrough<select id="playthrough-selector" aria-label="Playthrough">'+runs.map(item=>'<option value="'+d2Attr(item.id)+'"'+(item.id===run.id?' selected':'')+'>'+escHtml(item.name)+(item.finishedAt?' (finished)':'')+'</option>').join('')+'</select></label>';
+    const stats=d2RunStats(parent,run),content=d2RunContent(parent,run),selectedKey=isDlc?playthroughUI.contentId:playthroughUI.contentSelection.get(parent.id)||'base';
+    const selected=content.find(item=>item.key===selectedKey)||content[0];
+    const relevantRows=isDlc?stats.rows.filter(session=>(allocatedPlaytime(session).get(playthroughUI.contentId)||0)>0):stats.rows;
+    const milestones=isDlc?selected.data.milestones||[]:stats.items;
+    html+='<p class="backup-hint">'+(run.finishedAt?'Finished '+fmtDateShort(run.finishedAt):'In progress · Created '+fmtDateShort(run.createdAt))+'</p><dl class="feature-summary"><div><dt>Recorded time</dt><dd>'+fmtDurationShort(isDlc?d2RunMs(parent.id,run.id,playthroughUI.contentId):stats.total)+'</dd></div><div><dt>Sessions</dt><dd>'+relevantRows.length+'</dd></div><div><dt>Milestones</dt><dd>'+milestones.filter(item=>item.completedAt).length+' / '+milestones.length+'</dd></div></dl>';
+    html+='<div class="d2-actions">'+(!run.finishedAt&&!parent.archived?d2Button('Start run','run-start',activeSession?'disabled':''):'')+'<details class="playthrough-actions"><summary>Run actions</summary><div class="d2-actions">'+d2Button('Rename','run-rename')+d2Button(run.finishedAt?'Reopen':'Finish run','run-finish')+d2Button('Assign sessions','run-assign')+d2Button('Compare runs','run-compare',runs.length<2?'disabled':'')+d2Button('Remove run','run-delete')+'</div></details></div>';
+    html+='<div class="playthrough-progress"><h4>Playthrough progress</h4>';
+    if(!isDlc&&content.length>1)html+='<label class="d2-field">Content<select id="playthrough-content" aria-label="Playthrough content">'+content.map(entry=>'<option value="'+d2Attr(entry.key)+'"'+(entry.key===selected.key?' selected':'')+'>'+escHtml(entry.name)+'</option>').join('')+'</select></label>';
+    else html+='<p class="backup-hint">'+escHtml(selected.name)+'</p>';
+    const ms=d2RunMs(parent.id,run.id,selected.id),data=selected.data;
+    html+='<div class="d2-section-head"><h4>Run HLTB</h4>'+d2Button('Edit estimates','run-hltb','data-content="'+d2Attr(selected.key)+'"')+'</div>'+beatProgressRows(data,ms);
+    html+='<div class="d2-section-head playthrough-milestone-heading"><h4>Run milestones</h4>'+d2Button('Add milestone','run-milestone','data-content="'+d2Attr(selected.key)+'"')+'</div>';
+    html+=(data.milestones||[]).map(item=>{
+      const p=milestoneProgress(item,parent.id,selected.id,stats.rows),blocked=(item.prerequisites||[]).some(id=>!(data.milestones||[]).find(other=>other.id===id)?.completedAt);let controls='';
+      if(item.type==='counter')controls='<label class="d2-field">'+escHtml(item.unit||'Count')+'<input type="number" min="0" step="1" value="'+item.current+'" data-d2-counter="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"></label>';
+      else if(item.type==='checklist')controls=item.checklist.map(step=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-step="'+d2Attr(step.id)+'" data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'" '+(step.done?'checked':'')+'>'+escHtml(step.name)+'</label>').join('');
+      else if(item.type==='manual')controls='<label class="milestone-step-toggle"><input type="checkbox" data-d2-manual="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'" '+(item.manualDone?'checked':'')+'>Mark done</label>';
+      return '<article class="d2-objective"><strong>'+escHtml(item.name)+'</strong><p class="backup-hint">'+(item.completedAt?'Completed '+fmtDateShort(item.completedAt):blocked?'Blocked by prerequisites':'In progress')+'</p>'+d2Progress(p.value,p.target,p.text)+controls+'<div class="d2-actions">'+d2Button('Edit','run-milestone','data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"')+d2Button('Remove','run-milestone-remove','data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"')+'</div></article>';
+    }).join('')||'<p class="backup-hint">No milestones for this run and content yet.</p>';
+    html+='</div><details class="playthrough-session-history"><summary>Run session history ('+relevantRows.length+')</summary>'+relevantRows.slice().sort((a,b)=>Date.parse(b.start)-Date.parse(a.start)).map(session=>'<div class="d2-history-row"><span>'+escHtml(fmtDateShort(session.start)+' '+fmtTime(session.start))+'<small>'+escHtml(contentBreakdown(session))+'</small></span><strong>'+fmtDurationShort(isDlc?allocatedPlaytime(session).get(playthroughUI.contentId)||0:session.durationMs||0)+'</strong></div>').join('')+'</details>';
+    host.innerHTML=html;
+  }
+  function loadLastWeekIntoPlanner(){
+    ensureRotationWeek();
+    if(plannerUI.draft.week!==settings.weeklyRotationWeek){d2LoadDraft();toast('A new week started. Loading into a fresh weekly draft.');}
+    const snapshot=lastWeekRotation();if(!snapshot)return;
+    const available=new Set(contentEntries().filter(entry=>!entry.archived).map(entry=>entry.id));
+    plannerUI.raw={};plannerUI.draft.ids=snapshot.ids.filter(id=>available.has(id));plannerUI.draft.targets={};plannerUI.draft.days={};
+    for(const id of plannerUI.draft.ids){const target=Number(snapshot.targets?.[id]);if(Number.isInteger(target)&&target>0&&target<=10080)plannerUI.draft.targets[id]=Math.ceil(target/60)*60;plannerUI.draft.days[id]=plannedWeekdays.includes(snapshot.days?.[id])?snapshot.days[id]:'Any day';}
+    renderWeeklyPlanner();toast('Loaded '+plannerUI.draft.ids.length+' entries into the draft. Current weekday planned hours were kept.');
+  }
+  function handlePlannerAction(action,button){
+    if(action==='planner-weekday-off'){
+      plannerUI.draft.enabled=false;plannerUI.weekdayOpen=false;
+      document.getElementById('planner-weekdays').open=false;updatePlannerSummary();
+      document.getElementById('planner-weekday-summary').focus();return;
+    }
+    if(action==='planner-weekday-hour'){
+      const field=document.getElementById('planner-weekday-hours-'+button.dataset.day);if(!field)return;
+      const current=Number(field.value),step=Number(button.dataset.step);
+      field.value=String(Math.max(0,Math.min(24,(Number.isFinite(current)?Math.floor(current):0)+step)));
+      field.dispatchEvent(new Event('input',{bubbles:true}));return;
+    }
+    if(action==='planner-hour'){
+      const field=document.getElementById('planner-hours-'+button.dataset.entry);if(!field)return;
+      const current=Number(field.value),step=Number(button.dataset.step);
+      field.value=step<0&&current<=1?'':String(Math.max(1,Math.min(168,(Number.isFinite(current)?Math.floor(current):0)+step)));
+      field.dispatchEvent(new Event('input',{bubbles:true}));return;
+    }
+    if(action==='planner-add')return d2PlannerAdd();
+    if(action==='planner-preset-save')return d2SavePreset();
+    if(action==='planner-preset-load')return d2LoadPreset();
+    if(action==='planner-rebalance')return d2Rebalance();
+    if(action==='planner-last-week')return d2PreviousWeek();
+    if(action==='planner-load-last')return loadLastWeekIntoPlanner();
+    if(action==='planner-remove'){delete plannerUI.raw['target:'+button.dataset.entry];plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>id!==button.dataset.entry);renderWeeklyPlanner();document.querySelector('#weekly-planner-body [data-d2="planner-add"]')?.focus();return;}
+
+  }
+  function focusPlaythroughField(id){requestAnimationFrame(()=>{const field=document.getElementById(id);if(!field)return;(field.classList.contains('mx-native-select')?field.nextElementSibling:field)?.focus();});}
+  function handlePlaythroughChange(field){
+    if(field.id==='playthrough-selector'){playthroughUI.runId=field.value;renderDashboardPlaythroughs();focusPlaythroughField('playthrough-selector');return;}
+    if(field.id==='playthrough-content'){playthroughUI.contentSelection.set(playthroughUI.gameId,field.value);renderDashboardPlaythroughs();focusPlaythroughField('playthrough-content');return;}
+    if(field.dataset.d2Counter||field.dataset.d2Step||field.dataset.d2Manual){
+      const retainFocus=document.activeElement===field,marker={...field.dataset};
+      try{d2ChangeRun(run=>{const item=(run.content[field.dataset.content]?.milestones||[]).find(item=>item.id===(field.dataset.d2Counter||field.dataset.item||field.dataset.d2Manual));if(!item)throw Error('Milestone no longer exists.');if(field.dataset.d2Counter){const value=Number(field.value);if(!Number.isSafeInteger(value)||value<0)throw Error('Use a nonnegative whole number.');item.current=value;}else if(field.dataset.d2Step)item.checklist.find(step=>step.id===field.dataset.d2Step).done=field.checked;else item.manualDone=field.checked;});}catch(error){toast(error.message);renderDashboardPlaythroughs();}
+      if(retainFocus)requestAnimationFrame(()=>{[...document.querySelectorAll('#dashboard-playthroughs input')].find(input=>Object.entries(marker).every(([key,value])=>input.dataset[key]===value))?.focus();});
+    }
+  }
+  document.getElementById('dashboard-body').addEventListener('click',event=>{if(!event.target.closest('#dashboard-playthroughs'))return;const button=event.target.closest('[data-d2]');if(button)try{handlePlaythroughAction(button.dataset.d2,button);}catch(error){toast(error.message);}});
+  document.getElementById('dashboard-body').addEventListener('change',event=>{if(event.target.closest('#dashboard-playthroughs'))handlePlaythroughChange(event.target);});
+  document.getElementById('weekly-planner-body').addEventListener('click',event=>{if(event.target.closest('#planner-weekday-summary')&&!document.getElementById('planner-weekdays').open){event.preventDefault();document.getElementById('planner-weekdays').open=true;plannerUI.draft.enabled=true;updatePlannerSummary();}const button=event.target.closest('[data-d2]');if(button)try{const menu=button.closest('.planner-more');if(menu)menu.open=false;handlePlannerAction(button.dataset.d2,button);}catch(error){toast(error.message);}});
+  function changePlannerField(event){
+    const field=event.target,draft=plannerUI.draft;if(!draft)return;
+    if(field.dataset.d2Capacity){plannerUI.raw['day:'+field.dataset.d2Capacity]=field.value;draft.hours[field.dataset.d2Capacity]=field.validity.badInput||field.value===''?NaN:Number(field.value);}
+    else if(field.dataset.d2Target){plannerUI.raw['target:'+field.dataset.d2Target]=field.value;draft.targets[field.dataset.d2Target]=field.validity.badInput?NaN:field.value===''?0:Number(field.value)*60;}
+    else if(field.dataset.d2Day)draft.days[field.dataset.d2Day]=field.value;
+    else return;
+    updatePlannerSummary();
+  }
+  document.getElementById('weekly-planner-body').addEventListener('input',changePlannerField);
+  document.getElementById('weekly-planner-body').addEventListener('change',changePlannerField);
+  const syncHost=document.getElementById('sync-settings-body');
+  syncHost.innerHTML='<div id="sync-device-row"></div><div id="sync-manual-actions"></div><div id="sync-review-content"></div>';
+  document.getElementById('sync-manual-actions').append(document.querySelector('#dbx-connected .dbx-actions'));
+  document.getElementById('dbx-connected').closest('.card').append(syncHost);
+  const syncRiskActions=document.querySelector('#dbx-connected .settings-risk-actions');syncHost.after(syncRiskActions);
+  syncHost.addEventListener('click',event=>{const button=event.target.closest('[data-d2]');if(button)runSyncAction(button.dataset.d2,button);});
+
+  function d2SaveLibrary(nextGames,nextSessions=sessions,nextSettings=settings){
+    d2Validate({games:nextGames,sessions:nextSessions,settings:nextSettings});
+    persistLibraryReplacement(nextGames,nextSessions,nextSettings);render();
+  }
+  function d2Run(gameId,runId){if(arguments.length===0){gameId=playthroughUI.gameId;runId=playthroughUI.runId;}return games.find(game=>game.id===gameId)?.playthroughs?.find(run=>run.id===runId);}
+  function d2RunRows(gameId,runId,includeLive=false){return sessions.filter(session=>session.gameId===gameId&&session.playthroughId===runId&&(includeLive||session.stop!==null));}
+  function d2RunContent(parent,run){return [{id:null,name:'Base game'},...(parent.dlcs||[]).map(dlc=>({id:dlc.id,name:dlc.name})),...Object.keys(run.content||{}).filter(key=>key!=='base'&&!(parent.dlcs||[]).some(dlc=>dlc.id===key)).map(id=>({id,name:'Removed DLC (history)'}))].map(content=>({...content,key:content.id||'base',data:run.content?.[content.id||'base']||{milestones:[]}}));}
+  function d2RunMs(parentId,runId,dlcId=null){return d2RunRows(parentId,runId).reduce((sum,session)=>sum+(allocatedPlaytime(session).get(dlcId)||0),0);}
+  function d2RunStats(parent,run){
+    const rows=d2RunRows(parent.id,run.id),total=rows.reduce((sum,session)=>sum+(session.durationMs||0),0);
+    const content=d2RunContent(parent,run),items=content.flatMap(entry=>entry.data.milestones||[]);
+    return {rows,total,items,completed:items.filter(item=>item.completedAt).length};
+  }
+  // Reuse the existing progression engine with a run-specific library and session list.
+  const d2CoreReconcile=reconcileMilestoneLibrary;
+  reconcileMilestoneLibrary=function(library,rows){
+    const result=d2CoreReconcile(library,rows);
+    for(const parent of library)for(const run of parent.playthroughs||[]){
+      const before=d2Json(run),content=run.content||(run.content={});
+      if(!content.base)content.base={milestones:[]};
+      const virtual={id:parent.id,milestones:content.base.milestones||[],dlcs:[]};
+      for(const key of Object.keys(content).filter(key=>key!=='base'))virtual.dlcs.push({id:key,milestones:content[key].milestones||[]});
+      const outcome=d2CoreReconcile([virtual],rows.filter(session=>session.gameId===parent.id&&session.playthroughId===run.id));
+      content.base.milestones=virtual.milestones;
+      for(const dlc of virtual.dlcs)content[dlc.id].milestones=dlc.milestones;
+      if(d2Json(run)!==before)result.changed=true;
+      result.completed.push(...outcome.completed.map(name=>run.name+': '+name));
+    }
+    return result;
+  };
+
+  function d2ChangeRun(change){
+    const library=d2Clone(games),parent=library.find(game=>game.id===playthroughUI.gameId),run=parent?.playthroughs?.find(item=>item.id===playthroughUI.runId);
+    if(!parent||!run)throw Error('This playthrough no longer exists.');change(run,parent);d2SaveLibrary(library);renderDashboardPlaythroughs();
+  }
+  function d2NewRun(){
+    const parent=games.find(game=>game.id===playthroughUI.gameId);if(!parent)return;
+    d2Edit('New playthrough',d2Input('Playthrough name','d2-run-name','','type="text" maxlength="80" required placeholder="e.g. New Game+"')+'<label class="milestone-step-toggle"><input type="checkbox" id="d2-copy-goals" checked>Copy current milestone objectives and HLTB estimates, with fresh progress</label><p class="backup-hint">Previously played hours, completion dates, pins and target dates are not copied. Session history stays unassigned.</p>',()=>{
+      const name=document.getElementById('d2-run-name').value.trim();if(!name)throw Error('Enter a name.');
+      if(parent.playthroughs?.some(run=>run.name.toLowerCase()===name.toLowerCase()))throw Error('A playthrough already uses this name.');
+      const content={},copy=document.getElementById('d2-copy-goals').checked;
+      for(const entry of [parent,...(parent.dlcs||[])]){
+        const key=entry===parent?'base':entry.id,ids=new Map((entry.milestones||[]).map(m=>[m.id,uid()]));
+        content[key]={milestones:copy?normalizeGameMilestones((entry.milestones||[]).map(item=>({...d2Clone(item),id:ids.get(item.id),createdAt:new Date().toISOString(),completedAt:null,manualDone:false,pinned:false,targetDate:null,current:0,prerequisites:(item.prerequisites||[]).map(id=>ids.get(id)).filter(Boolean),checklist:(item.checklist||[]).map(step=>({id:uid(),name:step.name,done:false}))}))):[]};
+        if(copy)for(const field of ['mainStoryHours','mainExtraHours','beatNotNeeded','beatUnavailable'])if(entry[field]!=null)content[key][field]=entry[field];
+      }
+      const library=d2Clone(games),target=library.find(game=>game.id===parent.id),id=uid();
+      target.playthroughs=[...(target.playthroughs||[]),{id,name,createdAt:new Date().toISOString(),finishedAt:null,content}];
+      d2SaveLibrary(library);playthroughUI.runId=id;renderDashboardPlaythroughs();toast('Playthrough created');
+    },'Create playthrough');
+  }
+  function choosePlaythrough(gameId,dlcId){
+    const game=games.find(g=>g.id===gameId);if(!game)return;
+    d2Edit('Choose playthrough','<p>'+escHtml(game.name)+' · '+escHtml(contentName(gameId,dlcId))+'</p><label class="d2-field">Playthrough<select id="d2-start-run"><option value="">Unassigned / lifetime only</option>'+(game.playthroughs||[]).filter(run=>!run.finishedAt).map(run=>'<option value="'+d2Attr(run.id)+'">'+escHtml(run.name)+'</option>').join('')+'</select></label>',()=>{startGame(gameId,dlcId,document.getElementById('d2-start-run').value||null);},'Start session');
+  }
+  function addPlaythroughAllocationField(panel){
+    const game=games.find(game=>game.id===panel.dataset.gameId);if(!game?.playthroughs?.length)return;
+    const label=document.createElement('label');label.className='d2-field';label.innerHTML='Playthrough<select data-playthrough-choice aria-label="Session playthrough"><option value="">Unassigned / lifetime only</option>'+game.playthroughs.map(run=>'<option value="'+d2Attr(run.id)+'"'+(run.id===panel.dataset.playthroughId?' selected':'')+'>'+escHtml(run.name)+(run.finishedAt?' (finished)':'')+'</option>').join('')+'</select>';
+    label.querySelector('select').onchange=event=>panel.dataset.playthroughId=event.target.value;panel.append(label);
+  }
+  function refreshLivePlaythrough(){
+    let label=document.getElementById('d2-live-run');
+    if(!label){label=document.createElement('p');label.id='d2-live-run';label.className='d2-live-run';document.getElementById('live-content').before(label);}
+    const run=activeSession?.playthroughId?d2Run(activeSession.gameId,activeSession.playthroughId):null;
+    label.textContent=run?'Playthrough · '+run.name:'';label.hidden=!run;
+  }
+
+  function d2AssignHistory(){
+    const parent=games.find(game=>game.id===playthroughUI.gameId);if(!parent)return;
+    const history=sessions.filter(session=>session.gameId===parent.id&&session.stop!==null).sort((a,b)=>Date.parse(b.start)-Date.parse(a.start));
+    d2Edit('Assign session history','<p>Only selected sessions move. Active time, pauses, DLC allocation, sync flags and lifetime totals stay unchanged.</p><label class="d2-field">Destination<select id="d2-assign-run"><option value="">Unassigned</option>'+(parent.playthroughs||[]).map(run=>'<option value="'+d2Attr(run.id)+'"'+(run.id===playthroughUI.runId?' selected':'')+'>'+escHtml(run.name)+'</option>').join('')+'</select></label><div class="d2-assign-list">'+history.map(session=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-assign-id="'+d2Attr(session.id)+'"><span>'+escHtml(fmtDateShort(session.start)+' '+fmtTime(session.start))+' · '+fmtDurationShort(session.durationMs||0)+'<small>'+escHtml(d2Run(parent.id,session.playthroughId)?.name||'Unassigned')+'</small></span></label>').join('')+'</div>',()=>{
+      const ids=new Set([...document.querySelectorAll('[data-d2-assign-id]:checked')].map(input=>input.dataset.d2AssignId));if(!ids.size)throw Error('Choose at least one session.');
+      const destination=document.getElementById('d2-assign-run').value||null;
+      d2SaveLibrary(games,sessions.map(session=>ids.has(session.id)?{...session,playthroughId:destination}:session));renderDashboardPlaythroughs();toast('Session assignments updated');
+    },'Assign selected');
+  }
+  function d2EditHltb(key){
+    const run=d2Run(),data=run?.content?.[key]||{};if(!run)return;
+    d2Edit('Playthrough HLTB',d2Input('Main Story (hours)','d2-story',data.mainStoryHours||'','type="number" min="0.25" max="100000" step="0.25"')+d2Input('Main + Extra (hours)','d2-extra',data.mainExtraHours||'','type="number" min="0.25" max="100000" step="0.25"')+d2Input('Previously played (hours)','d2-prior',data.beatAlreadyPlayedHours||'','type="number" min="0" max="100000" step="0.25"')+'<p class="backup-hint">These estimates belong only to this playthrough and content. Previously played hours do not change recorded statistics or milestone playtime.</p>',()=>d2ChangeRun(target=>{
+      const entry=target.content[key]||(target.content[key]={milestones:[]});for(const [id,field] of [['d2-story','mainStoryHours'],['d2-extra','mainExtraHours'],['d2-prior','beatAlreadyPlayedHours']]){const value=document.getElementById(id).value;if(value)entry[field]=Number(value);else delete entry[field];}delete entry.beatNotNeeded;delete entry.beatUnavailable;
+    }));
+  }
+  function d2EditObjective(key,id){
+    const run=d2Run(),items=run?.content?.[key]?.milestones||[],item=items.find(m=>m.id===id);
+    d2Edit(item?'Edit playthrough milestone':'Add playthrough milestone',d2Input('Name','d2-objective-name',item?.name||'','type="text" maxlength="120" required')+'<label class="d2-field">Type<select id="d2-objective-type">'+[['manual','Manual'],['checklist','Checklist'],['counter','Counter'],['playtime','Tracked playtime']].map(([value,label])=>'<option value="'+value+'"'+((item?.type||'manual')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label><div class="d2-objective-fields">'+d2Input('Counter target','d2-objective-target',item?.target||1,'type="number" min="1" step="1"')+d2Input('Counter unit (optional)','d2-objective-unit',item?.unit||'','type="text" maxlength="40"')+d2Input('Playtime target (hours)','d2-objective-hours',item?.targetHours||1,'type="number" min="0.25" max="100000" step="0.25"')+'<label class="d2-field">Checklist (one item per line)<textarea id="d2-objective-steps" rows="4">'+escHtml((item?.checklist||[]).map(step=>step.name).join('\n'))+'</textarea></label></div><details><summary>Prerequisites</summary>'+items.filter(other=>other.id!==id).map(other=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-prereq="'+d2Attr(other.id)+'" '+(item?.prerequisites?.includes(other.id)?'checked':'')+'>'+escHtml(other.name)+'</label>').join('')+'</details><p class="backup-hint">Playtime uses completed sessions assigned to this playthrough and content. Changing type resets incompatible progress.</p>',()=>{
+      const name=document.getElementById('d2-objective-name').value.trim(),type=document.getElementById('d2-objective-type').value;
+      if(!name)throw Error('Enter a name.');
+      const checklistNames=document.getElementById('d2-objective-steps').value.split('\n').map(name=>name.trim()).filter(Boolean);
+      if(type==='checklist'&&!checklistNames.length)throw Error('Add at least one checklist item.');
+      if(type==='counter'&&!(Number.isSafeInteger(Number(document.getElementById('d2-objective-target').value))&&Number(document.getElementById('d2-objective-target').value)>0))throw Error('Counter target must be a positive whole number.');
+      const hours=Number(document.getElementById('d2-objective-hours').value);if(type==='playtime'&&!(hours>0&&Number.isInteger(hours*4)))throw Error('Use quarter-hour increments.');
+      if(item&&item.type!==type&&!confirm('Change milestone type? Incompatible checklist or counter progress will be reset.'))return false;
+      d2ChangeRun(target=>{
+        const entry=target.content[key]||(target.content[key]={milestones:[]}),same=item?.type===type;
+        const milestone={...(same?item:{}),id:item?.id||uid(),name,type,createdAt:item?.createdAt||new Date().toISOString(),completedAt:same?item.completedAt:null,manualDone:same?item.manualDone:false,current:same?item.current:0,target:Number(document.getElementById('d2-objective-target').value)||1,unit:document.getElementById('d2-objective-unit').value.trim(),targetHours:hours||1,timeBasis:'total',prerequisites:[...document.querySelectorAll('[data-d2-prereq]:checked')].map(input=>input.dataset.d2Prereq),checklist:checklistNames.map((name,index)=>same&&item.checklist?.[index]?.name===name?item.checklist[index]:{id:uid(),name,done:false})};
+        const next=normalizeGameMilestones([milestone])[0];entry.milestones=item?entry.milestones.map(other=>other.id===id?next:other):[...(entry.milestones||[]),next];validateMilestoneRecords(entry.milestones);
+      });
+    });
+    const type=document.getElementById('d2-objective-type');
+    const update=()=>{for(const [id,visible] of [['d2-objective-target',type.value==='counter'],['d2-objective-unit',type.value==='counter'],['d2-objective-hours',type.value==='playtime'],['d2-objective-steps',type.value==='checklist']]){const field=document.getElementById(id);field.closest('label').hidden=!visible;field.disabled=!visible;}};type.onchange=update;update();
+  }
+  function d2CompareRuns(){
+    const parent=games.find(game=>game.id===playthroughUI.gameId);if(!parent)return;
+    d2Edit('Compare playthroughs','<div class="d2-table-wrap"><table class="d2-table"><thead><tr><th>Playthrough</th><th>Active time</th><th>Sessions</th><th>Milestones</th><th>State</th></tr></thead><tbody>'+(parent.playthroughs||[]).map(run=>{const stats=d2RunStats(parent,run);return '<tr><th>'+escHtml(run.name)+'</th><td>'+fmtDurationShort(stats.total)+'</td><td>'+stats.rows.length+'</td><td>'+stats.completed+' / '+stats.items.length+'</td><td>'+(run.finishedAt?'Finished':'In progress')+'</td></tr>';}).join('')+'</tbody></table></div><p class="backup-hint">Includes recorded Base game and DLC time; excludes previously played HLTB hours.</p>',()=>{},'Done');
+  }
+  // Weekly planner keeps native rotation IDs, targets and weekdays for all existing views.
+  const d2NativeDaily=effectiveDailyGoalMinutes,d2NativeGoal=renderGoal;
+  effectiveDailyGoalMinutes=function(){return settings.plannerDayBudgets?(Number(settings.plannerDayHours?.[plannedWeekdays[new Date().getDay()]])||0)*60:d2NativeDaily();};
+  renderGoal=function(){d2NativeGoal();document.getElementById('setAutoDailyGoal').disabled=!!settings.plannerDayBudgets;if(settings.plannerDayBudgets){document.getElementById('goal-hours').disabled=true;document.getElementById('goal-save').disabled=true;document.getElementById('goal-week-budget').textContent=fmtDurationMinutes(weeklyRotationBudgetMinutes()*60000);if(!effectiveDailyGoalMinutes())document.getElementById('goal-text').textContent='No playtime planned today';const button=document.getElementById('btn-goal-edit');button.disabled=true;button.textContent='Weekly planner';}};
+  function d2LoadDraft(source){
+    ensureRotationWeek();
+    plannerUI.draft=source?d2Clone(source):{week:settings.weeklyRotationWeek,enabled:!!settings.plannerDayBudgets,hours:Object.fromEntries(plannedWeekdays.map(day=>[day,(Number.isFinite(settings.plannerDayHours?.[day])?settings.plannerDayHours[day]:Math.ceil(d2NativeDaily()/60))])),ids:rotationGameIds(),targets:d2Clone(settings.weeklyRotationTargets||{}),days:d2Clone(settings.weeklyRotationDays||{})};
+    plannerUI.draft.week=settings.weeklyRotationWeek;
+    const available=new Set(contentEntries().filter(entry=>!entry.archived).map(entry=>entry.id));
+    plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>available.has(id));
+    plannerUI.draftOriginal=d2Json(plannerUI.draft);plannerUI.raw={};plannerUI.weekdayOpen=false;
+  }
+  function d2DraftBudget(){return weeklyRotationBudgetMinutes();}
+  function d2DraftGameTargets(){return plannerUI.draft.ids.reduce((sum,id)=>sum+(Number(plannerUI.draft.targets[id])||0),0)+archivedRotationSpentMinutes();}
+  function d2DraftPlanned(){return plannerUI.draft.enabled?plannedWeekdayMinutes(plannerUI.draft.hours):d2DraftGameTargets();}
+  function plannerEntryLabel(entry){
+    return '<strong>'+escHtml(entry.contentName||entry.name)+'</strong><small>'+escHtml(entry.dlcId?'DLC / '+(contentEntry(entry.parentId)?.name||'Game'):'Base game')+'</small>';
+  }
+  function plannerValue(key,fallback){return Object.prototype.hasOwnProperty.call(plannerUI.raw,key)?plannerUI.raw[key]:fallback;}
+  function updatePlannerSummary(){
+    const draft=plannerUI.draft,host=document.getElementById('weekly-planner-body'),budgetHost=document.getElementById('planner-budget');if(!draft||!host.querySelector('#planner-weekday-summary'))return;
+    const budget=d2DraftBudget(),gamesTotal=d2DraftGameTargets(),daysTotal=plannedWeekdayMinutes(draft.hours),fmt=value=>fmtDurationMinutes(value*60000);
+    const allocation=(name,value)=>{
+      const remaining=Math.max(0,Math.min(budget,budget-value)),percent=budget>0?Math.max(0,Math.min(100,remaining/budget*100)):0,over=value>budget;
+      return '<span>'+name+': <strong>'+fmt(value)+'</strong></span><span class="'+(over?'d2-error':'')+'">'+(over?'Over budget: ':name==='Game targets'?'Remaining for games: ':'Remaining for weekdays: ')+'<strong>'+fmt(Math.abs(budget-value))+'</strong></span><div class="planner-remaining'+(over?' is-over':'')+'"><div class="progress-track" role="progressbar" aria-label="'+(name==='Game targets'?'Remaining for games':'Remaining for weekdays')+'" aria-valuemin="0" aria-valuemax="'+budget+'" aria-valuenow="'+remaining+'" aria-valuetext="'+(over?'Over budget by '+fmt(value-budget):fmt(remaining)+' remaining of '+fmt(budget))+'"><div class="progress-fill" style="width:'+percent+'%"></div></div><small>'+ (over?'Over budget':Math.round(percent)+'% remaining')+'</small></div>';
+    };
+    budgetHost.innerHTML='<div class="planner-capacity">Weekly capacity <strong>'+fmt(budget)+'</strong></div><div class="planner-allocation">'+allocation('Game targets',gamesTotal)+'</div>'+(draft.enabled?'<div class="planner-allocation">'+allocation('Weekday plan',daysTotal)+'</div>':'');
+    host.querySelector('#planner-weekday-summary').textContent='Weekday targets / '+(draft.enabled?'Enabled / '+fmt(daysTotal)+' planned':'Off');
+    const invalid=[...host.querySelectorAll('input[data-d2-target],input[data-d2-capacity]')].find(field=>!field.checkValidity());
+    host.querySelector('#d2-planner-error').textContent=invalid?'Use whole hours: 1 to 168 for game targets (or blank), and 0 to 24 for weekdays.':gamesTotal>budget?'Game targets exceed weekly capacity by '+fmt(gamesTotal-budget)+'.':draft.enabled&&daysTotal>budget?'Weekday plan exceeds weekly capacity by '+fmt(daysTotal-budget)+'.':'';
+    const invalidDay=[...host.querySelectorAll('input[data-d2-capacity]')].some(field=>!field.checkValidity());
+    host.querySelector('#planner-weekday-fields').hidden=!draft.enabled&&!invalidDay;
+    if((draft.enabled&&daysTotal>budget)||invalidDay)host.querySelector('#planner-weekdays').open=true;
+    const progress=rotationWeekProgress(draft.ids);
+    for(const row of host.querySelectorAll('[data-planner-row]')){
+      const id=row.dataset.plannerRow,target=Number(draft.targets[id])||0,ms=progress.games[id]?.ms||0;
+      row.querySelector('.planner-recorded').textContent=fmtDurationShort(ms)+' played this week'+(target>0?' / '+fmt(target)+' target':'');
+    }
+  }
+  function renderWeeklyPlanner(){
+    if(!plannerUI.draft)d2LoadDraft();const draft=plannerUI.draft,days=['Any day',...orderedWeekdays()],host=document.getElementById('weekly-planner-body'),scroll=host.scrollTop;
+    const open=host.querySelector('#planner-weekdays');if(open)plannerUI.weekdayOpen=open.open;
+    const last=lastWeekRotation(),canLoad=last?.ids?.some(id=>{const entry=contentEntry(id);return entry&&!entry.archived;});
+    let html='<p class="backup-hint">'+escHtml(draft.week)+' - '+addDays(draft.week,6)+' / Changes stay in this draft until Save plan.</p>';
+    html+='<div class="planner-toolbar"><button type="button" class="btn btn-start" data-d2="planner-add">+ Add games</button>'+d2Button('Load last week','planner-load-last',canLoad?'':'disabled')+'<details class="planner-more"><summary>More actions</summary><div>'+d2Button('Save preset','planner-preset-save')+d2Button('Load preset','planner-preset-load')+d2Button('Review previous week','planner-last-week')+d2Button('Review unfinished targets','planner-rebalance')+'</div></details></div>';
+    if(!canLoad)html+='<p class="backup-hint">No available rotation from last week. Add games or load a saved preset.</p>';
+    html+='<p id="d2-planner-error" role="alert" class="d2-error"></p><div class="planner-list">';
+    html+=draft.ids.length?draft.ids.map(id=>{
+      const entry=contentEntry(id);if(!entry)return '';const target=draft.targets[id]||0;
+      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+'<span class="planner-recorded"></span></div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" min="1" max="168" step="1" placeholder="Optional" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target?target/60:''))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label>'+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</article>';
+    }).join(''):'<div class="planner-empty"><strong>Plan your next week of games</strong><p>Add Base games or DLCs, set optional targets, then choose days if you like. Reuse last week or a preset to get started.</p></div>';
+    html+='</div><details id="planner-weekdays"'+(plannerUI.weekdayOpen?' open':'')+'><summary id="planner-weekday-summary" tabindex="0">Weekday targets</summary><p class="backup-hint">Optional daily goals within the same weekly capacity. Weekday hours and game targets are independent allocations; they are never added together.</p><div id="planner-weekday-fields"><div class="d2-capacities">'+orderedWeekdays().map(day=>'<div class="d2-field"><label for="planner-weekday-hours-'+day+'">'+day.slice(0,3)+'</label><span class="planner-hour-control"><input id="planner-weekday-hours-'+day+'" type="number" required min="0" max="24" step="1" value="'+d2Attr(plannerValue('day:'+day,draft.hours[day]))+'" data-d2-capacity="'+day+'" aria-label="'+day+' planned hours"><span class="planner-hour-arrows"><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="1" aria-label="Increase '+day+' hours">&#9650;</button><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="-1" aria-label="Decrease '+day+' hours">&#9660;</button></span></span></div>').join('')+'</div><p class="backup-hint">Today&#39;s goal follows its weekday hours. Zero hours means a rest day. Your automatic-goal preference stays unchanged.</p>'+d2Button('Use daily goal instead','planner-weekday-off')+'</div></details><p class="backup-hint">Recorded sessions count toward each game target regardless of the planned day.</p>';
+    host.innerHTML=html;updatePlannerSummary();host.scrollTop=scroll;
+  }
+  function validatePlannerFields(){
+    const invalid=[...document.querySelectorAll('#weekly-planner-body input[data-d2-target],#weekly-planner-body input[data-d2-capacity]')].find(field=>!field.checkValidity());
+    if(invalid){if(invalid.dataset.d2Capacity)document.getElementById('planner-weekdays').open=true;invalid.focus();throw Error('Use whole hours: 1 to 168 for game targets (or blank), and 0 to 24 for weekdays.');}
+  }
+  function d2SavePlan(){
+    validatePlannerFields();
+    ensureRotationWeek();const draft=plannerUI.draft;if(draft.week!==settings.weeklyRotationWeek)throw Error('A new week has started. Close and reopen the planner to start a fresh plan.');
+    for(const day of plannedWeekdays)if(!Number.isInteger(draft.hours[day])||draft.hours[day]<0||draft.hours[day]>24)throw Error('Planned hours must be whole numbers from 0 to 24.');
+    for(const id of draft.ids){const target=draft.targets[id];if(target!=null&&target!==0&&(!Number.isInteger(target/60)||target<60||target>10080))throw Error('Targets must be whole hours from 1 to 168, or blank.');}
+    const planned=d2DraftPlanned(),gameTargets=d2DraftGameTargets(),budget=d2DraftBudget();if(planned>budget)throw Error((draft.enabled?'Weekday plan':'Game targets')+' over weekly budget by '+fmtDurationMinutes((planned-budget)*60000)+'. Reduce planned hours or increase your weekly goal.');
+    if(gameTargets>budget)throw Error('Game targets over weekly budget by '+fmtDurationMinutes((gameTargets-budget)*60000)+'. Reduce game targets or increase your weekly goal.');
+    const next=d2Clone(settings),archived=archivedRotationIds();
+    next.weeklyRotation=[...draft.ids,...archived];next.weeklyRotationTargets={};next.weeklyRotationDays={};
+    for(const id of draft.ids){if(draft.targets[id])next.weeklyRotationTargets[id]=draft.targets[id];next.weeklyRotationDays[id]=draft.days[id]||'Any day';}
+    for(const id of archived){next.weeklyRotationTargets[id]=rotationTargetMinutes(id);next.weeklyRotationDays[id]=settings.weeklyRotationDays?.[id]||'Any day';}
+    next.plannerDayBudgets=draft.enabled;next.plannerDayHours=d2Clone(draft.hours);
+    const plans=next.weeklyPlanHistory||(next.weeklyPlanHistory={});plans[draft.week]={week:draft.week,ids:d2Clone(draft.ids),targets:d2Clone(draft.targets),days:d2Clone(draft.days),hours:d2Clone(draft.hours),enabled:draft.enabled,savedAt:new Date().toISOString()};
+    for(const week of Object.keys(plans).sort().slice(0,-12))delete plans[week];
+    d2SaveLibrary(games,sessions,next);d2LoadDraft();renderWeeklyPlanner();closeWeeklyPlanner(true);toast('Weekly plan saved');
+  }
+  function d2PlannerAdd(){
+    const options=contentEntries().filter(entry=>!entry.archived&&!plannerUI.draft.ids.includes(entry.id));
+    d2Edit('Add games','<label class="d2-field">Search games and DLCs<input type="search" id="planner-picker-search" placeholder="Search by game or DLC name"></label><p class="backup-hint">Select any number. Targets and days can be set after adding.</p><div id="planner-picker" class="d2-assign-list">'+options.map(entry=>'<label class="planner-pick" data-search="'+d2Attr(entry.name.toLocaleLowerCase())+'"><input type="checkbox" data-d2-plan-add="'+d2Attr(entry.id)+'">'+gameCoverHtml(entry)+'<span>'+plannerEntryLabel(entry)+'</span></label>').join('')+'</div><p id="planner-picker-empty" class="backup-hint"'+(options.length?' hidden':'')+'>No available games or DLCs match. All active content may already be selected.</p>',()=>{
+      for(const input of document.querySelectorAll('[data-d2-plan-add]:checked')){plannerUI.draft.ids.push(input.dataset.d2PlanAdd);plannerUI.draft.days[input.dataset.d2PlanAdd]='Any day';}renderWeeklyPlanner();
+    },'Add selected');
+    document.getElementById('planner-picker-search').oninput=event=>{const q=event.target.value.trim().toLocaleLowerCase();let count=0;for(const row of document.querySelectorAll('#planner-picker .planner-pick')){row.hidden=!row.dataset.search.includes(q);if(!row.hidden)count++;}document.getElementById('planner-picker-empty').hidden=count>0;};
+  }
+  function d2SavePreset(){
+    validatePlannerFields();
+    d2Edit('Save rotation preset',d2Input('Preset name','d2-preset-name','','type="text" maxlength="80" required')+'<p class="backup-hint">Saves games, DLCs, targets, planned days and weekday planned hours. Applying a preset opens a draft and still requires budget validation.</p>',()=>{
+      const name=document.getElementById('d2-preset-name').value.trim();if(!name)throw Error('Enter a name.');if((settings.rotationPresets||[]).some(preset=>preset.name.toLowerCase()===name.toLowerCase()))throw Error('A preset already uses this name.');
+      const next=d2Clone(settings);next.rotationPresets=[...(next.rotationPresets||[]),{id:uid(),name,plan:d2Clone(plannerUI.draft)}];d2SaveLibrary(games,sessions,next);renderWeeklyPlanner();toast('Preset saved');
+    });
+  }
+  function d2LoadPreset(){
+    const presets=settings.rotationPresets||[];
+    d2Edit('Load rotation preset','<p>Loading replaces the unsaved planner draft. Archived or deleted content is skipped.</p><label class="d2-field">Preset<select id="d2-preset-choice">'+presets.map(preset=>'<option value="'+d2Attr(preset.id)+'">'+escHtml(preset.name)+'</option>').join('')+'</select></label><div id="d2-preset-preview"></div>',()=>{
+      const preset=presets.find(item=>item.id===document.getElementById('d2-preset-choice').value);if(!preset)throw Error('Save a preset first.');
+      const available=new Set(contentEntries().filter(entry=>!entry.archived).map(entry=>entry.id)),skipped=preset.plan.ids.filter(id=>!available.has(id)).length;
+      const original=plannerUI.draftOriginal;d2LoadDraft(preset.plan);plannerUI.draftOriginal=original;renderWeeklyPlanner();toast('Preset loaded into draft'+(skipped?' · '+skipped+' unavailable entries skipped':''));
+    },'Load into draft');
+    const paint=()=>{const preset=presets.find(item=>item.id===document.getElementById('d2-preset-choice').value);document.getElementById('d2-preset-preview').innerHTML=preset?'<ul>'+preset.plan.ids.map(id=>'<li>'+escHtml(contentEntry(id)?.name||'Unavailable content')+' · '+fmtDurationMinutes((preset.plan.targets[id]||0)*60000)+' · '+escHtml(preset.plan.days[id]||'Any day')+'</li>').join('')+'</ul>':'<p class="backup-hint">No saved presets yet.</p>';};document.getElementById('d2-preset-choice').onchange=paint;paint();
+  }
+  function d2Rebalance(){
+    const draft=d2Clone(plannerUI.draft),today=plannedWeekdays[new Date().getDay()],week=orderedWeekdays(),todayIndex=week.indexOf(today),remainingDays=week.slice(todayIndex),progress=rotationWeekProgress(draft.ids),moves=[],load=Object.fromEntries(remainingDays.map(day=>[day,0]));
+    for(const id of draft.ids)if(remainingDays.includes(draft.days[id]))load[draft.days[id]]+=(draft.targets[id]||0);
+    for(const id of draft.ids){
+      const old=draft.days[id];if(!week.includes(old)||week.indexOf(old)>=todayIndex)continue;
+      const remaining=Math.max(0,(draft.targets[id]||0)*60000-(progress.games[id]?.ms||0));if(draft.targets[id]&&!remaining)continue;
+      const destination=remainingDays.slice().sort((a,b)=>load[a]-load[b])[0];draft.days[id]=destination;load[destination]+=Math.ceil(remaining/60000);moves.push({id,old,destination,remaining});
+    }
+    d2Edit('Preview unfinished target moves','<p>Weekly targets stay unchanged so already-played time still counts. Only planned days move; nothing is saved yet.</p>'+(moves.length?'<ul>'+moves.map(move=>'<li><strong>'+escHtml(contentEntry(move.id)?.name||'Content')+'</strong>: '+move.old+' → '+move.destination+' · '+fmtDurationShort(move.remaining)+' remaining</li>').join('')+'</ul>':'<p>No unfinished targets are scheduled before today.</p>'),()=>{plannerUI.draft=draft;renderWeeklyPlanner();},'Apply to draft');
+  }
+  function d2PreviousWeek(){
+    const first=rotationWeekKey(new Date(),settings.weekStartsOn==='sunday'?'sunday':'monday'),key=addDays(first,-7),plan=settings.weeklyPlanHistory?.[key]||settings.weeklyRotationLastWeek;
+    if(!plan){d2Edit('Previous week','<p>No previous weekly plan has been saved yet. Save a plan and return after the next calendar week begins.</p>',()=>{},'Done');return;}
+    const bounds={start:new Date(key+'T00:00:00'),end:new Date(addDays(key,7)+'T00:00:00')};
+    d2Edit('Last week: plan versus play','<div class="d2-table-wrap"><table class="d2-table"><thead><tr><th>Content</th><th>Planned</th><th>Played</th><th>Result</th></tr></thead><tbody>'+(plan.ids||[]).map(id=>{
+      const target=plan.targets?.[id]||0,played=sessions.filter(session=>session.stop!==null&&new Date(session.start)>=bounds.start&&new Date(session.start)<bounds.end).reduce((sum,session)=>sum+contentMs(session,id),0);
+      return '<tr><th>'+escHtml(contentEntry(id)?.name||'Archived / removed content')+'</th><td>'+fmtDurationMinutes(target*60000)+'</td><td>'+fmtDurationShort(played)+'</td><td>'+(target?played>=target*60000?'Target reached':fmtDurationShort(target*60000-played)+' remaining':'Flexible')+'</td></tr>';
+    }).join('')+'</tbody></table></div>',()=>{},'Done');
+  }
+  // Persist record fingerprints only; downloaded libraries stay in memory until reviewed.
+  const SYNC_INDEX_KEY='playdex.dropbox.record-index',DEVICE_KEY='playdex.device';
+  function d2Snapshot(){return d2Clone({games,sessions,settings:syncSettings(settings)});}
+  function d2Device(){
+    let device;try{device=JSON.parse(localStorage.getItem(DEVICE_KEY));}catch{}
+    if(!device||typeof device.id!=='string'||typeof device.name!=='string'){
+      device={id:uid(),name:/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)?'My phone':'My computer'};
+      localStorage.setItem(DEVICE_KEY,JSON.stringify(device));
+    }
+    return device;
+  }
+  function d2ReadIndex(){
+    try{const index=JSON.parse(localStorage.getItem(SYNC_INDEX_KEY));return index&&typeof index.rev==='string'&&index.records&&typeof index.records==='object'&&index.rev===dbx.syncedRev?index:null;}catch{return null;}
+  }
+  function d2SyncState(){
+    if(!syncUI.state||syncUI.state.connection!==dbx)syncUI.state={connection:dbx,loaded:false,remote:null,revision:null,baseIndex:d2ReadIndex(),error:'',loading:false};
+    syncUI.state.baseIndex=d2ReadIndex();return syncUI.state;
+  }
+  async function d2RecordIndex(snapshot){
+    const entries=await Promise.all([...d2Records(snapshot)].map(async([key,record])=>{
+      const hash=await dbxStateHash(d2Json(record.value));if(!hash)throw Error('Secure browser storage is required to compare sync changes.');
+      return [key,{hash,kind:record.kind,name:record.name}];
+    }));
+    return Object.fromEntries(entries);
+  }
+  async function d2RememberSynced(state,rev,connection){
+    try{
+      const records=await d2RecordIndex(JSON.parse(state));
+      if(dbx!==connection||dbx.syncedRev!==rev||dbx.rev!==rev)return;
+      localStorage.setItem(SYNC_INDEX_KEY,JSON.stringify({rev,at:new Date().toISOString(),records}));
+      if(syncUI.state)syncUI.state.baseIndex=d2ReadIndex();
+    }catch(error){console.warn('Sync review fingerprints:',error.message);}
+  }
+  const d2MarkSynced=dbxMarkSynced;
+  dbxMarkSynced=async function(state=dbxSnapshot()){
+    const connection=dbx,rev=dbx.rev;
+    await d2MarkSynced(state);
+    if(dbx===connection&&dbx.syncedRev===rev)await d2RememberSynced(state,rev,connection);
+  };
+  const d2ScheduleUpload=scheduleAutoUpload;
+  scheduleAutoUpload=function(){
+    if(syncUI.reviewing){
+      if(dbx.accessToken&&!dbxSkipAutoUpload){++dbxCompareGeneration;clearTimeout(dbxSyncTimer);dbxSetDirty(true);}
+      return;
+    }
+    d2ScheduleUpload();
+  };
+  document.getElementById('dbxDisconnectBtn').addEventListener('click',()=>{endSyncReview();localStorage.removeItem(SYNC_INDEX_KEY);syncUI.state=null;if(document.getElementById('sync-settings-body'))renderSyncSettings();});
+  const d2Disconnect=dropboxDisconnect;
+  dropboxDisconnect=function(){d2Disconnect();endSyncReview();localStorage.removeItem(SYNC_INDEX_KEY);syncUI.state=null;if(document.getElementById('sync-settings-body'))renderSyncSettings();};
+  async function d2ReadRemote(){
+    try{return await dbxReadLive();}
+    catch(error){if(error.code==='not_found')return {data:null,rev:null};throw error;}
+  }
+  async function d2LoadRemote(){
+    const state=d2SyncState();if(state.loading)return;
+    if(!dbx.accessToken){state.error='Connect Dropbox in Settings to compare devices and review version history.';renderSyncSettings();return;}
+    if(dbxSyncOps){state.error='A Dropbox operation is in progress. Refresh when it finishes.';renderSyncSettings();return;}
+    state.loading=true;state.error='';clearTimeout(dbxSyncTimer);renderSyncSettings();
+    let locked=false;
+    try{
+      if(!await dropboxRefreshIfNeeded())throw Error('Reconnect Dropbox in Settings to continue.');
+      if(dbxSyncOps)throw Error('Dropbox is busy. Refresh when it finishes.');
+      dbxSyncSpinning(true);locked=true;
+      const connection=dbx,remote=await d2ReadRemote();
+      if(dbx!==connection||!dbx.accessToken)throw Error('Dropbox connection changed. Refresh to continue.');
+      state.remote=remote.data;state.revision=remote.rev;state.loaded=true;state.baseIndex=d2ReadIndex();
+      if(!state.baseIndex&&remote.data){
+        const snapshot=dbxSnapshot();
+        if(dbxSnapshot(remote.data)===snapshot){
+          const hash=await dbxStateHash(snapshot);
+          if(hash&&dbx===connection&&dbx.accessToken&&dbxSnapshot()===snapshot){dbx.rev=remote.rev;dbx.syncedRev=remote.rev;dbx.syncedHash=hash;dbxLastUploadedState=snapshot;dbxSetDirty(false);await d2RememberSynced(snapshot,remote.rev,connection);state.baseIndex=d2ReadIndex();}
+        }
+      }
+    }catch(error){state.error=error.message;}
+    finally{if(locked)dbxSyncSpinning(false);state.loading=false;if(document.getElementById('sync-settings-body'))renderSyncSettings();}
+  }
+  async function d2ChangesSince(index,snapshot){
+    const current=d2Records(snapshot),hashes=await d2RecordIndex(snapshot),before=index?.records||{};
+    return [...new Set([...Object.keys(before),...Object.keys(hashes)])].filter(key=>before[key]?.hash!==hashes[key]?.hash).map(key=>{
+      const record=current.get(key),old=before[key];return {key,kind:record?.kind||old?.kind||'Record',name:record?.name||old?.name||key,change:!old?'Added':!record?'Removed':'Changed',before:old?'Previous synced value is represented by its fingerprint.':undefined,after:record?.value};
+    });
+  }
+  function renderSyncSettings(){
+    const identity=document.getElementById('sync-device-row'),host=document.getElementById('sync-review-content');if(!identity||!host)return;
+    const state=d2SyncState(),connected=!!dbx.accessToken,device=d2Device(),busy=state.loading||syncUI.reviewing;
+    identity.innerHTML='<div class="preference-row"><div><strong>This device</strong><p class="backup-hint">'+escHtml(device.name)+'</p></div>'+d2Button('Rename device','sync-device',busy?'disabled':'')+'</div>';
+    document.getElementById('sync-manual-actions').hidden=!connected;
+    const risk=document.querySelector('#settings-dropbox .settings-risk-actions');if(risk)risk.hidden=!connected;
+    document.getElementById('dbxUploadBtn').disabled=busy;document.getElementById('dbxDownloadBtn').disabled=busy;
+    const remote=state.remote,history=Array.isArray(remote?.history)?remote.history.slice(0,5):[],comparison=state.loaded?d2Diff(remote||{games:[],sessions:[],settings:{}},d2Snapshot()):[];
+    let html='<p class="backup-hint">Dropbox uploads are separate from each session\'s manual Synced flag. Appearance stays on this device.</p>';
+    if(state.loading)html+='<p role="status" class="backup-hint">Loading Dropbox revision and history…</p>';
+    if(state.error)html+='<p class="d2-error" role="alert">'+escHtml(state.error)+'</p>';
+    if(connected){
+      html+='<section class="sync-preference-section"><div class="d2-section-head"><h4>Changes</h4>'+d2Button('Refresh','sync-refresh',busy?'disabled':'')+'</div>';
+      if(state.loaded){
+        html+='<p class="backup-hint" role="status">'+comparison.length+' record'+(comparison.length===1?'':'s')+' differ between devices. '+(remote?'Dropbox revision '+escHtml(state.revision)+'.':'No Dropbox file yet; Review changes will create one.')+'</p>';
+        if(remote){const date=Date.parse(remote.exportedAt);html+='<p class="backup-hint">Last uploaded by '+escHtml(remote.device?.name||'an earlier PlayDex device')+(Number.isFinite(date)?' · '+escHtml(new Date(date).toLocaleString()):'')+'</p>';}
+        if(!state.baseIndex&&remote)html+='<p class="backup-hint">On the first review, choose which device to keep for each differing record.</p>';
+        if(comparison.length)html+='<details class="sync-differences"><summary>Compare Dropbox with this device</summary>'+d2DiffHtml(comparison)+'</details>';
+      }else html+='<p class="backup-hint">Refresh or Review changes to compare with Dropbox. Opening Settings does not start a transfer.</p>';
+      html+='</section><section class="sync-preference-section"><h4>Version history</h4><p class="backup-hint">The five previous changes are retained. Restore previews create a recovery copy before applying anything.</p>';
+      html+=state.loaded?(history.length?history.map((entry,index)=>{const time=Date.parse(entry.savedAt);return '<div class="d2-history-row"><span><strong>'+escHtml(entry.revision?'Revision '+entry.revision:'Earlier version')+'</strong><small>'+escHtml(entry.device?.name||'Earlier device')+(Number.isFinite(time)?' · '+escHtml(new Date(time).toLocaleString()):'')+'</small></span>'+d2Button('Preview restore','sync-restore','data-history="'+index+'"'+(busy?' disabled':''))+'</div>';}).join(''):'<p class="backup-hint">No previous changes yet.</p>'):'<p class="backup-hint">Refresh to load version history.</p>';
+      html+='</section>';
+    }
+    let recovery;try{recovery=JSON.parse(localStorage.getItem(DBX_RECOVERY_KEY));}catch{}
+    html+='<section class="sync-preference-section"><div class="d2-section-head"><h4>Local recovery</h4>'+d2Button('Export current copy','sync-export')+'</div>';
+    if(recovery){const time=Date.parse(recovery.exportedAt);html+='<p class="backup-hint">'+(Number.isFinite(time)?'Saved '+escHtml(new Date(time).toLocaleString()):'A recovery copy is available')+(recovery.reason?' before '+escHtml(recovery.reason):'')+'.</p>'+d2Button('Preview recovery','sync-recovery',busy?'disabled':'');}
+    else html+='<p class="backup-hint">A local recovery copy is created before a download, sync merge or restore replaces data.</p>';
+    html+='</section>';host.innerHTML=html;
+  }
+  async function d2ReviewSync(){
+    if(activeSession){toast('Stop the running session before reviewing sync changes.');return;}
+    const generation=beginSyncReview();if(generation===null)return;
+    try{await reviewSyncRecords(generation);}
+    finally{if(syncUI.generation===generation&&(!d2Editor.classList.contains('open')||editorUI.onClose!==endSyncReview))endSyncReview();}
+  }
+  async function previewLatestDropbox(){
+    if(activeSession){toast('Stop the running session before downloading.');return;}
+    const generation=beginSyncReview();if(generation===null)return;
+    try{await d2LoadRemote();if(syncUI.generation!==generation||currentTab!=='settings')return;const state=d2SyncState();if(state.error)throw Error(state.error);if(!state.remote)throw Error('No Dropbox backup exists yet. Review changes to create one.');d2PreviewRestore({games:state.remote.games,sessions:state.remote.sessions,settings:state.remote.settings||syncSettings(settings)},'Dropbox download');}
+    finally{if(syncUI.generation===generation&&(!d2Editor.classList.contains('open')||editorUI.onClose!==endSyncReview))endSyncReview();}
+  }
+
+  function d2Recover(reason){
+    localStorage.setItem(DBX_RECOVERY_KEY,JSON.stringify({app:'PlayDex',version:1,exportedAt:new Date().toISOString(),reason,games,sessions,settings}));
+    document.getElementById('dbx-recovery-export').style.display='';
+  }
+  async function reviewSyncRecords(generation){
+    if(activeSession){toast('Stop the running session before reviewing sync changes.');return;}
+    await d2LoadRemote();if(syncUI.generation!==generation||currentTab!=='settings')return;const state=d2SyncState();if(!state.loaded||state.error)return;
+    const local=d2Snapshot(),remote=state.remote,base=state.baseIndex?.records||null,mine=d2Records(local),theirs=d2Records(remote||{games:[],sessions:[],settings:{}});
+    const [localHashes,remoteHashes]=await Promise.all([d2RecordIndex(local),d2RecordIndex(remote||{games:[],sessions:[],settings:{}})]);
+    if(d2Json(d2Snapshot())!==d2Json(local)){toast('Your data changed while loading the review. Review again.');return;}
+    const keys=new Set([...Object.keys(base||{}),...mine.keys(),...theirs.keys()]),merged=new Map(),conflicts=[];
+    for(const key of keys){
+      const l=mine.get(key)?.value,r=theirs.get(key)?.value,lh=localHashes[key]?.hash,rh=remoteHashes[key]?.hash,bh=base?.[key]?.hash;
+      if(lh===rh){merged.set(key,l);continue;}
+      if(!remote){merged.set(key,l);continue;}
+      const localChanged=!base||lh!==bh,remoteChanged=!base||rh!==bh;
+      if(localChanged&&remoteChanged){conflicts.push({key,kind:(mine.get(key)||theirs.get(key)||base[key]).kind,name:(mine.get(key)||theirs.get(key)||base[key]).name,local:l,remote:r});merged.set(key,undefined);}
+      else merged.set(key,remoteChanged?r:l);
+    }
+    const localChanges=base?await d2ChangesSince(state.baseIndex,local):null,remoteChanges=base?await d2ChangesSince(state.baseIndex,remote||{games:[],sessions:[],settings:{}}):null;
+    if(remote&&dbxSnapshot(remote)===dbxSnapshot(local)){toast('No changes to sync.');return;}
+    if(syncUI.generation!==generation||currentTab!=='settings')return;
+    syncUI.merge={localFingerprint:dbxSnapshot(local),revision:state.revision,connection:dbx,remote,merged,conflicts};
+    d2Edit('Review changes before syncing','<p>'+(localChanges?localChanges.length+' local changes · '+remoteChanges.length+' remote changes · ':'')+conflicts.length+' conflicts. Matching records and nonconflicting changes merge automatically.</p><p class="backup-hint">A game record includes its DLCs, milestones and playthroughs. Sessions and shared settings are separate records. Deletions must leave valid references.</p>'+conflicts.map((conflict,index)=>'<section class="d2-content"><h4>'+escHtml(conflict.kind+' · '+conflict.name)+'</h4><div class="d2-diff-values"><div><h4>This device</h4><pre>'+escHtml(JSON.stringify(conflict.local??'Removed',null,2))+'</pre></div><div><h4>Dropbox</h4><pre>'+escHtml(JSON.stringify(conflict.remote??'Removed',null,2))+'</pre></div></div><label class="d2-field">Keep<select data-d2-resolution="'+index+'" required><option value="">Choose a version</option><option value="local">This device</option><option value="remote">Dropbox</option></select></label></section>').join('')+(!conflicts.length?'<p>The combined changes are ready to apply.</p>':'')+(localChanges?'<details><summary>Local changes since the last sync</summary>'+d2DiffHtml(localChanges)+'</details><details><summary>Remote changes since the last sync</summary>'+d2DiffHtml(remoteChanges)+'</details>':'<details><summary>Differences between devices</summary>'+d2DiffHtml(d2Diff(remote||{games:[],sessions:[],settings:{}},local))+'</details>'),async()=>{
+      const proposal=syncUI.merge;
+      for(const [index,conflict] of proposal.conflicts.entries()){const choice=document.querySelector('[data-d2-resolution="'+index+'"]').value;if(!choice)throw Error('Resolve every conflict first.');proposal.merged.set(conflict.key,choice==='local'?conflict.local:conflict.remote);}
+      const result=d2Rebuild(proposal.merged);d2Validate(result);
+      await d2CommitSnapshot(result,proposal,'sync merge');
+    },remote?'Apply reviewed changes':'Create Dropbox backup',null,{onClose:endSyncReview});
+  }
+  async function d2CommitSnapshot(snapshot,proposal,reason){
+    if(activeSession)throw Error('Stop the running session first.');
+    if(dbx!==proposal.connection||!dbx.accessToken)throw Error('Dropbox connection changed. Review again.');
+    if(dbxSnapshot()!==proposal.localFingerprint)throw Error('Your data changed during review. Cancel and review again.');
+    if(dbxSyncOps)throw Error('Another Dropbox operation is in progress. Try again when it finishes.');
+    if(!await dropboxRefreshIfNeeded())throw Error('Reconnect Dropbox before applying changes.');
+    if(dbxSyncOps)throw Error('Dropbox is busy. Try again.');
+    const connection=dbx;clearTimeout(dbxSyncTimer);++dbxCompareGeneration;dbxSyncSpinning(true);
+    try{
+      const current=await d2ReadRemote();
+      if(current.rev!==proposal.revision)throw Error('Dropbox changed during review. Cancel, refresh and review the newer revision.');
+      if(dbx!==connection||!dbx.accessToken||dbxSnapshot()!==proposal.localFingerprint)throw Error('Local data or the Dropbox connection changed during review. Review again.');
+      checkStorageFresh();d2Validate(snapshot);
+      const prepared=d2Clone(snapshot);prepared.games=normalizeGames(prepared.games);prepared.settings=Object.assign(defaultSettings(),prepared.settings);
+      rollWeeklyRotation(prepared.settings);reconcileMilestoneLibrary(prepared.games,prepared.sessions);
+      d2Recover(reason);
+      const uploadedState=dbxSnapshot(prepared),sameRemote=current.data&&dbxSnapshot(current.data)===uploadedState;
+      let rev=current.rev,payload=current.data;
+      if(!sameRemote){
+        payload=dbxWithHistory({app:'PlayDex',version:1,exportedAt:new Date().toISOString(),games:prepared.games,sessions:prepared.sessions,settings:syncSettings(prepared.settings)},current.data,current.rev);
+        const response=await fetch('https://content.dropboxapi.com/2/files/upload',{
+          method:'POST',headers:{'Authorization':'Bearer '+dbx.accessToken,'Content-Type':'application/octet-stream','Dropbox-API-Arg':JSON.stringify({path:DBX_PATH,mode:current.rev?{'.tag':'update',update:current.rev}:'add',autorename:false,strict_conflict:true,mute:true})},body:JSON.stringify(payload)
+        });
+        if(response.status===409)throw Error('Dropbox changed before the upload completed. Nothing was replaced locally; refresh and review again.');
+        if(!response.ok)throw Error('Dropbox upload failed ('+response.status+'). Your local data is unchanged.');
+        const metadata=await response.json();if(!metadata.rev)throw Error('Dropbox returned no revision. Refresh before retrying.');rev=metadata.rev;
+      }
+      if(dbx!==connection||!dbx.accessToken)throw Error('Dropbox was disconnected during upload. Refresh after reconnecting; local data was kept.');
+      dbx.rev=rev;dbxHistoryView={data:payload,rev};dbxPaintHistory();
+      if(dbxSnapshot()===proposal.localFingerprint){
+        const preferences={...prepared.settings,...Object.fromEntries(DEVICE_SETTINGS.map(key=>[key,settings[key]]))};
+        dbxSkipAutoUpload=true;
+        try{persistLibraryReplacement(prepared.games,prepared.sessions,preferences);refreshSyncedSettingsControls();applyTheme();render();}
+        catch(error){
+          dbx.autoUpload=false;dbxSave();await dbxMarkSynced(uploadedState);updateDropboxUI();
+          throw Error('Dropbox saved the reviewed version, but local storage could not apply it. Your recovery copy is safe. Automatic upload was paused; free storage, then refresh and review.');
+        }finally{dbxSkipAutoUpload=false;}
+      }
+      await dbxMarkSynced(uploadedState);dbxSave();
+      syncUI.state={connection:dbx,loaded:true,remote:payload,revision:rev,baseIndex:d2ReadIndex(),loading:false,error:''};
+      plannerUI.draft=null;renderSyncSettings();toast(dbxDirty?'Dropbox updated. Newer local edits were kept; review again.':'Dropbox and this device are synchronized');
+    }finally{dbxSyncSpinning(false);}
+  }
+  function d2PreviewRestore(snapshot,label){
+    if(syncUI.reviewing&&d2Editor.classList.contains('open'))return;
+    if(!syncUI.reviewing)beginSyncReview();
+    const state=d2SyncState(),proposal={localFingerprint:dbxSnapshot(),revision:state.revision,connection:dbx};
+    d2Edit('Preview '+label,'<p>'+escHtml(dbx.accessToken?'This restores the selected version to this device and Dropbox as a new revision.':'This restores the selected version on this device. Connect Dropbox later to review it before syncing.')+' A recovery copy of your current library is saved first. Theme, Interface and Theme Colour stay on this device.</p>'+d2DiffHtml(d2Diff(d2Snapshot(),snapshot)),async()=>{
+      if(activeSession)throw Error('Stop the running session before restoring.');if(dbxSnapshot()!==proposal.localFingerprint)throw Error('Your data changed. Cancel and preview again.');
+      d2Validate(snapshot);
+      if(dbx.accessToken){if(!state.loaded)throw Error('Refresh Dropbox before restoring.');await d2CommitSnapshot(snapshot,proposal,label);}
+      else{d2Recover(label);d2SaveLibrary(snapshot.games,snapshot.sessions,{...snapshot.settings,...Object.fromEntries(DEVICE_SETTINGS.map(key=>[key,settings[key]]))});playthroughUI.runId=null;plannerUI.draft=null;renderSyncSettings();toast('Local history restored');}
+    },'Restore this version',null,{onClose:endSyncReview});
+  }
+  function d2SyncAction(action,button){
+    if(action==='sync-refresh')return d2LoadRemote();
+    if(action==='sync-download')return previewLatestDropbox();
+    if(action==='sync-review')return d2ReviewSync();
+    if(action==='sync-connect'){showSyncSettings();return;}
+    if(action==='sync-device')return d2Edit('Name this device',d2Input('Device name','d2-device',d2Device().name,'type="text" maxlength="60" required'),()=>{const name=document.getElementById('d2-device').value.trim();if(!name)throw Error('Enter a name.');localStorage.setItem(DEVICE_KEY,JSON.stringify({...d2Device(),name}));renderSyncSettings();});
+    if(action==='sync-export')return triggerDownload('playdex-recovery-'+todayStr()+'.json',new Blob([JSON.stringify({app:'PlayDex',version:1,exportedAt:new Date().toISOString(),games,sessions,settings},null,2)],{type:'application/json'}));
+    if(action==='sync-restore'){const entry=d2SyncState().remote?.history?.[Number(button.dataset.history)];if(entry){const current=d2SyncState().remote;d2PreviewRestore({games:entry.games,sessions:entry.sessions,settings:entry.settings||current.settings||syncSettings(settings)},'saved version');}return;}
+    if(action==='sync-recovery'){let copy;try{copy=JSON.parse(localStorage.getItem(DBX_RECOVERY_KEY));}catch{}if(copy)d2PreviewRestore({games:copy.games,sessions:copy.sessions,settings:copy.settings||syncSettings(settings)},'local recovery');return;}
+  }
+
+  function d2Records(snapshot){
+    const records=new Map();
+    for(const game of snapshot.games||[])records.set('games:'+game.id,{kind:'Game',name:game.name,value:game});
+    for(const session of snapshot.sessions||[])records.set('sessions:'+session.id,{kind:'Session',name:(session.gameName||'Game')+' · '+fmtDateShort(session.start)+' '+fmtTime(session.start),value:session});
+    for(const [key,value] of Object.entries(snapshot.settings||{}))if(!DEVICE_SETTINGS.includes(key))records.set('settings:'+key,{kind:'Shared setting',name:key,value});
+    return records;
+  }
+  function d2Diff(before,after){const a=d2Records(before),b=d2Records(after);return [...new Set([...a.keys(),...b.keys()])].filter(key=>d2Json(a.get(key)?.value)!==d2Json(b.get(key)?.value)).map(key=>({key,...(b.get(key)||a.get(key)),change:!a.has(key)?'Added':!b.has(key)?'Removed':'Changed',before:a.get(key)?.value,after:b.get(key)?.value}));}
+  function d2DiffHtml(changes){
+    return changes.length?changes.map(change=>'<details class="d2-diff"><summary><span class="d2-tag">'+change.change+'</span> '+escHtml(change.kind+' · '+change.name)+'</summary><div class="d2-diff-values"><div><h4>Before</h4><pre>'+escHtml(JSON.stringify(change.before??null,null,2))+'</pre></div><div><h4>After</h4><pre>'+escHtml(JSON.stringify(change.after??null,null,2))+'</pre></div></div></details>').join(''):'<p class="d2-empty-small">No changes.</p>';
+  }
+
+  function d2Rebuild(records){
+    const snapshot={games:[],sessions:[],settings:{}};
+    for(const [key,record] of records){if(record===undefined)continue;const colon=key.indexOf(':'),kind=key.slice(0,colon),id=key.slice(colon+1);if(kind==='settings')snapshot.settings[id]=d2Clone(record);else snapshot[kind].push(d2Clone(record));}
+    return snapshot;
+  }
+
+  function validateProgressionData(snapshot){
+    if(!Array.isArray(snapshot.games)||!Array.isArray(snapshot.sessions)||(snapshot.settings!==undefined&&(!snapshot.settings||typeof snapshot.settings!=='object'||Array.isArray(snapshot.settings))))throw Error('Invalid backup.');
+
+    const gameIds=new Set();for(const game of snapshot.games){
+      if(!game.id||gameIds.has(game.id))throw Error('Duplicate game ID.');gameIds.add(game.id);
+      if(game.playthroughs!==undefined&&!Array.isArray(game.playthroughs))throw Error('Invalid playthrough list.');
+      const ids=new Set(),runNames=new Set();for(const run of game.playthroughs||[]){
+        if(!run.id||ids.has(run.id)||typeof run.name!=='string'||!run.name.trim()||!Number.isFinite(Date.parse(run.createdAt)))throw Error('Invalid playthrough record.');ids.add(run.id);if(runNames.has(run.name.trim().toLowerCase()))throw Error('Duplicate playthrough name.');runNames.add(run.name.trim().toLowerCase());if(!run.content||typeof run.content!=='object'||Array.isArray(run.content))throw Error('Invalid playthrough content.');
+        if(run.finishedAt&&!Number.isFinite(Date.parse(run.finishedAt)))throw Error('Invalid playthrough finish date.');
+        for(const [key,content] of Object.entries(run.content||{})){
+          if(typeof key!=='string'||!key||!content||typeof content!=='object'||Array.isArray(content))throw Error('Invalid playthrough content key.');validateMilestoneRecords(content.milestones||[]);
+          for(const field of ['mainStoryHours','mainExtraHours','beatAlreadyPlayedHours'])if(content[field]!=null&&(!Number.isFinite(content[field])||content[field]<0))throw Error('Invalid playthrough HLTB hours.');
+        }
+      }
+    }
+    const sessionIds=new Set();for(const session of snapshot.sessions){
+      if(!session.id||sessionIds.has(session.id))throw Error('Duplicate session ID.');sessionIds.add(session.id);
+      const parent=snapshot.games.find(game=>game.id===session.gameId);if(!parent){const known=sessions.find(row=>row.id===session.id&&row.gameId===session.gameId);if(!known||games.some(game=>game.id===session.gameId))throw Error('A change would leave a session referencing a missing game. Keep its game or reassign the session first.');continue;}
+      if(session.playthroughId&&!parent.playthroughs?.some(run=>run.id===session.playthroughId))throw Error('A session references a missing playthrough.');
+    }
+    const preferences=snapshot.settings||{};
+    const record=value=>value&&typeof value==='object'&&!Array.isArray(value);
+    const capacities=value=>{if(!record(value)||plannedWeekdays.some(day=>!Number.isInteger(value[day])||value[day]<0||value[day]>24))throw Error('Invalid weekday planned hours.');};
+    if(preferences.plannerDayBudgets!==undefined&&typeof preferences.plannerDayBudgets!=='boolean')throw Error('Invalid planner mode.');
+    if(preferences.plannerDayHours!==undefined)capacities(preferences.plannerDayHours);
+    if(preferences.plannerDayBudgets&&!preferences.plannerDayHours)throw Error('Missing weekday planned hours.');
+    const plan=value=>{if(!record(value)||!Array.isArray(value.ids)||value.ids.some(id=>typeof id!=='string'||!id)||new Set(value.ids).size!==value.ids.length||!record(value.targets)||!record(value.days))throw Error('Invalid saved rotation plan.');if(value.hours!==undefined)capacities(value.hours);for(const target of Object.values(value.targets))if(!Number.isInteger(target)||target<0||target>10080||target%60)throw Error('Saved targets must use whole hours.');for(const day of Object.values(value.days))if(!['Any day',...plannedWeekdays].includes(day))throw Error('Invalid saved planned day.');};
+    if(preferences.rotationPresets!==undefined){if(!Array.isArray(preferences.rotationPresets))throw Error('Invalid rotation presets.');const ids=new Set(),names=new Set();for(const preset of preferences.rotationPresets){if(!record(preset)||typeof preset.id!=='string'||!preset.id||ids.has(preset.id)||typeof preset.name!=='string'||!preset.name.trim()||names.has(preset.name.trim().toLowerCase()))throw Error('Invalid or duplicate rotation preset.');ids.add(preset.id);names.add(preset.name.trim().toLowerCase());plan(preset.plan);}}
+    if(preferences.weeklyPlanHistory!==undefined){if(!record(preferences.weeklyPlanHistory))throw Error('Invalid weekly plan history.');for(const [week,saved] of Object.entries(preferences.weeklyPlanHistory)){if(!milestoneValidDate(week))throw Error('Invalid saved plan week.');plan(saved);}}
+
+  }
+  function d2Validate(snapshot){validateBackupData(snapshot);return snapshot;}
+  function handlePlaythroughAction(action,button){
+    if(action==='run-milestone-remove'){
+      const run=d2Run(),key=button.dataset.content,id=button.dataset.item,item=run?.content?.[key]?.milestones?.find(row=>row.id===id);if(!item)return;
+      const dependents=run.content[key].milestones.filter(row=>row.prerequisites?.includes(id));
+      return d2Edit('Remove milestone?','<p>Remove '+escHtml(item.name)+' from this playthrough?</p>'+(dependents.length?'<p>Prerequisite links will also be removed from: '+escHtml(dependents.map(row=>row.name).join(', '))+'.</p>':''),()=>d2ChangeRun(target=>{target.content[key].milestones=target.content[key].milestones.filter(row=>row.id!==id).map(row=>({...row,prerequisites:(row.prerequisites||[]).filter(required=>required!==id)}));}),'Remove milestone');
+    }
+    if(action==='run-new')return d2NewRun();
+    if(action==='run-assign')return d2AssignHistory();
+    if(action==='run-compare')return d2CompareRuns();
+    if(action==='run-hltb')return d2EditHltb(button.dataset.content);
+    if(action==='run-milestone')return d2EditObjective(button.dataset.content,button.dataset.item);
+    if(action==='run-rename'){
+      const run=d2Run();if(!run)return;
+      return d2Edit('Rename playthrough',d2Input('Name','d2-rename-run',run.name,'type="text" maxlength="80" required'),()=>{
+        const name=document.getElementById('d2-rename-run').value.trim();if(!name)throw Error('Enter a name.');
+        if(games.find(game=>game.id===playthroughUI.gameId).playthroughs.some(other=>other.id!==run.id&&other.name.toLowerCase()===name.toLowerCase()))throw Error('This name is already in use.');d2ChangeRun(item=>item.name=name);
+      });
+    }
+    if(action==='run-finish'){
+      const parent=games.find(game=>game.id===playthroughUI.gameId),run=d2Run();if(!run)return;
+      if(activeSession?.gameId===parent.id&&activeSession.playthroughId===run.id){toast('Stop this playthrough\'s active session first.');return;}
+      const stats=d2RunStats(parent,run);
+      return d2Edit(run.finishedAt?'Reopen playthrough':'Finish playthrough','<h4>'+escHtml(run.name)+'</h4><div class="d2-metrics"><div><strong>'+fmtDurationShort(stats.total)+'</strong><small>Active playtime</small></div><div><strong>'+stats.rows.length+'</strong><small>Sessions</small></div><div><strong>'+stats.completed+' / '+stats.items.length+'</strong><small>Milestones completed</small></div></div><p>Started '+fmtDateShort(run.createdAt)+'. '+(run.finishedAt?'Reopening retains all recorded progress.':'Finishing preserves every session and objective. You can reopen this run later.')+'</p>'+d2RunContent(parent,run).map(content=>'<div class="d2-history-row"><span>'+escHtml(content.name)+'</span><strong>'+fmtDurationShort(d2RunMs(parent.id,run.id,content.id))+'</strong></div>').join(''),()=>d2ChangeRun(item=>item.finishedAt=item.finishedAt?null:new Date().toISOString()),run.finishedAt?'Reopen':'Finish playthrough');
+    }
+    if(action==='run-delete'){
+      const run=d2Run();if(!run)return;
+      if(activeSession?.playthroughId===run.id){toast('Stop this playthrough\'s active session first.');return;}
+      return d2Edit('Remove playthrough?','<p>Remove '+escHtml(run.name)+' and its separate milestone and HLTB progress? Its sessions will become unassigned. All tracked playtime, DLC allocations and lifetime totals are preserved.</p>',()=>{
+        const library=d2Clone(games),parent=library.find(game=>game.id===playthroughUI.gameId);parent.playthroughs=parent.playthroughs.filter(item=>item.id!==run.id);
+        d2SaveLibrary(library,sessions.map(session=>session.gameId===parent.id&&session.playthroughId===run.id?{...session,playthroughId:null}:session));playthroughUI.runId=null;renderDashboardPlaythroughs();
+      },'Remove playthrough');
+    }
+    if(action==='run-start'){
+      const parent=games.find(game=>game.id===playthroughUI.gameId),run=d2Run();if(!parent||!run||run.finishedAt||parent.archived)return;
+      return d2Edit('Start '+run.name,'<label class="d2-field">Content<select id="d2-run-content">'+contentOptions(parent.id,playthroughUI.contentId||(playthroughUI.contentSelection.get(parent.id)==='base'?null:playthroughUI.contentSelection.get(parent.id)))+'</select></label>',()=>{const dlcId=document.getElementById('d2-run-content').value||null;document.getElementById('dashboard-modal').classList.remove('open');startGame(parent.id,dlcId,run.id);goTab('today');},'Start session');
+    }
+  }
+
+  const d2RenderSessions=renderSessionsTab;
+  renderSessionsTab=function(animate=true){d2RenderSessions(animate);document.querySelectorAll('.session-edit[data-id]').forEach(button=>{const session=sessions.find(row=>row.id===button.dataset.id),run=session?.playthroughId?d2Run(session.gameId,session.playthroughId):null;if(run){const label=document.createElement('small');label.className='d2-session-run';label.textContent='Playthrough · '+run.name;button.closest('li,.session-row')?.querySelector('.session-info')?.append(label);}});};
+
+  const d2FinishReview=showFinishReview;
+  showFinishReview=function(id){
+    d2FinishReview(id);const session=sessions.find(row=>row.id===id),run=session?.playthroughId?d2Run(session.gameId,session.playthroughId):null;
+    if(!run)return;
+    const host=document.getElementById('session-finish-details');
+    host.querySelectorAll('.finish-beat-progress').forEach(section=>section.remove());
+    const context=document.createElement('p');context.className='d2-live-run';context.textContent='Playthrough · '+run.name;host.querySelector('h4')?.after(context);
+    const parent=games.find(game=>game.id===session.gameId),ids=[...new Set(sessionSegments(session).map(segment=>segment.dlcId||null))];
+    for(const dlcId of ids){const entry=run.content?.[dlcId||'base'];if(!entry)continue;const section=document.createElement('section');section.className='finish-beat-progress';section.innerHTML='<h4>'+escHtml(contentName(parent.id,dlcId))+' · Playthrough HLTB</h4>'+beatProgressRows(entry,d2RunMs(parent.id,run.id,dlcId));host.append(section);}
+  };
+
   // --- Initial render ---
   ensureRotationWeek();
   const initialMilestoneState=reconcileMilestoneLibrary(games,sessions);
@@ -14042,6 +14836,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   dropboxHandleRedirect().then(() => {
     render();
     dropboxCheckForUpdates();
+    scheduleAutoUpload();
     if (window.hideBootSplash) window.hideBootSplash();
     queueStartupSyncReview();
     setTimeout(explainDlcRotation, 5500);
@@ -14079,7 +14874,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '1.9.3';
+    const APP_VERSION = '2.0.0';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {

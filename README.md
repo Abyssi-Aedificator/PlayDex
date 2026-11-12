@@ -28,6 +28,13 @@ Weekly rotations start empty each calendar week, following Week starts on. Choos
 
 
 
+
+Open a game dashboard from Games to use its Playthroughs section below HLTB and Personal milestones. DLC dashboards show the same parent playthroughs with DLC-specific progress. Create named runs, assign existing sessions without changing their totals, and track independent Base game and DLC objectives and HLTB progress. A new run starts with fresh milestone progress; unassigned history and lifetime statistics remain intact. Run completions also count toward personal-milestone badges.
+
+Use Plan week on Today's rotation card to open the single Weekly rotation editor. Enable weekday planning to distribute your fixed weekly goal across the week. Changing a weekday's hours changes the Weekday plan allocation, while Weekly capacity remains the saved daily goal times seven (or the automatic last-week average times seven). Today's goal follows its planned hours. Weekday planning and game targets are checked separately against the same weekly limit, and automatic-goal preferences are preserved. Zero-hour days are rest days and do not break goal streaks. Choose planned days in each game row, review unfinished-target moves, save named presets, and compare last week's plan with actual playtime. Changes remain drafts until saved; Cancel, Escape and backdrop dismissal confirm before discarding edits. Load last week restores available games, targets and planned days without replacing weekday planned hours.
+
+Sync and recovery are integrated into Settings > Dropbox, below the connection controls. Refresh and review actions load cloud data; opening Settings alone does not. It reads the live Dropbox revision, compares individual games, sessions and shared settings, and asks you to resolve competing changes before applying them. Restoring a saved version creates a new Dropbox revision and first saves local recovery data. Device names identify uploads; appearance preferences stay local. Automatic transfers pause during an active review or restore, and resume after it closes. The session's Synced flag is a separate manual status. No second full library is stored for change detection: only record fingerprints are persisted.
+
 ## Getting started
 
 PlayDex is a static, self-contained app. No build step or server is required to develop it.
@@ -82,3 +89,5 @@ Your data is sent directly from your browser to Dropbox — nothing is stored on
 ## License
 
 This project is for personal/portfolio use. No warranty is provided.
+
+Weekly rotation uses a game-first list: Add games supports search and multiple selection, then set optional whole-hour targets and planned days without changing row order. Load last week keeps current weekday hours; More actions holds presets and previous-week reviews. Opening Weekday targets enables optional daily goals; Use daily goal instead turns weekday planning off. Game targets and weekday hours each have their own remaining allocation against the same fixed weekly capacity; these totals are never added together. Cancel, Escape, or dismissing the dialog confirms before discarding edits.

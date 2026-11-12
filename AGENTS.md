@@ -54,9 +54,11 @@ stays on `dev`. Pushing `dev` when asked is fine.
 
 - Consolidation is a routine the user triggers explicitly, phrased like
   "consolidate version from X to Y" (e.g. 1.0.1 to 1.0.8).
-- The user supplies BOTH the start/end range AND the target consolidated
-  version (e.g. 1.1.0) AND the new cache name (e.g. `playdex-vX`). Follow
-  those exactly; never derive or invent them.
+- The user supplies the start/end range and target consolidated version
+  (e.g. 1.1.0). Follow those exactly.
+- Choose the next unused `playdex-v` numeric cache name automatically,
+  incrementing the current suffix and preserving its zero padding. Do not ask
+  the user for a cache name. If the user supplies one, use it exactly.
 - Collapse every changelog entry whose version falls within and includes the
   start/end range into ONE new block at the top under the consolidated version,
   combining their user-facing bullets. Dedupe near-duplicates; keep entries
@@ -209,3 +211,19 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - Top rolling-day ranges use local calendar date arithmetic (setDate), not fixed 24-hour offsets, so DST does not change the number of included dates.
 
 - Cover uploads use editor revision guards and capture their original game identity. Ignore canceled/superseded callbacks, keep Save disabled during image processing, and re-enable it when decoding fails. URL fields preserve quotes; escape at rendering instead of stripping URL characters.
+
+## Dropbox change detection
+
+- dbxSnapshot canonicalizes object keys and excludes device-only Theme, Interface, and Theme Colour settings. Persist only the SHA-256 synced fingerprint and its Dropbox revision, not another full local data copy.
+- Await dbxMarkSynced with the exact uploaded/downloaded snapshot. Never mark later local edits as uploaded; keep them dirty and queued. No-op checks must preserve the last-sync timestamp and avoid file/history writes.
+- scheduleAutoUpload compares against the known synced revision before scheduling a transfer, ignores obsolete async hash results, and cancels queued work when changes are reverted. Preserve remote revision/conflict checks for genuine changes.
+
+## Playthroughs, planner, and sync review
+
+- Parent games own optional playthroughs; sessions keep an optional playthroughId. Run content stores independent Base game/DLC milestones and HLTB values. Reconcile each run using only its assigned sessions; lifetime rankings and counts stay combined. Legacy sessions remain unassigned.
+- plannerDayBudgets/plannerDayHours set planned weekday hours and Today's goal, never Weekly capacity. Weekly capacity comes from the saved daily goal times seven or the automatic last-week average times seven; the sum of weekday hours drives Planned targets when weekday planning is enabled. Validate weekday allocations and game commitments separately against that fixed budget, without adding them together or disabling automatic goals on save. Zero-hour days are rest days. rotationPresets and weeklyPlanHistory sync as shared settings; validate them on import and restore. Keep planner drafts separate until Save plan.
+- The Sync & Recovery Centre uses real Dropbox requests and strict revision updates. playdex.dropbox.record-index stores per-record hashes and the synced revision, never a full baseline library. Unknown baselines require explicit choices for differing records.
+- Keep automatic uploads paused while reviewing sync conflicts. Recheck local state, connection and remote revision before applying; preserve later local edits, take a recovery copy first, and retain the previous five remote versions. Device identity is local metadata and accompanies uploads.
+
+- Keep feature UI contextual: playthroughs render inline in the game/DLC dashboard, one Plan week action opens the Weekly rotation editor, and sync/recovery renders inside Dropbox settings. Do not reintroduce a shared feature hub or Games shortcuts.
+- UI state is independent for playthrough selection, planner drafts, sync review and focused editors. Opening Settings must not fetch Dropbox; pause automatic transfers only for explicit review/restore and release the guard on cancel, success or navigation away during loading.
