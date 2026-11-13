@@ -5686,7 +5686,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.0.0</span>
+    <span class="version-badge">2.0.1</span>
   </div>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
@@ -9551,6 +9551,20 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return hours?hours+'h'+(minutes%60?' '+minutes%60+'m':''):minutes+'m';
   }
   function rotationPlayedTime(ms) { return fmtDurationMinutes(ms); }
+  function rotationHltbRemaining(key) {
+    const entry=contentEntry(key);if(!entry||entry.beatNotNeeded||entry.beatUnavailable)return '';
+    const estimates=[['Main Story',entry.mainStoryHours],['Main + Extra',entry.mainExtraHours]].filter(([,hours])=>Number.isFinite(hours)&&hours>0);
+    if(!estimates.length)return '';
+    const parentId=entry.parentId||entry.id,now=Date.now();
+    let played=(entry.beatAlreadyPlayedHours||0)*3600000;
+    for(const session of sessions)if(session.stop!==null&&session.gameId===parentId)played+=contentMs(session,key,now);
+    if(activeSession&&activeSession.gameId===parentId)played+=contentMs(activeSession,key,now);
+    return 'HLTB remaining: '+estimates.map(([label,hours])=>label+' '+fmtDurationMinutes(Math.ceil(Math.max(0,hours*3600000-played)/60000)*60000)).join(' / ');
+  }
+  function rotationHltbHtml(key) {
+    const text=rotationHltbRemaining(key);return text?'<small class="rotation-hltb" data-rotation-hltb>'+escHtml(text)+'</small>':'';
+  }
+
   function updateActiveRotationProgress() {
     if(!activeSession)return;
     const row=[...document.querySelectorAll('#rotation-list [data-rotation-game]')].find(row=>row.dataset.rotationGame===sessionContentKey(activeSession));
@@ -9558,6 +9572,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const key=sessionContentKey(activeSession),pin=row.querySelector('.milestone-pin'),pinHtml=pinnedMilestoneHtml(key,true);
     if(pin&&pin.outerHTML!==pinHtml)pin.outerHTML=pinHtml;
     else if(!pin&&pinHtml)row.querySelector('.rotation-game').insertAdjacentHTML('beforeend',pinHtml);
+    const hltb=row.querySelector('[data-rotation-hltb]'),remainingHltb=rotationHltbRemaining(key);if(hltb&&hltb.textContent!==remainingHltb)hltb.textContent=remainingHltb;
     const entry=rotationProgressWithLive([key]).games[key];
     const elapsed=row.querySelector('[data-rotation-elapsed]');if(elapsed)elapsed.textContent=rotationPlayedTime(entry.ms);
     const target=rotationTargetMinutes(sessionContentKey(activeSession)),percent=row.querySelector('[data-rotation-percent]'),bar=row.querySelector('[data-rotation-progress]');
@@ -9599,7 +9614,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const targetHtml=target?'<div class="rotation-metrics" data-rotation-target-text><span class="rotation-time"><span class="rotation-elapsed" data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span><span class="rotation-target-text">/ '+fmtDurationMinutes(target*60000)+'</span></span><span class="rotation-percent" data-rotation-percent>'+(pct===100?'Target reached':pct+'%')+'</span></div><div class="progress-track" data-rotation-progress role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'<small><span data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span> this week</small>';
       const day = settings.weeklyRotationDays?.[id];
       const dayLabel = plannedWeekdays.includes(day) ? '<small>Planned day: ' + day + '</small>' : '';
-      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+dayLabel+targetHtml+pinnedMilestoneHtml(id,!!activeSession)+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'">Start</button>')+'</div>';
+      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+dayLabel+targetHtml+rotationHltbHtml(id)+pinnedMilestoneHtml(id,!!activeSession)+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'">Start</button>')+'</div>';
     }).join('');
   }
   const plannedWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -14137,7 +14152,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function closeWeeklyPlanner(force=false){
     if(editorUI.busy&&force!==true)return;
-    if(force!==true&&plannerUI.draft&&(d2Json(plannerUI.draft)!==plannerUI.draftOriginal||Object.keys(plannerUI.raw).length>0)){
+    if(force!==true&&plannerUI.draft&&d2PlannerSignature()!==plannerUI.draftOriginal){
       d2Edit('Discard unsaved plan?','<p>Your changes to this week\'s games, targets, days and capacities have not been saved.</p>',()=>closeWeeklyPlanner(true),'Discard changes');return;
     }
     weeklyPlanner.classList.remove('open');plannerUI.draft=null;
@@ -14224,6 +14239,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function handlePlannerAction(action,button){
     if(action==='planner-weekday-off'){
+      const original=JSON.parse(plannerUI.draftOriginal);
+      for(const day of plannedWeekdays){
+        const field=document.getElementById('planner-weekday-hours-'+day);
+        if(field&&!field.checkValidity()){
+          const previous=original.hours[day];plannerUI.draft.hours[day]=Number.isInteger(previous)&&previous>=0&&previous<=24?previous:0;
+          delete plannerUI.raw['day:'+day];field.value=String(plannerUI.draft.hours[day]);
+        }
+      }
       plannerUI.draft.enabled=false;plannerUI.weekdayOpen=false;
       document.getElementById('planner-weekdays').open=false;updatePlannerSummary();
       document.getElementById('planner-weekday-summary').focus();return;
@@ -14246,7 +14269,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(action==='planner-rebalance')return d2Rebalance();
     if(action==='planner-last-week')return d2PreviousWeek();
     if(action==='planner-load-last')return loadLastWeekIntoPlanner();
-    if(action==='planner-remove'){delete plannerUI.raw['target:'+button.dataset.entry];plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>id!==button.dataset.entry);renderWeeklyPlanner();document.querySelector('#weekly-planner-body [data-d2="planner-add"]')?.focus();return;}
+    if(action==='planner-remove'){delete plannerUI.draft.targets[button.dataset.entry];delete plannerUI.draft.days[button.dataset.entry];delete plannerUI.raw['target:'+button.dataset.entry];plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>id!==button.dataset.entry);renderWeeklyPlanner();document.querySelector('#weekly-planner-body [data-d2="planner-add"]')?.focus();return;}
 
   }
   function focusPlaythroughField(id){requestAnimationFrame(()=>{const field=document.getElementById(id);if(!field)return;(field.classList.contains('mx-native-select')?field.nextElementSibling:field)?.focus();});}
@@ -14394,7 +14417,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     plannerUI.draft.week=settings.weeklyRotationWeek;
     const available=new Set(contentEntries().filter(entry=>!entry.archived).map(entry=>entry.id));
     plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>available.has(id));
-    plannerUI.draftOriginal=d2Json(plannerUI.draft);plannerUI.raw={};plannerUI.weekdayOpen=false;
+    plannerUI.draft.targets=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.targets[id]!=null).map(id=>[id,plannerUI.draft.targets[id]]));
+    plannerUI.draft.days=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.days[id]!=null).map(id=>[id,plannerUI.draft.days[id]]));
+    for(const id of plannerUI.draft.ids){const target=plannerUI.draft.targets[id];if(Number.isFinite(target)&&target>0)plannerUI.draft.targets[id]=Math.ceil(target/60)*60;}
+    plannerUI.draftOriginal=d2PlannerSignature();plannerUI.raw={};plannerUI.weekdayOpen=false;
+  }
+  function d2PlannerSignature(){
+    const draft=plannerUI.draft;
+    return d2Json({...draft,targets:Object.fromEntries(draft.ids.map(id=>[id,draft.targets[id]??0])),days:Object.fromEntries(draft.ids.map(id=>[id,draft.days[id]||'Any day']))});
   }
   function d2DraftBudget(){return weeklyRotationBudgetMinutes();}
   function d2DraftGameTargets(){return plannerUI.draft.ids.reduce((sum,id)=>sum+(Number(plannerUI.draft.targets[id])||0),0)+archivedRotationSpentMinutes();}
@@ -14433,7 +14463,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     html+='<p id="d2-planner-error" role="alert" class="d2-error"></p><div class="planner-list">';
     html+=draft.ids.length?draft.ids.map(id=>{
       const entry=contentEntry(id);if(!entry)return '';const target=draft.targets[id]||0;
-      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+'<span class="planner-recorded"></span></div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" min="1" max="168" step="1" placeholder="Optional" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target?target/60:''))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label>'+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</article>';
+      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+'<span class="planner-recorded"></span>'+rotationHltbHtml(id)+'</div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" min="1" max="168" step="1" placeholder="Optional" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target?target/60:''))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label>'+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</article>';
     }).join(''):'<div class="planner-empty"><strong>Plan your next week of games</strong><p>Add Base games or DLCs, set optional targets, then choose days if you like. Reuse last week or a preset to get started.</p></div>';
     html+='</div><details id="planner-weekdays"'+(plannerUI.weekdayOpen?' open':'')+'><summary id="planner-weekday-summary" tabindex="0">Weekday targets</summary><p class="backup-hint">Optional daily goals within the same weekly capacity. Weekday hours and game targets are independent allocations; they are never added together.</p><div id="planner-weekday-fields"><div class="d2-capacities">'+orderedWeekdays().map(day=>'<div class="d2-field"><label for="planner-weekday-hours-'+day+'">'+day.slice(0,3)+'</label><span class="planner-hour-control"><input id="planner-weekday-hours-'+day+'" type="number" required min="0" max="24" step="1" value="'+d2Attr(plannerValue('day:'+day,draft.hours[day]))+'" data-d2-capacity="'+day+'" aria-label="'+day+' planned hours"><span class="planner-hour-arrows"><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="1" aria-label="Increase '+day+' hours">&#9650;</button><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="-1" aria-label="Decrease '+day+' hours">&#9660;</button></span></span></div>').join('')+'</div><p class="backup-hint">Today&#39;s goal follows its weekday hours. Zero hours means a rest day. Your automatic-goal preference stays unchanged.</p>'+d2Button('Use daily goal instead','planner-weekday-off')+'</div></details><p class="backup-hint">Recorded sessions count toward each game target regardless of the planned day.</p>';
     host.innerHTML=html;updatePlannerSummary();host.scrollTop=scroll;
@@ -14874,7 +14904,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.0.0';
+    const APP_VERSION = '2.0.1';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
     const updateModal = () => document.getElementById('update-modal');
     function askWorker(worker, message) {

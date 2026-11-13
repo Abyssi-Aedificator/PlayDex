@@ -1,6 +1,14 @@
 PlayDex - Changelog
 ====================
 
+Version 2.0.1
+-------------------
+- Removing a rotation game clears its draft target and planned day; invalid targets and unavailable entries no longer block saving the remaining plan.
+- Reverting planner edits to their original values no longer prompts to discard unchanged data.
+- Older partial-hour rotation targets round up to whole hours in the planner draft, allowing corrections and saving without changing stored targets until Save plan.
+- Turning off weekday planning discards invalid weekday entries so they cannot block saving a game-only plan.
+- Weekly rotation and its planner show remaining Main Story and Main + Extra HLTB time when estimates are available, using Base game or DLC tracked time plus previously played hours.
+
 Version 2.0.0
 -------------------
 - Weekly rotations now start empty each calendar week, following Week starts on, with Load last week to review and restore the previous week's active games, DLCs, targets, and planned days before saving.
