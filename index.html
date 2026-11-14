@@ -330,6 +330,11 @@ button.milestone-remove-step { width:44px; min-width:44px; height:44px; padding:
     transform: translateY(1px);
   }
 
+  .header-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
+  #update-available[hidden] { display:none; }
+  header:has(#update-available:not([hidden])) { flex-wrap:wrap; gap:8px; }
+  #update-available { min-height:36px; white-space:nowrap; }
+
   .sync-btn {
     margin-left: auto;
     display: inline-flex;
@@ -5686,12 +5691,15 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.0.1</span>
+    <span class="version-badge">2.0.2</span>
   </div>
+  <div class="header-actions">
+  <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
     <span>Sync</span>
   </button>
+  </div>
 </header>
 
 <div class="app-content">
@@ -6859,8 +6867,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
 <!-- Update available modal -->
 <div class="modal-overlay" id="update-modal">
-  <div class="modal">
-    <h3>New version available</h3>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="update-title">
+    <h3 id="update-title">New version available</h3>
     <p class="modal-subheader">A new version of PlayDex is ready. Choose Update now to install it, or Later to keep your current version.</p>
     <div class="modal-actions">
       <button class="btn-ghost" id="update-dismiss">Later</button>
@@ -13445,7 +13453,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(mxSheet.open&&(!mxMaterial()||innerWidth>=900))mxCloseFilters();
     queueAppleGlass();
   }
-  const mxTitle=document.createElement('span');mxTitle.className='mx-page-title';mxTitle.textContent='Today';document.querySelector('header').insertBefore(mxTitle,document.getElementById('sync-btn'));
+  const mxTitle=document.createElement('span');mxTitle.className='mx-page-title';mxTitle.textContent='Today';document.querySelector('header').insertBefore(mxTitle,document.querySelector('.header-actions'));
   function mxRefresh(){mxSyncSelects();mxSyncDialogs();mxNavigation();mxRefreshIcons();}
   let mxRefreshQueued=false;
   const mxObserver=new MutationObserver(()=>{if(!mxRefreshQueued){mxRefreshQueued=true;requestAnimationFrame(()=>{mxRefreshQueued=false;mxRefresh();});}});
@@ -14904,9 +14912,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.0.1';
-    let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
+    const APP_VERSION = '2.0.2';
+    let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
+    const updateAvailable = document.getElementById('update-available');
+    updateAvailable.addEventListener('click',()=>{if(offeredUpdate){updateModal().classList.add('open');document.getElementById('update-reload').focus();}});
     function askWorker(worker, message) {
       return new Promise((resolve,reject) => {
         const channel=new MessageChannel();
@@ -14922,11 +14932,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if (!updateRegistration) return;
       const worker=updateRegistration.waiting || updateRegistration.active;
       if (!worker) return;
+      const check=++updateCheck;
       try {
         const info=await askWorker(worker,{type:'PLAYDEX_UPDATE_INFO'});
-        if (!info.pending) return;
+        if(check!==updateCheck)return;
+        if (!info.pending) {offeredUpdate=null;updateAvailable.hidden=true;updateModal().classList.remove('open');return;}
         if (!offeredUpdate || offeredUpdate.cache !== info.cache) updateDismissed=false;
         offeredUpdate={worker,cache:info.cache};
+        updateAvailable.hidden=false;
         if (!updateDismissed) updateModal().classList.add('open');
       } catch(error) { console.warn('Update check:',error.message); }
     }
@@ -14949,7 +14962,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if (document.visibilityState==='visible') {updateDismissed=false;offerUpdate();if(updateRegistration)updateRegistration.update().catch(()=>{});}
     });
     document.getElementById('update-dismiss').addEventListener('click',()=>{
-      updateDismissed=true;updateModal().classList.remove('open');
+      updateDismissed=true;updateModal().classList.remove('open');if(!updateAvailable.hidden)updateAvailable.focus();
     });
     document.getElementById('update-reload').addEventListener('click',async()=>{
       if (!offeredUpdate) return;
