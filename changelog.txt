@@ -1,6 +1,11 @@
 PlayDex - Changelog
 ====================
 
+Version 2.0.2
+-------------------
+- Session saved shows unfinished personal milestones for the played Base game, DLC, or playthrough; milestone target dates show days remaining, Due today, or overdue days in reviews and milestone displays.
+- Added an Update available button in the header when a new app version is ready, allowing the confirmation to be reopened after choosing Later.
+
 Version 2.0.1
 -------------------
 - Removing a rotation game clears its draft target and planned day; invalid targets and unavailable entries no longer block saving the remaining plan.

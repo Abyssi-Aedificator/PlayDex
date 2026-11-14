@@ -330,6 +330,11 @@ button.milestone-remove-step { width:44px; min-width:44px; height:44px; padding:
     transform: translateY(1px);
   }
 
+  .header-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
+  #update-available[hidden] { display:none; }
+  header:has(#update-available:not([hidden])) { flex-wrap:wrap; gap:8px; }
+  #update-available { min-height:36px; white-space:nowrap; }
+
   .sync-btn {
     margin-left: auto;
     display: inline-flex;
@@ -1462,7 +1467,8 @@ opacity: 0.18;
   .beat-progress-label { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; font-size:.8rem; }
   .beat-progress-label > span { color:var(--text2); font-variant-numeric:tabular-nums; }
   .beat-progress-row .progress-track { height:6px; margin:6px 0 0; }
-  .finish-beat-progress { margin-top:12px; }
+  .finish-beat-progress,.finish-milestones { margin-top:16px; }
+  .finish-milestones h4 { overflow-wrap:anywhere; margin-bottom:12px; }
   .dashboard-milestone-column { display:grid; gap:18px; }
   #session-finish-sync { display:inline-grid; place-items:center; }
   #session-finish-sync span { grid-area:1 / 1; }
@@ -5686,12 +5692,15 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.0.1</span>
+    <span class="version-badge">2.0.2</span>
   </div>
+  <div class="header-actions">
+  <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
   <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
     <span>Sync</span>
   </button>
+  </div>
 </header>
 
 <div class="app-content">
@@ -6859,8 +6868,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
 <!-- Update available modal -->
 <div class="modal-overlay" id="update-modal">
-  <div class="modal">
-    <h3>New version available</h3>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="update-title">
+    <h3 id="update-title">New version available</h3>
     <p class="modal-subheader">A new version of PlayDex is ready. Choose Update now to install it, or Later to keep your current version.</p>
     <div class="modal-actions">
       <button class="btn-ghost" id="update-dismiss">Later</button>
@@ -13445,7 +13454,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(mxSheet.open&&(!mxMaterial()||innerWidth>=900))mxCloseFilters();
     queueAppleGlass();
   }
-  const mxTitle=document.createElement('span');mxTitle.className='mx-page-title';mxTitle.textContent='Today';document.querySelector('header').insertBefore(mxTitle,document.getElementById('sync-btn'));
+  const mxTitle=document.createElement('span');mxTitle.className='mx-page-title';mxTitle.textContent='Today';document.querySelector('header').insertBefore(mxTitle,document.querySelector('.header-actions'));
   function mxRefresh(){mxSyncSelects();mxSyncDialogs();mxNavigation();mxRefreshIcons();}
   let mxRefreshQueued=false;
   const mxObserver=new MutationObserver(()=>{if(!mxRefreshQueued){mxRefreshQueued=true;requestAnimationFrame(()=>{mxRefreshQueued=false;mxRefresh();});}});
@@ -13582,6 +13591,21 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const date=new Date(value+'T12:00:00Z');
     return !isNaN(date.getTime())&&date.toISOString().slice(0,10)===value;
   }
+  function milestoneTargetDateHtml(item) {
+    if(item.completedAt||!milestoneValidDate(item.targetDate))return '';
+    const calendarDay=value=>{const [y,m,d]=value.split('-').map(Number);return Date.UTC(y,m-1,d);};
+    const days=Math.round((calendarDay(item.targetDate)-calendarDay(todayStr()))/86400000);
+    const text=days===0?'Due today':days>0?days+' day'+(days===1?'':'s')+' left':'Overdue by '+(-days)+' day'+(days===-1?'':'s');
+    return '<span class="milestone-due">Target: '+escHtml(item.targetDate)+' / '+text+'</span>';
+  }
+  function finishMilestonesHtml(key,data,history=sessions,scope='') {
+    const items=normalizeGameMilestones(data?.milestones),pending=milestoneSorted(items.filter(item=>!item.completedAt));if(!pending.length)return '';
+    const context=milestoneContext(key);
+    return '<section class="finish-milestones"><h4>'+escHtml(contentName(context.parentId,context.dlcId)+(scope?' / '+scope:''))+' - Personal milestones</h4>'+pending.map(item=>{
+      const p=milestoneProgress(item,context.parentId,context.dlcId,history),blocked=milestoneBlocked(item,items);
+      return '<article class="milestone-objective"><strong class="game-milestone-name">'+escHtml(item.name)+'</strong><p class="backup-hint">'+escHtml(blocked.length?'Blocked: '+blocked.join(', '):p.text)+'</p>'+milestoneTargetDateHtml(item)+'</article>';
+    }).join('')+'</section>';
+  }
   function milestoneAttr(value){return escHtml(String(value)).replace(/"/g,'&quot;');}
   function milestoneFinishEstimate(gameId, hours) {
     if (!hours) return '';
@@ -13610,7 +13634,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   function pinnedMilestoneHtml(key,live=false){
     const data=contentData(key),items=normalizeGameMilestones(data?.milestones),item=items.find(m=>m.pinned);if(!item)return '';
     const blocked=milestoneBlocked(item,items),status=item.completedAt?'Completed':blocked.length?'Blocked: '+blocked.join(', '):'Pinned milestone';
-    return '<div class="milestone-pin"><small>'+escHtml(status)+'</small><strong>'+escHtml(item.name)+'</strong>'+milestoneProgressHtml(item,key,live)+'</div>';
+    return '<div class="milestone-pin"><small>'+escHtml(status)+'</small><strong>'+escHtml(item.name)+'</strong>'+milestoneTargetDateHtml(item)+milestoneProgressHtml(item,key,live)+'</div>';
   }
   function milestoneSorted(items){return items.slice().sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id));}
   function milestoneGroups(items){return [...new Set(items.map(m=>m.group))].sort((a,b)=>Math.min(...items.filter(m=>m.group===a).map(m=>m.groupOrder))-Math.min(...items.filter(m=>m.group===b).map(m=>m.groupOrder))||a.localeCompare(b));}
@@ -13623,7 +13647,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const row=m=>{
       const p=milestoneSummary(m,game.id),blocked=milestoneBlocked(m,items),siblings=milestoneSorted(items.filter(i=>i.group===m.group));
       const remaining=m.type==='playtime'?Math.max(0,(p.target-p.value)/3600000):m.hoursRemaining;
-      const due=!m.completedAt&&m.targetDate?'<span class="milestone-due">'+(m.targetDate<todayStr()?'Overdue: ':'Upcoming: ')+escHtml(m.targetDate)+'</span>':'';
+      const due=milestoneTargetDateHtml(m);
       const info=(m.completedAt?'Completed '+m.completedAt:blocked.length?'Blocked: '+blocked.join(', '):'In progress')+(!m.completedAt?milestoneFinishEstimate(game.id,remaining):'');
       const tools=action('Edit','edit',m.id)+action(m.pinned?'Unpin':'Pin','pin',m.id)+'<details class="milestone-more" data-milestone-detail="more:'+milestoneAttr(m.id)+'"><summary>More</summary><div class="milestone-row-tools">'+action('Move up','up',m.id,siblings[0].id===m.id)+action('Move down','down',m.id,siblings.at(-1).id===m.id)+action('Delete','delete',m.id)+'</div></details>';
       let updates='';
@@ -13925,12 +13949,13 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       ['Active playtime', fmtDuration(session.durationMs || 0)],
       ['Paused time', fmtDuration(totalPausedMs(session, Date.parse(session.stop)))]
     ];
-    let beatProgress = '';
+    let beatProgress = '',pendingMilestones = '';
     const contents = [...allocatedPlaytime(session).keys()];
     for (const dlcId of contents) {
       const key = dlcId ? dlcKey(session.gameId, dlcId) : session.gameId;
       const entry = contentEntry(key);
       if (!entry) continue;
+      pendingMilestones+=finishMilestonesHtml(key,contentData(key));
       const dayMs = sessions.filter(row => row.stop !== null && row.gameId === session.gameId && dateKey(row.start) === sessionDay)
         .reduce((sum,row) => sum + contentMs(row,key),0);
       const prefix = dlcId ? contentName(session.gameId,dlcId) + ' - ' : '';
@@ -13945,7 +13970,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         beatProgress += '<section class="finish-beat-progress"><h4>' + escHtml(contentName(session.gameId,dlcId)) + ' - HLTB</h4>' + beatProgressRows(entry,loggedMs) + '</section>';
       }
     }
-    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + escHtml(label) + '</span><strong>' + escHtml(value) + '</strong></p>').join('') + beatProgress;
+    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + escHtml(label) + '</span><strong>' + escHtml(value) + '</strong></p>').join('') + beatProgress + pendingMilestones;
     const button = document.getElementById('session-finish-sync');
     button.disabled = !!session.synced;
     finishReview.classList.add('open');
@@ -14223,7 +14248,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(item.type==='counter')controls='<label class="d2-field">'+escHtml(item.unit||'Count')+'<input type="number" min="0" step="1" value="'+item.current+'" data-d2-counter="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"></label>';
       else if(item.type==='checklist')controls=item.checklist.map(step=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-step="'+d2Attr(step.id)+'" data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'" '+(step.done?'checked':'')+'>'+escHtml(step.name)+'</label>').join('');
       else if(item.type==='manual')controls='<label class="milestone-step-toggle"><input type="checkbox" data-d2-manual="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'" '+(item.manualDone?'checked':'')+'>Mark done</label>';
-      return '<article class="d2-objective"><strong>'+escHtml(item.name)+'</strong><p class="backup-hint">'+(item.completedAt?'Completed '+fmtDateShort(item.completedAt):blocked?'Blocked by prerequisites':'In progress')+'</p>'+d2Progress(p.value,p.target,p.text)+controls+'<div class="d2-actions">'+d2Button('Edit','run-milestone','data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"')+d2Button('Remove','run-milestone-remove','data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"')+'</div></article>';
+      return '<article class="d2-objective"><strong>'+escHtml(item.name)+'</strong><p class="backup-hint">'+(item.completedAt?'Completed '+fmtDateShort(item.completedAt):blocked?'Blocked by prerequisites':'In progress')+'</p>'+milestoneTargetDateHtml(item)+d2Progress(p.value,p.target,p.text)+controls+'<div class="d2-actions">'+d2Button('Edit','run-milestone','data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"')+d2Button('Remove','run-milestone-remove','data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"')+'</div></article>';
     }).join('')||'<p class="backup-hint">No milestones for this run and content yet.</p>';
     html+='</div><details class="playthrough-session-history"><summary>Run session history ('+relevantRows.length+')</summary>'+relevantRows.slice().sort((a,b)=>Date.parse(b.start)-Date.parse(a.start)).map(session=>'<div class="d2-history-row"><span>'+escHtml(fmtDateShort(session.start)+' '+fmtTime(session.start))+'<small>'+escHtml(contentBreakdown(session))+'</small></span><strong>'+fmtDurationShort(isDlc?allocatedPlaytime(session).get(playthroughUI.contentId)||0:session.durationMs||0)+'</strong></div>').join('')+'</details>';
     host.innerHTML=html;
@@ -14846,10 +14871,10 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     d2FinishReview(id);const session=sessions.find(row=>row.id===id),run=session?.playthroughId?d2Run(session.gameId,session.playthroughId):null;
     if(!run)return;
     const host=document.getElementById('session-finish-details');
-    host.querySelectorAll('.finish-beat-progress').forEach(section=>section.remove());
+    host.querySelectorAll('.finish-beat-progress,.finish-milestones').forEach(section=>section.remove());
     const context=document.createElement('p');context.className='d2-live-run';context.textContent='Playthrough · '+run.name;host.querySelector('h4')?.after(context);
     const parent=games.find(game=>game.id===session.gameId),ids=[...new Set(sessionSegments(session).map(segment=>segment.dlcId||null))];
-    for(const dlcId of ids){const entry=run.content?.[dlcId||'base'];if(!entry)continue;const section=document.createElement('section');section.className='finish-beat-progress';section.innerHTML='<h4>'+escHtml(contentName(parent.id,dlcId))+' · Playthrough HLTB</h4>'+beatProgressRows(entry,d2RunMs(parent.id,run.id,dlcId));host.append(section);}
+    for(const dlcId of ids){const entry=run.content?.[dlcId||'base'];if(!entry)continue;const section=document.createElement('section');section.className='finish-beat-progress';section.innerHTML='<h4>'+escHtml(contentName(parent.id,dlcId))+' · Playthrough HLTB</h4>'+beatProgressRows(entry,d2RunMs(parent.id,run.id,dlcId));host.append(section);host.insertAdjacentHTML('beforeend',finishMilestonesHtml(dlcId?dlcKey(parent.id,dlcId):parent.id,entry,d2RunRows(parent.id,run.id),'Playthrough'));}
   };
 
   // --- Initial render ---
@@ -14904,9 +14929,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.0.1';
-    let updateRegistration = null, offeredUpdate = null, updateDismissed = false;
+    const APP_VERSION = '2.0.2';
+    let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
+    const updateAvailable = document.getElementById('update-available');
+    updateAvailable.addEventListener('click',()=>{if(offeredUpdate){updateModal().classList.add('open');document.getElementById('update-reload').focus();}});
     function askWorker(worker, message) {
       return new Promise((resolve,reject) => {
         const channel=new MessageChannel();
@@ -14922,11 +14949,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if (!updateRegistration) return;
       const worker=updateRegistration.waiting || updateRegistration.active;
       if (!worker) return;
+      const check=++updateCheck;
       try {
         const info=await askWorker(worker,{type:'PLAYDEX_UPDATE_INFO'});
-        if (!info.pending) return;
+        if(check!==updateCheck)return;
+        if (!info.pending) {offeredUpdate=null;updateAvailable.hidden=true;updateModal().classList.remove('open');return;}
         if (!offeredUpdate || offeredUpdate.cache !== info.cache) updateDismissed=false;
         offeredUpdate={worker,cache:info.cache};
+        updateAvailable.hidden=false;
         if (!updateDismissed) updateModal().classList.add('open');
       } catch(error) { console.warn('Update check:',error.message); }
     }
@@ -14949,7 +14979,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if (document.visibilityState==='visible') {updateDismissed=false;offerUpdate();if(updateRegistration)updateRegistration.update().catch(()=>{});}
     });
     document.getElementById('update-dismiss').addEventListener('click',()=>{
-      updateDismissed=true;updateModal().classList.remove('open');
+      updateDismissed=true;updateModal().classList.remove('open');if(!updateAvailable.hidden)updateAvailable.focus();
     });
     document.getElementById('update-reload').addEventListener('click',async()=>{
       if (!offeredUpdate) return;
