@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.0.4
 -------------------
+- Added a Stats playthrough comparison by game with recorded time, sessions, average session length and milestone completion, clearly distinguishing finished and ongoing runs.
 - Added Stats milestone counts for completed, unfinished, blocked and overdue objectives, plus target-date countdowns and dashboard links for Base games, DLCs and playthroughs.
 - Added monthly gaming consistency with days played, days without playtime and average playtime per active day; the current month excludes future days.
 - Stats shows the Base game and DLC playtime split with percentages and per-game breakdowns, using recorded allocations and excluding HLTB previously played hours.

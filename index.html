@@ -1452,6 +1452,9 @@ opacity: 0.18;
   .stats-insight-row > strong { display:block; font-size:14px; }
   .stats-insight-row p { margin:6px 0; color:var(--text2); font-size:12px; line-height:1.6; }
   .stats-scroll { max-height:360px; overflow:auto; padding-right:4px; }
+  .stats-run-table { min-width:640px; }
+  .stats-run-table .btn-ghost { white-space:normal; overflow-wrap:anywhere; text-align:left; min-height:44px; }
+  .stats-run-table td { vertical-align:top; }
   .stats-objective-link { color:var(--accent); text-decoration:none; font-weight:600; font-size:14px; overflow-wrap:anywhere; }
   .stats-objective-link:hover { text-decoration:underline; }
   .stats-objective-link:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
@@ -5933,6 +5936,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <div class="insight-selects"><div><label for="compare-game-a">First game</label><select id="compare-game-a"></select></div><div><label for="compare-game-b">Second game</label><select id="compare-game-b"></select></div></div>
       <div id="comparison-result" aria-live="polite"></div>
     </div>
+    <div class="card" id="stats-playthrough-card"><div class="card-header">Playthrough comparison</div><label class="d2-field" for="stats-playthrough-game">Game<select id="stats-playthrough-game"></select></label><div id="stats-playthrough-comparison"></div></div>
     <div class="card" id="recap-card">
       <div class="card-header">Your gaming recap</div>
       <div class="insight-selects"><div><label for="recap-mode">Recap</label><select id="recap-mode"><option value="month">Monthly</option><option value="year">Yearly</option></select></div><div><label for="recap-period">Period</label><select id="recap-period"></select></div></div>
@@ -10202,7 +10206,29 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     requestAnimationFrame(()=>document.querySelector(link.dataset.run?'#dashboard-playthroughs':'#dashboard-body .milestone-system')?.scrollIntoView({block:'nearest'}));
   });
 
+  function statsRunComparisons(parent) {
+    return (parent.playthroughs||[]).map(run=>{const stats=d2RunStats(parent,run);return {id:run.id,name:run.name,finishedAt:run.finishedAt,total:stats.total,count:stats.rows.length,average:stats.rows.length?stats.total/stats.rows.length:0,completed:stats.completed,milestones:stats.items.length};});
+  }
+  function renderPlaythroughComparison() {
+    const select=document.getElementById('stats-playthrough-game'),host=document.getElementById('stats-playthrough-comparison');
+    const options=games.filter(game=>game.playthroughs?.length).slice().sort((a,b)=>a.name.localeCompare(b.name)),selected=select.value;
+    const html=options.length?options.map(game=>'<option value="'+milestoneAttr(game.id)+'">'+escHtml(game.name+(game.archived?' / Archived':''))+'</option>').join(''):'<option value="">No playthroughs yet</option>';
+    if(select.innerHTML!==html)select.innerHTML=html;
+    select.disabled=!options.length;select.value=options.some(game=>game.id===selected)?selected:options[0]?.id||'';
+    const parent=options.find(game=>game.id===select.value);
+    if(!parent){host.innerHTML='<p class="backup-hint">Create a playthrough from a game dashboard to compare its runs here.</p>';return;}
+    const rows=statsRunComparisons(parent);
+    host.innerHTML=(rows.length===1?'<p class="backup-hint">One playthrough so far. Create another from this game&#39;s dashboard to compare runs.</p>':'')+'<div class="d2-table-wrap" tabindex="0" role="region" aria-label="Playthrough comparison table"><table class="d2-table stats-run-table"><thead><tr><th scope="col">Playthrough</th><th scope="col">State</th><th scope="col">Recorded time</th><th scope="col">Sessions</th><th scope="col">Avg. session</th><th scope="col">Milestones</th></tr></thead><tbody>'+rows.map(row=>'<tr><th scope="row"><button type="button" class="btn-ghost" data-stats-run-open="'+milestoneAttr(row.id)+'" data-parent="'+milestoneAttr(parent.id)+'">'+escHtml(row.name)+'</button></th><td>'+(row.finishedAt?'Finished '+escHtml(fmtDateShort(row.finishedAt)):'In progress')+'</td><td>'+fmtDurationShort(row.total)+'</td><td>'+row.count+'</td><td>'+fmtDurationShort(row.average)+'</td><td>'+row.completed+' / '+row.milestones+'</td></tr>').join('')+'</tbody></table></div><p class="backup-hint">Base game and DLC time are combined within each run. Unassigned sessions and HLTB previously played hours are excluded; ongoing runs are incomplete.</p>';
+  }
+  document.getElementById('stats-playthrough-game').addEventListener('change',renderPlaythroughComparison);
+  document.getElementById('stats-playthrough-comparison').addEventListener('click',event=>{
+    const button=event.target.closest('[data-stats-run-open]');if(!button)return;
+    playthroughUI.selection.set(button.dataset.parent,button.dataset.statsRunOpen);openDashboard(button.dataset.parent);
+    requestAnimationFrame(()=>document.getElementById('dashboard-playthroughs')?.scrollIntoView({block:'nearest'}));
+  });
+
   function renderStatsTab() {
+    renderPlaythroughComparison();
     renderMilestoneStats();
     renderConsistency();
     renderContentPlaytime();
@@ -13910,7 +13936,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     try{saveGames(games);}catch(error){content.milestones=previous;throw error;}
     backfillUnlockDates('gentle');
     const pin=document.getElementById('live-milestone');if(pin)delete pin.dataset.tick;
-    refreshMilestoneDashboard();renderWeeklyRotation();refreshLiveContent();renderAchievementsTab();renderProfileTab();
+    refreshMilestoneDashboard();renderWeeklyRotation();refreshLiveContent();renderAchievementsTab();renderProfileTab();renderMilestoneStats();
   }
   function openMilestoneTemplates(key,mode){
     milestoneEditorGame=key;milestoneTemplateMode=mode;
