@@ -1452,6 +1452,9 @@ opacity: 0.18;
   .stats-insight-row > strong { display:block; font-size:14px; }
   .stats-insight-row p { margin:6px 0; color:var(--text2); font-size:12px; line-height:1.6; }
   .stats-scroll { max-height:360px; overflow:auto; padding-right:4px; }
+  .stats-objective-link { color:var(--accent); text-decoration:none; font-weight:600; font-size:14px; overflow-wrap:anywhere; }
+  .stats-objective-link:hover { text-decoration:underline; }
+  .stats-objective-link:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
   .stats-details > summary { cursor:pointer; padding:12px 0; color:var(--text2); font-size:13px; }
   .stats-distribution-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) 10ch; gap:8px; align-items:center; padding:5px 0; font-size:.8rem; }
   .stats-distribution-row > span { min-width:0; overflow-wrap:anywhere; }
@@ -5924,6 +5927,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     <div class="card"><div class="card-header">Session lengths</div><div id="stats-session-lengths"></div></div>
     <div class="card" id="content-playtime-card"><div class="card-header">Base game vs DLC</div><p class="backup-hint">All completed recorded playtime. Previously played HLTB hours are excluded.</p><div id="stats-content-playtime"></div></div>
     <div class="card" id="platform-stats-card"><div class="card-header">Playtime by Platform</div><div id="platform-stats"></div></div>
+    <div class="card" id="stats-milestones-card"><div class="card-header">Milestone progress</div><div id="stats-milestone-progress"></div></div>
     <div class="card" id="comparison-card">
       <div class="card-header">Compare games</div>
       <div class="insight-selects"><div><label for="compare-game-a">First game</label><select id="compare-game-a"></select></div><div><label for="compare-game-b">Second game</label><select id="compare-game-b"></select></div></div>
@@ -10175,7 +10179,31 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   document.getElementById('stats-consistency-month').addEventListener('change',renderConsistency);
 
+  function statsMilestoneData() {
+    const rows=[];
+    for(const parent of games){
+      const append=(key,data,scope,runId=null)=>{const items=normalizeGameMilestones(data?.milestones);for(const item of items)rows.push({key,parentId:parent.id,scope,runId,item,blocked:milestoneBlocked(item,items)});};
+      append(parent.id,parent,parent.name+' / Base game'+(parent.archived?' / Archived':''));
+      for(const dlc of parent.dlcs||[])append(dlcKey(parent.id,dlc.id),dlc,parent.name+' / '+dlc.name+(parent.archived||dlc.archived?' / Archived':''));
+      for(const run of parent.playthroughs||[])for(const [id,data]of Object.entries(run.content||{}))append(id==='base'?parent.id:dlcKey(parent.id,id),data,parent.name+' / '+(id==='base'?'Base game':contentName(parent.id,id))+' / '+run.name,run.id);
+    }
+    return rows;
+  }
+  function renderMilestoneStats() {
+    const rows=statsMilestoneData(),pending=rows.filter(row=>!row.item.completedAt),today=todayStr();
+    const due=pending.filter(row=>row.item.targetDate).sort((a,b)=>a.item.targetDate.localeCompare(b.item.targetDate)||a.item.name.localeCompare(b.item.name));
+    const metric=(label,value)=>'<div class="stat-box"><div class="stat-value">'+value+'</div><div class="stat-label">'+label+'</div></div>';
+    document.getElementById('stats-milestone-progress').innerHTML=rows.length?'<div class="stat-grid">'+metric('Completed',rows.length-pending.length)+metric('Unfinished',pending.length)+metric('Blocked',pending.filter(row=>row.blocked.length).length)+metric('Overdue',pending.filter(row=>row.item.targetDate&&row.item.targetDate<today).length)+'</div><p class="backup-hint">Includes Base games, DLCs, archived content and playthroughs. Blocked and overdue objectives are included in Unfinished.</p><details class="stats-details" open><summary>Upcoming and overdue targets ('+due.length+')</summary><div class="stats-scroll">'+(due.length?due.map(row=>'<article class="stats-insight-row"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a><p>'+escHtml(row.scope)+'</p>'+milestoneTargetDateHtml(row.item)+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join(''):'<p class="backup-hint">No unfinished milestones with target dates.</p>')+'</div></details>':'<p class="backup-hint">No personal milestones yet. Add objectives from a game or DLC dashboard.</p>';
+  }
+  document.getElementById('stats-milestone-progress').addEventListener('click',event=>{
+    const link=event.target.closest('[data-stats-objective]');if(!link)return;event.preventDefault();
+    if(link.dataset.run)playthroughUI.selection.set(link.dataset.parent,link.dataset.run);
+    openDashboard(contentEntry(link.dataset.statsObjective)?link.dataset.statsObjective:link.dataset.parent);
+    requestAnimationFrame(()=>document.querySelector(link.dataset.run?'#dashboard-playthroughs':'#dashboard-body .milestone-system')?.scrollIntoView({block:'nearest'}));
+  });
+
   function renderStatsTab() {
+    renderMilestoneStats();
     renderConsistency();
     renderContentPlaytime();
     renderWeeklyTrend();

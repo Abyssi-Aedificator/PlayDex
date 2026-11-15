@@ -97,3 +97,5 @@ Stats includes a 12-calendar-week playtime trend following Week starts on. Zero-
 Base game vs DLC in Stats shows lifetime recorded content allocations with a per-game breakdown. Mixed sessions keep one session count; HLTB previously played hours are excluded.
 
 Gaming consistency lets you choose a month. Days played require completed active playtime; the average divides recorded playtime by active days. The current month counts days only through today, while historical months count every calendar day.
+
+Milestone progress in Stats combines lifetime and playthrough objectives for Base games and DLCs, including archived content. Blocked and overdue counts are subsets of unfinished objectives. Upcoming/overdue links open the matching dashboard and playthrough.
