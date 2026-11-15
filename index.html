@@ -1446,9 +1446,9 @@ opacity: 0.18;
   .stats-distribution-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) 10ch; gap:8px; align-items:center; padding:5px 0; font-size:.8rem; }
   .stats-distribution-row > span { min-width:0; overflow-wrap:anywhere; }
   @supports (grid-template-columns:subgrid) {
-    #stats-monthly-playtime,#stats-session-lengths { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) minmax(10ch,max-content); column-gap:8px; }
+    #stats-monthly-playtime,#stats-session-lengths,#stats-weekly-trend { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) minmax(10ch,max-content); column-gap:8px; }
     .stats-distribution-row { grid-column:1 / -1; grid-template-columns:subgrid; }
-    #stats-monthly-playtime > .backup-hint,#stats-session-lengths > .backup-hint { grid-column:1 / -1; }
+    #stats-monthly-playtime > .backup-hint,#stats-session-lengths > .backup-hint,#stats-weekly-trend > .backup-hint { grid-column:1 / -1; }
   }
   .stats-distribution-row .progress-track { margin:0; height:6px; }
   .stats-distribution-value { font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
@@ -5904,6 +5904,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       </div>
       <div class="bar-chart" id="week-chart"></div>
     </div>
+    <div class="card" id="weekly-trend-card"><div class="card-header">Weekly playtime trend</div><p class="backup-hint">Last 12 calendar weeks, following Week starts on. The current week is incomplete.</p><div id="stats-weekly-trend"></div></div>
     <div class="card">
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
@@ -10118,7 +10119,20 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return statsDistributionRow(bucket.label, bucket.count + ' (' + Math.round(percent) + '%)', percent);
     }).join('') : empty;
   }
+  function weeklyTrendData(now=new Date()) {
+    const current=dateKey(getWeekBounds(now).start);
+    const weeks=Array.from({length:12},(_,i)=>({start:addDays(current,(i-11)*7),ms:0,count:0,current:i===11}));
+    const byWeek=new Map(weeks.map(week=>[week.start,week]));
+    for(const session of sessions){if(session.stop===null)continue;const key=dateKey(getWeekBounds(new Date(session.start)).start),week=byWeek.get(key);if(week){week.ms+=session.durationMs||0;week.count++;}}
+    return weeks;
+  }
+  function renderWeeklyTrend() {
+    const weeks=weeklyTrendData(),max=Math.max(1,...weeks.map(week=>week.ms));
+    document.getElementById('stats-weekly-trend').innerHTML=weeks.some(week=>week.count)?weeks.map(week=>statsDistributionRow(week.start+' - '+addDays(week.start,6)+(week.current?' / So far':''),fmtDuration(week.ms),week.ms/max*100)).join(''):'<p class="backup-hint">No completed sessions in the last 12 weeks.</p>';
+  }
+
   function renderStatsTab() {
+    renderWeeklyTrend();
     renderPlaytimeDistributions();
     renderPlaytimeCalendar();
     renderGameComparison();

@@ -91,3 +91,5 @@ Your data is sent directly from your browser to Dropbox — nothing is stored on
 This project is for personal/portfolio use. No warranty is provided.
 
 Weekly rotation uses a game-first list: Add games supports search and multiple selection, then set optional whole-hour targets and planned days without changing row order. Load last week keeps current weekday hours; More actions holds presets and previous-week reviews. Opening Weekday targets enables optional daily goals; Use daily goal instead turns weekday planning off. Game targets and weekday hours each have their own remaining allocation against the same fixed weekly capacity; these totals are never added together. Cancel, Escape, or dismissing the dialog confirms before discarding edits.
+
+Stats includes a 12-calendar-week playtime trend following Week starts on. Zero-play weeks remain visible, and the current week is marked So far; only completed recorded sessions count.
