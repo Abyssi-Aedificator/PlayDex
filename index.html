@@ -1443,6 +1443,14 @@ opacity: 0.18;
   .session-item:last-child { border-bottom: none; }
 
   .playtime-month-controls { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .stats-content-bar { display:flex; height:8px; border-radius:999px; overflow:hidden; background:var(--surface2); margin:12px 0; }
+  .stats-content-bar > span { background:var(--accent); }
+  .stats-content-bar > span + span { opacity:.45; }
+  .stats-insight-row { padding:12px 0; border-bottom:1px solid var(--border); min-width:0; overflow-wrap:anywhere; }
+  .stats-insight-row > strong { display:block; font-size:14px; }
+  .stats-insight-row p { margin:6px 0; color:var(--text2); font-size:12px; line-height:1.6; }
+  .stats-scroll { max-height:360px; overflow:auto; padding-right:4px; }
+  .stats-details > summary { cursor:pointer; padding:12px 0; color:var(--text2); font-size:13px; }
   .stats-distribution-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) 10ch; gap:8px; align-items:center; padding:5px 0; font-size:.8rem; }
   .stats-distribution-row > span { min-width:0; overflow-wrap:anywhere; }
   @supports (grid-template-columns:subgrid) {
@@ -5911,6 +5919,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     </div>
     <div class="card"><div class="card-header">Monthly playtime</div><div id="stats-monthly-playtime"></div></div>
     <div class="card"><div class="card-header">Session lengths</div><div id="stats-session-lengths"></div></div>
+    <div class="card" id="content-playtime-card"><div class="card-header">Base game vs DLC</div><p class="backup-hint">All completed recorded playtime. Previously played HLTB hours are excluded.</p><div id="stats-content-playtime"></div></div>
     <div class="card" id="platform-stats-card"><div class="card-header">Playtime by Platform</div><div id="platform-stats"></div></div>
     <div class="card" id="comparison-card">
       <div class="card-header">Compare games</div>
@@ -10131,7 +10140,24 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.getElementById('stats-weekly-trend').innerHTML=weeks.some(week=>week.count)?weeks.map(week=>statsDistributionRow(week.start+' - '+addDays(week.start,6)+(week.current?' / So far':''),fmtDuration(week.ms),week.ms/max*100)).join(''):'<p class="backup-hint">No completed sessions in the last 12 weeks.</p>';
   }
 
+  function contentPlaytimeData() {
+    const byGame=new Map();let base=0,dlc=0,count=0;
+    for(const session of sessions){if(session.stop===null)continue;count++;let row=byGame.get(session.gameId);if(!row){row={id:session.gameId,name:games.find(game=>game.id===session.gameId)?.name||session.gameName||'Removed game',base:0,dlc:0};byGame.set(session.gameId,row);}
+      for(const [id,ms]of allocatedPlaytime(session)){if(id===null){row.base+=ms;base+=ms;}else{row.dlc+=ms;dlc+=ms;}}
+    }
+    return {base,dlc,count,games:[...byGame.values()].sort((a,b)=>(b.base+b.dlc)-(a.base+a.dlc))};
+  }
+  function contentPlaytimeBar(base,dlc) {
+    const total=base+dlc,basePercent=total?base/total*100:0,dlcPercent=total?dlc/total*100:0;
+    return '<div class="stats-content-bar" role="img" aria-label="'+milestoneAttr('Base game '+fmtDuration(base)+'; DLC '+fmtDuration(dlc))+'"><span style="width:'+basePercent+'%"></span><span style="width:'+dlcPercent+'%"></span></div><p class="backup-hint">Base game: '+fmtDuration(base)+' ('+Math.round(basePercent)+'%) / DLC: '+fmtDuration(dlc)+' ('+Math.round(dlcPercent)+'%)</p>';
+  }
+  function renderContentPlaytime() {
+    const data=contentPlaytimeData(),host=document.getElementById('stats-content-playtime');
+    host.innerHTML=data.count?contentPlaytimeBar(data.base,data.dlc)+'<details class="stats-details"><summary>By game ('+data.games.length+')</summary><div class="stats-scroll">'+data.games.map(game=>'<div class="stats-insight-row"><strong>'+escHtml(game.name)+'</strong>'+contentPlaytimeBar(game.base,game.dlc)+'</div>').join('')+'</div></details>':'<p class="backup-hint">No completed sessions.</p>';
+  }
+
   function renderStatsTab() {
+    renderContentPlaytime();
     renderWeeklyTrend();
     renderPlaytimeDistributions();
     renderPlaytimeCalendar();
