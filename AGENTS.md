@@ -177,7 +177,7 @@ stays on `dev`. Pushing `dev` when asked is fine.
 
 - Period is user-selectable (`This week` / `7 days` / `Month` / `All time`), persisted in `settings.topPeriod` and validated against `TOP_PERIODS` via `getTopPeriod()`.
 - Bounds come from `getPeriodBounds(period)` / `getPrevPeriodBounds(period)`; `start` is `null` for `all` (no previous period ⇒ trends, deltas and the "Fell out" section are hidden).
-- `week` is **calendar** (Mon–Sun, via `getWeekBounds`); `rolling7` is the trailing 7 days. Note the Stats tab's "This week" is rolling 7 days — the two differ by design.
+- `week` is calendar via `getWeekBounds`, respecting Week starts on; `rolling7` is the trailing 7 days. Stats This Week Review uses the same calendar week and compares against the full previous calendar week. The separate Last 7 Days card remains rolling.
 - `renderTop()` owns the whole panel: the period selector is static markup (`#top-periods`), but the summary (`#top-summary`), list (`#top-list`) and fell-out block (`#top-fellout`) are rebuilt on every render. Shared helpers: `topDeltaHtml`, `championStreak`, `topPeriodBuckets`, `sparkBarsHtml`.
 
 ## Workflow conventions
@@ -202,7 +202,7 @@ stays on `dev`. Pushing `dev` when asked is fine.
 ## Weekly rotation reset
 
 - weeklyRotationWeek and weeklyRotationWeekStartsOn tag the current plan. rollWeeklyRotation clears games, targets, and days on a new calendar week and keeps weeklyRotationLastWeek as a synced snapshot. First-upgrade data adopts the current week without discarding selections.
-- ensureRotationWeek guards rendering, settings saves, midnight, and resume. Rebase when Week starts on changes; never clear a plan because the device clock moved backward.
+- ensureRotationWeek guards rendering, settings saves, midnight, and resume. When Week starts on changes, rebase the plan's original week using the optional synced weeklyRotationWeekAnchor before testing for rollover; preserve same-week plans, reset across a newly elapsed boundary, and never clear a plan because the device clock moved backward.
 - Load last week populates the rotation editor only, skips unavailable content, and retains Save rotation budget checks. Check the editor week before saving so a draft from an expired week cannot silently repopulate a reset rotation.
 
 ## Backup replacement safety

@@ -1443,9 +1443,15 @@ opacity: 0.18;
   .session-item:last-child { border-bottom: none; }
 
   .playtime-month-controls { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-  .stats-distribution-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) auto; gap:8px; align-items:center; padding:5px 0; font-size:.8rem; }
+  .stats-distribution-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) 10ch; gap:8px; align-items:center; padding:5px 0; font-size:.8rem; }
+  .stats-distribution-row > span { min-width:0; overflow-wrap:anywhere; }
+  @supports (grid-template-columns:subgrid) {
+    #stats-monthly-playtime,#stats-session-lengths { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) minmax(10ch,max-content); column-gap:8px; }
+    .stats-distribution-row { grid-column:1 / -1; grid-template-columns:subgrid; }
+    #stats-monthly-playtime > .backup-hint,#stats-session-lengths > .backup-hint { grid-column:1 / -1; }
+  }
   .stats-distribution-row .progress-track { margin:0; height:6px; }
-  .stats-distribution-value { font-variant-numeric:tabular-nums; text-align:right; }
+  .stats-distribution-value { font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
   .playtime-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; margin:12px 0; text-align:center; }
   .playtime-days > span { font-size:.7rem; color:var(--text2); }
   #playtime-days button.btn-ghost { min-width:0; padding:4px 1px !important; min-height:44px; font-size:.75rem; line-height:1.2; }
@@ -5692,7 +5698,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.0.2</span>
+    <span class="version-badge">2.0.3</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -5878,6 +5884,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     </div>
     <div class="card">
       <div class="card-header">This Week Review</div>
+      <p class="backup-hint" id="wr-period"></p>
       <div class="stat-grid">
         <div class="stat-box"><div class="stat-value" id="wr-week-total">0:00:00</div><div class="stat-label">Total Time</div></div>
         <div class="stat-box"><div class="stat-value" id="wr-delta">+0m</div><div class="stat-label">vs Last Week</div></div>
@@ -5890,7 +5897,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     <div class="card">
       <div class="card-header">Last 7 Days</div>
       <div class="stat-grid">
-        <div class="stat-box"><div class="stat-value" id="stat-week-total">0:00:00</div><div class="stat-label">This Week</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-week-total">0:00:00</div><div class="stat-label">Total Time</div></div>
         <div class="stat-box"><div class="stat-value" id="stat-most-played">-</div><div class="stat-label">Most Played</div></div>
         <div class="stat-box"><div class="stat-value" id="stat-avg-session">0:00</div><div class="stat-label">Avg Session</div></div>
         <div class="stat-box"><div class="stat-value" id="stat-session-count">0</div><div class="stat-label">Total Sessions</div></div>
@@ -9436,6 +9443,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function validateRotationHistory(state) {
     if(!state)return;
     if(state.weeklyRotationWeek!==undefined&&!milestoneValidDate(state.weeklyRotationWeek))throw Error('Invalid rotation week');
+    if(state.weeklyRotationWeekAnchor!==undefined&&!milestoneValidDate(state.weeklyRotationWeekAnchor))throw Error('Invalid rotation week anchor');
     if(state.weeklyRotationWeekStartsOn!==undefined&&!['sunday','monday'].includes(state.weeklyRotationWeekStartsOn))throw Error('Invalid rotation week start');
     const saved=state.weeklyRotationLastWeek;if(saved===undefined)return;
     const record=value=>value&&typeof value==='object'&&!Array.isArray(value);
@@ -9449,14 +9457,21 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return day.getFullYear()+'-'+String(day.getMonth()+1).padStart(2,'0')+'-'+String(day.getDate()).padStart(2,'0');
   }
   function rollWeeklyRotation(state,now=new Date()) {
-    const first=state.weekStartsOn==='sunday'?'sunday':'monday',week=rotationWeekKey(now,first),previous=state.weeklyRotationWeek;
+    const first=state.weekStartsOn==='sunday'?'sunday':'monday',week=rotationWeekKey(now,first);
+    let previous=state.weeklyRotationWeek;
     // Adopt existing selections on first upgrade; older data has no reliable week stamp.
     if(!milestoneValidDate(previous)){
-      state.weeklyRotationWeek=week;state.weeklyRotationWeekStartsOn=first;return true;
+      state.weeklyRotationWeek=week;state.weeklyRotationWeekAnchor=week;state.weeklyRotationWeekStartsOn=first;return true;
     }
     if(state.weeklyRotationWeekStartsOn!==first){
-      if(state.weeklyRotationLastWeek?.weekStart===addDays(previous,-7))state.weeklyRotationLastWeek={...state.weeklyRotationLastWeek,weekStart:addDays(week,-7),weekStartsOn:first};
-      state.weeklyRotationWeek=week;state.weeklyRotationWeekStartsOn=first;return true;
+      // Rebase the plan's original week, not today's week: a newly crossed
+      // boundary must still reset it when the week-start preference changes.
+      if(state.weeklyRotationLastWeek?.weekStart===addDays(previous,-7))state.weeklyRotationLastWeek={...state.weeklyRotationLastWeek,weekStart:rotationWeekKey(new Date(state.weeklyRotationLastWeek.weekStart+'T12:00:00'),first),weekStartsOn:first};
+      const anchor=milestoneValidDate(state.weeklyRotationWeekAnchor)?state.weeklyRotationWeekAnchor:previous;
+      state.weeklyRotationWeekAnchor=anchor;
+      previous=rotationWeekKey(new Date(anchor+'T12:00:00'),first);
+      state.weeklyRotationWeek=previous;state.weeklyRotationWeekStartsOn=first;
+      if(previous>=week)return true;
     }
     // A backward device-clock change must not clear the current plan.
     if(previous>=week)return false;
@@ -9468,7 +9483,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
     state.weeklyRotationLastWeek={weekStart:last,weekStartsOn:first,ids,targets,days};
     state.weeklyRotation=[];state.weeklyRotationTargets={};state.weeklyRotationDays={};
-    state.weeklyRotationWeek=week;state.weeklyRotationWeekStartsOn=first;
+    state.weeklyRotationWeek=week;state.weeklyRotationWeekAnchor=week;state.weeklyRotationWeekStartsOn=first;
     return true;
   }
   function ensureRotationWeek() {
@@ -10151,9 +10166,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '</div>';
     }).join('');
 
-    // This Week Review card
+    // Calendar review respects Week starts on; Last 7 Days stays rolling.
+    const reviewStart=dateKey(getWeekBounds().start),previousStart=addDays(reviewStart,-7);
+    const reviewDays=Array.from({length:7},(_,i)=>{const date=addDays(reviewStart,i);return {date,ms:totalMsForDate(date)};});
+    const reviewDates=new Set(reviewDays.map(day=>day.date));
+    const reviewSessions=completed.filter(session=>reviewDates.has(dateKey(session.start)));
+    const reviewTotal=reviewDays.reduce((sum,day)=>sum+day.ms,0),reviewByGame={};
+    reviewSessions.forEach(session=>{reviewByGame[session.gameName]=(reviewByGame[session.gameName]||0)+(session.durationMs||0);});
+    const reviewTop=Object.entries(reviewByGame).sort((a,b)=>b[1]-a[1])[0];
+    document.getElementById('wr-period').textContent=reviewStart+' - '+addDays(reviewStart,6)+' / Compared with the full previous week: '+previousStart+' - '+addDays(reviewStart,-1)+'.';
     let bestDayMs = 0, bestDayStr = null;
-    days.forEach(d => { if (d.ms > bestDayMs) { bestDayMs = d.ms; bestDayStr = d.date; } });
+    reviewDays.forEach(d => { if (d.ms > bestDayMs) { bestDayMs = d.ms; bestDayStr = d.date; } });
     // Current streak: real played days, bridged by one earned freeze when today is missed
     const todayPlayed = totalMsForDate(todayStr()) > 0;
     const yesterdayPlayed = totalMsForDate(addDays(todayStr(), -1)) > 0;
@@ -10166,15 +10189,15 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       frozenToday = true;
     }
     let prevWeekTotal = 0;
-    for (let i = 7; i <= 13; i++) prevWeekTotal += totalMsForDate(addDays(todayStr(), -i));
-    const delta = weekTotal - prevWeekTotal;
+    for (let i = 0; i < 7; i++) prevWeekTotal += totalMsForDate(addDays(previousStart,i));
+    const delta = reviewTotal - prevWeekTotal;
     const deltaEl = document.getElementById('wr-delta');
-    const dAbs = Math.abs(delta);
-    deltaEl.textContent = (delta > 0 ? '+' : delta < 0 ? '-' : '') + (Math.floor(dAbs / 3600000) > 0 ? Math.floor(dAbs / 3600000) + 'h ' : '') + Math.round((dAbs % 3600000) / 60000) + 'm';
+    const deltaMinutes=Math.round(Math.abs(delta)/60000);
+    deltaEl.textContent = (delta > 0 ? '+' : delta < 0 ? '-' : '') + (deltaMinutes>=60?Math.floor(deltaMinutes/60)+'h ':'') + deltaMinutes%60+'m';
     deltaEl.className = 'stat-value' + (delta > 0 ? ' up' : delta < 0 ? ' down' : '');
-    document.getElementById('wr-week-total').textContent = fmtDuration(weekTotal);
-    document.getElementById('wr-sessions').textContent = String(weekCount);
-    document.getElementById('wr-top-game').textContent = weekTop ? weekTop[0] : '-';
+    document.getElementById('wr-week-total').textContent = fmtDuration(reviewTotal);
+    document.getElementById('wr-sessions').textContent = String(reviewSessions.length);
+    document.getElementById('wr-top-game').textContent = reviewTop ? reviewTop[0] : '-';
     document.getElementById('wr-best-day').textContent = bestDayStr ? new Date(bestDayStr + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short' }) + ' \u00b7 ' + fmtDurationShort(bestDayMs) : '-';
     document.getElementById('wr-streak').textContent = curStreak + ' day' + (curStreak !== 1 ? 's' : '') +
       (freezeBank > 0 ? ' \u2744 ' + freezeBank : '') +
@@ -12583,7 +12606,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       try {
         const data = validateBackupData(JSON.parse(reader.result));
         // Restore progression/planning data without replacing this device's appearance preferences.
-        const portable=['milestoneTemplates','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
+        const portable=['milestoneTemplates','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
         importData = { games:data.games, sessions:data.sessions, settings:data.settings?Object.fromEntries(portable.filter(key=>data.settings[key]!==undefined).map(key=>[key,data.settings[key]])):undefined };
         document.getElementById('import-modal').classList.add('open');
       } catch (error) {
@@ -12608,7 +12631,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const localSettings=structuredClone(settings);
       // Restore portable progression and planning data; retain other local preferences.
       if(importData.settings?.milestoneTemplates!==undefined)localSettings.milestoneTemplates=structuredClone(importData.settings.milestoneTemplates);
-      for(const key of ['dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
+      for(const key of ['dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
+      if(importData.settings?.weeklyRotationWeek!==undefined&&importData.settings.weeklyRotationWeekAnchor===undefined)delete localSettings.weeklyRotationWeekAnchor;
       try{persistLibraryReplacement(importData.games,importData.sessions,localSettings);}
       catch(error){toast('Backup could not be imported: '+error.message);return;}
       backfillUnlockDates('gentle');
@@ -14929,7 +14953,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.0.2';
+    const APP_VERSION = '2.0.3';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
