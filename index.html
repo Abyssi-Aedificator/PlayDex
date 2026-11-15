@@ -1443,9 +1443,15 @@ opacity: 0.18;
   .session-item:last-child { border-bottom: none; }
 
   .playtime-month-controls { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-  .stats-distribution-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) auto; gap:8px; align-items:center; padding:5px 0; font-size:.8rem; }
+  .stats-distribution-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) 10ch; gap:8px; align-items:center; padding:5px 0; font-size:.8rem; }
+  .stats-distribution-row > span { min-width:0; overflow-wrap:anywhere; }
+  @supports (grid-template-columns:subgrid) {
+    #stats-monthly-playtime,#stats-session-lengths { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) minmax(10ch,max-content); column-gap:8px; }
+    .stats-distribution-row { grid-column:1 / -1; grid-template-columns:subgrid; }
+    #stats-monthly-playtime > .backup-hint,#stats-session-lengths > .backup-hint { grid-column:1 / -1; }
+  }
   .stats-distribution-row .progress-track { margin:0; height:6px; }
-  .stats-distribution-value { font-variant-numeric:tabular-nums; text-align:right; }
+  .stats-distribution-value { font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
   .playtime-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; margin:12px 0; text-align:center; }
   .playtime-days > span { font-size:.7rem; color:var(--text2); }
   #playtime-days button.btn-ghost { min-width:0; padding:4px 1px !important; min-height:44px; font-size:.75rem; line-height:1.2; }
