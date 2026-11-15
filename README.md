@@ -95,3 +95,5 @@ Weekly rotation uses a game-first list: Add games supports search and multiple s
 Stats includes a 12-calendar-week playtime trend following Week starts on. Zero-play weeks remain visible, and the current week is marked So far; only completed recorded sessions count.
 
 Base game vs DLC in Stats shows lifetime recorded content allocations with a per-game breakdown. Mixed sessions keep one session count; HLTB previously played hours are excluded.
+
+Gaming consistency lets you choose a month. Days played require completed active playtime; the average divides recorded playtime by active days. The current month counts days only through today, while historical months count every calendar day.

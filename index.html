@@ -1443,6 +1443,8 @@ opacity: 0.18;
   .session-item:last-child { border-bottom: none; }
 
   .playtime-month-controls { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .stats-month-label { display:flex; flex-direction:column; gap:8px; font-size:13px; color:var(--text2); margin:12px 0; }
+  input#stats-consistency-month { box-sizing:border-box; width:100%; min-height:44px; padding:11px 14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); color:var(--text); font:inherit; color-scheme:inherit; }
   .stats-content-bar { display:flex; height:8px; border-radius:999px; overflow:hidden; background:var(--surface2); margin:12px 0; }
   .stats-content-bar > span { background:var(--accent); }
   .stats-content-bar > span + span { opacity:.45; }
@@ -5912,6 +5914,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       </div>
       <div class="bar-chart" id="week-chart"></div>
     </div>
+    <div class="card" id="consistency-card"><div class="card-header">Gaming consistency</div><label class="stats-month-label" for="stats-consistency-month">Month<input type="month" id="stats-consistency-month"></label><div id="stats-consistency" aria-live="polite"></div></div>
     <div class="card" id="weekly-trend-card"><div class="card-header">Weekly playtime trend</div><p class="backup-hint">Last 12 calendar weeks, following Week starts on. The current week is incomplete.</p><div id="stats-weekly-trend"></div></div>
     <div class="card">
       <div class="card-header">Last 30 Days</div>
@@ -10156,7 +10159,24 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     host.innerHTML=data.count?contentPlaytimeBar(data.base,data.dlc)+'<details class="stats-details"><summary>By game ('+data.games.length+')</summary><div class="stats-scroll">'+data.games.map(game=>'<div class="stats-insight-row"><strong>'+escHtml(game.name)+'</strong>'+contentPlaytimeBar(game.base,game.dlc)+'</div>').join('')+'</div></details>':'<p class="backup-hint">No completed sessions.</p>';
   }
 
+  function consistencyData(month,now=new Date()) {
+    if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))return null;
+    const [year,m]=month.split('-').map(Number),current=dateKey(now).slice(0,7),elapsed=month===current?now.getDate():month<current?new Date(year,m,0).getDate():0;
+    const days=new Set();let total=0,count=0;
+    for(const session of sessions){if(session.stop===null)continue;const day=dateKey(session.start);if(day.slice(0,7)!==month||day>dateKey(now))continue;count++;total+=session.durationMs||0;if((session.durationMs||0)>0)days.add(day);}
+    return {active:days.size,inactive:Math.max(0,elapsed-days.size),elapsed,total,count,average:days.size?total/days.size:0};
+  }
+  function renderConsistency() {
+    const input=document.getElementById('stats-consistency-month'),month=input.value||todayStr().slice(0,7);input.max=todayStr().slice(0,7);if(!input.value)input.value=month;
+    const data=consistencyData(month),host=document.getElementById('stats-consistency');
+    if(!data||month>todayStr().slice(0,7)){host.innerHTML='<p class="backup-hint">Choose the current month or an earlier month.</p>';return;}
+    const metric=(label,value)=>'<div class="stat-box"><div class="stat-value">'+escHtml(String(value))+'</div><div class="stat-label">'+label+'</div></div>';
+    host.innerHTML='<div class="stat-grid">'+metric('Days played',data.active)+metric('Days without playtime',data.inactive)+metric('Average per active day',fmtDurationShort(data.average))+metric('Playtime',fmtDurationShort(data.total))+'</div><p class="backup-hint">'+(month===todayStr().slice(0,7)?'So far this month; future days are excluded.':'Full calendar month.')+' A played day has completed active playtime, grouped by the session&#39;s local start date.</p>'+(data.count?'':'<p class="backup-hint">No completed sessions this month.</p>');
+  }
+  document.getElementById('stats-consistency-month').addEventListener('change',renderConsistency);
+
   function renderStatsTab() {
+    renderConsistency();
     renderContentPlaytime();
     renderWeeklyTrend();
     renderPlaytimeDistributions();
