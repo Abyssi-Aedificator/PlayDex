@@ -202,7 +202,7 @@ stays on `dev`. Pushing `dev` when asked is fine.
 ## Weekly rotation reset
 
 - weeklyRotationWeek and weeklyRotationWeekStartsOn tag the current plan. rollWeeklyRotation clears games, targets, and days on a new calendar week and keeps weeklyRotationLastWeek as a synced snapshot. First-upgrade data adopts the current week without discarding selections.
-- ensureRotationWeek guards rendering, settings saves, midnight, and resume. Rebase when Week starts on changes; never clear a plan because the device clock moved backward.
+- ensureRotationWeek guards rendering, settings saves, midnight, and resume. When Week starts on changes, rebase the plan's original week using the optional synced weeklyRotationWeekAnchor before testing for rollover; preserve same-week plans, reset across a newly elapsed boundary, and never clear a plan because the device clock moved backward.
 - Load last week populates the rotation editor only, skips unavailable content, and retains Save rotation budget checks. Check the editor week before saving so a draft from an expired week cannot silently repopulate a reset rotation.
 
 ## Backup replacement safety

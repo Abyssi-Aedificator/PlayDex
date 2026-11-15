@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.0.3
 -------------------
+- Switching Week starts on now resets the rotation when the newly selected week's boundary has already passed, preserving the previous plan for Load last week instead of carrying it into the new week.
 - Stats This Week Review now follows Week starts on for totals, sessions, top game, best day and the previous-week comparison, with visible date ranges; Last 7 Days remains rolling and uses a clearer Total Time label.
 
 Version 2.0.2

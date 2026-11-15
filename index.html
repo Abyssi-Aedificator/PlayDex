@@ -9437,6 +9437,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function validateRotationHistory(state) {
     if(!state)return;
     if(state.weeklyRotationWeek!==undefined&&!milestoneValidDate(state.weeklyRotationWeek))throw Error('Invalid rotation week');
+    if(state.weeklyRotationWeekAnchor!==undefined&&!milestoneValidDate(state.weeklyRotationWeekAnchor))throw Error('Invalid rotation week anchor');
     if(state.weeklyRotationWeekStartsOn!==undefined&&!['sunday','monday'].includes(state.weeklyRotationWeekStartsOn))throw Error('Invalid rotation week start');
     const saved=state.weeklyRotationLastWeek;if(saved===undefined)return;
     const record=value=>value&&typeof value==='object'&&!Array.isArray(value);
@@ -9450,14 +9451,21 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return day.getFullYear()+'-'+String(day.getMonth()+1).padStart(2,'0')+'-'+String(day.getDate()).padStart(2,'0');
   }
   function rollWeeklyRotation(state,now=new Date()) {
-    const first=state.weekStartsOn==='sunday'?'sunday':'monday',week=rotationWeekKey(now,first),previous=state.weeklyRotationWeek;
+    const first=state.weekStartsOn==='sunday'?'sunday':'monday',week=rotationWeekKey(now,first);
+    let previous=state.weeklyRotationWeek;
     // Adopt existing selections on first upgrade; older data has no reliable week stamp.
     if(!milestoneValidDate(previous)){
-      state.weeklyRotationWeek=week;state.weeklyRotationWeekStartsOn=first;return true;
+      state.weeklyRotationWeek=week;state.weeklyRotationWeekAnchor=week;state.weeklyRotationWeekStartsOn=first;return true;
     }
     if(state.weeklyRotationWeekStartsOn!==first){
-      if(state.weeklyRotationLastWeek?.weekStart===addDays(previous,-7))state.weeklyRotationLastWeek={...state.weeklyRotationLastWeek,weekStart:addDays(week,-7),weekStartsOn:first};
-      state.weeklyRotationWeek=week;state.weeklyRotationWeekStartsOn=first;return true;
+      // Rebase the plan's original week, not today's week: a newly crossed
+      // boundary must still reset it when the week-start preference changes.
+      if(state.weeklyRotationLastWeek?.weekStart===addDays(previous,-7))state.weeklyRotationLastWeek={...state.weeklyRotationLastWeek,weekStart:rotationWeekKey(new Date(state.weeklyRotationLastWeek.weekStart+'T12:00:00'),first),weekStartsOn:first};
+      const anchor=milestoneValidDate(state.weeklyRotationWeekAnchor)?state.weeklyRotationWeekAnchor:previous;
+      state.weeklyRotationWeekAnchor=anchor;
+      previous=rotationWeekKey(new Date(anchor+'T12:00:00'),first);
+      state.weeklyRotationWeek=previous;state.weeklyRotationWeekStartsOn=first;
+      if(previous>=week)return true;
     }
     // A backward device-clock change must not clear the current plan.
     if(previous>=week)return false;
@@ -9469,7 +9477,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
     state.weeklyRotationLastWeek={weekStart:last,weekStartsOn:first,ids,targets,days};
     state.weeklyRotation=[];state.weeklyRotationTargets={};state.weeklyRotationDays={};
-    state.weeklyRotationWeek=week;state.weeklyRotationWeekStartsOn=first;
+    state.weeklyRotationWeek=week;state.weeklyRotationWeekAnchor=week;state.weeklyRotationWeekStartsOn=first;
     return true;
   }
   function ensureRotationWeek() {
@@ -12592,7 +12600,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       try {
         const data = validateBackupData(JSON.parse(reader.result));
         // Restore progression/planning data without replacing this device's appearance preferences.
-        const portable=['milestoneTemplates','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
+        const portable=['milestoneTemplates','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
         importData = { games:data.games, sessions:data.sessions, settings:data.settings?Object.fromEntries(portable.filter(key=>data.settings[key]!==undefined).map(key=>[key,data.settings[key]])):undefined };
         document.getElementById('import-modal').classList.add('open');
       } catch (error) {
@@ -12617,7 +12625,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const localSettings=structuredClone(settings);
       // Restore portable progression and planning data; retain other local preferences.
       if(importData.settings?.milestoneTemplates!==undefined)localSettings.milestoneTemplates=structuredClone(importData.settings.milestoneTemplates);
-      for(const key of ['dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
+      for(const key of ['dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
+      if(importData.settings?.weeklyRotationWeek!==undefined&&importData.settings.weeklyRotationWeekAnchor===undefined)delete localSettings.weeklyRotationWeekAnchor;
       try{persistLibraryReplacement(importData.games,importData.sessions,localSettings);}
       catch(error){toast('Backup could not be imported: '+error.message);return;}
       backfillUnlockDates('gentle');
