@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 2.0.4
+-------------------
+- After a weekly rotation resets, a popup offers Plan week or Later, waiting until startup and any other dialogs are finished.
+
 Version 2.0.3
 -------------------
 - Aligned Monthly playtime and Session lengths bars using shared columns so different duration and count lengths do not shift individual rows.

@@ -5698,7 +5698,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.0.3</span>
+    <span class="version-badge">2.0.4</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -6873,6 +6873,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
+<div class="modal-overlay" id="rotation-reset-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-reset-title" aria-describedby="rotation-reset-description">
+    <h3 id="rotation-reset-title">Plan your new week</h3>
+    <p class="backup-hint" id="rotation-reset-description">Your weekly rotation has reset. Choose games and targets for the new week. You can reuse the previous plan with Load last week.</p>
+    <div class="modal-actions"><button type="button" class="btn-ghost" id="rotation-reset-later">Later</button><button type="button" class="btn btn-start" id="rotation-reset-plan">Plan week</button></div>
+  </div>
+</div>
+
 <!-- Update available modal -->
 <div class="modal-overlay" id="update-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="update-title">
@@ -7101,10 +7109,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function saveSettings(settings) {
     checkStorageFresh();
-    rollWeeklyRotation(settings);
+    const rotationChange={};
+    rollWeeklyRotation(settings,new Date(),rotationChange);
     const previous = JSON.stringify(syncSettings(loadSettings()));
     writeLocalData(KEYS.settings, settings);
     if (previous !== JSON.stringify(syncSettings(settings))) scheduleAutoUpload();
+    if(rotationChange.reset)queueRotationResetPrompt(settings.weeklyRotationWeek);
   }
 
   function uid() {
@@ -7115,6 +7125,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   let games = loadGames();
   let sessions = loadSessions();
   let settings = loadSettings();
+  var pendingRotationResetWeek=null,shownRotationResetWeek=null,rotationResetObserver=null,rotationResetReturnFocus=null;
   let activeSession = sessions.find(s => s.stop === null) || null;
   let lastHadActiveSession = !!activeSession;
   let cardAnimating = false;
@@ -9456,7 +9467,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     day.setDate(day.getDate()-(day.getDay()-(first==='sunday'?0:1)+7)%7);
     return day.getFullYear()+'-'+String(day.getMonth()+1).padStart(2,'0')+'-'+String(day.getDate()).padStart(2,'0');
   }
-  function rollWeeklyRotation(state,now=new Date()) {
+  function rollWeeklyRotation(state,now=new Date(),change=null) {
     const first=state.weekStartsOn==='sunday'?'sunday':'monday',week=rotationWeekKey(now,first);
     let previous=state.weeklyRotationWeek;
     // Adopt existing selections on first upgrade; older data has no reliable week stamp.
@@ -9484,14 +9495,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     state.weeklyRotationLastWeek={weekStart:last,weekStartsOn:first,ids,targets,days};
     state.weeklyRotation=[];state.weeklyRotationTargets={};state.weeklyRotationDays={};
     state.weeklyRotationWeek=week;state.weeklyRotationWeekAnchor=week;state.weeklyRotationWeekStartsOn=first;
+    if(change)change.reset=true;
     return true;
   }
   function ensureRotationWeek() {
     const first=settings.weekStartsOn==='sunday'?'sunday':'monday';
     if(settings.weeklyRotationWeekStartsOn===first && milestoneValidDate(settings.weeklyRotationWeek) && settings.weeklyRotationWeek>=rotationWeekKey(new Date(),first))return false;
-    const next=structuredClone(settings);
-    if(!rollWeeklyRotation(next))return false;
-    saveSettings(next);settings=next;return true;
+    const next=structuredClone(settings),rotationChange={};
+    if(!rollWeeklyRotation(next,new Date(),rotationChange))return false;
+    saveSettings(next);settings=next;
+    if(rotationChange.reset)queueRotationResetPrompt(settings.weeklyRotationWeek);
+    return true;
   }
   function lastWeekRotation() {
     const snapshot=settings.weeklyRotationLastWeek;
@@ -12179,7 +12193,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   // Close modals on overlay click (except the target-reached alert, which needs explicit confirmation)
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    if (['target-reached-modal','idle-reminder-modal','weekly-planner-modal','feature-editor'].includes(overlay.id)) return;
+    if (['target-reached-modal','idle-reminder-modal','weekly-planner-modal','feature-editor','rotation-reset-modal'].includes(overlay.id)) return;
     overlay.addEventListener('click', e => {
       if (e.target === overlay) overlay.classList.remove('open');
     });
@@ -14139,6 +14153,33 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   document.getElementById('btn-review-unsynced').addEventListener('click', openUnsyncedReview);
 
+  function queueRotationResetPrompt(week) {
+    if(week===shownRotationResetWeek)return;
+    pendingRotationResetWeek=week;
+    if(!rotationResetObserver){rotationResetObserver=new MutationObserver(showRotationResetPrompt);rotationResetObserver.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','open']});}
+    showRotationResetPrompt();
+  }
+  function showRotationResetPrompt() {
+    if(!pendingRotationResetWeek||document.visibilityState==='hidden'||document.getElementById('boot-splash')||document.querySelector('.modal-overlay.open,dialog[open]'))return;
+    const modal=document.getElementById('rotation-reset-modal');if(!modal)return;
+    shownRotationResetWeek=pendingRotationResetWeek;pendingRotationResetWeek=null;
+    rotationResetObserver?.disconnect();rotationResetObserver=null;
+    rotationResetReturnFocus=document.activeElement;
+    modal.classList.add('open');document.getElementById('rotation-reset-plan').focus();
+  }
+  function closeRotationResetPrompt(plan=false) {
+    document.getElementById('rotation-reset-modal').classList.remove('open');
+    if(plan)openWeeklyPlanner();else if(rotationResetReturnFocus?.isConnected)rotationResetReturnFocus.focus();
+  }
+  document.getElementById('rotation-reset-plan').onclick=()=>closeRotationResetPrompt(true);
+  document.getElementById('rotation-reset-later').onclick=()=>closeRotationResetPrompt();
+  document.getElementById('rotation-reset-modal').addEventListener('click',event=>{if(event.target===event.currentTarget)closeRotationResetPrompt();});
+  document.getElementById('rotation-reset-modal').addEventListener('keydown',event=>{
+    if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();closeRotationResetPrompt();}
+    if(event.key==='Tab'){const first=document.getElementById('rotation-reset-later'),last=document.getElementById('rotation-reset-plan');if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
+  });
+  document.addEventListener('visibilitychange',showRotationResetPrompt);
+
   function queueStartupSyncReview() {
     const observer = new MutationObserver(showWhenReady);
     function showWhenReady() {
@@ -14953,7 +14994,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.0.3';
+    const APP_VERSION = '2.0.4';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
