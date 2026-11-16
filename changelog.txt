@@ -4,7 +4,7 @@ PlayDex - Changelog
 Version 2.0.7
 -------------------
 - Rotation milestone estimates fall back to remaining Main Story HLTB time, or Main + Extra when Main Story is unavailable, if Hours remaining is empty; the source is labelled and completion remains manual.
-- The weekly planner rounds Remaining for games up to whole hours, matching Today while preserving exact budget validation, meter percentages and over-budget amounts.
+- The weekly planner shows Remaining for games as complete whole hours (8h 53m becomes 8h), preserving exact budget validation, meter percentages and over-budget amounts.
 
 Version 2.0.6
 -------------------
