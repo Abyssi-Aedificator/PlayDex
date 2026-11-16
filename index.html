@@ -9644,15 +9644,19 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return hours?hours+'h'+(minutes%60?' '+minutes%60+'m':''):minutes+'m';
   }
   function rotationPlayedTime(ms) { return fmtDurationMinutes(ms); }
-  function rotationHltbRemaining(key) {
-    const entry=contentEntry(key);if(!entry||entry.beatNotNeeded||entry.beatUnavailable)return '';
+  function rotationHltbEstimates(key) {
+    const entry=contentEntry(key);if(!entry||entry.beatNotNeeded||entry.beatUnavailable)return [];
     const estimates=[['Main Story',entry.mainStoryHours],['Main + Extra',entry.mainExtraHours]].filter(([,hours])=>Number.isFinite(hours)&&hours>0);
-    if(!estimates.length)return '';
+    if(!estimates.length)return [];
     const parentId=entry.parentId||entry.id,now=Date.now();
     let played=(entry.beatAlreadyPlayedHours||0)*3600000;
     for(const session of sessions)if(session.stop!==null&&session.gameId===parentId)played+=contentMs(session,key,now);
     if(activeSession&&activeSession.gameId===parentId)played+=contentMs(activeSession,key,now);
-    return 'HLTB remaining: '+estimates.map(([label,hours])=>label+' '+fmtDurationMinutes(Math.ceil(Math.max(0,hours*3600000-played)/60000)*60000)).join(' / ');
+    return estimates.map(([label,hours])=>({label,hoursRemaining:Math.max(0,hours*3600000-played)/3600000}));
+  }
+  function rotationHltbRemaining(key) {
+    const estimates=rotationHltbEstimates(key);
+    return estimates.length?'HLTB remaining: '+estimates.map(estimate=>estimate.label+' '+fmtDurationMinutes(Math.ceil(estimate.hoursRemaining*60)*60000)).join(' / '):'';
   }
   function rotationHltbHtml(key) {
     const text=rotationHltbRemaining(key);return text?'<small class="rotation-hltb" data-rotation-hltb>'+escHtml(text)+'</small>':'';
@@ -9663,9 +9667,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const items=normalizeGameMilestones(contentData(key)?.milestones).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
     return items.map(item=>{
       const progress=item.type==='playtime'?milestoneSummary(item,key,live):null;
-      const remaining=progress?Math.max(0,(progress.target-progress.value)/3600000):item.hoursRemaining;
+      const fallback=!progress&&!Number.isFinite(item.hoursRemaining)?rotationHltbEstimates(key)[0]:null;
+      const remaining=progress?Math.max(0,(progress.target-progress.value)/3600000):Number.isFinite(item.hoursRemaining)?item.hoursRemaining:fallback?.hoursRemaining;
       let text;
-      if(remaining===0)text='Playtime target reached; awaiting completion or prerequisites.';
+      if(remaining===0)text=fallback?'The HLTB estimate has been reached; milestone completion stays manual.':'Playtime target reached; awaiting completion or prerequisites.';
       else if(!Number.isFinite(remaining))text='Set Hours remaining to estimate days needed.';
       else if(!Number.isInteger(targetMinutes/60)||targetMinutes<60||targetMinutes>10080)text='Set a whole-hour weekly target to estimate days needed.';
       else{
@@ -9677,6 +9682,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
           if(milestoneBlocked(item,items).length)text+=' Prerequisites must also be completed.';
         }
       }
+      if(fallback)text+=' Based on '+fallback.label+' HLTB.';
       return {name:item.name,text,targetDate:item.targetDate};
     });
   }
