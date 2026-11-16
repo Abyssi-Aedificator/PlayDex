@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.0.5
 -------------------
+- Today milestone names now use the normal text colour instead of the theme accent, with dark text in light mode and readable light text in dark mode.
 - Removed the extra game/context line from Today milestone targets, keeping the objective link and date countdown.
 - Simplified Today milestone labels by omitting Base game while retaining game, DLC and playthrough names.
 - Added a Today milestone-targets card with days-left and overdue countdowns, dashboard links, and a synced Settings toggle; completed, archived and finished-run objectives are excluded.
