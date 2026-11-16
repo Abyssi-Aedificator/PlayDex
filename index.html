@@ -9647,6 +9647,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function rotationMilestoneEstimates(key,targetMinutes,live=false) {
+    if(!contentEntry(key)||contentEntry(key).archived)return [];
     const items=normalizeGameMilestones(contentData(key)?.milestones).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
     return items.map(item=>{
       const progress=item.type==='playtime'?milestoneSummary(item,key,live):null;
@@ -10245,7 +10246,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function statsMilestoneData() {
     const rows=[];
     for(const parent of games){
-      const append=(key,data,scope,runId=null)=>{const items=normalizeGameMilestones(data?.milestones);for(const item of items)rows.push({key,parentId:parent.id,scope,runId,item,blocked:milestoneBlocked(item,items)});};
+      if(parent.archived)continue;
+      const append=(key,data,scope,runId=null)=>{const entry=contentEntry(key);if(!entry||entry.archived)return;const items=normalizeGameMilestones(data?.milestones);for(const item of items)rows.push({key,parentId:parent.id,scope,runId,item,blocked:milestoneBlocked(item,items)});};
       append(parent.id,parent,parent.name+' / Base game'+(parent.archived?' / Archived':''));
       for(const dlc of parent.dlcs||[])append(dlcKey(parent.id,dlc.id),dlc,parent.name+' / '+dlc.name+(parent.archived||dlc.archived?' / Archived':''));
       for(const run of parent.playthroughs||[])for(const [id,data]of Object.entries(run.content||{}))append(id==='base'?parent.id:dlcKey(parent.id,id),data,parent.name+' / '+(id==='base'?'Base game':contentName(parent.id,id))+' / '+run.name,run.id);
@@ -10256,7 +10258,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const rows=statsMilestoneData(),pending=rows.filter(row=>!row.item.completedAt),today=todayStr();
     const due=pending.filter(row=>row.item.targetDate).sort((a,b)=>a.item.targetDate.localeCompare(b.item.targetDate)||a.item.name.localeCompare(b.item.name));
     const metric=(label,value)=>'<div class="stat-box"><div class="stat-value">'+value+'</div><div class="stat-label">'+label+'</div></div>';
-    document.getElementById('stats-milestone-progress').innerHTML=rows.length?'<div class="stat-grid">'+metric('Completed',rows.length-pending.length)+metric('Unfinished',pending.length)+metric('Blocked',pending.filter(row=>row.blocked.length).length)+metric('Overdue',pending.filter(row=>row.item.targetDate&&row.item.targetDate<today).length)+'</div><p class="backup-hint">Includes Base games, DLCs, archived content and playthroughs. Blocked and overdue objectives are included in Unfinished.</p><details class="stats-details" open><summary>Upcoming and overdue targets ('+due.length+')</summary><div class="stats-scroll">'+(due.length?due.map(row=>'<article class="stats-insight-row"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a><p>'+escHtml(row.scope)+'</p>'+milestoneTargetDateHtml(row.item)+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join(''):'<p class="backup-hint">No unfinished milestones with target dates.</p>')+'</div></details>':'<p class="backup-hint">No personal milestones yet. Add objectives from a game or DLC dashboard.</p>';
+    document.getElementById('stats-milestone-progress').innerHTML=rows.length?'<div class="stat-grid">'+metric('Completed',rows.length-pending.length)+metric('Unfinished',pending.length)+metric('Blocked',pending.filter(row=>row.blocked.length).length)+metric('Overdue',pending.filter(row=>row.item.targetDate&&row.item.targetDate<today).length)+'</div><p class="backup-hint">Includes active Base games, DLCs and playthroughs. Archived content is excluded. Blocked and overdue objectives are included in Unfinished.</p><details class="stats-details" open><summary>Upcoming and overdue targets ('+due.length+')</summary><div class="stats-scroll">'+(due.length?due.map(row=>'<article class="stats-insight-row"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a><p>'+escHtml(row.scope)+'</p>'+milestoneTargetDateHtml(row.item)+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join(''):'<p class="backup-hint">No unfinished milestones with target dates.</p>')+'</div></details>':'<p class="backup-hint">No personal milestones yet. Add objectives from a game or DLC dashboard.</p>';
   }
   function openDatedMilestoneDashboard(event){
     const link=event.target.closest('[data-stats-objective]');if(!link)return;event.preventDefault();
@@ -13828,6 +13830,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     return '<span class="milestone-due">Target: '+escHtml(item.targetDate)+' / '+text+'</span>';
   }
   function finishMilestonesHtml(key,data,history=sessions,scope='') {
+    if(!contentEntry(key)||contentEntry(key).archived)return '';
     const items=normalizeGameMilestones(data?.milestones),pending=milestoneSorted(items.filter(item=>!item.completedAt));if(!pending.length)return '';
     const context=milestoneContext(key);
     return '<section class="finish-milestones"><h4>'+escHtml(contentName(context.parentId,context.dlcId)+(scope?' / '+scope:''))+' - Personal milestones</h4>'+pending.map(item=>{
@@ -13861,6 +13864,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     return '<div class="milestone-progress-label"><span>'+escHtml(p.text)+'</span><strong>'+Math.floor(p.percent)+'%</strong></div><div class="progress-track" role="progressbar" aria-label="'+milestoneAttr(item.name)+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.floor(p.percent)+'"><div class="progress-fill" style="width:'+p.percent+'%"></div></div>';
   }
   function pinnedMilestoneHtml(key,live=false){
+    if(!contentEntry(key)||contentEntry(key).archived)return '';
     const data=contentData(key),items=normalizeGameMilestones(data?.milestones),item=items.find(m=>m.pinned);if(!item)return '';
     const blocked=milestoneBlocked(item,items),status=item.completedAt?'Completed':blocked.length?'Blocked: '+blocked.join(', '):'Pinned milestone';
     return '<div class="milestone-pin"><small>'+escHtml(status)+'</small><strong>'+escHtml(item.name)+'</strong>'+milestoneTargetDateHtml(item)+milestoneProgressHtml(item,key,live)+'</div>';
