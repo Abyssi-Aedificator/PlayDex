@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.0.6
 -------------------
+- Session saved can now ask about milestone completion with manual, checklist and counter progress controls that respect prerequisites and automatic playtime rules; a synced Settings toggle disables the prompt.
 - Dated rotation milestones now show remaining playtime, estimated days needed and a projected completion date at the allocated weekly pace, indicating whether it falls before, on or after the target date.
 - Shared milestone summaries, reminders and session reviews exclude archived games and DLCs, including their playthrough objectives; saved milestones remain accessible in their dashboards.
 - Added a Multiplayer game checkbox in game details and Edit Game; marked games and their DLCs leave weekly rotation and are skipped by selection, Load last week and presets while retaining tracked history.

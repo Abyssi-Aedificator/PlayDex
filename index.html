@@ -6308,6 +6308,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     <div class="card">
       <div class="card-header">Personal milestones</div>
       <label class="dbx-toggle"><input type="checkbox" id="setTodayMilestones"><span class="dbx-toggle-label">Show milestone targets on Today</span></label>
+      <label class="dbx-toggle"><input type="checkbox" id="setSessionMilestonePrompts"><span class="dbx-toggle-label">Ask about milestone completion after sessions</span></label>
+      <p class="backup-hint">Update manual objectives, checklist steps or counters in Session saved. Playtime milestones complete automatically when their targets and prerequisites are met.</p>
       <p class="backup-hint">Show unfinished objectives with target dates, including days left and overdue targets. Archived content and finished playthroughs stay out of Today. This setting syncs across devices.</p>
     </div>
     <div class="card">
@@ -7131,7 +7133,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     scheduleAutoUpload();
   }
   function defaultSettings() {
-    return { showTodayMilestones:true, dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' };
+    return { sessionMilestonePrompts:true, showTodayMilestones:true, dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' };
   }
 
   function loadSettings() {
@@ -7911,6 +7913,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     stalePresetBtns.forEach(b => b.classList.toggle('on', Number(b.dataset.days) === (settings.staleDays || 0)));
     weekStartPresetBtns.forEach(b => b.classList.toggle('on', b.dataset.weekstart === (settings.weekStartsOn || 'monday')));
     document.getElementById('setTodayMilestones').checked=settings.showTodayMilestones!==false;
+    document.getElementById('setSessionMilestonePrompts').checked=settings.sessionMilestonePrompts!==false;
     if (!settings.tabTitle) document.title = APP_TITLE;
   }
 
@@ -9738,6 +9741,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function renderTodayMilestones() {
     const enabled=settings.showTodayMilestones!==false,card=document.getElementById('today-milestone-card'),host=document.getElementById('today-milestone-list');
     document.getElementById('setTodayMilestones').checked=enabled;
+    document.getElementById('setSessionMilestonePrompts').checked=settings.sessionMilestonePrompts!==false;
     const rows=enabled?todayMilestoneRows():[];card.hidden=!rows.length;
     host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a>'+milestoneTargetDateHtml(row.item)+'</div>'+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
   }
@@ -12820,7 +12824,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       try {
         const data = validateBackupData(JSON.parse(reader.result));
         // Restore progression/planning data without replacing this device's appearance preferences.
-        const portable=['milestoneTemplates','showTodayMilestones','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
+        const portable=['milestoneTemplates','sessionMilestonePrompts','showTodayMilestones','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
         importData = { games:data.games, sessions:data.sessions, settings:data.settings?Object.fromEntries(portable.filter(key=>data.settings[key]!==undefined).map(key=>[key,data.settings[key]])):undefined };
         document.getElementById('import-modal').classList.add('open');
       } catch (error) {
@@ -12845,7 +12849,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const localSettings=structuredClone(settings);
       // Restore portable progression and planning data; retain other local preferences.
       if(importData.settings?.milestoneTemplates!==undefined)localSettings.milestoneTemplates=structuredClone(importData.settings.milestoneTemplates);
-      for(const key of ['showTodayMilestones','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
+      for(const key of ['sessionMilestonePrompts','showTodayMilestones','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
       if(importData.settings?.weeklyRotationWeek!==undefined&&importData.settings.weeklyRotationWeekAnchor===undefined)delete localSettings.weeklyRotationWeekAnchor;
       try{persistLibraryReplacement(importData.games,importData.sessions,localSettings);}
       catch(error){toast('Backup could not be imported: '+error.message);return;}
@@ -13837,13 +13841,19 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const text=days===0?'Due today':days>0?days+' day'+(days===1?'':'s')+' left':'Overdue by '+(-days)+' day'+(days===-1?'':'s');
     return '<span class="milestone-due">Target: '+escHtml(item.targetDate)+' / '+text+'</span>';
   }
-  function finishMilestonesHtml(key,data,history=sessions,scope='') {
+  function finishMilestonesHtml(key,data,history=sessions,scope='',runId='') {
     if(!contentEntry(key)||contentEntry(key).archived)return '';
     const items=normalizeGameMilestones(data?.milestones),pending=milestoneSorted(items.filter(item=>!item.completedAt));if(!pending.length)return '';
-    const context=milestoneContext(key);
-    return '<section class="finish-milestones"><h4>'+escHtml(contentName(context.parentId,context.dlcId)+(scope?' / '+scope:''))+' - Personal milestones</h4>'+pending.map(item=>{
-      const p=milestoneProgress(item,context.parentId,context.dlcId,history),blocked=milestoneBlocked(item,items);
-      return '<article class="milestone-objective"><strong class="game-milestone-name">'+escHtml(item.name)+'</strong><p class="backup-hint">'+escHtml(blocked.length?'Blocked: '+blocked.join(', '):p.text)+'</p>'+milestoneTargetDateHtml(item)+'</article>';
+    const context=milestoneContext(key),prompt=settings.sessionMilestonePrompts!==false;
+    return '<section class="finish-milestones"><h4>'+escHtml(contentName(context.parentId,context.dlcId)+(scope?' / '+scope:''))+' - Personal milestones</h4>'+(prompt?'<p class="backup-hint">Completed any milestones? Update your progress below, or choose Done to skip.</p>':'')+pending.map(item=>{
+      const p=milestoneProgress(item,context.parentId,context.dlcId,history),blocked=milestoneBlocked(item,items);let controls='';
+      if(prompt){
+        if(item.type==='manual')controls='<label class="milestone-complete-toggle"><input type="checkbox" data-finish-manual '+(item.manualDone?'checked':'')+'>Mark done'+(blocked.length?' (waits for prerequisites)':'')+'</label>';
+        else if(item.type==='checklist')controls=item.checklist.map(step=>'<label class="milestone-step-toggle"><input type="checkbox" data-finish-step="'+milestoneAttr(step.id)+'" '+(step.done?'checked':'')+'>'+escHtml(step.name)+'</label>').join('');
+        else if(item.type==='counter')controls='<label class="milestone-inline-counter">'+escHtml(item.unit||'Current count')+'<input type="number" min="0" step="1" required value="'+item.current+'" data-finish-counter aria-label="'+milestoneAttr(item.name+' current count')+'"></label><button type="button" class="btn-ghost" data-finish-save-counter>Save progress</button>';
+        else controls='<p class="backup-hint">Completes automatically when recorded playtime and prerequisites reach the target.</p>';
+      }
+      return '<article class="milestone-objective" data-finish-item="'+milestoneAttr(item.id)+'" data-content="'+milestoneAttr(key)+'" data-run="'+milestoneAttr(runId)+'"><strong class="game-milestone-name">'+escHtml(item.name)+'</strong><p class="backup-hint">'+escHtml(blocked.length?'Blocked: '+blocked.join(', '):p.text)+'</p>'+milestoneTargetDateHtml(item)+controls+'<p class="d2-error" data-finish-error role="alert" hidden></p></article>';
     }).join('')+'</section>';
   }
   function milestoneAttr(value){return escHtml(String(value)).replace(/"/g,'&quot;');}
@@ -14217,6 +14227,40 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     finishReview.classList.add('open');
     document.getElementById('session-finish-close').focus();
   }
+  function finishMilestoneRecord(library,parentId,dlcId,runId) {
+    const parent=library.find(game=>game.id===parentId);if(!parent)return null;
+    if(runId)return parent.playthroughs?.find(run=>run.id===runId)?.content?.[dlcId||'base'];
+    return dlcId?parent.dlcs?.find(dlc=>dlc.id===dlcId):parent;
+  }
+  function updateFinishMilestone(control) {
+    const row=control.closest('[data-finish-item]'),error=row?.querySelector('[data-finish-error]');if(!row||settings.sessionMilestonePrompts===false)return;
+    const checked=control.checked;
+    try{
+      const session=sessions.find(session=>session.id===finishReviewId&&session.stop!==null),entry=contentEntry(row.dataset.content),runId=row.dataset.run||'';
+      if(!session||!entry||entry.archived||session.gameId!==(entry.parentId||entry.id)||runId!==(session.playthroughId||''))throw Error('This milestone review is out of date. Close and reopen it.');
+      if(!allocatedPlaytime(session).has(entry.dlcId||null))throw Error('This content was not part of the saved session.');
+      const library=structuredClone(games),data=finishMilestoneRecord(library,session.gameId,entry.dlcId||null,runId),items=normalizeGameMilestones(data?.milestones),item=items.find(item=>item.id===row.dataset.finishItem);
+      if(!item||item.completedAt)throw Error('This milestone is no longer pending.');
+      const before=new Set(items.filter(item=>item.completedAt).map(item=>item.id));
+      if(control.hasAttribute('data-finish-manual')&&item.type==='manual')item.manualDone=control.checked;
+      else if(control.hasAttribute('data-finish-step')&&item.type==='checklist'){const step=item.checklist.find(step=>step.id===control.dataset.finishStep);if(!step)throw Error('Checklist step no longer exists.');step.done=control.checked;}
+      else if(control.hasAttribute('data-finish-save-counter')&&item.type==='counter'){const field=row.querySelector('[data-finish-counter]'),value=Number(field.value);if(!field.checkValidity()||!Number.isSafeInteger(value)||value<0)throw Error('Enter a whole count of zero or more.');item.current=value;}
+      else return;
+      data.milestones=items;d2SaveLibrary(library);
+      const saved=finishMilestoneRecord(games,session.gameId,entry.dlcId||null,runId),completed=saved.milestones.filter(item=>item.completedAt&&!before.has(item.id)).length;
+      showFinishReview(session.id);toast(completed?completed===1?'Milestone completed':completed+' milestones completed':'Milestone progress saved');
+      const current=[...finishReview.querySelectorAll('[data-finish-item]')].find(candidate=>candidate.dataset.finishItem===row.dataset.finishItem&&candidate.dataset.content===row.dataset.content&&candidate.dataset.run===row.dataset.run);
+      const focus=current&&(control.hasAttribute('data-finish-step')?[...current.querySelectorAll('[data-finish-step]')].find(input=>input.dataset.finishStep===control.dataset.finishStep):current.querySelector(control.hasAttribute('data-finish-manual')?'[data-finish-manual]':'[data-finish-save-counter]'));
+      (focus||document.getElementById('session-finish-close')).focus();
+    }catch(reason){if(control.type==='checkbox')control.checked=!checked;if(error){error.textContent=reason.message;error.hidden=false;}}
+  }
+  document.getElementById('session-finish-details').addEventListener('change',event=>{if(event.target.matches('[data-finish-manual],[data-finish-step]'))updateFinishMilestone(event.target);});
+  document.getElementById('session-finish-details').addEventListener('click',event=>{const button=event.target.closest('[data-finish-save-counter]');if(button)updateFinishMilestone(button);});
+  document.getElementById('setSessionMilestonePrompts').addEventListener('change',event=>{
+    const next={...settings,sessionMilestonePrompts:event.target.checked};
+    try{saveSettings(next);settings=next;}catch(error){event.target.checked=settings.sessionMilestonePrompts!==false;toast(error.message);}
+  });
+
   const finishReviewEditor = document.getElementById('edit-session-modal');
   new MutationObserver(() => {
     if (!returnToFinishReview || finishReviewEditor.classList.contains('open')) return;
@@ -14230,7 +14274,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       finishReview.classList.remove('open');
     }
     if (event.key !== 'Tab') return;
-    const buttons = [...finishReview.querySelectorAll('button:not(:disabled)')];
+    const buttons = [...finishReview.querySelectorAll('button:not(:disabled),input:not(:disabled)')].filter(field=>field.getClientRects().length);
     const first = buttons[0], last = buttons.at(-1);
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
@@ -15083,6 +15127,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(session.playthroughId&&!parent.playthroughs?.some(run=>run.id===session.playthroughId))throw Error('A session references a missing playthrough.');
     }
     const preferences=snapshot.settings||{};
+    if(preferences.sessionMilestonePrompts!==undefined&&typeof preferences.sessionMilestonePrompts!=='boolean')throw Error('Invalid milestone completion prompt setting.');
     if(preferences.showTodayMilestones!==undefined&&typeof preferences.showTodayMilestones!=='boolean')throw Error('Invalid Today milestone setting.');
     const record=value=>value&&typeof value==='object'&&!Array.isArray(value);
     const capacities=value=>{if(!record(value)||plannedWeekdays.some(day=>!Number.isInteger(value[day])||value[day]<0||value[day]>24))throw Error('Invalid weekday planned hours.');};
@@ -15144,7 +15189,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     host.querySelectorAll('.finish-beat-progress,.finish-milestones').forEach(section=>section.remove());
     const context=document.createElement('p');context.className='d2-live-run';context.textContent='Playthrough · '+run.name;host.querySelector('h4')?.after(context);
     const parent=games.find(game=>game.id===session.gameId),ids=[...new Set(sessionSegments(session).map(segment=>segment.dlcId||null))];
-    for(const dlcId of ids){const entry=run.content?.[dlcId||'base'];if(!entry)continue;const section=document.createElement('section');section.className='finish-beat-progress';section.innerHTML='<h4>'+escHtml(contentName(parent.id,dlcId))+' · Playthrough HLTB</h4>'+beatProgressRows(entry,d2RunMs(parent.id,run.id,dlcId));host.append(section);host.insertAdjacentHTML('beforeend',finishMilestonesHtml(dlcId?dlcKey(parent.id,dlcId):parent.id,entry,d2RunRows(parent.id,run.id),'Playthrough'));}
+    for(const dlcId of ids){const entry=run.content?.[dlcId||'base'];if(!entry)continue;const section=document.createElement('section');section.className='finish-beat-progress';section.innerHTML='<h4>'+escHtml(contentName(parent.id,dlcId))+' · Playthrough HLTB</h4>'+beatProgressRows(entry,d2RunMs(parent.id,run.id,dlcId));host.append(section);host.insertAdjacentHTML('beforeend',finishMilestonesHtml(dlcId?dlcKey(parent.id,dlcId):parent.id,entry,d2RunRows(parent.id,run.id),'Playthrough',run.id));}
   };
 
   // --- Initial render ---
