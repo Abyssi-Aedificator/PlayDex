@@ -2591,6 +2591,13 @@ opacity: 0.18;
 
   .records-grid { margin-top: 12px; }
 
+  .completion-timeline { list-style:none; margin:0; padding:0; }
+  .completion-timeline > li { display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--border); min-width:0; }
+  .completion-timeline .library-game-cover { width:52px; height:52px; flex-shrink:0; }
+  .completion-timeline-info { min-width:0; flex:1; overflow-wrap:anywhere; }
+  .completion-timeline-info small { display:block; color:var(--text2); font-size:12px; line-height:1.6; margin-top:4px; }
+  .completion-timeline-info time { display:block; color:var(--text2); font-size:12px; margin-top:4px; }
+  .completion-timeline-more { margin-top:14px; min-height:44px; }
   .profile-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -3918,12 +3925,13 @@ opacity: 0.18;
     .records-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
     .next-badge-card { grid-column: 1; grid-row: 3; }
     .favorite-card { grid-column: 2; grid-row: 3; }
-    .playstyle-card { grid-row: 4; }
-    .weekday-habits-card { grid-row: 5; }
-    .heatmap-card { grid-row: 6; }
-    .streak-calendar-card { grid-row: 7; }
-    .cum-card { grid-row: 8; }
-    .milestones-card { grid-row: 9; }
+    .completion-timeline-card { grid-column:1 / -1; grid-row:4; }
+    .playstyle-card { grid-row: 5; }
+    .weekday-habits-card { grid-row: 6; }
+    .heatmap-card { grid-row: 7; }
+    .streak-calendar-card { grid-row: 8; }
+    .cum-card { grid-row: 9; }
+    .milestones-card { grid-row: 10; }
     .streak-cell { border-radius: 3px; }
   }
 
@@ -6106,6 +6114,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <div class="card-header">Favorite Game</div>
       <div class="favorite-game" id="favorite-game-box"></div>
     </div>
+    <div class="card completion-timeline-card"><div class="card-header">Completion timeline</div><div id="profile-completion-timeline"></div></div>
     <div class="card playstyle-card">
       <div class="card-header">Playstyle</div>
       <div class="playstyle" id="playstyle-box"></div>
@@ -11354,7 +11363,33 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
   }
 
+  var profileCompletionLimit=5;
+  function completedMilestoneTimeline() {
+    return statsMilestoneData().filter(row=>milestoneValidDate(row.item.completedAt)).sort((a,b)=>b.item.completedAt.localeCompare(a.item.completedAt)||a.scope.localeCompare(b.scope)||a.item.name.localeCompare(b.item.name));
+  }
+  function renderCompletionTimeline() {
+    const rows=completedMilestoneTimeline(),host=document.getElementById('profile-completion-timeline');
+    if(!rows.length){host.innerHTML='<p class="backup-hint">No completed personal milestones yet. Completed objectives from active games and DLCs will appear here.</p>';return;}
+    const visible=rows.slice(0,profileCompletionLimit);
+    host.innerHTML='<p class="backup-hint">Newest first / '+visible.length+' of '+rows.length+' completed objectives. Archived content is excluded.</p><ol class="completion-timeline">'+visible.map(row=>{
+      const entry=contentEntry(row.key),parent=games.find(game=>game.id===row.parentId),cover={...entry,image:entry?.image||parent?.image};
+      return '<li>'+gameCoverHtml(cover)+'<div class="completion-timeline-info"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'" data-completed-milestone="'+milestoneAttr(row.item.id)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a><small>'+escHtml(row.scope)+'</small><time datetime="'+row.item.completedAt+'">Completed '+escHtml(fmtDateShort(row.item.completedAt+'T12:00:00'))+'</time></div></li>';
+    }).join('')+'</ol>'+(rows.length>visible.length?'<button class="btn-ghost completion-timeline-more" type="button" data-completion-more>Show '+Math.min(5,rows.length-visible.length)+' more</button>':'');
+  }
+  document.getElementById('profile-completion-timeline').addEventListener('click',event=>{
+    if(event.target.closest('[data-completion-more]')){const previousCount=document.querySelectorAll('#profile-completion-timeline li').length;profileCompletionLimit+=5;renderCompletionTimeline();document.querySelectorAll('#profile-completion-timeline [data-completed-milestone]')[previousCount]?.focus();return;}
+    const link=event.target.closest('[data-completed-milestone]');if(!link)return;
+    if(!link.dataset.run)milestoneViews.set(link.dataset.statsObjective,'completed');
+    openDatedMilestoneDashboard(event);
+    requestAnimationFrame(()=>{
+      const controls=[...document.querySelectorAll(link.dataset.run?'#dashboard-playthroughs [data-item]':'#dashboard-body [data-milestone-id]')],control=controls.find(control=>(control.dataset.item||control.dataset.milestoneId)===link.dataset.completedMilestone);
+      if(!control)return;let details=control.closest('details');while(details){details.open=true;details=details.parentElement?.closest('details');}
+      control.closest('.milestone-objective,.d2-objective')?.scrollIntoView({block:'nearest'});
+    });
+  });
+
   function renderProfileTab() {
+    renderCompletionTimeline();
     const nameEl = document.getElementById('profile-name');
     if (nameEl) nameEl.textContent = (settings.name || '').trim() || 'Player';
     renderCumChart();

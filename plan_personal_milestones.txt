@@ -1,8 +1,5 @@
 PlayDex - Personal Milestones Ideas
 ==================================
 
-Completion timeline
-- Show recently completed personal milestones across all games in Profile, with dates and game artwork.
-
 Repeatable milestones
 - Reset selected challenges weekly or monthly while keeping their completion history.
