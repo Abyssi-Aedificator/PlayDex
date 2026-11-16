@@ -9698,11 +9698,18 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return !row.runId||!games.find(game=>game.id===row.parentId)?.playthroughs?.find(run=>run.id===row.runId)?.finishedAt;
     }).sort((a,b)=>a.item.targetDate.localeCompare(b.item.targetDate)||a.item.name.localeCompare(b.item.name));
   }
+  function todayMilestoneLabel(row) {
+    const entry=contentEntry(row.key),parent=games.find(game=>game.id===row.parentId);
+    const labels=[parent?.name||entry?.name||'Game'];
+    if(entry?.dlcId)labels.push(entry.contentName);
+    const run=parent?.playthroughs?.find(run=>run.id===row.runId);if(run)labels.push(run.name);
+    return labels.join(' / ');
+  }
   function renderTodayMilestones() {
     const enabled=settings.showTodayMilestones!==false,card=document.getElementById('today-milestone-card'),host=document.getElementById('today-milestone-list');
     document.getElementById('setTodayMilestones').checked=enabled;
     const rows=enabled?todayMilestoneRows():[];card.hidden=!rows.length;
-    host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a><p>'+escHtml(row.scope)+'</p>'+milestoneTargetDateHtml(row.item)+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
+    host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a><p>'+escHtml(todayMilestoneLabel(row))+'</p>'+milestoneTargetDateHtml(row.item)+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
   }
   document.getElementById('setTodayMilestones').addEventListener('change',event=>{
     const next={...settings,showTodayMilestones:event.target.checked};

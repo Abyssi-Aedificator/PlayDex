@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.0.5
 -------------------
+- Simplified Today milestone labels by omitting Base game while retaining game, DLC and playthrough names.
 - Added a Today milestone-targets card with days-left and overdue countdowns, dashboard links, and a synced Settings toggle; completed, archived and finished-run objectives are excluded.
 
 Version 2.0.4
