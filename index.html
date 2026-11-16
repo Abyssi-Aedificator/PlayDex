@@ -9656,7 +9656,15 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       if(remaining===0)text='Playtime target reached; awaiting completion or prerequisites.';
       else if(!Number.isFinite(remaining))text='Set Hours remaining to estimate days needed.';
       else if(!Number.isInteger(targetMinutes/60)||targetMinutes<60||targetMinutes>10080)text='Set a whole-hour weekly target to estimate days needed.';
-      else{const days=Math.ceil(remaining/(targetMinutes/60)*7);text='About '+days+' day'+(days===1?'':'s')+' needed at '+fmtDurationMinutes(targetMinutes*60000)+'/week, spread evenly.';}
+      else{
+        const days=Math.ceil(remaining/(targetMinutes/60)*7),pace=fmtDurationMinutes(targetMinutes*60000)+'/week';
+        if(!Number.isFinite(days)||days>36500)text='More than 100 years needed at '+pace+'. Estimated completion is beyond 100 years.';
+        else{
+          const finish=addDays(todayStr(),days),timing=finish>item.targetDate?'after target':finish===item.targetDate?'on target date':'before target';
+          text='About '+days+' day'+(days===1?'':'s')+' needed at '+pace+' ('+fmtDurationMinutes(Math.ceil(remaining*60)*60000)+' remaining). Estimated completion: '+finish+' / '+timing+'. Assumes an even weekly pace.';
+          if(milestoneBlocked(item,items).length)text+=' Prerequisites must also be completed.';
+        }
+      }
       return {name:item.name,text,targetDate:item.targetDate};
     });
   }
