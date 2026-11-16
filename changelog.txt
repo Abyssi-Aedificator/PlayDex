@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 2.0.6
+-------------------
+- Weekly rotation and its planner estimate days needed for dated milestones from remaining hours and the allocated weekly target, updating as targets change and identifying missing estimates.
+
 Version 2.0.5
 -------------------
 - This week's rotation rounds displayed available time up to whole hours while retaining exact budget calculations and over-budget amounts.

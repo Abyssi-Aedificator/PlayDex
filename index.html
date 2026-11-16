@@ -5718,7 +5718,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.0.5</span>
+    <span class="version-badge">2.0.6</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -9640,6 +9640,23 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const text=rotationHltbRemaining(key);return text?'<small class="rotation-hltb" data-rotation-hltb>'+escHtml(text)+'</small>':'';
   }
 
+  function rotationMilestoneEstimates(key,targetMinutes,live=false) {
+    const items=normalizeGameMilestones(contentData(key)?.milestones).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
+    return items.map(item=>{
+      const progress=item.type==='playtime'?milestoneSummary(item,key,live):null;
+      const remaining=progress?Math.max(0,(progress.target-progress.value)/3600000):item.hoursRemaining;
+      let text;
+      if(remaining===0)text='Playtime target reached; awaiting completion or prerequisites.';
+      else if(!Number.isFinite(remaining))text='Set Hours remaining to estimate days needed.';
+      else if(!Number.isInteger(targetMinutes/60)||targetMinutes<60||targetMinutes>10080)text='Set a whole-hour weekly target to estimate days needed.';
+      else{const days=Math.ceil(remaining/(targetMinutes/60)*7);text='About '+days+' day'+(days===1?'':'s')+' needed at '+fmtDurationMinutes(targetMinutes*60000)+'/week, spread evenly.';}
+      return {name:item.name,text,targetDate:item.targetDate};
+    });
+  }
+  function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false) {
+    return rotationMilestoneEstimates(key,targetMinutes,live).map(item=>'<small>'+escHtml(item.name+': '+item.text+' Target: '+item.targetDate)+'</small>').join('');
+  }
+
   function updateActiveRotationProgress() {
     if(!activeSession)return;
     const row=[...document.querySelectorAll('#rotation-list [data-rotation-game]')].find(row=>row.dataset.rotationGame===sessionContentKey(activeSession));
@@ -9648,6 +9665,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if(pin&&pin.outerHTML!==pinHtml)pin.outerHTML=pinHtml;
     else if(!pin&&pinHtml)row.querySelector('.rotation-game').insertAdjacentHTML('beforeend',pinHtml);
     const hltb=row.querySelector('[data-rotation-hltb]'),remainingHltb=rotationHltbRemaining(key);if(hltb&&hltb.textContent!==remainingHltb)hltb.textContent=remainingHltb;
+    const milestoneEstimates=row.querySelector('[data-rotation-milestone-estimates]'),milestoneHtml=rotationMilestoneEstimatesHtml(key,rotationTargetMinutes(key),true);if(milestoneEstimates&&milestoneEstimates.innerHTML!==milestoneHtml)milestoneEstimates.innerHTML=milestoneHtml;
     const entry=rotationProgressWithLive([key]).games[key];
     const elapsed=row.querySelector('[data-rotation-elapsed]');if(elapsed)elapsed.textContent=rotationPlayedTime(entry.ms);
     const target=rotationTargetMinutes(sessionContentKey(activeSession)),percent=row.querySelector('[data-rotation-percent]'),bar=row.querySelector('[data-rotation-progress]');
@@ -9689,7 +9707,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const targetHtml=target?'<div class="rotation-metrics" data-rotation-target-text><span class="rotation-time"><span class="rotation-elapsed" data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span><span class="rotation-target-text">/ '+fmtDurationMinutes(target*60000)+'</span></span><span class="rotation-percent" data-rotation-percent>'+(pct===100?'Target reached':pct+'%')+'</span></div><div class="progress-track" data-rotation-progress role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'<small><span data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span> this week</small>';
       const day = settings.weeklyRotationDays?.[id];
       const dayLabel = plannedWeekdays.includes(day) ? '<small>Planned day: ' + day + '</small>' : '';
-      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+dayLabel+targetHtml+rotationHltbHtml(id)+pinnedMilestoneHtml(id,!!activeSession)+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'">Start</button>')+'</div>';
+      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+dayLabel+targetHtml+rotationHltbHtml(id)+'<div data-rotation-milestone-estimates>'+rotationMilestoneEstimatesHtml(id,target,!!activeSession)+'</div>'+pinnedMilestoneHtml(id,!!activeSession)+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'">Start</button>')+'</div>';
     }).join('');
   }
   const plannedWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -14693,6 +14711,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     for(const row of host.querySelectorAll('[data-planner-row]')){
       const id=row.dataset.plannerRow,target=Number(draft.targets[id])||0,ms=progress.games[id]?.ms||0;
       row.querySelector('.planner-recorded').textContent=fmtDurationShort(ms)+' played this week'+(target>0?' / '+fmt(target)+' target':'');
+      row.querySelector('[data-planner-milestone-estimates]').innerHTML=rotationMilestoneEstimatesHtml(id,target);
     }
   }
   function renderWeeklyPlanner(){
@@ -14705,7 +14724,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     html+='<p id="d2-planner-error" role="alert" class="d2-error"></p><div class="planner-list">';
     html+=draft.ids.length?draft.ids.map(id=>{
       const entry=contentEntry(id);if(!entry)return '';const target=draft.targets[id]||0;
-      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+'<span class="planner-recorded"></span>'+rotationHltbHtml(id)+'</div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" min="1" max="168" step="1" placeholder="Optional" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target?target/60:''))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label>'+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</article>';
+      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+'<span class="planner-recorded"></span>'+rotationHltbHtml(id)+'<div data-planner-milestone-estimates></div></div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" min="1" max="168" step="1" placeholder="Optional" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target?target/60:''))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label>'+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</article>';
     }).join(''):'<div class="planner-empty"><strong>Plan your next week of games</strong><p>Add Base games or DLCs, set optional targets, then choose days if you like. Reuse last week or a preset to get started.</p></div>';
     html+='</div><details id="planner-weekdays"'+(plannerUI.weekdayOpen?' open':'')+'><summary id="planner-weekday-summary" tabindex="0">Weekday targets</summary><p class="backup-hint">Optional daily goals within the same weekly capacity. Weekday hours and game targets are independent allocations; they are never added together.</p><div id="planner-weekday-fields"><div class="d2-capacities">'+orderedWeekdays().map(day=>'<div class="d2-field"><label for="planner-weekday-hours-'+day+'">'+day.slice(0,3)+'</label><span class="planner-hour-control"><input id="planner-weekday-hours-'+day+'" type="number" required min="0" max="24" step="1" value="'+d2Attr(plannerValue('day:'+day,draft.hours[day]))+'" data-d2-capacity="'+day+'" aria-label="'+day+' planned hours"><span class="planner-hour-arrows"><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="1" aria-label="Increase '+day+' hours">&#9650;</button><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="-1" aria-label="Decrease '+day+' hours">&#9660;</button></span></span></div>').join('')+'</div><p class="backup-hint">Today&#39;s goal follows its weekday hours. Zero hours means a rest day. Your automatic-goal preference stays unchanged.</p>'+d2Button('Use daily goal instead','planner-weekday-off')+'</div></details><p class="backup-hint">Recorded sessions count toward each game target regardless of the planned day.</p>';
     host.innerHTML=html;updatePlannerSummary();host.scrollTop=scroll;
@@ -15147,7 +15166,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.0.5';
+    const APP_VERSION = '2.0.6';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
