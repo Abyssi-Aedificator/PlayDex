@@ -101,3 +101,5 @@ Gaming consistency lets you choose a month. Days played require completed active
 Milestone progress in Stats combines lifetime and playthrough objectives for Base games and DLCs, including archived content. Blocked and overdue counts are subsets of unfinished objectives. Upcoming/overdue links open the matching dashboard and playthrough.
 
 Playthrough comparison in Stats compares runs of a selected game, including archived games. Run names open the dashboard with that run selected. Totals combine Base game and DLC recorded sessions, exclude running/unassigned sessions and HLTB previously played hours, and mark unfinished runs as In progress.
+
+Today shows unfinished milestone targets in date order, with days left, Due today, or overdue days. Click an objective to open its Base game, DLC or playthrough dashboard. The card is hidden when there are no eligible targets. Settings > Session tracking > Personal milestones controls visibility; it is enabled by default and syncs with shared settings. Archived content and finished playthroughs are excluded from Today.

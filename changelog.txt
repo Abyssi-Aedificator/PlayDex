@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 2.0.5
+-------------------
+- Added a Today milestone-targets card with days-left and overdue countdowns, dashboard links, and a synced Settings toggle; completed, archived and finished-run objectives are excluded.
+
 Version 2.0.4
 -------------------
 - Added a Stats playthrough comparison by game with recorded time, sessions, average session length and milestone completion, clearly distinguishing finished and ongoing runs.
