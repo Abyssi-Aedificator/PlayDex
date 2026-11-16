@@ -1456,7 +1456,9 @@ opacity: 0.18;
   .stats-run-table .btn-ghost { white-space:normal; overflow-wrap:anywhere; text-align:left; min-height:44px; }
   .stats-run-table td { vertical-align:top; }
   .stats-objective-link { color:var(--accent); text-decoration:none; font-weight:600; font-size:14px; overflow-wrap:anywhere; }
-  #today-milestone-list .stats-objective-link { color:var(--text); }
+  #today-milestone-list .stats-objective-link { color:var(--text); flex:1; min-width:0; }
+  .today-milestone-heading { display:flex; align-items:baseline; justify-content:space-between; gap:8px 16px; }
+  .today-milestone-heading .milestone-due { flex:0 1 auto; max-width:60%; margin:0; text-align:right; overflow-wrap:anywhere; }
   .stats-objective-link:hover { text-decoration:underline; }
   .stats-objective-link:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
   .stats-details > summary { cursor:pointer; padding:12px 0; color:var(--text2); font-size:13px; }
@@ -9703,7 +9705,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const enabled=settings.showTodayMilestones!==false,card=document.getElementById('today-milestone-card'),host=document.getElementById('today-milestone-list');
     document.getElementById('setTodayMilestones').checked=enabled;
     const rows=enabled?todayMilestoneRows():[];card.hidden=!rows.length;
-    host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a>'+milestoneTargetDateHtml(row.item)+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
+    host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a>'+milestoneTargetDateHtml(row.item)+'</div>'+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
   }
   document.getElementById('setTodayMilestones').addEventListener('change',event=>{
     const next={...settings,showTodayMilestones:event.target.checked};
