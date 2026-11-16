@@ -1,5 +1,0 @@
-PlayDex - Personal Milestones Ideas
-==================================
-
-Repeatable milestones
-- Reset selected challenges weekly or monthly while keeping their completion history.

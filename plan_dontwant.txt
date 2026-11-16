@@ -11,3 +11,6 @@ Session notes
 
 Backlog picks
 - A Want to play list and a From my backlog option in What should I play?
+
+Repeatable milestones
+- Reset selected challenges weekly or monthly while keeping their completion history.
