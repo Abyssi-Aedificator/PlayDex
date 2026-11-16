@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 2.0.7
+-------------------
+- The weekly planner rounds Remaining for games up to whole hours, matching Today while preserving exact budget validation, meter percentages and over-budget amounts.
+
 Version 2.0.6
 -------------------
 - Added a Profile completion timeline showing recent personal milestones with saved completion dates, game artwork, content/playthrough context, dashboard links and Show more; archived content stays excluded.

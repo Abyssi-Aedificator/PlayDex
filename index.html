@@ -5726,7 +5726,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.0.6</span>
+    <span class="version-badge">2.0.7</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -14810,7 +14810,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const budget=d2DraftBudget(),gamesTotal=d2DraftGameTargets(),daysTotal=plannedWeekdayMinutes(draft.hours),fmt=value=>fmtDurationMinutes(value*60000);
     const allocation=(name,value)=>{
       const remaining=Math.max(0,Math.min(budget,budget-value)),percent=budget>0?Math.max(0,Math.min(100,remaining/budget*100)):0,over=value>budget;
-      return '<span>'+name+': <strong>'+fmt(value)+'</strong></span><span class="'+(over?'d2-error':'')+'">'+(over?'Over budget: ':name==='Game targets'?'Remaining for games: ':'Remaining for weekdays: ')+'<strong>'+fmt(Math.abs(budget-value))+'</strong></span><div class="planner-remaining'+(over?' is-over':'')+'"><div class="progress-track" role="progressbar" aria-label="'+(name==='Game targets'?'Remaining for games':'Remaining for weekdays')+'" aria-valuemin="0" aria-valuemax="'+budget+'" aria-valuenow="'+remaining+'" aria-valuetext="'+(over?'Over budget by '+fmt(value-budget):fmt(remaining)+' remaining of '+fmt(budget))+'"><div class="progress-fill" style="width:'+percent+'%"></div></div><small>'+ (over?'Over budget':Math.round(percent)+'% remaining')+'</small></div>';
+      const availableText=!over&&name==='Game targets'?rotationAvailableHours(remaining):fmt(Math.abs(budget-value));
+      return '<span>'+name+': <strong>'+fmt(value)+'</strong></span><span class="'+(over?'d2-error':'')+'">'+(over?'Over budget: ':name==='Game targets'?'Remaining for games: ':'Remaining for weekdays: ')+'<strong>'+availableText+'</strong></span><div class="planner-remaining'+(over?' is-over':'')+'"><div class="progress-track" role="progressbar" aria-label="'+(name==='Game targets'?'Remaining for games':'Remaining for weekdays')+'" aria-valuemin="0" aria-valuemax="'+budget+'" aria-valuenow="'+remaining+'" aria-valuetext="'+(over?'Over budget by '+fmt(value-budget):fmt(remaining)+' remaining of '+fmt(budget))+'"><div class="progress-fill" style="width:'+percent+'%"></div></div><small>'+ (over?'Over budget':Math.round(percent)+'% remaining')+'</small></div>';
     };
     budgetHost.innerHTML='<div class="planner-capacity">Weekly capacity <strong>'+fmt(budget)+'</strong></div><div class="planner-allocation">'+allocation('Game targets',gamesTotal)+'</div>'+(draft.enabled?'<div class="planner-allocation">'+allocation('Weekday plan',daysTotal)+'</div>':'');
     host.querySelector('#planner-weekday-summary').textContent='Weekday targets / '+(draft.enabled?'Enabled / '+fmt(daysTotal)+' planned':'Off');
@@ -15279,7 +15280,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.0.6';
+    const APP_VERSION = '2.0.7';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
