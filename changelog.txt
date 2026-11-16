@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.0.6
 -------------------
+- Added a Multiplayer game checkbox in game details and Edit Game; marked games and their DLCs leave weekly rotation and are skipped by selection, Load last week and presets while retaining tracked history.
 - Weekly rotation and its planner estimate days needed for dated milestones from remaining hours and the allocated weekly target, updating as targets change and identifying missing estimates.
 
 Version 2.0.5

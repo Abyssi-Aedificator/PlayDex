@@ -6490,6 +6490,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <input type="text" id="rename-tags" placeholder="Tags, comma separated (e.g. PC, Co-op)" maxlength="180" autocomplete="off">
       <label for="rename-tags">Tags, comma separated</label>
     </div>
+    <label class="milestone-step-toggle" style="margin-top:14px"><input type="checkbox" id="rename-multiplayer">Multiplayer game</label>
+    <p class="backup-hint">Exclude this game and its DLCs from weekly rotation. Existing sessions and statistics are kept.</p>
     <div class="modal-actions">
       <button class="btn-ghost" id="rename-cancel">Cancel</button>
       <button class="btn btn-start" id="rename-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -7055,6 +7057,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
       const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform), milestones: normalizeGameMilestones(g.milestones) };
+      if(g.multiplayer===true)o.multiplayer=true;
       if (Array.isArray(g.playthroughs)) o.playthroughs = structuredClone(g.playthroughs);
       if (Array.isArray(g.dlcs)) o.dlcs = normalizeGames(g.dlcs.map(({dlcs, ...dlc}) => dlc));
       for (const key of ['mainStoryHours', 'mainExtraHours', 'beatAlreadyPlayedHours']) {
@@ -8530,11 +8533,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function validateDlcData(data) {
     const allIds = new Set(data.games.map(game => game.id));
     for (const parent of data.games) {
+      if(parent.multiplayer!==undefined&&typeof parent.multiplayer!=='boolean')throw new Error('Invalid multiplayer flag');
       if (parent.dlcs === undefined) continue;
       if (!Array.isArray(parent.dlcs)) throw new Error('Invalid DLC list');
       const names = new Set();
       for (const dlc of parent.dlcs) {
         if (!dlc || typeof dlc.id !== 'string' || !dlc.id.trim() || allIds.has(dlc.id) || typeof dlc.name !== 'string' || !dlc.name.trim() || dlc.dlcs !== undefined) throw new Error('Invalid or duplicate DLC');
+        if(dlc.multiplayer!==undefined&&typeof dlc.multiplayer!=='boolean')throw new Error('Invalid multiplayer flag');
         if (dlc.archived !== undefined && typeof dlc.archived !== 'boolean') throw new Error('Invalid DLC archive state');
         if (dlc.image != null && (typeof dlc.image !== 'string' || !/^(https?:\/\/|data:image\/(jpeg|png|webp);base64,)/i.test(dlc.image))) throw new Error('Invalid DLC cover');
         for (const key of ['mainStoryHours','mainExtraHours','beatAlreadyPlayedHours']) {
@@ -8595,7 +8600,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return {
       ...dlc, id:dlcKey(parent.id, dlc.id), parentId:parent.id, dlcId:dlc.id,
       name:parent.name + ' / ' + dlc.name, contentName:dlc.name,
-      archived:parent.archived || dlc.archived, platform:parent.platform, tags:parent.tags || []
+      archived:parent.archived || dlc.archived, multiplayer:!!parent.multiplayer, platform:parent.platform, tags:parent.tags || []
     };
   }
   function contentEntries() {
@@ -9548,10 +9553,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const first=settings.weekStartsOn==='sunday'?'sunday':'monday';
     return snapshot&&snapshot.weekStart===addDays(rotationWeekKey(new Date(),first),-7)&&Array.isArray(snapshot.ids)?snapshot:null;
   }
+  function rotationEntryEligible(entry) { return !!entry&&!entry.archived&&!entry.multiplayer; }
   function rotationGameIds() {
     ensureRotationWeek();
     const selected=Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[];
-    const available=new Set(contentEntries().filter(g=>!g.archived).map(g=>g.id));
+    const available=new Set(contentEntries().filter(rotationEntryEligible).map(g=>g.id));
     return [...new Set(selected)].filter(id=>available.has(id));
   }
   function rotationWeekProgress(ids,now=new Date()) {
@@ -9573,7 +9579,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function archivedRotationIds() {
     ensureRotationWeek();
     const selected=new Set(Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[]);
-    return contentEntries().filter(game=>game.archived && selected.has(game.id)).map(game=>game.id);
+    return contentEntries().filter(game=>game.archived && !game.multiplayer && selected.has(game.id)).map(game=>game.id);
   }
   function archivedRotationSpentMinutes(now=new Date()) {
     const ids=archivedRotationIds(),progress=rotationProgressWithLive(ids,now);
@@ -12034,6 +12040,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
+    html += '<div class="dash-row"><label class="milestone-step-toggle"><input type="checkbox" data-game-multiplayer="'+milestoneAttr(game.parentId||game.id)+'"'+(game.multiplayer?' checked':'')+(game.parentId?' disabled':'')+'>Multiplayer game'+(game.parentId?' (inherited)':'')+'</label></div><p class="backup-hint">Multiplayer games and their DLCs cannot be selected for weekly rotation.</p>';
     html = '<div class="milestone-dashboard-summary">' + html + '</div><div class="dashboard-milestone-column">' +
       beatTimeSection(game, contentSessions(game.id).filter(s => s.stop !== null).reduce((sum,s) => sum + (s.durationMs || 0),0)) + gameMilestonesHtml(game) + '</div><div class="milestone-dashboard-history">';
 
@@ -12253,6 +12260,21 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   });
 
   // --- Edit game modal ---
+  function excludeMultiplayerRotation(game,preferences,wasMultiplayer=false) {
+    if(!game.multiplayer&&!wasMultiplayer)return;
+    const ids=new Set([game.id,...(game.dlcs||[]).map(dlc=>dlcKey(game.id,dlc.id))]);
+    preferences.weeklyRotation=(preferences.weeklyRotation||[]).filter(id=>!ids.has(id));
+    for(const key of ['weeklyRotationTargets','weeklyRotationDays']){preferences[key]={...(preferences[key]||{})};for(const id of ids)delete preferences[key][id];}
+  }
+  document.getElementById('dashboard-body').addEventListener('change',event=>{
+    const control=event.target.closest('[data-game-multiplayer]');if(!control)return;
+    const parent=games.find(game=>game.id===control.dataset.gameMultiplayer);if(!parent)return;
+    const key=playthroughUI.dashboardKey||parent.id,library=structuredClone(games),next=library.find(game=>game.id===parent.id),preferences=structuredClone(settings);
+    if(control.checked)next.multiplayer=true;else delete next.multiplayer;excludeMultiplayerRotation(next,preferences,!!parent.multiplayer);
+    try{d2SaveLibrary(library,sessions,preferences);openDashboard(key);document.querySelector('#dashboard-body [data-game-multiplayer]')?.focus();}
+    catch(error){control.checked=!!parent.multiplayer;toast(error.message);}
+  });
+
   function openRenameModal(id) {
     const game = games.find(g => g.id === id);
     if (!game) return;
@@ -12260,6 +12282,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     advanceCoverRevision(document.getElementById('rename-modal'));
     document.getElementById('rename-input').value = game.name;
     document.getElementById('rename-tags').value = (game.tags || []).join(', ');
+    document.getElementById('rename-multiplayer').checked=!!game.multiplayer;
     gamePlatformField.value = game.platform || '';
     paintCover(document.getElementById('rename-cover'), game, 'Add a cover');
     const urlField = document.getElementById('cover-url');
@@ -12277,14 +12300,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (!name) return;
     const game = games.find(g => g.id === pendingRenameGameId);
     if (game) {
-      game.name = name;
-      game.tags = normalizeTags(document.getElementById('rename-tags').value.split(','));
-      game.platform = gamePlatformField.value;
-      saveGames(games);
-      sessions.forEach(s => { if (s.gameId === game.id) s.gameName = name; });
-      saveSessions(sessions);
+      const library=structuredClone(games),next=library.find(entry=>entry.id===game.id),preferences=structuredClone(settings);
+      next.name=name;next.tags=normalizeTags(document.getElementById('rename-tags').value.split(','));next.platform=gamePlatformField.value;
+      if(document.getElementById('rename-multiplayer').checked)next.multiplayer=true;else delete next.multiplayer;
+      excludeMultiplayerRotation(next,preferences,!!game.multiplayer);
+      try{d2SaveLibrary(library,sessions.map(session=>session.gameId===game.id?{...session,gameName:name}:session),preferences);}catch(error){toast(error.message);return;}
       toast('Game updated');
-      render();
     }
     document.getElementById('rename-modal').classList.remove('open');
   });
@@ -14492,7 +14513,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     ensureRotationWeek();
     if(plannerUI.draft.week!==settings.weeklyRotationWeek){d2LoadDraft();toast('A new week started. Loading into a fresh weekly draft.');}
     const snapshot=lastWeekRotation();if(!snapshot)return;
-    const available=new Set(contentEntries().filter(entry=>!entry.archived).map(entry=>entry.id));
+    const available=new Set(contentEntries().filter(rotationEntryEligible).map(entry=>entry.id));
     plannerUI.raw={};plannerUI.draft.ids=snapshot.ids.filter(id=>available.has(id));plannerUI.draft.targets={};plannerUI.draft.days={};
     for(const id of plannerUI.draft.ids){const target=Number(snapshot.targets?.[id]);if(Number.isInteger(target)&&target>0&&target<=10080)plannerUI.draft.targets[id]=Math.ceil(target/60)*60;plannerUI.draft.days[id]=plannedWeekdays.includes(snapshot.days?.[id])?snapshot.days[id]:'Any day';}
     renderWeeklyPlanner();toast('Loaded '+plannerUI.draft.ids.length+' entries into the draft. Current weekday planned hours were kept.');
@@ -14675,7 +14696,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     ensureRotationWeek();
     plannerUI.draft=source?d2Clone(source):{week:settings.weeklyRotationWeek,enabled:!!settings.plannerDayBudgets,hours:Object.fromEntries(plannedWeekdays.map(day=>[day,(Number.isFinite(settings.plannerDayHours?.[day])?settings.plannerDayHours[day]:Math.ceil(d2NativeDaily()/60))])),ids:rotationGameIds(),targets:d2Clone(settings.weeklyRotationTargets||{}),days:d2Clone(settings.weeklyRotationDays||{})};
     plannerUI.draft.week=settings.weeklyRotationWeek;
-    const available=new Set(contentEntries().filter(entry=>!entry.archived).map(entry=>entry.id));
+    const available=new Set(contentEntries().filter(rotationEntryEligible).map(entry=>entry.id));
     plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>available.has(id));
     plannerUI.draft.targets=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.targets[id]!=null).map(id=>[id,plannerUI.draft.targets[id]]));
     plannerUI.draft.days=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.days[id]!=null).map(id=>[id,plannerUI.draft.days[id]]));
@@ -14717,7 +14738,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   function renderWeeklyPlanner(){
     if(!plannerUI.draft)d2LoadDraft();const draft=plannerUI.draft,days=['Any day',...orderedWeekdays()],host=document.getElementById('weekly-planner-body'),scroll=host.scrollTop;
     const open=host.querySelector('#planner-weekdays');if(open)plannerUI.weekdayOpen=open.open;
-    const last=lastWeekRotation(),canLoad=last?.ids?.some(id=>{const entry=contentEntry(id);return entry&&!entry.archived;});
+    const last=lastWeekRotation(),canLoad=last?.ids?.some(id=>{const entry=contentEntry(id);return rotationEntryEligible(entry);});
     let html='<p class="backup-hint">'+escHtml(draft.week)+' - '+addDays(draft.week,6)+' / Changes stay in this draft until Save plan.</p>';
     html+='<div class="planner-toolbar"><button type="button" class="btn btn-start" data-d2="planner-add">+ Add games</button>'+d2Button('Load last week','planner-load-last',canLoad?'':'disabled')+'<details class="planner-more"><summary>More actions</summary><div>'+d2Button('Save preset','planner-preset-save')+d2Button('Load preset','planner-preset-load')+d2Button('Review previous week','planner-last-week')+d2Button('Review unfinished targets','planner-rebalance')+'</div></details></div>';
     if(!canLoad)html+='<p class="backup-hint">No available rotation from last week. Add games or load a saved preset.</p>';
@@ -14735,7 +14756,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function d2SavePlan(){
     validatePlannerFields();
-    ensureRotationWeek();const draft=plannerUI.draft;if(draft.week!==settings.weeklyRotationWeek)throw Error('A new week has started. Close and reopen the planner to start a fresh plan.');
+    ensureRotationWeek();const draft=plannerUI.draft;if(draft.ids.some(id=>!rotationEntryEligible(contentEntry(id))))throw Error('Remove unavailable or multiplayer games from this plan before saving.');if(draft.week!==settings.weeklyRotationWeek)throw Error('A new week has started. Close and reopen the planner to start a fresh plan.');
     for(const day of plannedWeekdays)if(!Number.isInteger(draft.hours[day])||draft.hours[day]<0||draft.hours[day]>24)throw Error('Planned hours must be whole numbers from 0 to 24.');
     for(const id of draft.ids){const target=draft.targets[id];if(target!=null&&target!==0&&(!Number.isInteger(target/60)||target<60||target>10080))throw Error('Targets must be whole hours from 1 to 168, or blank.');}
     const planned=d2DraftPlanned(),gameTargets=d2DraftGameTargets(),budget=d2DraftBudget();if(planned>budget)throw Error((draft.enabled?'Weekday plan':'Game targets')+' over weekly budget by '+fmtDurationMinutes((planned-budget)*60000)+'. Reduce planned hours or increase your weekly goal.');
@@ -14750,8 +14771,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     d2SaveLibrary(games,sessions,next);d2LoadDraft();renderWeeklyPlanner();closeWeeklyPlanner(true);toast('Weekly plan saved');
   }
   function d2PlannerAdd(){
-    const options=contentEntries().filter(entry=>!entry.archived&&!plannerUI.draft.ids.includes(entry.id));
-    d2Edit('Add games','<label class="d2-field">Search games and DLCs<input type="search" id="planner-picker-search" placeholder="Search by game or DLC name"></label><p class="backup-hint">Select any number. Targets and days can be set after adding.</p><div id="planner-picker" class="d2-assign-list">'+options.map(entry=>'<label class="planner-pick" data-search="'+d2Attr(entry.name.toLocaleLowerCase())+'"><input type="checkbox" data-d2-plan-add="'+d2Attr(entry.id)+'">'+gameCoverHtml(entry)+'<span>'+plannerEntryLabel(entry)+'</span></label>').join('')+'</div><p id="planner-picker-empty" class="backup-hint"'+(options.length?' hidden':'')+'>No available games or DLCs match. All active content may already be selected.</p>',()=>{
+    const options=contentEntries().filter(entry=>rotationEntryEligible(entry)&&!plannerUI.draft.ids.includes(entry.id));
+    d2Edit('Add games','<label class="d2-field">Search games and DLCs<input type="search" id="planner-picker-search" placeholder="Search by game or DLC name"></label><p class="backup-hint">Select any number. Multiplayer games and their DLCs are excluded. Targets and days can be set after adding.</p><div id="planner-picker" class="d2-assign-list">'+options.map(entry=>'<label class="planner-pick" data-search="'+d2Attr(entry.name.toLocaleLowerCase())+'"><input type="checkbox" data-d2-plan-add="'+d2Attr(entry.id)+'">'+gameCoverHtml(entry)+'<span>'+plannerEntryLabel(entry)+'</span></label>').join('')+'</div><p id="planner-picker-empty" class="backup-hint"'+(options.length?' hidden':'')+'>No available games or DLCs match. All active content may already be selected.</p>',()=>{
       for(const input of document.querySelectorAll('[data-d2-plan-add]:checked')){plannerUI.draft.ids.push(input.dataset.d2PlanAdd);plannerUI.draft.days[input.dataset.d2PlanAdd]='Any day';}renderWeeklyPlanner();
     },'Add selected');
     document.getElementById('planner-picker-search').oninput=event=>{const q=event.target.value.trim().toLocaleLowerCase();let count=0;for(const row of document.querySelectorAll('#planner-picker .planner-pick')){row.hidden=!row.dataset.search.includes(q);if(!row.hidden)count++;}document.getElementById('planner-picker-empty').hidden=count>0;};
@@ -14765,9 +14786,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function d2LoadPreset(){
     const presets=settings.rotationPresets||[];
-    d2Edit('Load rotation preset','<p>Loading replaces the unsaved planner draft. Archived or deleted content is skipped.</p><label class="d2-field">Preset<select id="d2-preset-choice">'+presets.map(preset=>'<option value="'+d2Attr(preset.id)+'">'+escHtml(preset.name)+'</option>').join('')+'</select></label><div id="d2-preset-preview"></div>',()=>{
+    d2Edit('Load rotation preset','<p>Loading replaces the unsaved planner draft. Archived, multiplayer or deleted content is skipped.</p><label class="d2-field">Preset<select id="d2-preset-choice">'+presets.map(preset=>'<option value="'+d2Attr(preset.id)+'">'+escHtml(preset.name)+'</option>').join('')+'</select></label><div id="d2-preset-preview"></div>',()=>{
       const preset=presets.find(item=>item.id===document.getElementById('d2-preset-choice').value);if(!preset)throw Error('Save a preset first.');
-      const available=new Set(contentEntries().filter(entry=>!entry.archived).map(entry=>entry.id)),skipped=preset.plan.ids.filter(id=>!available.has(id)).length;
+      const available=new Set(contentEntries().filter(rotationEntryEligible).map(entry=>entry.id)),skipped=preset.plan.ids.filter(id=>!available.has(id)).length;
       const original=plannerUI.draftOriginal;d2LoadDraft(preset.plan);plannerUI.draftOriginal=original;renderWeeklyPlanner();toast('Preset loaded into draft'+(skipped?' · '+skipped+' unavailable entries skipped':''));
     },'Load into draft');
     const paint=()=>{const preset=presets.find(item=>item.id===document.getElementById('d2-preset-choice').value);document.getElementById('d2-preset-preview').innerHTML=preset?'<ul>'+preset.plan.ids.map(id=>'<li>'+escHtml(contentEntry(id)?.name||'Unavailable content')+' · '+fmtDurationMinutes((preset.plan.targets[id]||0)*60000)+' · '+escHtml(preset.plan.days[id]||'Any day')+'</li>').join('')+'</ul>':'<p class="backup-hint">No saved presets yet.</p>';};document.getElementById('d2-preset-choice').onchange=paint;paint();
