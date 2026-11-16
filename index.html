@@ -9592,11 +9592,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function rotationGoalCommitmentMinutes() {
     return Math.max(rotationCommittedMinutes(),settings.plannerDayBudgets?plannedWeekdayMinutes(settings.plannerDayHours):0);
   }
+  function rotationAvailableHours(minutes) { return Math.ceil(Math.max(0,minutes)/60)+'h'; }
   function rotationBudgetText(planned) {
     const budget=weeklyRotationBudgetMinutes();
     if(!budget && !settings.autoDailyGoal) return 'Set a daily goal to define your weekly rotation budget.';
     const remaining=budget-planned;
-    return 'Weekly budget: '+fmtDurationMinutes(budget*60000)+' | Planned: '+fmtDurationMinutes(planned*60000)+' | '+(remaining<0?'Over budget: ':'Available: ')+fmtDurationMinutes(Math.abs(remaining)*60000);
+    return 'Weekly budget: '+fmtDurationMinutes(budget*60000)+' | Planned: '+fmtDurationMinutes(planned*60000)+' | '+(remaining<0?'Over budget: '+fmtDurationMinutes(-remaining*60000):'Available: '+rotationAvailableHours(remaining));
   }
   function renderRotationBudgetMeter(id,planned) {
     const panel=document.getElementById(id+'-meter'),budget=weeklyRotationBudgetMinutes();
