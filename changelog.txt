@@ -1,6 +1,15 @@
 PlayDex - Changelog
 ====================
 
+Version 2.0.5
+-------------------
+- This week's rotation rounds displayed available time up to whole hours while retaining exact budget calculations and over-budget amounts.
+- Moved Today milestone target dates and countdowns to the right of their names, with wrapping for longer text.
+- Today milestone names now use the normal text colour instead of the theme accent, with dark text in light mode and readable light text in dark mode.
+- Removed the extra game/context line from Today milestone targets, keeping the objective link and date countdown.
+- Simplified Today milestone labels by omitting Base game while retaining game, DLC and playthrough names.
+- Added a Today milestone-targets card with days-left and overdue countdowns, dashboard links, and a synced Settings toggle; completed, archived and finished-run objectives are excluded.
+
 Version 2.0.4
 -------------------
 - Added a Stats playthrough comparison by game with recorded time, sessions, average session length and milestone completion, clearly distinguishing finished and ongoing runs.

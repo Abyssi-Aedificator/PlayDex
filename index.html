@@ -1456,6 +1456,9 @@ opacity: 0.18;
   .stats-run-table .btn-ghost { white-space:normal; overflow-wrap:anywhere; text-align:left; min-height:44px; }
   .stats-run-table td { vertical-align:top; }
   .stats-objective-link { color:var(--accent); text-decoration:none; font-weight:600; font-size:14px; overflow-wrap:anywhere; }
+  #today-milestone-list .stats-objective-link { color:var(--text); flex:1; min-width:0; }
+  .today-milestone-heading { display:flex; align-items:baseline; justify-content:space-between; gap:8px 16px; }
+  .today-milestone-heading .milestone-due { flex:0 1 auto; max-width:60%; margin:0; text-align:right; overflow-wrap:anywhere; }
   .stats-objective-link:hover { text-decoration:underline; }
   .stats-objective-link:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
   .stats-details > summary { cursor:pointer; padding:12px 0; color:var(--text2); font-size:13px; }
@@ -4895,6 +4898,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
   :root[data-ui="material"] .rotation-elapsed,:root[data-ui="material"] .rotation-target-text { color:var(--md-on-surface-variant); font-size:14px; font-weight:500; line-height:20px; }
   :root[data-ui="material"] .rotation-percent { background:var(--md-secondary-container); color:var(--md-on-secondary-container); border-radius:8px; font-size:12px; font-weight:600; }
 
+  #today-milestone-card[hidden] { display:none!important; }
   #weekly-rotation-card[hidden] { display:none!important; }
 
   .game-milestones { margin:24px 0; padding:16px; border:1px solid var(--border); border-radius:16px; background:var(--surface2); }
@@ -5714,7 +5718,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.0.4</span>
+    <span class="version-badge">2.0.5</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -5772,6 +5776,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
     </div>
 
+    <div class="card" id="today-milestone-card" hidden>
+      <div class="card-header">Milestone targets</div>
+      <p class="backup-hint">Unfinished objectives, earliest target first.</p>
+      <div id="today-milestone-list" class="stats-scroll"></div>
+    </div>
     <div class="card" id="weekly-rotation-card">
       <div class="rotation-heading"><div class="card-header">This week's rotation</div><button class="btn-ghost" id="rotation-manage" type="button">Plan week</button></div>
       <p class="rotation-summary" id="rotation-summary"></p><p class="rotation-summary" id="rotation-budget"></p><div class="rotation-budget-meter-panel" id="rotation-budget-meter" hidden></div><div id="rotation-list"></div>
@@ -6295,6 +6304,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <label class="dbx-toggle"><input type="checkbox" id="setAutoDailyGoal"><span class="dbx-toggle-label">Automatically use last week's daily average</span></label>
       <p class="backup-hint">Uses the previous calendar week's average rounded to whole hours. Manual editing is disabled while enabled. The weekly rotation budget is seven times the daily goal and updates automatically each week.</p>
       <p class="backup-hint" id="auto-goal-error" role="alert" style="color:var(--red)" hidden></p>
+    </div>
+    <div class="card">
+      <div class="card-header">Personal milestones</div>
+      <label class="dbx-toggle"><input type="checkbox" id="setTodayMilestones"><span class="dbx-toggle-label">Show milestone targets on Today</span></label>
+      <p class="backup-hint">Show unfinished objectives with target dates, including days left and overdue targets. Archived content and finished playthroughs stay out of Today. This setting syncs across devices.</p>
     </div>
     <div class="card">
       <div class="card-header">Live session</div>
@@ -7114,7 +7128,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     scheduleAutoUpload();
   }
   function defaultSettings() {
-    return { dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' };
+    return { showTodayMilestones:true, dailyGoalMinutes: 0, theme: 'system', accent: null, achievementUnlocks: {}, achievementLevel: 0, questView: null, questNotified: null, dailyQuestPicks: null, weeklyQuestPicks: null, dailyFullClear: null, name: '', tabTitle: true, targetNotif: false, idleRemindMin: 0, staleDays: 0, stalePrompt: false, topPeriod: 'week', uiStyle: 'classic', weekStartsOn: 'monday' };
   }
 
   function loadSettings() {
@@ -7893,6 +7907,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     idlePresetBtns.forEach(b => b.classList.toggle('on', Number(b.dataset.idle) === (settings.idleRemindMin || 0)));
     stalePresetBtns.forEach(b => b.classList.toggle('on', Number(b.dataset.days) === (settings.staleDays || 0)));
     weekStartPresetBtns.forEach(b => b.classList.toggle('on', b.dataset.weekstart === (settings.weekStartsOn || 'monday')));
+    document.getElementById('setTodayMilestones').checked=settings.showTodayMilestones!==false;
     if (!settings.tabTitle) document.title = APP_TITLE;
   }
 
@@ -9577,11 +9592,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function rotationGoalCommitmentMinutes() {
     return Math.max(rotationCommittedMinutes(),settings.plannerDayBudgets?plannedWeekdayMinutes(settings.plannerDayHours):0);
   }
+  function rotationAvailableHours(minutes) { return Math.ceil(Math.max(0,minutes)/60)+'h'; }
   function rotationBudgetText(planned) {
     const budget=weeklyRotationBudgetMinutes();
     if(!budget && !settings.autoDailyGoal) return 'Set a daily goal to define your weekly rotation budget.';
     const remaining=budget-planned;
-    return 'Weekly budget: '+fmtDurationMinutes(budget*60000)+' | Planned: '+fmtDurationMinutes(planned*60000)+' | '+(remaining<0?'Over budget: ':'Available: ')+fmtDurationMinutes(Math.abs(remaining)*60000);
+    return 'Weekly budget: '+fmtDurationMinutes(budget*60000)+' | Planned: '+fmtDurationMinutes(planned*60000)+' | '+(remaining<0?'Over budget: '+fmtDurationMinutes(-remaining*60000):'Available: '+rotationAvailableHours(remaining));
   }
   function renderRotationBudgetMeter(id,planned) {
     const panel=document.getElementById(id+'-meter'),budget=weeklyRotationBudgetMinutes();
@@ -9680,7 +9696,26 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function orderedWeekdays() {
     return weekStartsOnMonday() ? plannedWeekdays.slice(1).concat(plannedWeekdays[0]) : plannedWeekdays;
   }
+  function todayMilestoneRows() {
+    return statsMilestoneData().filter(row=>{
+      const entry=contentEntry(row.key);if(!entry||entry.archived||row.item.completedAt||!milestoneValidDate(row.item.targetDate))return false;
+      return !row.runId||!games.find(game=>game.id===row.parentId)?.playthroughs?.find(run=>run.id===row.runId)?.finishedAt;
+    }).sort((a,b)=>a.item.targetDate.localeCompare(b.item.targetDate)||a.item.name.localeCompare(b.item.name));
+  }
+  function renderTodayMilestones() {
+    const enabled=settings.showTodayMilestones!==false,card=document.getElementById('today-milestone-card'),host=document.getElementById('today-milestone-list');
+    document.getElementById('setTodayMilestones').checked=enabled;
+    const rows=enabled?todayMilestoneRows():[];card.hidden=!rows.length;
+    host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a>'+milestoneTargetDateHtml(row.item)+'</div>'+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
+  }
+  document.getElementById('setTodayMilestones').addEventListener('change',event=>{
+    const next={...settings,showTodayMilestones:event.target.checked};
+    try{saveSettings(next);settings=next;renderTodayMilestones();}catch(error){event.target.checked=settings.showTodayMilestones!==false;toast(error.message);}
+  });
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')renderTodayMilestones();});
+
   function renderTodayTab() {
+    renderTodayMilestones();
     renderWeeklyRotation();
     const wasActive = lastHadActiveSession;
     const isActive = !!activeSession;
@@ -10199,12 +10234,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const metric=(label,value)=>'<div class="stat-box"><div class="stat-value">'+value+'</div><div class="stat-label">'+label+'</div></div>';
     document.getElementById('stats-milestone-progress').innerHTML=rows.length?'<div class="stat-grid">'+metric('Completed',rows.length-pending.length)+metric('Unfinished',pending.length)+metric('Blocked',pending.filter(row=>row.blocked.length).length)+metric('Overdue',pending.filter(row=>row.item.targetDate&&row.item.targetDate<today).length)+'</div><p class="backup-hint">Includes Base games, DLCs, archived content and playthroughs. Blocked and overdue objectives are included in Unfinished.</p><details class="stats-details" open><summary>Upcoming and overdue targets ('+due.length+')</summary><div class="stats-scroll">'+(due.length?due.map(row=>'<article class="stats-insight-row"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a><p>'+escHtml(row.scope)+'</p>'+milestoneTargetDateHtml(row.item)+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join(''):'<p class="backup-hint">No unfinished milestones with target dates.</p>')+'</div></details>':'<p class="backup-hint">No personal milestones yet. Add objectives from a game or DLC dashboard.</p>';
   }
-  document.getElementById('stats-milestone-progress').addEventListener('click',event=>{
+  function openDatedMilestoneDashboard(event){
     const link=event.target.closest('[data-stats-objective]');if(!link)return;event.preventDefault();
     if(link.dataset.run)playthroughUI.selection.set(link.dataset.parent,link.dataset.run);
     openDashboard(contentEntry(link.dataset.statsObjective)?link.dataset.statsObjective:link.dataset.parent);
     requestAnimationFrame(()=>document.querySelector(link.dataset.run?'#dashboard-playthroughs':'#dashboard-body .milestone-system')?.scrollIntoView({block:'nearest'}));
-  });
+  }
+  document.getElementById('stats-milestone-progress').addEventListener('click',openDatedMilestoneDashboard);
+  document.getElementById('today-milestone-list').addEventListener('click',openDatedMilestoneDashboard);
 
   function statsRunComparisons(parent) {
     return (parent.playthroughs||[]).map(run=>{const stats=d2RunStats(parent,run);return {id:run.id,name:run.name,finishedAt:run.finishedAt,total:stats.total,count:stats.rows.length,average:stats.rows.length?stats.total/stats.rows.length:0,completed:stats.completed,milestones:stats.items.length};});
@@ -12734,7 +12771,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       try {
         const data = validateBackupData(JSON.parse(reader.result));
         // Restore progression/planning data without replacing this device's appearance preferences.
-        const portable=['milestoneTemplates','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
+        const portable=['milestoneTemplates','showTodayMilestones','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
         importData = { games:data.games, sessions:data.sessions, settings:data.settings?Object.fromEntries(portable.filter(key=>data.settings[key]!==undefined).map(key=>[key,data.settings[key]])):undefined };
         document.getElementById('import-modal').classList.add('open');
       } catch (error) {
@@ -12759,7 +12796,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const localSettings=structuredClone(settings);
       // Restore portable progression and planning data; retain other local preferences.
       if(importData.settings?.milestoneTemplates!==undefined)localSettings.milestoneTemplates=structuredClone(importData.settings.milestoneTemplates);
-      for(const key of ['dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
+      for(const key of ['showTodayMilestones','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
       if(importData.settings?.weeklyRotationWeek!==undefined&&importData.settings.weeklyRotationWeekAnchor===undefined)delete localSettings.weeklyRotationWeekAnchor;
       try{persistLibraryReplacement(importData.games,importData.sessions,localSettings);}
       catch(error){toast('Backup could not be imported: '+error.message);return;}
@@ -12914,6 +12951,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       refreshQuestCountdown();
       if (todayStr() !== lastQuestDay) {
         lastQuestDay = todayStr();
+        renderTodayMilestones();
         if(ensureRotationWeek()){renderTodayTab();renderGamesTab();}
         renderWeeklyRotation();
         renderAchievementsTab();
@@ -13242,7 +13280,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const cards=[...panel.children].filter(element=>element.classList.contains('card'));
     const find=title=>cards.find(card=>card.querySelector('.card-header')?.textContent.trim()===title);
     const appearance=find('Appearance'),live=find('Live session'),library=find('Game list'),dropbox=find('Dropbox Sync'),backup=find('Backup'),maintenance=find('Achievements'),shortcuts=find('Keyboard shortcuts');
-    const sections=[['appearance','Appearance',[appearance]],['tracking','Session tracking',[find('Playtime goal'),live,library,shortcuts]],['dropbox','Dropbox',[dropbox]],['data','Data',[backup,maintenance]]];
+    const sections=[['appearance','Appearance',[appearance]],['tracking','Session tracking',[find('Playtime goal'),find('Personal milestones'),live,library,shortcuts]],['dropbox','Dropbox',[dropbox]],['data','Data',[backup,maintenance]]];
     const nav=document.createElement('nav');nav.className='settings-nav';nav.setAttribute('aria-label','Settings sections');
     panel.prepend(nav);
     sections.forEach(([id,title,items])=>{
@@ -13936,7 +13974,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     try{saveGames(games);}catch(error){content.milestones=previous;throw error;}
     backfillUnlockDates('gentle');
     const pin=document.getElementById('live-milestone');if(pin)delete pin.dataset.tick;
-    refreshMilestoneDashboard();renderWeeklyRotation();refreshLiveContent();renderAchievementsTab();renderProfileTab();renderMilestoneStats();
+    refreshMilestoneDashboard();renderWeeklyRotation();refreshLiveContent();renderAchievementsTab();renderProfileTab();renderMilestoneStats();renderTodayMilestones();
   }
   function openMilestoneTemplates(key,mode){
     milestoneEditorGame=key;milestoneTemplateMode=mode;
@@ -14993,6 +15031,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(session.playthroughId&&!parent.playthroughs?.some(run=>run.id===session.playthroughId))throw Error('A session references a missing playthrough.');
     }
     const preferences=snapshot.settings||{};
+    if(preferences.showTodayMilestones!==undefined&&typeof preferences.showTodayMilestones!=='boolean')throw Error('Invalid Today milestone setting.');
     const record=value=>value&&typeof value==='object'&&!Array.isArray(value);
     const capacities=value=>{if(!record(value)||plannedWeekdays.some(day=>!Number.isInteger(value[day])||value[day]<0||value[day]>24))throw Error('Invalid weekday planned hours.');};
     if(preferences.plannerDayBudgets!==undefined&&typeof preferences.plannerDayBudgets!=='boolean')throw Error('Invalid planner mode.');
@@ -15108,7 +15147,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.0.4';
+    const APP_VERSION = '2.0.5';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
