@@ -1443,12 +1443,28 @@ opacity: 0.18;
   .session-item:last-child { border-bottom: none; }
 
   .playtime-month-controls { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .stats-month-label { display:flex; flex-direction:column; gap:8px; font-size:13px; color:var(--text2); margin:12px 0; }
+  input#stats-consistency-month { box-sizing:border-box; width:100%; min-height:44px; padding:11px 14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); color:var(--text); font:inherit; color-scheme:inherit; }
+  .stats-content-bar { display:flex; height:8px; border-radius:999px; overflow:hidden; background:var(--surface2); margin:12px 0; }
+  .stats-content-bar > span { background:var(--accent); }
+  .stats-content-bar > span + span { opacity:.45; }
+  .stats-insight-row { padding:12px 0; border-bottom:1px solid var(--border); min-width:0; overflow-wrap:anywhere; }
+  .stats-insight-row > strong { display:block; font-size:14px; }
+  .stats-insight-row p { margin:6px 0; color:var(--text2); font-size:12px; line-height:1.6; }
+  .stats-scroll { max-height:360px; overflow:auto; padding-right:4px; }
+  .stats-run-table { min-width:640px; }
+  .stats-run-table .btn-ghost { white-space:normal; overflow-wrap:anywhere; text-align:left; min-height:44px; }
+  .stats-run-table td { vertical-align:top; }
+  .stats-objective-link { color:var(--accent); text-decoration:none; font-weight:600; font-size:14px; overflow-wrap:anywhere; }
+  .stats-objective-link:hover { text-decoration:underline; }
+  .stats-objective-link:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+  .stats-details > summary { cursor:pointer; padding:12px 0; color:var(--text2); font-size:13px; }
   .stats-distribution-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) 10ch; gap:8px; align-items:center; padding:5px 0; font-size:.8rem; }
   .stats-distribution-row > span { min-width:0; overflow-wrap:anywhere; }
   @supports (grid-template-columns:subgrid) {
-    #stats-monthly-playtime,#stats-session-lengths { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) minmax(10ch,max-content); column-gap:8px; }
+    #stats-monthly-playtime,#stats-session-lengths,#stats-weekly-trend { display:grid; grid-template-columns:minmax(0,1fr) minmax(32px,1fr) minmax(10ch,max-content); column-gap:8px; }
     .stats-distribution-row { grid-column:1 / -1; grid-template-columns:subgrid; }
-    #stats-monthly-playtime > .backup-hint,#stats-session-lengths > .backup-hint { grid-column:1 / -1; }
+    #stats-monthly-playtime > .backup-hint,#stats-session-lengths > .backup-hint,#stats-weekly-trend > .backup-hint { grid-column:1 / -1; }
   }
   .stats-distribution-row .progress-track { margin:0; height:6px; }
   .stats-distribution-value { font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
@@ -5698,7 +5714,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.0.3</span>
+    <span class="version-badge">2.0.4</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -5904,18 +5920,23 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       </div>
       <div class="bar-chart" id="week-chart"></div>
     </div>
+    <div class="card" id="consistency-card"><div class="card-header">Gaming consistency</div><label class="stats-month-label" for="stats-consistency-month">Month<input type="month" id="stats-consistency-month"></label><div id="stats-consistency" aria-live="polite"></div></div>
+    <div class="card" id="weekly-trend-card"><div class="card-header">Weekly playtime trend</div><p class="backup-hint">Last 12 calendar weeks, following Week starts on. The current week is incomplete.</p><div id="stats-weekly-trend"></div></div>
     <div class="card">
       <div class="card-header">Last 30 Days</div>
       <div class="bar-chart" id="month-chart"></div>
     </div>
     <div class="card"><div class="card-header">Monthly playtime</div><div id="stats-monthly-playtime"></div></div>
     <div class="card"><div class="card-header">Session lengths</div><div id="stats-session-lengths"></div></div>
+    <div class="card" id="content-playtime-card"><div class="card-header">Base game vs DLC</div><p class="backup-hint">All completed recorded playtime. Previously played HLTB hours are excluded.</p><div id="stats-content-playtime"></div></div>
     <div class="card" id="platform-stats-card"><div class="card-header">Playtime by Platform</div><div id="platform-stats"></div></div>
+    <div class="card" id="stats-milestones-card"><div class="card-header">Milestone progress</div><div id="stats-milestone-progress"></div></div>
     <div class="card" id="comparison-card">
       <div class="card-header">Compare games</div>
       <div class="insight-selects"><div><label for="compare-game-a">First game</label><select id="compare-game-a"></select></div><div><label for="compare-game-b">Second game</label><select id="compare-game-b"></select></div></div>
       <div id="comparison-result" aria-live="polite"></div>
     </div>
+    <div class="card" id="stats-playthrough-card"><div class="card-header">Playthrough comparison</div><label class="d2-field" for="stats-playthrough-game">Game<select id="stats-playthrough-game"></select></label><div id="stats-playthrough-comparison"></div></div>
     <div class="card" id="recap-card">
       <div class="card-header">Your gaming recap</div>
       <div class="insight-selects"><div><label for="recap-mode">Recap</label><select id="recap-mode"><option value="month">Monthly</option><option value="year">Yearly</option></select></div><div><label for="recap-period">Period</label><select id="recap-period"></select></div></div>
@@ -6873,6 +6894,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
+<div class="modal-overlay" id="rotation-reset-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rotation-reset-title" aria-describedby="rotation-reset-description">
+    <h3 id="rotation-reset-title">Plan your new week</h3>
+    <p class="backup-hint" id="rotation-reset-description">Your weekly rotation has reset. Choose games and targets for the new week. You can reuse the previous plan with Load last week.</p>
+    <div class="modal-actions"><button type="button" class="btn-ghost" id="rotation-reset-later">Later</button><button type="button" class="btn btn-start" id="rotation-reset-plan">Plan week</button></div>
+  </div>
+</div>
+
 <!-- Update available modal -->
 <div class="modal-overlay" id="update-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="update-title">
@@ -7101,10 +7130,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function saveSettings(settings) {
     checkStorageFresh();
-    rollWeeklyRotation(settings);
+    const rotationChange={};
+    rollWeeklyRotation(settings,new Date(),rotationChange);
     const previous = JSON.stringify(syncSettings(loadSettings()));
     writeLocalData(KEYS.settings, settings);
     if (previous !== JSON.stringify(syncSettings(settings))) scheduleAutoUpload();
+    if(rotationChange.reset)queueRotationResetPrompt(settings.weeklyRotationWeek);
   }
 
   function uid() {
@@ -7115,6 +7146,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   let games = loadGames();
   let sessions = loadSessions();
   let settings = loadSettings();
+  var pendingRotationResetWeek=null,shownRotationResetWeek=null,rotationResetObserver=null,rotationResetReturnFocus=null;
   let activeSession = sessions.find(s => s.stop === null) || null;
   let lastHadActiveSession = !!activeSession;
   let cardAnimating = false;
@@ -9456,7 +9488,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     day.setDate(day.getDate()-(day.getDay()-(first==='sunday'?0:1)+7)%7);
     return day.getFullYear()+'-'+String(day.getMonth()+1).padStart(2,'0')+'-'+String(day.getDate()).padStart(2,'0');
   }
-  function rollWeeklyRotation(state,now=new Date()) {
+  function rollWeeklyRotation(state,now=new Date(),change=null) {
     const first=state.weekStartsOn==='sunday'?'sunday':'monday',week=rotationWeekKey(now,first);
     let previous=state.weeklyRotationWeek;
     // Adopt existing selections on first upgrade; older data has no reliable week stamp.
@@ -9484,14 +9516,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     state.weeklyRotationLastWeek={weekStart:last,weekStartsOn:first,ids,targets,days};
     state.weeklyRotation=[];state.weeklyRotationTargets={};state.weeklyRotationDays={};
     state.weeklyRotationWeek=week;state.weeklyRotationWeekAnchor=week;state.weeklyRotationWeekStartsOn=first;
+    if(change)change.reset=true;
     return true;
   }
   function ensureRotationWeek() {
     const first=settings.weekStartsOn==='sunday'?'sunday':'monday';
     if(settings.weeklyRotationWeekStartsOn===first && milestoneValidDate(settings.weeklyRotationWeek) && settings.weeklyRotationWeek>=rotationWeekKey(new Date(),first))return false;
-    const next=structuredClone(settings);
-    if(!rollWeeklyRotation(next))return false;
-    saveSettings(next);settings=next;return true;
+    const next=structuredClone(settings),rotationChange={};
+    if(!rollWeeklyRotation(next,new Date(),rotationChange))return false;
+    saveSettings(next);settings=next;
+    if(rotationChange.reset)queueRotationResetPrompt(settings.weeklyRotationWeek);
+    return true;
   }
   function lastWeekRotation() {
     const snapshot=settings.weeklyRotationLastWeek;
@@ -10104,7 +10139,100 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return statsDistributionRow(bucket.label, bucket.count + ' (' + Math.round(percent) + '%)', percent);
     }).join('') : empty;
   }
+  function weeklyTrendData(now=new Date()) {
+    const current=dateKey(getWeekBounds(now).start);
+    const weeks=Array.from({length:12},(_,i)=>({start:addDays(current,(i-11)*7),ms:0,count:0,current:i===11}));
+    const byWeek=new Map(weeks.map(week=>[week.start,week]));
+    for(const session of sessions){if(session.stop===null)continue;const key=dateKey(getWeekBounds(new Date(session.start)).start),week=byWeek.get(key);if(week){week.ms+=session.durationMs||0;week.count++;}}
+    return weeks;
+  }
+  function renderWeeklyTrend() {
+    const weeks=weeklyTrendData(),max=Math.max(1,...weeks.map(week=>week.ms));
+    document.getElementById('stats-weekly-trend').innerHTML=weeks.some(week=>week.count)?weeks.map(week=>statsDistributionRow(week.start+' - '+addDays(week.start,6)+(week.current?' / So far':''),fmtDuration(week.ms),week.ms/max*100)).join(''):'<p class="backup-hint">No completed sessions in the last 12 weeks.</p>';
+  }
+
+  function contentPlaytimeData() {
+    const byGame=new Map();let base=0,dlc=0,count=0;
+    for(const session of sessions){if(session.stop===null)continue;count++;let row=byGame.get(session.gameId);if(!row){row={id:session.gameId,name:games.find(game=>game.id===session.gameId)?.name||session.gameName||'Removed game',base:0,dlc:0};byGame.set(session.gameId,row);}
+      for(const [id,ms]of allocatedPlaytime(session)){if(id===null){row.base+=ms;base+=ms;}else{row.dlc+=ms;dlc+=ms;}}
+    }
+    return {base,dlc,count,games:[...byGame.values()].sort((a,b)=>(b.base+b.dlc)-(a.base+a.dlc))};
+  }
+  function contentPlaytimeBar(base,dlc) {
+    const total=base+dlc,basePercent=total?base/total*100:0,dlcPercent=total?dlc/total*100:0;
+    return '<div class="stats-content-bar" role="img" aria-label="'+milestoneAttr('Base game '+fmtDuration(base)+'; DLC '+fmtDuration(dlc))+'"><span style="width:'+basePercent+'%"></span><span style="width:'+dlcPercent+'%"></span></div><p class="backup-hint">Base game: '+fmtDuration(base)+' ('+Math.round(basePercent)+'%) / DLC: '+fmtDuration(dlc)+' ('+Math.round(dlcPercent)+'%)</p>';
+  }
+  function renderContentPlaytime() {
+    const data=contentPlaytimeData(),host=document.getElementById('stats-content-playtime');
+    host.innerHTML=data.count?contentPlaytimeBar(data.base,data.dlc)+'<details class="stats-details"><summary>By game ('+data.games.length+')</summary><div class="stats-scroll">'+data.games.map(game=>'<div class="stats-insight-row"><strong>'+escHtml(game.name)+'</strong>'+contentPlaytimeBar(game.base,game.dlc)+'</div>').join('')+'</div></details>':'<p class="backup-hint">No completed sessions.</p>';
+  }
+
+  function consistencyData(month,now=new Date()) {
+    if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))return null;
+    const [year,m]=month.split('-').map(Number),current=dateKey(now).slice(0,7),elapsed=month===current?now.getDate():month<current?new Date(year,m,0).getDate():0;
+    const days=new Set();let total=0,count=0;
+    for(const session of sessions){if(session.stop===null)continue;const day=dateKey(session.start);if(day.slice(0,7)!==month||day>dateKey(now))continue;count++;total+=session.durationMs||0;if((session.durationMs||0)>0)days.add(day);}
+    return {active:days.size,inactive:Math.max(0,elapsed-days.size),elapsed,total,count,average:days.size?total/days.size:0};
+  }
+  function renderConsistency() {
+    const input=document.getElementById('stats-consistency-month'),month=input.value||todayStr().slice(0,7);input.max=todayStr().slice(0,7);if(!input.value)input.value=month;
+    const data=consistencyData(month),host=document.getElementById('stats-consistency');
+    if(!data||month>todayStr().slice(0,7)){host.innerHTML='<p class="backup-hint">Choose the current month or an earlier month.</p>';return;}
+    const metric=(label,value)=>'<div class="stat-box"><div class="stat-value">'+escHtml(String(value))+'</div><div class="stat-label">'+label+'</div></div>';
+    host.innerHTML='<div class="stat-grid">'+metric('Days played',data.active)+metric('Days without playtime',data.inactive)+metric('Average per active day',fmtDurationShort(data.average))+metric('Playtime',fmtDurationShort(data.total))+'</div><p class="backup-hint">'+(month===todayStr().slice(0,7)?'So far this month; future days are excluded.':'Full calendar month.')+' A played day has completed active playtime, grouped by the session&#39;s local start date.</p>'+(data.count?'':'<p class="backup-hint">No completed sessions this month.</p>');
+  }
+  document.getElementById('stats-consistency-month').addEventListener('change',renderConsistency);
+
+  function statsMilestoneData() {
+    const rows=[];
+    for(const parent of games){
+      const append=(key,data,scope,runId=null)=>{const items=normalizeGameMilestones(data?.milestones);for(const item of items)rows.push({key,parentId:parent.id,scope,runId,item,blocked:milestoneBlocked(item,items)});};
+      append(parent.id,parent,parent.name+' / Base game'+(parent.archived?' / Archived':''));
+      for(const dlc of parent.dlcs||[])append(dlcKey(parent.id,dlc.id),dlc,parent.name+' / '+dlc.name+(parent.archived||dlc.archived?' / Archived':''));
+      for(const run of parent.playthroughs||[])for(const [id,data]of Object.entries(run.content||{}))append(id==='base'?parent.id:dlcKey(parent.id,id),data,parent.name+' / '+(id==='base'?'Base game':contentName(parent.id,id))+' / '+run.name,run.id);
+    }
+    return rows;
+  }
+  function renderMilestoneStats() {
+    const rows=statsMilestoneData(),pending=rows.filter(row=>!row.item.completedAt),today=todayStr();
+    const due=pending.filter(row=>row.item.targetDate).sort((a,b)=>a.item.targetDate.localeCompare(b.item.targetDate)||a.item.name.localeCompare(b.item.name));
+    const metric=(label,value)=>'<div class="stat-box"><div class="stat-value">'+value+'</div><div class="stat-label">'+label+'</div></div>';
+    document.getElementById('stats-milestone-progress').innerHTML=rows.length?'<div class="stat-grid">'+metric('Completed',rows.length-pending.length)+metric('Unfinished',pending.length)+metric('Blocked',pending.filter(row=>row.blocked.length).length)+metric('Overdue',pending.filter(row=>row.item.targetDate&&row.item.targetDate<today).length)+'</div><p class="backup-hint">Includes Base games, DLCs, archived content and playthroughs. Blocked and overdue objectives are included in Unfinished.</p><details class="stats-details" open><summary>Upcoming and overdue targets ('+due.length+')</summary><div class="stats-scroll">'+(due.length?due.map(row=>'<article class="stats-insight-row"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a><p>'+escHtml(row.scope)+'</p>'+milestoneTargetDateHtml(row.item)+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join(''):'<p class="backup-hint">No unfinished milestones with target dates.</p>')+'</div></details>':'<p class="backup-hint">No personal milestones yet. Add objectives from a game or DLC dashboard.</p>';
+  }
+  document.getElementById('stats-milestone-progress').addEventListener('click',event=>{
+    const link=event.target.closest('[data-stats-objective]');if(!link)return;event.preventDefault();
+    if(link.dataset.run)playthroughUI.selection.set(link.dataset.parent,link.dataset.run);
+    openDashboard(contentEntry(link.dataset.statsObjective)?link.dataset.statsObjective:link.dataset.parent);
+    requestAnimationFrame(()=>document.querySelector(link.dataset.run?'#dashboard-playthroughs':'#dashboard-body .milestone-system')?.scrollIntoView({block:'nearest'}));
+  });
+
+  function statsRunComparisons(parent) {
+    return (parent.playthroughs||[]).map(run=>{const stats=d2RunStats(parent,run);return {id:run.id,name:run.name,finishedAt:run.finishedAt,total:stats.total,count:stats.rows.length,average:stats.rows.length?stats.total/stats.rows.length:0,completed:stats.completed,milestones:stats.items.length};});
+  }
+  function renderPlaythroughComparison() {
+    const select=document.getElementById('stats-playthrough-game'),host=document.getElementById('stats-playthrough-comparison');
+    const options=games.filter(game=>game.playthroughs?.length).slice().sort((a,b)=>a.name.localeCompare(b.name)),selected=select.value;
+    const html=options.length?options.map(game=>'<option value="'+milestoneAttr(game.id)+'">'+escHtml(game.name+(game.archived?' / Archived':''))+'</option>').join(''):'<option value="">No playthroughs yet</option>';
+    if(select.innerHTML!==html)select.innerHTML=html;
+    select.disabled=!options.length;select.value=options.some(game=>game.id===selected)?selected:options[0]?.id||'';
+    const parent=options.find(game=>game.id===select.value);
+    if(!parent){host.innerHTML='<p class="backup-hint">Create a playthrough from a game dashboard to compare its runs here.</p>';return;}
+    const rows=statsRunComparisons(parent);
+    host.innerHTML=(rows.length===1?'<p class="backup-hint">One playthrough so far. Create another from this game&#39;s dashboard to compare runs.</p>':'')+'<div class="d2-table-wrap" tabindex="0" role="region" aria-label="Playthrough comparison table"><table class="d2-table stats-run-table"><thead><tr><th scope="col">Playthrough</th><th scope="col">State</th><th scope="col">Recorded time</th><th scope="col">Sessions</th><th scope="col">Avg. session</th><th scope="col">Milestones</th></tr></thead><tbody>'+rows.map(row=>'<tr><th scope="row"><button type="button" class="btn-ghost" data-stats-run-open="'+milestoneAttr(row.id)+'" data-parent="'+milestoneAttr(parent.id)+'">'+escHtml(row.name)+'</button></th><td>'+(row.finishedAt?'Finished '+escHtml(fmtDateShort(row.finishedAt)):'In progress')+'</td><td>'+fmtDurationShort(row.total)+'</td><td>'+row.count+'</td><td>'+fmtDurationShort(row.average)+'</td><td>'+row.completed+' / '+row.milestones+'</td></tr>').join('')+'</tbody></table></div><p class="backup-hint">Base game and DLC time are combined within each run. Unassigned sessions and HLTB previously played hours are excluded; ongoing runs are incomplete.</p>';
+  }
+  document.getElementById('stats-playthrough-game').addEventListener('change',renderPlaythroughComparison);
+  document.getElementById('stats-playthrough-comparison').addEventListener('click',event=>{
+    const button=event.target.closest('[data-stats-run-open]');if(!button)return;
+    playthroughUI.selection.set(button.dataset.parent,button.dataset.statsRunOpen);openDashboard(button.dataset.parent);
+    requestAnimationFrame(()=>document.getElementById('dashboard-playthroughs')?.scrollIntoView({block:'nearest'}));
+  });
+
   function renderStatsTab() {
+    renderPlaythroughComparison();
+    renderMilestoneStats();
+    renderConsistency();
+    renderContentPlaytime();
+    renderWeeklyTrend();
     renderPlaytimeDistributions();
     renderPlaytimeCalendar();
     renderGameComparison();
@@ -12179,7 +12307,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   // Close modals on overlay click (except the target-reached alert, which needs explicit confirmation)
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    if (['target-reached-modal','idle-reminder-modal','weekly-planner-modal','feature-editor'].includes(overlay.id)) return;
+    if (['target-reached-modal','idle-reminder-modal','weekly-planner-modal','feature-editor','rotation-reset-modal'].includes(overlay.id)) return;
     overlay.addEventListener('click', e => {
       if (e.target === overlay) overlay.classList.remove('open');
     });
@@ -13808,7 +13936,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     try{saveGames(games);}catch(error){content.milestones=previous;throw error;}
     backfillUnlockDates('gentle');
     const pin=document.getElementById('live-milestone');if(pin)delete pin.dataset.tick;
-    refreshMilestoneDashboard();renderWeeklyRotation();refreshLiveContent();renderAchievementsTab();renderProfileTab();
+    refreshMilestoneDashboard();renderWeeklyRotation();refreshLiveContent();renderAchievementsTab();renderProfileTab();renderMilestoneStats();
   }
   function openMilestoneTemplates(key,mode){
     milestoneEditorGame=key;milestoneTemplateMode=mode;
@@ -14138,6 +14266,33 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('startup-sync-close').focus();
   }
   document.getElementById('btn-review-unsynced').addEventListener('click', openUnsyncedReview);
+
+  function queueRotationResetPrompt(week) {
+    if(week===shownRotationResetWeek)return;
+    pendingRotationResetWeek=week;
+    if(!rotationResetObserver){rotationResetObserver=new MutationObserver(showRotationResetPrompt);rotationResetObserver.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','open']});}
+    showRotationResetPrompt();
+  }
+  function showRotationResetPrompt() {
+    if(!pendingRotationResetWeek||document.visibilityState==='hidden'||document.getElementById('boot-splash')||document.querySelector('.modal-overlay.open,dialog[open]'))return;
+    const modal=document.getElementById('rotation-reset-modal');if(!modal)return;
+    shownRotationResetWeek=pendingRotationResetWeek;pendingRotationResetWeek=null;
+    rotationResetObserver?.disconnect();rotationResetObserver=null;
+    rotationResetReturnFocus=document.activeElement;
+    modal.classList.add('open');document.getElementById('rotation-reset-plan').focus();
+  }
+  function closeRotationResetPrompt(plan=false) {
+    document.getElementById('rotation-reset-modal').classList.remove('open');
+    if(plan)openWeeklyPlanner();else if(rotationResetReturnFocus?.isConnected)rotationResetReturnFocus.focus();
+  }
+  document.getElementById('rotation-reset-plan').onclick=()=>closeRotationResetPrompt(true);
+  document.getElementById('rotation-reset-later').onclick=()=>closeRotationResetPrompt();
+  document.getElementById('rotation-reset-modal').addEventListener('click',event=>{if(event.target===event.currentTarget)closeRotationResetPrompt();});
+  document.getElementById('rotation-reset-modal').addEventListener('keydown',event=>{
+    if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();closeRotationResetPrompt();}
+    if(event.key==='Tab'){const first=document.getElementById('rotation-reset-later'),last=document.getElementById('rotation-reset-plan');if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
+  });
+  document.addEventListener('visibilitychange',showRotationResetPrompt);
 
   function queueStartupSyncReview() {
     const observer = new MutationObserver(showWhenReady);
@@ -14953,7 +15108,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.0.3';
+    const APP_VERSION = '2.0.4';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
