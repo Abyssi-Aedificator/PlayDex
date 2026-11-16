@@ -58,7 +58,21 @@ self.addEventListener('fetch', event => {
     // naturally after all tabs close. Approval changes the persistent pointer.
     const cached = await cache.match(request.mode === 'navigate' ? './index.html' : request);
     if (cached) return cached;
-    if (request.mode === 'navigate') return new Response('PlayDex is unavailable offline. Reconnect to recover the app.',{status:503,headers:{'Content-Type':'text/plain'}});
+    if (request.mode === 'navigate') {
+      // A missing cached shell must not trap the user on the offline error page
+      // after connectivity returns. Fetch the page and restore the shell cache
+      // so the app is available offline again on the next visit.
+      let response;
+      try {
+        response = await fetch(request);
+      } catch {
+        return new Response('PlayDex is unavailable offline. Reconnect to recover the app.',{status:503,headers:{'Content-Type':'text/plain'}});
+      }
+      if (response.ok) {
+        try { await cache.put('./index.html', response.clone()); } catch { /* Network response still recovers this visit. */ }
+      }
+      return response;
+    }
     return fetch(request);
   })());
 });
