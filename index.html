@@ -15595,7 +15595,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const offset=document.querySelector('header').getBoundingClientRect().height+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+20;
     let selected=sectionEntries[0];
     for(const entry of sectionEntries)if(entry.node.getBoundingClientRect().top<=offset)selected=entry;
-    const preferred=sectionEntries.find(entry=>entry.id===sectionPreferred);if(preferred&&Math.abs(preferred.node.getBoundingClientRect().top-selected.node.getBoundingClientRect().top)<4)selected=preferred;
+    const preferred=sectionEntries.find(entry=>entry.id===sectionPreferred),scroller=document.scrollingElement||document.documentElement,maxScroll=Math.max(0,scroller.scrollHeight-scroller.clientHeight),atBottom=window.scrollY>=maxScroll-16;
+    const visible=entry=>{const box=entry.node.getBoundingClientRect();return box.bottom>offset&&box.top<innerHeight;};
+    // Keep an explicitly opened section selected while visible; manual scrolling releases it.
+    if(preferred&&(visible(preferred)||Math.abs(preferred.node.getBoundingClientRect().top-selected.node.getBoundingClientRect().top)<4))selected=preferred;
+    else if(atBottom&&maxScroll>0){const lastVisible=sectionEntries.filter(visible).at(-1);if(lastVisible)selected=lastVisible;}
     for(const button of sectionLinks.querySelectorAll('button')){const value=button.dataset.section===selected.id?'location':'false';if(button.getAttribute('aria-current')!==value)button.setAttribute('aria-current',value);}
   }
   sectionToggle.onclick=()=>{const open=!sectionNav.hasAttribute('data-open');sectionNav.toggleAttribute('data-open',open);sectionToggle.setAttribute('aria-expanded',String(open));if(open)sectionLinks.querySelector('[aria-current="location"]')?.focus();};
@@ -15604,6 +15608,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     sectionPreferred=entry.id;sectionClose();const offset=document.querySelector('header').getBoundingClientRect().height+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+16;
     entry.node.setAttribute('tabindex','-1');entry.node.focus({preventScroll:true});
     window.scrollTo({top:Math.max(0,window.scrollY+entry.node.getBoundingClientRect().top-offset),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    requestAnimationFrame(updateSectionLocation);
   });
   sectionNav.addEventListener('keydown',event=>{
     if(event.key==='Escape'){event.preventDefault();sectionClose(true);return;}
@@ -15622,6 +15627,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   sectionLinks.addEventListener('pointerleave',()=>sectionTooltip.hidden=true);
   sectionLinks.addEventListener('focusout',event=>{event.target.removeAttribute('aria-describedby');sectionTooltip.hidden=true;});
   document.addEventListener('click',event=>{if(!sectionNav.contains(event.target))sectionClose();});
+  const clearSectionPreference=event=>{if(!sectionNav.contains(event.target))sectionPreferred=null;};
+  document.addEventListener('wheel',clearSectionPreference,{passive:true});
+  document.addEventListener('touchstart',clearSectionPreference,{passive:true});
+  document.addEventListener('pointerdown',clearSectionPreference,{passive:true});
+  document.addEventListener('keydown',event=>{if(['PageUp','PageDown','Home','End','ArrowUp','ArrowDown',' '].includes(event.key))clearSectionPreference(event);});
   window.addEventListener('scroll',()=>{sectionTooltip.hidden=true;if(!sectionScrollFrame)sectionScrollFrame=requestAnimationFrame(updateSectionLocation);},{passive:true});
   window.addEventListener('resize',()=>{sectionClose();scheduleSectionNavigation();});
   new ResizeObserver(scheduleSectionNavigation).observe(document.querySelector('header'));
