@@ -13596,6 +13596,17 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         };
         actions.append(select,assign);
       }
+      const remove=document.createElement('button');remove.type='button';remove.className='btn-ghost btn-danger';remove.textContent='Delete session';remove.setAttribute('aria-label','Delete session for '+name);
+      remove.onclick=()=>{
+        const current=sessions.find(entry=>entry.id===session.id);if(!current||current.stop===null){renderHistoryHealth();return;}
+        if(!confirm('Delete this session for '+name+'?\n'+fmtDateShort(current.start)+' '+fmtTime(current.start)+' / '+fmtDuration(current.durationMs||0)+' active playtime.\nThis cannot be undone.'))return;
+        try{
+          persistSessionReplacement(sessions.filter(entry=>entry.id!==current.id));
+          renderSessionsTab(false);renderTodayTab();renderStatsTab();renderAchievementsTab();renderProfileTab();renderGamesTab();renderTop();renderHistoryHealth();
+          document.getElementById('history-health-rescan').focus();toast('Session deleted');
+        }catch(error){toast(error.message||'Could not delete the session.');}
+      };
+      actions.append(remove);
       row.append(actions);list.append(row);
     }
   }
