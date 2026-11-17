@@ -1,6 +1,24 @@
 PlayDex - Changelog
 ====================
 
+Version 2.1.1
+-------------------
+- Fixed the general milestone calendar being oversized and clipped inside its editor; calendar navigation no longer submits the form.
+- Today's Milestone targets show the linked game beside each assigned objective in muted text.
+- General milestones now use the app's themed target-date calendar and no longer show or request hours remaining.
+- Removed the duplicate Multiplayer game status and explanation from game dashboards; the option remains in Edit Game.
+- Removed the weekly-pace explanatory line beneath rotation HLTB completion estimates.
+- Dated general milestones now appear in Today's Milestone targets with countdowns, ordered alongside game milestones; select one to edit it in Games.
+- Personal milestones now use one ordered list without groups or group controls; existing objectives, progress, prerequisites, and templates remain available.
+- General milestones now live in Games instead of Profile, alongside the library they can be assigned to.
+- Rotation entries with dated milestones now use the same separate Main Story and Main + Extra completion lines as other HLTB entries, with milestone targets shown beneath without duplicate HLTB predictions.
+- Profile now holds General milestones with optional target dates and hours remaining; add, edit, delete, or move them to a game or DLC later, with Dropbox sync and backup support.
+- Recent sessions in game dashboards show content breakdowns on a separate line with spacing below the date and time.
+- Delete saved milestone templates from the template picker with confirmation, keeping milestones already created from them.
+- The game dashboard shows Multiplayer game as read-only; change this setting through Edit Game.
+- Rotation entries without dated milestone estimates now show projected Main Story and Main + Extra completion dates using their weekly allocation, updating in the planner and during live play without duplicating milestone estimates.
+- Rotation milestone and HLTB estimates use the theme colour for days, playtime amounts and dates, including live updates.
+
 Version 2.1.0
 -------------------
 - Weekly rotation and its planner show remaining Main Story and Main + Extra HLTB time when estimates are available, using Base game or DLC tracked time plus previously played hours.
