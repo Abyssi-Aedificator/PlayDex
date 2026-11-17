@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.2
 -------------------
+- Widened the Weekly rotation dialog slightly on larger screens while retaining its responsive mobile layout.
 - Archived rotation entries no longer leave recorded minutes in planned allocations; empty rotations show zero planned time and the full available budget, and restoring entries validates their full targets.
 - Removed the Multiplayer game feature throughout the app; all active games and DLCs can be selected in weekly rotations, presets, and reused plans.
 
