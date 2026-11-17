@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.3
 -------------------
+- Games remain visible in This week's rotation after reaching their allocated hours, showing Target reached and full progress while still respecting planned days.
 - Weekly rotation explains missing or zero target hours in a themed popup when saving, instead of displaying a persistent validation line.
 - High priority badges now appear beside game names in This week's rotation, wrapping neatly when space is limited.
 - Save plan now requires a target of at least one whole hour for every selected game or DLC; zero and blank targets stay in the draft until corrected, and the first invalid target is focused on save.

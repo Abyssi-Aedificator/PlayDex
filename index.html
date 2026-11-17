@@ -9864,16 +9864,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     budgetEl.classList.toggle('over-budget',(!!weeklyRotationBudgetMinutes() || !!settings.autoDailyGoal || !!settings.plannerDayBudgets) && planned>weeklyRotationBudgetMinutes());
     const list=document.getElementById('rotation-list');
     const today = plannedWeekdays[new Date().getDay()];
-    const candidates = activeSession ? ids.filter(id => id === sessionContentKey(activeSession)) : remaining;
+    const candidates = activeSession ? ids.filter(id => id === sessionContentKey(activeSession)) : ids;
     const visible = candidates.filter(id => {
       const day = settings.weeklyRotationDays?.[id];
       return !plannedWeekdays.includes(day) || day === today;
     }).sort((a,b)=>Number(settings.weeklyRotationPriorities?.[b]===true)-Number(settings.weeklyRotationPriorities?.[a]===true));
-    const empty = candidates.length
-      ? '<p class="backup-hint">No rotation games planned for today.</p>'
-      : ids.length && !remaining.length && !activeSession
-        ? '<p class="backup-hint">All weekly targets reached! Your games return next week.</p>'
-        : '';
+    const empty = candidates.length ? '<p class="backup-hint">No rotation games planned for today.</p>' : '';
     list.innerHTML=!visible.length ? empty : visible.map(id=>{
       const game=contentEntry(id),entry=progress.games[id];
       const target=rotationTargetMinutes(id),pct=target?Math.min(100,Math.floor(entry.ms/(target*60000)*100)):0;
