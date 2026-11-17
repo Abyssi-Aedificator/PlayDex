@@ -9811,7 +9811,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const enabled=settings.showTodayMilestones!==false,card=document.getElementById('today-milestone-card'),host=document.getElementById('today-milestone-list');
     document.getElementById('setTodayMilestones').checked=enabled;
     document.getElementById('setSessionMilestonePrompts').checked=settings.sessionMilestonePrompts!==false;
-    const rows=enabled?todayMilestoneRows():[];card.hidden=!rows.length;
+    const rows=enabled&&!activeSession?todayMilestoneRows():[];card.hidden=!rows.length;
     host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" '+(row.general?'data-general-target="'+milestoneAttr(row.item.id)+'"':'data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':''))+'>'+escHtml(row.item.name)+(row.general?'':'<span class="today-milestone-game">'+escHtml(games.find(game=>game.id===row.parentId)?.name||'')+'</span>')+'</a>'+milestoneTargetDateHtml(row.item)+'</div>'+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
   }
   document.getElementById('setTodayMilestones').addEventListener('change',event=>{
