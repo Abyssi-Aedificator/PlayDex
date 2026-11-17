@@ -5429,15 +5429,25 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 .planner-remaining small { color:var(--text2); font-size:12px; white-space:nowrap; }
 .planner-remaining.is-over .progress-track { outline:1px solid var(--red); }
 .planner-remaining.is-over small { color:var(--red); }
-.planner-row { display:grid; grid-template-columns:48px minmax(100px,1fr) 110px 145px auto; gap:12px; align-items:center; padding:16px 0; border-bottom:1px solid var(--border); }
+ .planner-list { display:grid; gap:14px; }
+.planner-row { min-width:0; padding:16px; border:1px solid var(--border); border-radius:16px; }
+.planner-heading { display:grid; grid-template-columns:48px minmax(0,1fr) auto; align-items:center; gap:12px; }
 .planner-row .library-game-cover,.planner-pick .library-game-cover { width:48px; height:48px; }
 .planner-identity { min-width:0; overflow-wrap:anywhere; }
 .planner-identity strong,.planner-pick strong { display:block; font-size:14px; }
 .planner-identity small,.planner-pick small,.planner-recorded { display:block; font-size:12px; color:var(--text2); line-height:1.6; }
 .rotation-estimate-number { color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
-.planner-recorded { margin-top:5px; color:var(--accent); }
-.planner-row .d2-field { margin:0; font-size:12px; align-self:end; }
-.planner-row > button { align-self:end; }
+.planner-recorded { margin-top:4px; }
+.planner-controls { display:grid; grid-template-columns:minmax(0,1fr) 120px 160px; align-items:end; gap:12px; margin-top:14px; }
+.planner-controls--no-run { grid-template-columns:120px 160px; }
+.planner-controls--no-run .planner-run { display:none; }
+.planner-run { min-width:0; }
+.planner-row .d2-field { margin:0; font-size:12px; }
+.planner-heading > button { align-self:start; }
+.planner-estimates { margin-top:14px; padding-top:12px; border-top:1px solid var(--border); overflow-wrap:anywhere; }
+.planner-estimates small { display:block; font-size:12px; line-height:1.7; color:var(--text2); }
+.planner-estimates .planner-estimate-hint { margin-top:4px; }
+.planner-estimates[hidden] { display:none; }
 input[data-d2-target] { padding:11px 32px 11px 10px; }
 .planner-hour-control { position:relative; display:block; }
 .planner-hour-arrows { position:absolute; right:3px; top:3px; bottom:3px; display:flex; flex-direction:column; width:26px; }
@@ -5456,11 +5466,11 @@ input[data-d2-target]::-webkit-inner-spin-button,input[data-d2-target]::-webkit-
 .planner-pick[hidden],#planner-weekday-fields[hidden] { display:none; }
 #planner-picker-search { width:100%; box-sizing:border-box; padding:12px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); color:var(--text); font:inherit; }
 @media(max-width:700px) {
- .planner-row { grid-template-columns:48px minmax(0,1fr) auto; gap:10px; }
- .planner-row .planner-identity { grid-column:2 / 4; padding-right:0; }
- .planner-row > .d2-field { grid-row:2; grid-column:1 / 3; }
- .planner-row > .d2-field + .d2-field { grid-row:3; grid-column:1 / 3; }
- .planner-row > button { grid-column:3; grid-row:3; }
+ .planner-row { padding:12px; }
+ .planner-heading { grid-template-columns:44px minmax(0,1fr) auto; gap:10px; }
+ .planner-heading .library-game-cover { width:44px; height:44px; }
+ .planner-controls,.planner-controls--no-run { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+ .planner-run { grid-column:1 / -1; }
  .planner-more { margin-left:0; }
  .d2-capacities { grid-template-columns:repeat(4,minmax(0,1fr)); }
 }
@@ -9642,7 +9652,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function rotationRunPicker(key,selection){
     const entry=contentEntry(key),parent=games.find(game=>game.id===(entry?.parentId||entry?.id)),runs=parent?.playthroughs||[],selected=selection[key]||'';
     if(!runs.length&&!selected)return '';
-    return '<label class="d2-field" style="margin-top:8px">Playthrough<select aria-label="Playthrough for '+d2Attr(entry.name)+'" data-d2-run="'+d2Attr(key)+'"><option value="">Any playthrough</option>'+(!runs.some(run=>run.id===selected)&&selected?'<option value="'+d2Attr(selected)+'" selected disabled>Unavailable playthrough</option>':'')+runs.map(run=>'<option value="'+d2Attr(run.id)+'"'+(run.id===selected?' selected':'')+(run.finishedAt?' disabled':'')+'>'+escHtml(run.name)+(run.finishedAt?' (finished)':'')+'</option>').join('')+'</select></label>';
+    return '<label class="d2-field">Playthrough<select aria-label="Playthrough for '+d2Attr(entry.name)+'" data-d2-run="'+d2Attr(key)+'"><option value="">Any playthrough</option>'+(!runs.some(run=>run.id===selected)&&selected?'<option value="'+d2Attr(selected)+'" selected disabled>Unavailable playthrough</option>':'')+runs.map(run=>'<option value="'+d2Attr(run.id)+'"'+(run.id===selected?' selected':'')+(run.finishedAt?' disabled':'')+'>'+escHtml(run.name)+(run.finishedAt?' (finished)':'')+'</option>').join('')+'</select></label>';
   }
   function rotationPinnedMilestoneHtml(key,live=false){
     const data=rotationContentData(key),rows=sessions.filter(session=>rotationRunMatches(session,key));
@@ -15014,9 +15024,13 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const progress=rotationWeekProgress(draft.ids,new Date(),draft.playthroughs);
     for(const row of host.querySelectorAll('[data-planner-row]')){
       const id=row.dataset.plannerRow,target=Number(draft.targets[id])||0,ms=progress.games[id]?.ms||0;
-      row.querySelector('.planner-recorded').textContent=fmtDurationShort(ms)+' played this week'+(target>0?' / '+fmt(target)+' target':'');
-      row.querySelector('[data-planner-hltb]').innerHTML=rotationHltbHtml(id,draft.playthroughs);
-      row.querySelector('[data-planner-milestone-estimates]').innerHTML=rotationCompletionEstimatesHtml(id,target,false,draft.playthroughs);
+      row.querySelector('.planner-recorded').innerHTML=rotationEstimateNumbers(fmtDurationMinutes(ms)+' played this week'+(target>0?' / '+fmt(target)+' target':''));
+      const hltb=rotationHltbHtml(id,draft.playthroughs),validTarget=Number.isInteger(target/60)&&target>=60&&target<=10080;
+      const pending=normalizeGameMilestones(rotationContentData(id,draft.playthroughs)?.milestones).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
+      const estimates=validTarget?rotationCompletionEstimatesHtml(id,target,false,draft.playthroughs):pending.map(item=>'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+'</small>').join('')+(hltb||pending.length?'<small class="planner-estimate-hint">Set target hours to see completion dates.</small>':'');
+      row.querySelector('[data-planner-hltb]').innerHTML=hltb;
+      row.querySelector('[data-planner-milestone-estimates]').innerHTML=estimates;
+      row.querySelector('.planner-estimates').hidden=!hltb&&!estimates;
     }
   }
   function renderWeeklyPlanner(){
@@ -15029,7 +15043,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     html+='<p id="d2-planner-error" role="alert" class="d2-error"></p><div class="planner-list">';
     html+=draft.ids.length?draft.ids.map(id=>{
       const entry=contentEntry(id);if(!entry)return '';const target=draft.targets[id]||0;
-      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+rotationRunPicker(id,draft.playthroughs)+'<span class="planner-recorded"></span><div data-planner-hltb></div><div data-planner-milestone-estimates></div></div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" min="0" max="168" step="1" placeholder="Optional" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target/60))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label>'+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</article>';
+      const runPicker=rotationRunPicker(id,draft.playthroughs);
+      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'"><div class="planner-heading">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+'<span class="planner-recorded"></span></div>'+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</div><div class="planner-controls'+(runPicker?'':' planner-controls--no-run')+'"><div class="planner-run">'+runPicker+'</div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" min="0" max="168" step="1" placeholder="Optional" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target/60))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label></div><div class="planner-estimates"><div data-planner-hltb></div><div data-planner-milestone-estimates></div></div></article>';
     }).join(''):'<div class="planner-empty"><strong>Plan your next week of games</strong><p>Add Base games or DLCs, set optional targets, then choose days if you like. Reuse last week or a preset to get started.</p></div>';
     html+='</div><details id="planner-weekdays"'+(plannerUI.weekdayOpen?' open':'')+'><summary id="planner-weekday-summary" tabindex="0">Weekday targets</summary><p class="backup-hint">Optional daily goals within the same weekly capacity. Weekday hours and game targets are independent allocations; they are never added together.</p><div id="planner-weekday-fields"><div class="d2-capacities">'+orderedWeekdays().map(day=>'<div class="d2-field"><label for="planner-weekday-hours-'+day+'">'+day.slice(0,3)+'</label><span class="planner-hour-control"><input id="planner-weekday-hours-'+day+'" type="number" required min="0" max="24" step="1" value="'+d2Attr(plannerValue('day:'+day,draft.hours[day]))+'" data-d2-capacity="'+day+'" aria-label="'+day+' planned hours"><span class="planner-hour-arrows"><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="1" aria-label="Increase '+day+' hours">&#9650;</button><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="-1" aria-label="Decrease '+day+' hours">&#9660;</button></span></span></div>').join('')+'</div><p class="backup-hint">Today&#39;s goal follows its weekday hours. Zero hours means a rest day. Your automatic-goal preference stays unchanged.</p>'+d2Button('Use daily goal instead','planner-weekday-off')+'</div></details><p class="backup-hint">Recorded sessions count toward each game target regardless of the planned day. Zero hours means no game target.</p>';
     host.innerHTML=html;updatePlannerSummary();host.scrollTop=scroll;
