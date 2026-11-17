@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.1
 -------------------
+- Profile now holds General milestones with optional target dates and hours remaining; add, edit, delete, or move them to a game or DLC later, with Dropbox sync and backup support.
 - Recent sessions in game dashboards show content breakdowns on a separate line with spacing below the date and time.
 - Delete saved milestone templates from the template picker with confirmation, keeping milestones already created from them.
 - The game dashboard shows Multiplayer game as read-only; change this setting through Edit Game.
