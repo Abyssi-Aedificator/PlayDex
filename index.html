@@ -5468,7 +5468,7 @@ input[data-d2-target]::-webkit-inner-spin-button,input[data-d2-target]::-webkit-
 #feature-editor { z-index:1200; }
 #feature-editor .modal { width:100%; max-width:700px; max-height:calc(100dvh - 32px); overflow:auto; }
 #feature-editor .modal.compact-confirmation { max-width:460px; }
-#general-date .cal-popover { position:relative; inset:auto; width:100%; max-width:336px; margin-top:8px; }
+#general-date .cal-popover,#d2-objective-date .cal-popover { position:relative; inset:auto; width:100%; max-width:336px; margin-top:8px; }
 .d2-section-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
 .d2-section-head h4 { margin:0; font-size:13px; }
 .d2-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
@@ -6814,7 +6814,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div id="milestone-checklist-fields" hidden><p class="backup-hint">Name at least one step. Progress can be updated before prerequisites are met.</p><div id="milestone-steps"></div><button type="button" class="btn-ghost" id="milestone-step-add">+ Add step</button></div>
 <div id="milestone-counter-fields" hidden class="milestone-field-grid"><div class="field-group"><label for="milestone-current">Current count</label><input id="milestone-current" type="number" min="0" step="1"></div><div class="field-group"><label for="milestone-target">Target count</label><input id="milestone-target" type="number" min="1" step="1"></div><div class="field-group"><label for="milestone-unit">Unit (optional)</label><input id="milestone-unit" type="text" maxlength="40" placeholder="collectibles"></div></div>
 <div id="milestone-playtime-fields" hidden><div class="field-group"><label for="milestone-target-hours">Target hours</label><input id="milestone-target-hours" type="number" min="0.25" step="0.25"></div><div class="field-group"><label for="milestone-time-basis">Count recorded playtime</label><select id="milestone-time-basis"><option value="total">Total tracked time</option><option value="creation">Since creation</option></select></div><p class="backup-hint">Recorded Base game or DLC time only. HLTB already-played hours are excluded. Running time is provisional.</p></div>
-<details class="milestone-advanced"><summary>Advanced options</summary><div class="field-group"><label id="milestone-target-date-label">Target date (optional)</label><div class="cal-field" id="milestone-target-date" aria-labelledby="milestone-target-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-target-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><fieldset class="milestone-prerequisites"><legend>Prerequisites</legend><div id="milestone-prerequisite-options"></div></fieldset><label class="milestone-complete-toggle"><input id="milestone-pinned" type="checkbox"><span>Pin this milestone (replaces the current pin)</span></label></details><div class="field-group" id="milestone-estimate-field"><label for="milestone-hours-remaining">Hours remaining (optional)</label><input type="number" min="0.25" step="0.25" id="milestone-hours-remaining"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Mark done (waits for prerequisites)</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><div id="milestone-discard" class="milestone-warning" hidden><p>Changing type will discard the previous checklist or counter data. Save again to confirm, or Cancel to keep the original milestone.</p></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
+<details class="milestone-advanced"><summary>Advanced options</summary><div class="field-group"><label id="milestone-target-date-label">Target date (optional)</label><div class="cal-field" id="milestone-target-date" aria-labelledby="milestone-target-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-target-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><fieldset class="milestone-prerequisites"><legend>Prerequisites</legend><div id="milestone-prerequisite-options"></div></fieldset><label class="milestone-complete-toggle"><input id="milestone-pinned" type="checkbox"><span>Pin this milestone (replaces the current pin)</span></label></details><div class="field-group" id="milestone-estimate-source-field"><label for="milestone-estimate-source">Estimate completion using</label><select id="milestone-estimate-source"><option value="mainStory">Main Story (HLTB)</option><option value="mainExtra">Main + Extra (HLTB)</option><option value="hours">Custom hours remaining</option></select></div><div class="field-group" id="milestone-estimate-field"><label for="milestone-hours-remaining">Hours remaining (optional)</label><input type="number" min="0.25" step="0.25" id="milestone-hours-remaining"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Mark done (waits for prerequisites)</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><div id="milestone-discard" class="milestone-warning" hidden><p>Changing type will discard the previous checklist or counter data. Save again to confirm, or Cancel to keep the original milestone.</p></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
 <div class="modal-overlay" id="milestone-template-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-template-title"><h3 id="milestone-template-title">Milestone templates</h3><div class="field-group" id="milestone-template-name-field"><label for="milestone-template-name">Template name</label><input id="milestone-template-name" type="text" maxlength="80"></div><div class="field-group" id="milestone-template-select-field"><label for="milestone-template-select">Template</label><select id="milestone-template-select"></select></div><p class="backup-hint">Definitions, ordering, and prerequisites are copied. Progress, pins, and dates start fresh. Applying appends to your existing milestones.</p><div id="milestone-template-preview"></div><p id="milestone-template-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button id="milestone-template-delete" class="btn-danger" type="button" hidden>Delete template</button><button id="milestone-template-cancel" class="btn-ghost" type="button">Cancel</button><button id="milestone-template-confirm" class="btn-primary" type="button">Apply template</button></div></div></div>
 <div class="modal-overlay" id="milestone-delete-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-delete-title"><h3 id="milestone-delete-title">Delete milestone?</h3><p id="milestone-delete-message" class="backup-hint"></p><div class="modal-actions"><button class="btn-ghost" id="milestone-delete-cancel" type="button">Cancel</button><button class="btn-danger" id="milestone-delete-confirm" type="button">Delete</button></div></div></div>
 
@@ -9738,16 +9738,26 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const text=rotationHltbRemaining(key,selection);return text?'<small class="rotation-hltb" data-rotation-hltb>'+rotationEstimateNumbers(text)+'</small>':'';
   }
 
+  function milestoneEstimateSource(item,data={}){
+    if(['hours','mainStory','mainExtra'].includes(item?.estimateSource))return item.estimateSource;
+    if(Number.isFinite(item?.hoursRemaining))return 'hours';
+    return !data?.mainStoryHours&&data?.mainExtraHours?'mainExtra':'mainStory';
+  }
+  function milestoneEstimateSourceSelect(id,value,custom=true){
+    const options=[['mainStory','Main Story (HLTB)'],['mainExtra','Main + Extra (HLTB)'],...(custom?[['hours','Custom hours remaining']]:[])];
+    return '<label class="d2-field">Estimate completion using<select id="'+id+'">'+options.map(([key,label])=>'<option value="'+key+'"'+(key===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label>';
+  }
   function rotationMilestoneEstimates(key,targetMinutes,live=false,selection=settings.weeklyRotationPlaythroughs||{}) {
     if(!contentEntry(key)||contentEntry(key).archived)return [];
     const items=normalizeGameMilestones(rotationContentData(key,selection)?.milestones).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
     return items.map(item=>{
       const progress=item.type==='playtime'?milestoneProgress(item,contentEntry(key).parentId||contentEntry(key).id,contentEntry(key).dlcId||null,sessions.filter(session=>rotationRunMatches(session,key,selection)),live):null;
-      const fallback=!progress&&!Number.isFinite(item.hoursRemaining)?rotationHltbEstimates(key,selection)[0]:null;
-      const remaining=progress?Math.max(0,(progress.target-progress.value)/3600000):Number.isFinite(item.hoursRemaining)?item.hoursRemaining:fallback?.hoursRemaining;
+      const source=item.estimateSource,estimates=rotationHltbEstimates(key,selection);
+      const fallback=progress?null:source==='mainStory'||source==='mainExtra'?estimates.find(estimate=>estimate.label===(source==='mainExtra'?'Main + Extra':'Main Story')):source!=='hours'&&!Number.isFinite(item.hoursRemaining)?estimates[0]:null;
+      const remaining=progress?Math.max(0,(progress.target-progress.value)/3600000):fallback?fallback.hoursRemaining:(!source||source==='hours')&&Number.isFinite(item.hoursRemaining)?item.hoursRemaining:undefined;
       let text,targetTiming='';
       if(remaining===0)text=fallback?'The HLTB estimate has been reached; milestone completion stays manual.':'Playtime target reached; awaiting completion or prerequisites.';
-      else if(!Number.isFinite(remaining))text='Set Hours remaining to estimate days needed.';
+      else if(!Number.isFinite(remaining))text=source==='mainStory'||source==='mainExtra'?'Set '+(source==='mainExtra'?'Main + Extra':'Main Story')+' HLTB to estimate days needed.':'Set Hours remaining to estimate days needed.';
       else if(!Number.isInteger(targetMinutes/60)||targetMinutes<60||targetMinutes>10080)text='Set a whole-hour weekly target to estimate days needed.';
       else{
         const days=Math.ceil(remaining/(targetMinutes/60)*7),pace=fmtDurationMinutes(targetMinutes*60000)+'/week';
@@ -9760,14 +9770,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         }
       }
       if(fallback)text+=' Based on '+fallback.label+' HLTB.';
-      return {name:item.name,text,targetDate:item.targetDate,hltbFallback:!!fallback,targetTiming,blocked:milestoneBlocked(item,items).length>0};
+      return {name:item.name,text,targetDate:item.targetDate,hltbFallback:!!fallback,estimateLabel:fallback?.label,targetTiming,blocked:milestoneBlocked(item,items).length>0};
     });
   }
   function rotationTargetTimingHtml(text) {
     return rotationEstimateNumbers(text).replace(/\b(before target|after target)\b/g,phrase=>'<span class="rotation-timing-'+(phrase==='before target'?'before':'after')+'">'+phrase+'</span>');
   }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false,selection=settings.weeklyRotationPlaythroughs||{}) {
-    return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+'. Completion stays manual.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>').join('');
+    return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'. Completion stays manual.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>').join('');
   }
 
   function rotationHltbCompletionEstimates(key,targetMinutes,selection=settings.weeklyRotationPlaythroughs||{}) {
@@ -11513,16 +11523,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     checkStorageFresh();validateMilestoneRecords(items);
     const next={...settings,generalMilestones:items};saveSettings(next);settings=next;renderGeneralMilestones();renderTodayMilestones();
   }
+  function milestoneCalendarMarkup(id,labelId){
+    const calendar=document.getElementById('milestone-target-date').cloneNode(true);calendar.id=id;calendar.classList.remove('open');calendar.setAttribute('aria-labelledby',labelId);calendar.querySelector('.cal-trigger').setAttribute('aria-labelledby',labelId);calendar.querySelector('.cal-trigger').setAttribute('aria-expanded','false');calendar.querySelectorAll('button').forEach(button=>button.type='button');return calendar.outerHTML;
+  }
   function editGeneralMilestone(id){
     const original=(settings.generalMilestones||[]).find(item=>item.id===id);
-    const calendar=document.getElementById('milestone-target-date').cloneNode(true);calendar.id='general-date';calendar.classList.remove('open');calendar.setAttribute('aria-labelledby','general-date-label');calendar.querySelector('.cal-trigger').setAttribute('aria-labelledby','general-date-label');calendar.querySelector('.cal-trigger').setAttribute('aria-expanded','false');
-    calendar.querySelectorAll('button').forEach(button=>button.type='button');
     let dateField;
-    d2Edit(original?'Edit general milestone':'Add general milestone','<label class="d2-field">Name<input id="general-name" type="text" maxlength="140" value="'+milestoneAttr(original?.name||'')+'" required></label><div class="field-group"><label id="general-date-label">Target date (optional)</label>'+calendar.outerHTML+'</div><p class="backup-hint">Assign this objective when ready. You can then add checklists, counters, playtime goals, and prerequisites in the game dashboard.</p>',()=>{
+    d2Edit(original?'Edit general milestone':'Add general milestone','<label class="d2-field">Name<input id="general-name" type="text" maxlength="140" value="'+milestoneAttr(original?.name||'')+'" required></label><div class="field-group"><label id="general-date-label">Target date (optional)</label>'+milestoneCalendarMarkup('general-date','general-date-label')+'</div>'+milestoneEstimateSourceSelect('general-estimate-source',original?.estimateSource==='mainExtra'?'mainExtra':'mainStory',false)+'<p class="backup-hint">Assign this objective when ready. You can then add checklists, counters, playtime goals, and prerequisites in the game dashboard.</p>',()=>{
       const items=settings.generalMilestones||[],old=items.find(item=>item.id===id);if(id&&!old)throw Error('This milestone no longer exists.');
       const name=document.getElementById('general-name').value.trim(),targetDate=dateField.value||null;
       if(!name)throw Error('Enter a milestone name.');
-      const item={...old,id:old?.id||uid(),name,type:'manual',createdAt:old?.createdAt||new Date().toISOString(),targetDate,manualDone:false,completedAt:null};
+      const item={...old,id:old?.id||uid(),name,type:'manual',createdAt:old?.createdAt||new Date().toISOString(),targetDate,estimateSource:document.getElementById('general-estimate-source').value,manualDone:false,completedAt:null};
       delete item.hoursRemaining;
       saveGeneralMilestones(old?items.map(entry=>entry.id===id?item:entry):items.concat(item));
     },'Save',null,{onClose:()=>mxFieldRegistry.delete('general-date')});
@@ -13914,6 +13925,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         completedAt:milestoneValidDate(m.completedAt)?m.completedAt:null,
         manualDone:typeof m.manualDone==='boolean'?m.manualDone:!!m.completedAt,
         hoursRemaining:Number.isFinite(m.hoursRemaining)&&m.hoursRemaining>0?m.hoursRemaining:undefined,
+        estimateSource:['hours','mainStory','mainExtra'].includes(m.estimateSource)?m.estimateSource:undefined,
         group:typeof m.group==='string'?m.group.trim().slice(0,60):'',
         order:Number.isFinite(m.order)?m.order:index,groupOrder:Number.isFinite(m.groupOrder)?m.groupOrder:index,
         targetDate:milestoneValidDate(m.targetDate)?m.targetDate:null,
@@ -13998,6 +14010,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const type=m.type===undefined?'manual':m.type;
       if(!['manual','checklist','counter','playtime'].includes(type))throw Error('Invalid milestone type');
       if(m.completedAt!=null&&!milestoneValidDate(m.completedAt)||m.targetDate!=null&&!milestoneValidDate(m.targetDate)||m.createdAt!==undefined&&(typeof m.createdAt!=='string'||!Number.isFinite(Date.parse(m.createdAt))))throw Error('Invalid milestone date');
+      if(m.estimateSource!==undefined&&!['hours','mainStory','mainExtra'].includes(m.estimateSource))throw Error('Invalid milestone estimate source');
       if(m.hoursRemaining!=null&&(!Number.isFinite(m.hoursRemaining)||m.hoursRemaining<=0))throw Error('Invalid milestone estimate');
       for(const key of ['manualDone','pinned'])if(m[key]!==undefined&&typeof m[key]!=='boolean')throw Error('Invalid milestone state');
       if(m.pinned&&++pins>1)throw Error('Only one milestone may be pinned per content');
@@ -14093,7 +14106,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const counts={all:items.length,progress:items.filter(m=>milestoneStatus(m,items)==='progress').length,blocked:items.filter(m=>milestoneStatus(m,items)==='blocked').length,completed:done};
     const row=m=>{
       const p=milestoneSummary(m,game.id),blocked=milestoneBlocked(m,items),siblings=milestoneSorted(items);
-      const remaining=m.type==='playtime'?Math.max(0,(p.target-p.value)/3600000):m.hoursRemaining;
+      const remaining=m.type==='playtime'?Math.max(0,(p.target-p.value)/3600000):m.estimateSource==='mainStory'||m.estimateSource==='mainExtra'?rotationHltbEstimates(game.id,{}).find(estimate=>estimate.label===(m.estimateSource==='mainExtra'?'Main + Extra':'Main Story'))?.hoursRemaining:m.hoursRemaining;
       const due=milestoneTargetDateHtml(m);
       const info=(m.completedAt?'Completed '+m.completedAt:blocked.length?'Blocked: '+blocked.join(', '):'In progress')+(!m.completedAt?milestoneFinishEstimate(game.id,remaining):'');
       const tools=action('Edit','edit',m.id)+action(m.pinned?'Unpin':'Pin','pin',m.id)+'<details class="milestone-more" data-milestone-detail="more:'+milestoneAttr(m.id)+'"><summary>More</summary><div class="milestone-row-tools">'+action('Move up','up',m.id,siblings[0].id===m.id)+action('Move down','down',m.id,siblings.at(-1).id===m.id)+action('Delete','delete',m.id)+'</div></details>';
@@ -14200,14 +14213,16 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     for(const key of ['checklist','counter','playtime'])document.getElementById('milestone-'+key+'-fields').hidden=type!==key;
     document.getElementById('milestone-completed').closest('label').hidden=type!=='manual';
     document.getElementById('milestone-completion-date').hidden=type!=='manual'||!document.getElementById('milestone-completed').checked;
-    document.getElementById('milestone-estimate-field').hidden=type==='playtime';
+    document.getElementById('milestone-estimate-source-field').hidden=type==='playtime';
+    const custom=type!=='playtime'&&document.getElementById('milestone-estimate-source').value==='hours';
+    document.getElementById('milestone-estimate-field').hidden=!custom;document.getElementById('milestone-hours-remaining').disabled=!custom;
   }
   function openMilestoneEditor(game,id){
     milestoneEditorGame=game.id;milestoneEditorId=id||null;milestoneDiscardSignature=null;
     const items=normalizeGameMilestones(game.milestones),item=items.find(m=>m.id===id);
     const field=(key,value)=>{if(key==='target-date')milestoneTargetDateField.value=value||'';else document.getElementById('milestone-'+key).value=value??'';};
     document.getElementById('milestone-modal-title').textContent=item?'Edit milestone':'Add milestone';
-    field('name',item?.name);field('type',item?.type||'manual');field('hours-remaining',item?.hoursRemaining);
+    field('name',item?.name);field('type',item?.type||'manual');field('hours-remaining',item?.hoursRemaining);field('estimate-source',milestoneEstimateSource(item,game));
     field('current',item?.current??0);field('target',item?.target??1);field('unit',item?.unit);field('target-hours',item?.targetHours??1);field('time-basis',item?.timeBasis||'total');field('target-date',item?.targetDate);
     document.getElementById('milestone-pinned').checked=!!item?.pinned;
     document.getElementById('milestone-completed').checked=!!item?.manualDone;
@@ -14302,6 +14317,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
   });
   document.getElementById('milestone-type').onchange=updateMilestoneType;
+  document.getElementById('milestone-estimate-source').onchange=updateMilestoneType;
   document.getElementById('milestone-completed').onchange=updateMilestoneType;
   document.getElementById('milestone-step-add').onclick=()=>{milestoneStepDraft=readMilestoneSteps();milestoneStepDraft.push({id:uid(),name:'',done:false});paintMilestoneSteps();document.querySelector('#milestone-steps .milestone-step-edit:last-child input[type="text"]').focus();};
   document.getElementById('milestone-steps').onclick=event=>{const button=event.target.closest('[data-remove-step]');if(!button)return;milestoneStepDraft=readMilestoneSteps().filter(step=>step.id!==button.dataset.removeStep);paintMilestoneSteps();};
@@ -14315,8 +14331,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       manualDone:document.getElementById('milestone-completed').checked,
       completedAt:old?.completedAt||null,group,groupOrder:items.find(m=>m.group===group)?.groupOrder??Math.max(-1,...items.map(m=>m.groupOrder))+1,
       order:old?.order??Math.max(-1,...items.map(m=>m.order))+1,
-      targetDate:val('target-date')||null,prerequisites:[...document.querySelectorAll('#milestone-prerequisite-options input:checked')].map(input=>input.value),
-      pinned:document.getElementById('milestone-pinned').checked,hoursRemaining:val('hours-remaining')===''?undefined:Number(val('hours-remaining'))};
+      targetDate:val('target-date')||null,estimateSource:val('estimate-source'),prerequisites:[...document.querySelectorAll('#milestone-prerequisite-options input:checked')].map(input=>input.value),
+      pinned:document.getElementById('milestone-pinned').checked,hoursRemaining:val('estimate-source')==='hours'?(val('hours-remaining')===''?undefined:Number(val('hours-remaining'))):old?.hoursRemaining};
     if(type==='checklist')item.checklist=readMilestoneSteps();
     if(type==='counter'){item.current=val('current')===''?NaN:Number(val('current'));item.target=val('target')===''?NaN:Number(val('target'));item.unit=val('unit').trim();}
     if(type==='playtime'){item.targetHours=Number(val('target-hours'));item.timeBasis=val('time-basis');}
@@ -14929,7 +14945,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function d2EditObjective(key,id){
     const run=d2Run(),items=run?.content?.[key]?.milestones||[],item=items.find(m=>m.id===id);
-    d2Edit(item?'Edit playthrough milestone':'Add playthrough milestone',d2Input('Name','d2-objective-name',item?.name||'','type="text" maxlength="120" required')+'<label class="d2-field">Type<select id="d2-objective-type">'+[['manual','Manual'],['checklist','Checklist'],['counter','Counter'],['playtime','Tracked playtime']].map(([value,label])=>'<option value="'+value+'"'+((item?.type||'manual')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label><div class="d2-objective-fields">'+d2Input('Counter target','d2-objective-target',item?.target||1,'type="number" min="1" step="1"')+d2Input('Counter unit (optional)','d2-objective-unit',item?.unit||'','type="text" maxlength="40"')+d2Input('Playtime target (hours)','d2-objective-hours',item?.targetHours||1,'type="number" min="0.25" max="100000" step="0.25"')+'<label class="d2-field">Checklist (one item per line)<textarea id="d2-objective-steps" rows="4">'+escHtml((item?.checklist||[]).map(step=>step.name).join('\n'))+'</textarea></label></div><details><summary>Prerequisites</summary>'+items.filter(other=>other.id!==id).map(other=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-prereq="'+d2Attr(other.id)+'" '+(item?.prerequisites?.includes(other.id)?'checked':'')+'>'+escHtml(other.name)+'</label>').join('')+'</details><p class="backup-hint">Playtime uses completed sessions assigned to this playthrough and content. Changing type resets incompatible progress.</p>',()=>{
+    let dateField;
+    d2Edit(item?'Edit playthrough milestone':'Add playthrough milestone',d2Input('Name','d2-objective-name',item?.name||'','type="text" maxlength="120" required')+'<label class="d2-field">Type<select id="d2-objective-type">'+[['manual','Manual'],['checklist','Checklist'],['counter','Counter'],['playtime','Tracked playtime']].map(([value,label])=>'<option value="'+value+'"'+((item?.type||'manual')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label><div class="d2-objective-fields">'+d2Input('Counter target','d2-objective-target',item?.target||1,'type="number" min="1" step="1"')+d2Input('Counter unit (optional)','d2-objective-unit',item?.unit||'','type="text" maxlength="40"')+d2Input('Playtime target (hours)','d2-objective-hours',item?.targetHours||1,'type="number" min="0.25" max="100000" step="0.25"')+'<label class="d2-field">Checklist (one item per line)<textarea id="d2-objective-steps" rows="4">'+escHtml((item?.checklist||[]).map(step=>step.name).join('\n'))+'</textarea></label></div><div class="field-group"><label id="d2-objective-date-label">Target date (optional)</label>'+milestoneCalendarMarkup('d2-objective-date','d2-objective-date-label')+'</div>'+milestoneEstimateSourceSelect('d2-objective-estimate-source',milestoneEstimateSource(item,run?.content?.[key]))+d2Input('Custom hours remaining (optional)','d2-objective-remaining',item?.hoursRemaining??'','type="number" min="0.25" step="0.25"')+'<details><summary>Prerequisites</summary>'+items.filter(other=>other.id!==id).map(other=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-prereq="'+d2Attr(other.id)+'" '+(item?.prerequisites?.includes(other.id)?'checked':'')+'>'+escHtml(other.name)+'</label>').join('')+'</details><p class="backup-hint">Playtime uses completed sessions assigned to this playthrough and content. Changing type resets incompatible progress.</p>',()=>{
       const name=document.getElementById('d2-objective-name').value.trim(),type=document.getElementById('d2-objective-type').value;
       if(!name)throw Error('Enter a name.');
       const checklistNames=document.getElementById('d2-objective-steps').value.split('\n').map(name=>name.trim()).filter(Boolean);
@@ -14937,14 +14954,17 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(type==='counter'&&!(Number.isSafeInteger(Number(document.getElementById('d2-objective-target').value))&&Number(document.getElementById('d2-objective-target').value)>0))throw Error('Counter target must be a positive whole number.');
       const hours=Number(document.getElementById('d2-objective-hours').value);if(type==='playtime'&&!(hours>0&&Number.isInteger(hours*4)))throw Error('Use quarter-hour increments.');
       if(item&&item.type!==type&&!confirm('Change milestone type? Incompatible checklist or counter progress will be reset.'))return false;
+      const source=document.getElementById('d2-objective-estimate-source').value,raw=document.getElementById('d2-objective-remaining').value,remaining=source==='hours'&&type!=='playtime'?(raw===''?undefined:Number(raw)):item?.hoursRemaining;
+      if(remaining!==undefined&&(!Number.isFinite(remaining)||remaining<=0||!Number.isInteger(remaining*4)))throw Error('Use positive quarter-hour increments for hours remaining.');
       d2ChangeRun(target=>{
         const entry=target.content[key]||(target.content[key]={milestones:[]}),same=item?.type===type;
-        const milestone={...(same?item:{}),id:item?.id||uid(),name,type,createdAt:item?.createdAt||new Date().toISOString(),completedAt:same?item.completedAt:null,manualDone:same?item.manualDone:false,current:same?item.current:0,target:Number(document.getElementById('d2-objective-target').value)||1,unit:document.getElementById('d2-objective-unit').value.trim(),targetHours:hours||1,timeBasis:'total',prerequisites:[...document.querySelectorAll('[data-d2-prereq]:checked')].map(input=>input.dataset.d2Prereq),checklist:checklistNames.map((name,index)=>same&&item.checklist?.[index]?.name===name?item.checklist[index]:{id:uid(),name,done:false})};
+        const milestone={...(same?item:{}),id:item?.id||uid(),name,type,createdAt:item?.createdAt||new Date().toISOString(),completedAt:same?item.completedAt:null,targetDate:dateField.value||null,estimateSource:source,hoursRemaining:remaining,manualDone:same?item.manualDone:false,current:same?item.current:0,target:Number(document.getElementById('d2-objective-target').value)||1,unit:document.getElementById('d2-objective-unit').value.trim(),targetHours:hours||1,timeBasis:'total',prerequisites:[...document.querySelectorAll('[data-d2-prereq]:checked')].map(input=>input.dataset.d2Prereq),checklist:checklistNames.map((name,index)=>same&&item.checklist?.[index]?.name===name?item.checklist[index]:{id:uid(),name,done:false})};
         const next=normalizeGameMilestones([milestone])[0];entry.milestones=item?entry.milestones.map(other=>other.id===id?next:other):[...(entry.milestones||[]),next];validateMilestoneRecords(entry.milestones);
       });
-    });
+    },'Save',null,{onClose:()=>mxFieldRegistry.delete('d2-objective-date')});
+    dateField=createCalField('d2-objective-date');dateField.value=item?.targetDate||'';
     const type=document.getElementById('d2-objective-type');
-    const update=()=>{for(const [id,visible] of [['d2-objective-target',type.value==='counter'],['d2-objective-unit',type.value==='counter'],['d2-objective-hours',type.value==='playtime'],['d2-objective-steps',type.value==='checklist']]){const field=document.getElementById(id);field.closest('label').hidden=!visible;field.disabled=!visible;}};type.onchange=update;update();
+    const update=()=>{for(const [id,visible] of [['d2-objective-target',type.value==='counter'],['d2-objective-unit',type.value==='counter'],['d2-objective-hours',type.value==='playtime'],['d2-objective-steps',type.value==='checklist'],['d2-objective-estimate-source',type.value!=='playtime'],['d2-objective-remaining',type.value!=='playtime'&&document.getElementById('d2-objective-estimate-source').value==='hours']]){const field=document.getElementById(id);field.closest('label').hidden=!visible;field.disabled=!visible;}};document.getElementById('d2-objective-estimate-source').onchange=update;type.onchange=update;update();
   }
   function d2CompareRuns(){
     const parent=games.find(game=>game.id===playthroughUI.gameId);if(!parent)return;

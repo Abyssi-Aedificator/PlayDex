@@ -198,6 +198,7 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - milestoneTrackedMs uses recorded content allocations and clips segments and overlapping pauses for since-creation goals. Running sessions are provisional and must not save completion. HLTB already-played hours do not count.
 - Group names/order live on milestones; prerequisites resolve only within the same content. validateMilestoneRecords rejects cycles and invalid progress before imports.
 - settings.milestoneTemplates sync through Dropbox and are restored by JSON import without replacing other local preferences. Template application remaps milestone/checklist IDs and dependencies and resets manual progress, pins, and dates.
+- Optional milestone estimateSource selects mainStory, mainExtra, or hours. Explicit HLTB choices override retained custom hours and never silently fall back to another track; missing values preserve legacy behavior. Tracked-playtime milestones always use their own target. Preserve the field through templates, general assignment, playthroughs and backups.
 
 ## Weekly rotation reset
 
