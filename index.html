@@ -5428,6 +5428,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 .planner-identity { min-width:0; overflow-wrap:anywhere; }
 .planner-identity strong,.planner-pick strong { display:block; font-size:14px; }
 .planner-identity small,.planner-pick small,.planner-recorded { display:block; font-size:12px; color:var(--text2); line-height:1.6; }
+.rotation-estimate-number { color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
 .planner-recorded { margin-top:5px; color:var(--accent); }
 .planner-row .d2-field { margin:0; font-size:12px; align-self:end; }
 .planner-row > button { align-self:end; }
@@ -5726,7 +5727,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.1.0</span>
+    <span class="version-badge">2.1.1</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -9658,8 +9659,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const estimates=rotationHltbEstimates(key);
     return estimates.length?'HLTB remaining: '+estimates.map(estimate=>estimate.label+' '+fmtDurationMinutes(Math.ceil(estimate.hoursRemaining*60)*60000)).join(' / '):'';
   }
+  function rotationEstimateNumbers(text) {
+    return String(text).split(/(\b\d{4}-\d{2}-\d{2}\b|\b\d+(?:\.\d+)?[hm]?)/g).map((part,index)=>index%2?'<span class="rotation-estimate-number">'+escHtml(part)+'</span>':escHtml(part)).join('');
+  }
+
   function rotationHltbHtml(key) {
-    const text=rotationHltbRemaining(key);return text?'<small class="rotation-hltb" data-rotation-hltb>'+escHtml(text)+'</small>':'';
+    const text=rotationHltbRemaining(key);return text?'<small class="rotation-hltb" data-rotation-hltb>'+rotationEstimateNumbers(text)+'</small>':'';
   }
 
   function rotationMilestoneEstimates(key,targetMinutes,live=false) {
@@ -9687,7 +9692,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     });
   }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false) {
-    return rotationMilestoneEstimates(key,targetMinutes,live).map(item=>'<small>'+escHtml(item.name+': '+item.text+' Target: '+item.targetDate)+'</small>').join('');
+    return rotationMilestoneEstimates(key,targetMinutes,live).map(item=>'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers(item.text+' Target: '+item.targetDate)+'</small>').join('');
   }
 
   function updateActiveRotationProgress() {
@@ -9697,7 +9702,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const key=sessionContentKey(activeSession),pin=row.querySelector('.milestone-pin'),pinHtml=pinnedMilestoneHtml(key,true);
     if(pin&&pin.outerHTML!==pinHtml)pin.outerHTML=pinHtml;
     else if(!pin&&pinHtml)row.querySelector('.rotation-game').insertAdjacentHTML('beforeend',pinHtml);
-    const hltb=row.querySelector('[data-rotation-hltb]'),remainingHltb=rotationHltbRemaining(key);if(hltb&&hltb.textContent!==remainingHltb)hltb.textContent=remainingHltb;
+    const hltb=row.querySelector('[data-rotation-hltb]'),remainingHltb=rotationHltbRemaining(key);if(hltb&&hltb.textContent!==remainingHltb)hltb.innerHTML=rotationEstimateNumbers(remainingHltb);
     const milestoneEstimates=row.querySelector('[data-rotation-milestone-estimates]'),milestoneHtml=rotationMilestoneEstimatesHtml(key,rotationTargetMinutes(key),true);if(milestoneEstimates&&milestoneEstimates.innerHTML!==milestoneHtml)milestoneEstimates.innerHTML=milestoneHtml;
     const entry=rotationProgressWithLive([key]).games[key];
     const elapsed=row.querySelector('[data-rotation-elapsed]');if(elapsed)elapsed.textContent=rotationPlayedTime(entry.ms);
@@ -15286,7 +15291,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.1.0';
+    const APP_VERSION = '2.1.1';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');

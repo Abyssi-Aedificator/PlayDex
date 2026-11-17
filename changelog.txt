@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 2.1.1
+-------------------
+- Rotation milestone and HLTB estimates use the theme colour for days, playtime amounts and dates, including live updates.
+
 Version 2.1.0
 -------------------
 - Weekly rotation and its planner show remaining Main Story and Main + Extra HLTB time when estimates are available, using Base game or DLC tracked time plus previously played hours.
