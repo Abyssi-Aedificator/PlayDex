@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 2.1.2
+-------------------
+- Removed the Multiplayer game feature throughout the app; all active games and DLCs can be selected in weekly rotations, presets, and reused plans.
+
 Version 2.1.1
 -------------------
 - Fixed the general milestone calendar being oversized and clipped inside its editor; calendar navigation no longer submits the form.
