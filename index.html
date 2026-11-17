@@ -4942,7 +4942,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 #dashboard-body > * { min-width:0; }
 @media(min-width:850px) {
  #dashboard-modal .milestone-dashboard { max-width:1000px; }
- #dashboard-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"summary milestones" "history milestones"; column-gap:28px; align-items:start; }
+ #dashboard-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-areas:"summary milestones" "history milestones"; grid-template-rows:min-content 1fr; column-gap:28px; align-items:start; }
  .milestone-dashboard-summary { grid-area:summary; }
  .milestone-dashboard-history { grid-area:history; }
  #dashboard-body .dashboard-milestone-column { grid-area:milestones; }
