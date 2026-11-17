@@ -9679,7 +9679,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const progress=item.type==='playtime'?milestoneSummary(item,key,live):null;
       const fallback=!progress&&!Number.isFinite(item.hoursRemaining)?rotationHltbEstimates(key)[0]:null;
       const remaining=progress?Math.max(0,(progress.target-progress.value)/3600000):Number.isFinite(item.hoursRemaining)?item.hoursRemaining:fallback?.hoursRemaining;
-      let text;
+      let text,targetTiming='';
       if(remaining===0)text=fallback?'The HLTB estimate has been reached; milestone completion stays manual.':'Playtime target reached; awaiting completion or prerequisites.';
       else if(!Number.isFinite(remaining))text='Set Hours remaining to estimate days needed.';
       else if(!Number.isInteger(targetMinutes/60)||targetMinutes<60||targetMinutes>10080)text='Set a whole-hour weekly target to estimate days needed.';
@@ -9688,16 +9688,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         if(!Number.isFinite(days)||days>36500)text='More than 100 years needed at '+pace+'. Estimated completion is beyond 100 years.';
         else{
           const finish=addDays(todayStr(),days),timing=finish>item.targetDate?'after target':finish===item.targetDate?'on target date':'before target';
+          targetTiming=timing;
           text='About '+days+' day'+(days===1?'':'s')+' needed at '+pace+' ('+fmtDurationMinutes(Math.ceil(remaining*60)*60000)+' remaining). Estimated completion: '+finish+' / '+timing+'. Assumes an even weekly pace.';
           if(milestoneBlocked(item,items).length)text+=' Prerequisites must also be completed.';
         }
       }
       if(fallback)text+=' Based on '+fallback.label+' HLTB.';
-      return {name:item.name,text,targetDate:item.targetDate};
+      return {name:item.name,text,targetDate:item.targetDate,hltbFallback:!!fallback,targetTiming,blocked:milestoneBlocked(item,items).length>0};
     });
   }
-  function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false) {
-    return rotationMilestoneEstimates(key,targetMinutes,live).map(item=>'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers(item.text+' Target: '+item.targetDate)+'</small>').join('');
+  function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false) {
+    return rotationMilestoneEstimates(key,targetMinutes,live).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+escHtml(item.targetTiming):'')+'. Completion stays manual.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers(item.text+' Target: '+item.targetDate)+'</small>').join('');
   }
 
   function rotationHltbCompletionEstimates(key,targetMinutes) {
@@ -9716,9 +9717,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     });
   }
   function rotationCompletionEstimatesHtml(key,targetMinutes,live=false) {
-    const milestones=rotationMilestoneEstimatesHtml(key,targetMinutes,live);if(milestones)return milestones;
     const estimates=rotationHltbCompletionEstimates(key,targetMinutes);
-    return estimates.map(estimate=>'<small>'+escHtml(estimate.label)+': '+rotationEstimateNumbers(estimate.text)+'</small>').join('')+(estimates.length?'<small>HLTB projections assume an even weekly pace.</small>':'');
+    const milestones=rotationMilestoneEstimatesHtml(key,targetMinutes,live,estimates.length>0);
+    return estimates.map(estimate=>'<small>'+escHtml(estimate.label)+': '+rotationEstimateNumbers(estimate.text)+'</small>').join('')+(estimates.length?'<small>HLTB projections assume an even weekly pace.</small>':'')+milestones;
   }
 
   function updateActiveRotationProgress() {
