@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.1
 -------------------
+- General milestones now use the app's themed target-date calendar and no longer show or request hours remaining.
 - Removed the duplicate Multiplayer game status and explanation from game dashboards; the option remains in Edit Game.
 - Removed the weekly-pace explanatory line beneath rotation HLTB completion estimates.
 - Dated general milestones now appear in Today's Milestone targets with countdowns, ordered alongside game milestones; select one to edit it in Games.

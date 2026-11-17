@@ -11435,7 +11435,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function renderGeneralMilestones(){
     const items=settings.generalMilestones||[],host=document.getElementById('general-milestones');
-    host.innerHTML='<div class="milestone-toolbar"><button class="btn-ghost" type="button" data-general-action="add">+ Add milestone</button></div>'+(!items.length?'<p class="backup-hint">No unassigned milestones yet.</p>':'<ul class="completion-timeline">'+items.map(item=>'<li><div class="completion-timeline-info"><strong>'+escHtml(item.name)+'</strong>'+(item.targetDate?'<small>'+milestoneTargetDateHtml(item)+'</small>':'')+(item.hoursRemaining?'<small>'+escHtml(item.hoursRemaining+'h remaining')+'</small>':'')+'</div><div class="milestone-toolbar"><button class="btn-ghost" type="button" data-general-action="assign" data-general-id="'+milestoneAttr(item.id)+'">Assign</button><button class="btn-ghost" type="button" data-general-action="edit" data-general-id="'+milestoneAttr(item.id)+'">Edit</button><button class="btn-ghost" type="button" data-general-action="delete" data-general-id="'+milestoneAttr(item.id)+'">Delete</button></div></li>').join('')+'</ul>');
+    host.innerHTML='<div class="milestone-toolbar"><button class="btn-ghost" type="button" data-general-action="add">+ Add milestone</button></div>'+(!items.length?'<p class="backup-hint">No unassigned milestones yet.</p>':'<ul class="completion-timeline">'+items.map(item=>'<li><div class="completion-timeline-info"><strong>'+escHtml(item.name)+'</strong>'+(item.targetDate?'<small>'+milestoneTargetDateHtml(item)+'</small>':'')+'</div><div class="milestone-toolbar"><button class="btn-ghost" type="button" data-general-action="assign" data-general-id="'+milestoneAttr(item.id)+'">Assign</button><button class="btn-ghost" type="button" data-general-action="edit" data-general-id="'+milestoneAttr(item.id)+'">Edit</button><button class="btn-ghost" type="button" data-general-action="delete" data-general-id="'+milestoneAttr(item.id)+'">Delete</button></div></li>').join('')+'</ul>');
   }
   function saveGeneralMilestones(items){
     checkStorageFresh();validateMilestoneRecords(items);
@@ -11443,14 +11443,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function editGeneralMilestone(id){
     const original=(settings.generalMilestones||[]).find(item=>item.id===id);
-    d2Edit(original?'Edit general milestone':'Add general milestone','<label class="d2-field">Name<input id="general-name" type="text" maxlength="140" value="'+milestoneAttr(original?.name||'')+'" required></label><label class="d2-field">Target date (optional)<input id="general-date" type="date" value="'+milestoneAttr(original?.targetDate||'')+'"></label><label class="d2-field">Hours remaining (optional)<input id="general-hours" type="number" min="0.25" step="0.25" value="'+milestoneAttr(original?.hoursRemaining??'')+'"></label><p class="backup-hint">Assign this objective when ready. You can then add checklists, counters, playtime goals, and prerequisites in the game dashboard.</p>',()=>{
+    const calendar=document.getElementById('milestone-target-date').cloneNode(true);calendar.id='general-date';calendar.classList.remove('open');calendar.setAttribute('aria-labelledby','general-date-label');calendar.querySelector('.cal-trigger').setAttribute('aria-labelledby','general-date-label');calendar.querySelector('.cal-trigger').setAttribute('aria-expanded','false');
+    let dateField;
+    d2Edit(original?'Edit general milestone':'Add general milestone','<label class="d2-field">Name<input id="general-name" type="text" maxlength="140" value="'+milestoneAttr(original?.name||'')+'" required></label><div class="field-group"><label id="general-date-label">Target date (optional)</label>'+calendar.outerHTML+'</div><p class="backup-hint">Assign this objective when ready. You can then add checklists, counters, playtime goals, and prerequisites in the game dashboard.</p>',()=>{
       const items=settings.generalMilestones||[],old=items.find(item=>item.id===id);if(id&&!old)throw Error('This milestone no longer exists.');
-      const name=document.getElementById('general-name').value.trim(),targetDate=document.getElementById('general-date').value||null,hours=document.getElementById('general-hours').value;
+      const name=document.getElementById('general-name').value.trim(),targetDate=dateField.value||null;
       if(!name)throw Error('Enter a milestone name.');
-      const hoursRemaining=hours===''?undefined:Number(hours);if(hoursRemaining!==undefined&&(!Number.isFinite(hoursRemaining)||hoursRemaining<=0||!Number.isInteger(hoursRemaining*4)))throw Error('Use positive quarter-hour increments.');
-      const item={...old,id:old?.id||uid(),name,type:'manual',createdAt:old?.createdAt||new Date().toISOString(),targetDate,hoursRemaining,manualDone:false,completedAt:null};
+      const item={...old,id:old?.id||uid(),name,type:'manual',createdAt:old?.createdAt||new Date().toISOString(),targetDate,manualDone:false,completedAt:null};
+      delete item.hoursRemaining;
       saveGeneralMilestones(old?items.map(entry=>entry.id===id?item:entry):items.concat(item));
-    });
+    },'Save',null,{onClose:()=>mxFieldRegistry.delete('general-date')});
+    dateField=createCalField('general-date');dateField.value=original?.targetDate||'';
   }
   function assignGeneralMilestone(id){
     const options=games.filter(game=>!game.archived).flatMap(game=>[{key:game.id,name:game.name+' / Base game'},...(game.dlcs||[]).filter(dlc=>!dlc.archived).map(dlc=>({key:dlcKey(game.id,dlc.id),name:game.name+' / '+dlc.name}))]);
