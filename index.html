@@ -12179,7 +12179,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
-    html += '<div class="dash-row"><label class="milestone-step-toggle"><input type="checkbox" data-game-multiplayer="'+milestoneAttr(game.parentId||game.id)+'"'+(game.multiplayer?' checked':'')+' disabled>Multiplayer game'+(game.parentId?' (inherited)':'')+'</label></div><p class="backup-hint">Multiplayer games and their DLCs cannot be selected for weekly rotation.</p>';
     html = '<div class="milestone-dashboard-summary">' + html + '</div><div class="dashboard-milestone-column">' +
       beatTimeSection(game, contentSessions(game.id).filter(s => s.stop !== null).reduce((sum,s) => sum + (s.durationMs || 0),0)) + gameMilestonesHtml(game) + '</div><div class="milestone-dashboard-history">';
 
