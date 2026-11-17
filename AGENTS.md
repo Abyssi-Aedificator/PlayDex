@@ -233,3 +233,4 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - The left section rail (1024px and above) and compact Sections menu navigate within the visible page, never between tabs. Keep the existing bottom tab bar.
 - Collect visible card/category headings, including Sessions when merged with Today. Use stable semantic destination keys across rerenders, omit hidden sections, and preserve menu focus and scroll position.
 - Reserve 72px on desktop only while section navigation is present. Measure the sticky header for section-jump offsets, keep mobile menus above bottom navigation, and respect system reduced motion.
+- Section navigation icons must be unique within the current page, including merged Today/Sessions. Use the dedicated section icon catalog and its unused-icon fallback.
