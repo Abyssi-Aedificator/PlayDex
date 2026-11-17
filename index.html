@@ -9720,7 +9720,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function rotationCompletionEstimatesHtml(key,targetMinutes,live=false) {
     const estimates=rotationHltbCompletionEstimates(key,targetMinutes);
     const milestones=rotationMilestoneEstimatesHtml(key,targetMinutes,live,estimates.length>0);
-    return estimates.map(estimate=>'<small>'+escHtml(estimate.label)+': '+rotationEstimateNumbers(estimate.text)+'</small>').join('')+(estimates.length?'<small>HLTB projections assume an even weekly pace.</small>':'')+milestones;
+    return estimates.map(estimate=>'<small>'+escHtml(estimate.label)+': '+rotationEstimateNumbers(estimate.text)+'</small>').join('')+milestones;
   }
 
   function updateActiveRotationProgress() {
