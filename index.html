@@ -14706,10 +14706,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('d2-editor-title').textContent=title;
     document.getElementById('d2-editor-body').innerHTML=html;
     document.getElementById('d2-editor-save').textContent=label;
+    document.getElementById('d2-editor-cancel').hidden=!!options.acknowledge;
     document.getElementById('d2-editor-save').className=options.destructive?'btn btn-danger':'btn btn-start';
     d2Editor.querySelector('.modal').classList.toggle('compact-confirmation',!!options.compact);
     document.getElementById('d2-editor-error').textContent='';d2Editor.classList.add('open');
-    requestAnimationFrame(()=>{if(d2Editor.classList.contains('open'))d2Editor.querySelector('input:not([type=checkbox]),textarea,select,button')?.focus();});
+    requestAnimationFrame(()=>{if(d2Editor.classList.contains('open'))(options.acknowledge?document.getElementById('d2-editor-save'):d2Editor.querySelector('input:not([type=checkbox]),textarea,select,button'))?.focus();});
   }
   function restoreEditorFocus(){
     if(editorReturnFocus?.isConnected&&editorReturnFocus.getClientRects().length){editorReturnFocus.focus();return;}
@@ -14748,7 +14749,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   document.getElementById('rotation-manage').addEventListener('click',openWeeklyPlanner);
   document.getElementById('weekly-planner-cancel').onclick=()=>closeWeeklyPlanner();
-  document.getElementById('weekly-planner-save').onclick=()=>{try{d2SavePlan();}catch(error){const hint=document.getElementById('d2-planner-error');hint.textContent=error.message;hint.scrollIntoView({block:'nearest'});}};
+  document.getElementById('weekly-planner-save').onclick=()=>{try{d2SavePlan();}catch(error){if(error.plannerField){d2Edit(error.missingHours?'Target hours missing':'Check planned hours','<p>'+escHtml(error.message)+'</p>',()=>{},'Back to plan',null,{compact:true,acknowledge:true});return;}const hint=document.getElementById('d2-planner-error');hint.textContent=error.message;hint.scrollIntoView({block:'nearest'});}};
   weeklyPlanner.addEventListener('click',event=>{if(event.target===weeklyPlanner)closeWeeklyPlanner();});
   d2Editor.addEventListener('click',event=>{if(event.target===d2Editor)cancelFeatureEditor();});
   document.addEventListener('keydown',event=>{
@@ -15042,8 +15043,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     };
     budgetHost.innerHTML='<div class="planner-capacity">Weekly capacity <strong>'+fmt(budget)+'</strong></div><div class="planner-allocation">'+allocation('Game targets',gamesTotal)+'</div>'+(draft.enabled?'<div class="planner-allocation">'+allocation('Weekday plan',daysTotal)+'</div>':'');
     host.querySelector('#planner-weekday-summary').textContent='Weekday targets / '+(draft.enabled?'Enabled / '+fmt(daysTotal)+' planned':'Off');
-    const invalid=[...host.querySelectorAll('input[data-d2-target],input[data-d2-capacity]')].find(field=>!field.checkValidity());
-    host.querySelector('#d2-planner-error').textContent=invalid?'Every selected game or DLC needs a target of 1 to 168 whole hours. Weekday hours must be 0 to 24.':gamesTotal>budget?'Game targets exceed weekly capacity by '+fmt(gamesTotal-budget)+'.':draft.enabled&&daysTotal>budget?'Weekday plan exceeds weekly capacity by '+fmt(daysTotal-budget)+'.':'';
+    host.querySelector('#d2-planner-error').textContent=gamesTotal>budget?'Game targets exceed weekly capacity by '+fmt(gamesTotal-budget)+'.':draft.enabled&&daysTotal>budget?'Weekday plan exceeds weekly capacity by '+fmt(daysTotal-budget)+'.':'';
     const invalidDay=[...host.querySelectorAll('input[data-d2-capacity]')].some(field=>!field.checkValidity());
     host.querySelector('#planner-weekday-fields').hidden=!draft.enabled&&!invalidDay;
     if((draft.enabled&&daysTotal>budget)||invalidDay)host.querySelector('#planner-weekdays').open=true;
@@ -15077,7 +15077,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function validatePlannerFields(){
     const invalid=[...document.querySelectorAll('#weekly-planner-body input[data-d2-target],#weekly-planner-body input[data-d2-capacity]')].find(field=>!field.checkValidity());
-    if(invalid){if(invalid.dataset.d2Capacity)document.getElementById('planner-weekdays').open=true;invalid.focus();throw Error(invalid.dataset.d2Target?'Set a target of 1 to 168 whole hours for '+(contentEntry(invalid.dataset.d2Target)?.name||'this game or DLC')+'.':'Weekday hours must be whole numbers from 0 to 24.');}
+    if(invalid){
+      if(invalid.dataset.d2Capacity)document.getElementById('planner-weekdays').open=true;
+      invalid.focus();
+      const missingHours=!!invalid.dataset.d2Target&&(invalid.value.trim()===''||Number(invalid.value)===0);
+      const name=contentEntry(invalid.dataset.d2Target)?.name||'this game or DLC';
+      const error=Error(missingHours?'The target hours for '+name+' are empty or set to 0. Enter at least 1 whole hour before saving your plan.':invalid.dataset.d2Target?'Set a target of 1 to 168 whole hours for '+name+'.':'Weekday hours must be whole numbers from 0 to 24.');
+      error.plannerField=true;error.missingHours=missingHours;throw error;
+    }
   }
   function d2SavePlan(){
     validatePlannerFields();
