@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.1
 -------------------
+- Rotation entries without dated milestone estimates now show projected Main Story and Main + Extra completion dates using their weekly allocation, updating in the planner and during live play without duplicating milestone estimates.
 - Rotation milestone and HLTB estimates use the theme colour for days, playtime amounts and dates, including live updates.
 
 Version 2.1.0
