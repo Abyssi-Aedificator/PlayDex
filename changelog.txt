@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.2
 -------------------
+- Moved General milestones to the bottom of the Games tab, below the library and filters.
 - General milestones are ordered by earliest target date in Games and Today, with undated entries last in Games and matching dates ordered by name.
 - The Weekly rotation game picker now lets you select or deselect all available games and DLCs at once before adding them to the draft.
 - Checkboxes throughout the app now follow the selected interface and theme colour, with consistent sizing, keyboard focus, disabled states, and Material indeterminate styling; existing switches are preserved.
