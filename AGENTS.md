@@ -227,3 +227,9 @@ stays on `dev`. Pushing `dev` when asked is fine.
 
 - Keep feature UI contextual: playthroughs render inline in the game/DLC dashboard, one Plan week action opens the Weekly rotation editor, and sync/recovery renders inside Dropbox settings. Do not reintroduce a shared feature hub or Games shortcuts.
 - UI state is independent for playthrough selection, planner drafts, sync review and focused editors. Opening Settings must not fetch Dropbox; pause automatic transfers only for explicit review/restore and release the guard on cancel, success or navigation away during loading.
+
+## In-page section navigation
+
+- The left section rail (1024px and above) and compact Sections menu navigate within the visible page, never between tabs. Keep the existing bottom tab bar.
+- Collect visible card/category headings, including Sessions when merged with Today. Use stable semantic destination keys across rerenders, omit hidden sections, and preserve menu focus and scroll position.
+- Reserve 72px on desktop only while section navigation is present. Measure the sticky header for section-jump offsets, keep mobile menus above bottom navigation, and respect system reduced motion.

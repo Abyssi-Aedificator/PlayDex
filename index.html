@@ -5547,6 +5547,32 @@ input[data-d2-capacity]::-webkit-inner-spin-button,input[data-d2-capacity]::-web
 :root[data-ui="material"] #weekly-planner-modal .modal,:root[data-ui="material"] #feature-editor .modal { background:var(--md-surface-container-high); border-radius:28px; }
 :root[data-ui="material"] #weekly-planner-modal button,:root[data-ui="material"] #feature-editor button,:root[data-ui="material"] #dashboard-playthroughs button,:root[data-ui="material"] #sync-settings-body button { min-height:48px; }
 
+
+/* Navigation within the current page; bottom tabs continue switching pages. */
+#section-navigation[hidden] { display:none; }
+#section-navigation { position:sticky; top:var(--section-header-height,72px); z-index:85; padding:6px 16px; background:var(--surface); border-bottom:1px solid var(--border); }
+#section-toggle { display:flex; align-items:center; gap:8px; min-height:40px; padding:8px 12px; border:1px solid var(--border); border-radius:12px; background:var(--surface2); color:var(--text); font:inherit; cursor:pointer; }
+#section-links { display:none; position:absolute; left:16px; top:calc(100% + 4px); width:min(320px,calc(100vw - 32px)); max-height:calc(100dvh - var(--section-header-height,72px) - var(--mx-nav-height,96px) - 90px); overflow-y:auto; padding:8px; border:1px solid var(--border); border-radius:16px; background:var(--surface); box-shadow:var(--shadow); }
+#section-navigation[data-open] #section-links { display:flex; flex-direction:column; gap:4px; }
+.section-jump { display:flex; align-items:center; gap:12px; min-height:44px; padding:10px 12px; border:0; border-radius:12px; background:transparent; color:var(--text2); text-align:left; font:inherit; cursor:pointer; }
+.section-jump svg,#section-toggle svg { width:22px; height:22px; flex-shrink:0; }
+.section-jump:hover { background:var(--surface2); }
+.section-jump[aria-current="location"] { color:var(--accent); background:var(--accent-dim); }
+.section-jump:focus-visible,#section-toggle:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+#section-tooltip { position:fixed; z-index:95; max-width:240px; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text); box-shadow:var(--shadow); font-size:12px; pointer-events:none; }
+body:has(.modal-overlay.open,dialog[open]) :is(#section-navigation,#section-tooltip) { visibility:hidden; }
+:root[data-ui="material"] #section-navigation { background:var(--md-surface-container); }
+:root[data-ui="material"] .section-jump[aria-current="location"] { background:var(--md-secondary-container); color:var(--md-on-secondary-container); }
+:root[data-ui="apple"] #section-navigation { background:var(--surface); border-radius:16px; }
+@media(min-width:1024px) {
+  :root[data-section-navigation] body { padding-left:72px; }
+  #section-navigation { position:fixed; left:8px; top:calc(var(--section-header-height,72px) + 12px); bottom:calc(var(--mx-nav-height,96px) + 16px); width:56px; padding:2px; border:1px solid var(--border); border-radius:18px; background:var(--surface); }
+  #section-toggle { display:none; }
+  #section-navigation #section-links { display:flex; position:static; flex-direction:column; gap:6px; width:100%; max-height:100%; height:100%; overflow-y:auto; overflow-x:hidden; padding:0; border:0; border-radius:12px; background:transparent; box-shadow:none; scrollbar-width:thin; }
+  .section-jump { flex-shrink:0; justify-content:center; width:44px; padding:10px; }
+  .section-jump-label { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+}
+@media(max-width:1023px) { #section-tooltip { display:none; } }
 </style>
 <script>
 // Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
@@ -15419,6 +15445,90 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       } catch(error) {toast(error.message);button.disabled=false;}
     });
   }
+
+  // Section navigation uses existing headings, never individual library/session rows.
+  const sectionNav=document.createElement('nav');sectionNav.id='section-navigation';sectionNav.hidden=true;sectionNav.setAttribute('aria-label','Page sections');
+  sectionNav.innerHTML='<button type="button" id="section-toggle" aria-expanded="false" aria-controls="section-links">'+iconSvg('view')+'<span>Sections</span></button><div id="section-links"></div>';
+  document.querySelector('header').after(sectionNav);
+  const sectionToggle=document.getElementById('section-toggle'),sectionLinks=document.getElementById('section-links');
+  const sectionTooltip=document.createElement('div');sectionTooltip.id='section-tooltip';sectionTooltip.hidden=true;sectionTooltip.setAttribute('role','tooltip');document.body.append(sectionTooltip);
+  const sectionIds=new Map();let sectionNextId=0,sectionEntries=[],sectionSignature='',sectionFrame=0,sectionScrollFrame=0,sectionPreferred=null;
+  function sectionClose(restore=false){sectionNav.removeAttribute('data-open');sectionToggle.setAttribute('aria-expanded','false');sectionTooltip.hidden=true;if(restore)sectionToggle.focus();}
+  function sectionIcon(label){
+    if(/milestone|goal|target/i.test(label))return 'check';if(/game|dlc|discover/i.test(label))return 'games';
+    if(/calendar|week|month|day|session|streak/i.test(label))return 'sessions';if(/badge|quest|achievement/i.test(label))return 'badges';
+    if(/dropbox|sync/i.test(label))return 'dbx';if(/profile|playstyle/i.test(label))return 'profile';if(/backup|maintenance|export/i.test(label))return 'archive';
+    if(/theme|interface|colour|setting|shortcut/i.test(label))return 'settings';if(/top|podium|record|favorite/i.test(label))return 'star';return 'stats';
+  }
+  function sectionHeadingLabel(heading){
+    if(heading.classList.contains('quest-head-row'))return 'Quests';
+    if(heading.classList.contains('ach-section-header'))return heading.querySelector('span')?.textContent.trim()||'Badges';
+    const copy=heading.cloneNode(true);copy.querySelectorAll('button,select,input,.quest-count-pill').forEach(node=>node.remove());
+    return copy.textContent.replace(/\s+/g,' ').trim();
+  }
+  function refreshSectionNavigation(){
+    sectionFrame=0;
+    const panels=[...document.querySelectorAll('.app-content > .tab-panel')].filter(panel=>panel.getClientRects().length);
+    const candidates=panels.flatMap(panel=>[...panel.querySelectorAll('.card-header,.ach-section-header')]);
+    const live=document.getElementById('active-session-card');if(currentTab==='today'&&live?.getClientRects().length)candidates.unshift(live);
+    const sectionOccurrences=new Map();
+    const entries=candidates.filter(node=>node.getClientRects().length&&getComputedStyle(node).visibility!=='hidden').map(node=>{
+      const label=node===live?'Current session':sectionHeadingLabel(node),base=(node.closest('.tab-panel')?.id||currentTab)+'|'+label,occurrence=sectionOccurrences.get(base)||0;sectionOccurrences.set(base,occurrence+1);const key=base+'|'+occurrence;
+      if(!sectionIds.has(key))sectionIds.set(key,'section-'+(++sectionNextId));
+      return {node,id:sectionIds.get(key),label};
+    }).filter(entry=>entry.label);
+    const positions=new Map(entries.map(entry=>[entry,entry.node.getBoundingClientRect()]));
+    entries.sort((a,b)=>Math.round(positions.get(a).top)-Math.round(positions.get(b).top)||positions.get(a).left-positions.get(b).left);
+    // Keep visual order stable while the viewport scrolls.
+    const signature=currentTab+'|'+settings.uiStyle+'|'+entries.map(entry=>entry.id+':'+entry.label).join('|');
+    const enough=entries.length>=2;sectionNav.hidden=!enough;document.documentElement.toggleAttribute('data-section-navigation',enough);
+    const headerHeight=Math.ceil(document.querySelector('header').getBoundingClientRect().height)+'px';
+    if(document.documentElement.style.getPropertyValue('--section-header-height')!==headerHeight)document.documentElement.style.setProperty('--section-header-height',headerHeight);
+    sectionEntries=entries;
+    if(signature!==sectionSignature){
+      const focused=document.activeElement?.closest('#section-links button')?.dataset.section;
+      if(!sectionSignature.startsWith(currentTab+'|')){sectionClose();sectionPreferred=null;}
+      sectionSignature=signature;const navScroll=sectionLinks.scrollTop;
+      sectionLinks.innerHTML=entries.map(entry=>'<button type="button" class="section-jump" data-section="'+entry.id+'" aria-label="'+milestoneAttr(entry.label)+'">'+iconSvg(sectionIcon(entry.label))+'<span class="section-jump-label">'+escHtml(entry.label)+'</span></button>').join('');
+      sectionLinks.scrollTop=navScroll;
+      if(focused){const replacement=sectionLinks.querySelector('[data-section="'+focused+'"]');if(replacement)replacement.focus();else if(innerWidth<1024)sectionToggle.focus();}
+    }
+    updateSectionLocation();
+  }
+  function scheduleSectionNavigation(){if(!sectionFrame)sectionFrame=requestAnimationFrame(refreshSectionNavigation);}
+  function updateSectionLocation(){
+    sectionScrollFrame=0;if(sectionNav.hidden||!sectionEntries.length)return;
+    const offset=document.querySelector('header').getBoundingClientRect().height+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+20;
+    let selected=sectionEntries[0];
+    for(const entry of sectionEntries)if(entry.node.getBoundingClientRect().top<=offset)selected=entry;
+    const preferred=sectionEntries.find(entry=>entry.id===sectionPreferred);if(preferred&&Math.abs(preferred.node.getBoundingClientRect().top-selected.node.getBoundingClientRect().top)<4)selected=preferred;
+    for(const button of sectionLinks.querySelectorAll('button')){const value=button.dataset.section===selected.id?'location':'false';if(button.getAttribute('aria-current')!==value)button.setAttribute('aria-current',value);}
+  }
+  sectionToggle.onclick=()=>{const open=!sectionNav.hasAttribute('data-open');sectionNav.toggleAttribute('data-open',open);sectionToggle.setAttribute('aria-expanded',String(open));if(open)sectionLinks.querySelector('[aria-current="location"]')?.focus();};
+  sectionLinks.addEventListener('click',event=>{
+    const button=event.target.closest('[data-section]'),entry=sectionEntries.find(item=>item.id===button?.dataset.section);if(!entry)return;
+    sectionPreferred=entry.id;sectionClose();const offset=document.querySelector('header').getBoundingClientRect().height+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+16;
+    entry.node.setAttribute('tabindex','-1');entry.node.focus({preventScroll:true});
+    window.scrollTo({top:Math.max(0,window.scrollY+entry.node.getBoundingClientRect().top-offset),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  });
+  sectionNav.addEventListener('keydown',event=>{
+    if(event.key==='Escape'){event.preventDefault();sectionClose(true);return;}
+    if(!['ArrowDown','ArrowUp','Home','End'].includes(event.key))return;
+    const buttons=[...sectionLinks.querySelectorAll('button')],index=buttons.indexOf(document.activeElement);if(index<0)return;
+    event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:-1)+buttons.length)%buttons.length]?.focus();
+  });
+  function sectionShowTooltip(button){if(innerWidth<1024||!button)return;sectionTooltip.textContent=button.getAttribute('aria-label');sectionTooltip.hidden=false;const box=button.getBoundingClientRect();sectionTooltip.style.left='72px';sectionTooltip.style.top=Math.max(8,Math.min(innerHeight-sectionTooltip.offsetHeight-8,box.top+(box.height-sectionTooltip.offsetHeight)/2))+'px';button.setAttribute('aria-describedby','section-tooltip');}
+  sectionLinks.addEventListener('pointerover',event=>sectionShowTooltip(event.target.closest('button')));
+  sectionLinks.addEventListener('focusin',event=>sectionShowTooltip(event.target.closest('button')));
+  sectionLinks.addEventListener('pointerleave',()=>sectionTooltip.hidden=true);
+  sectionLinks.addEventListener('focusout',event=>{event.target.removeAttribute('aria-describedby');sectionTooltip.hidden=true;});
+  document.addEventListener('click',event=>{if(!sectionNav.contains(event.target))sectionClose();});
+  window.addEventListener('scroll',()=>{sectionTooltip.hidden=true;if(!sectionScrollFrame)sectionScrollFrame=requestAnimationFrame(updateSectionLocation);},{passive:true});
+  window.addEventListener('resize',()=>{sectionClose();scheduleSectionNavigation();});
+  new ResizeObserver(scheduleSectionNavigation).observe(document.querySelector('header'));
+  new MutationObserver(scheduleSectionNavigation).observe(document.querySelector('.app-content'),{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','style','hidden']});
+  new MutationObserver(scheduleSectionNavigation).observe(document.documentElement,{attributes:true,attributeFilter:['data-ui','data-theme']});
+  scheduleSectionNavigation();
 })();
 </script>
 </body>
