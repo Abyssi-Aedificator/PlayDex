@@ -234,3 +234,5 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - Collect visible card/category headings, including Sessions when merged with Today. Use stable semantic destination keys across rerenders, omit hidden sections, and preserve menu focus and scroll position.
 - Reserve 72px on desktop only while section navigation is present. Measure the sticky header for section-jump offsets, keep mobile menus above bottom navigation, and respect system reduced motion.
 - Section navigation icons must be unique within the current page, including merged Today/Sessions. Use the dedicated section icon catalog and its unused-icon fallback.
+
+- Optional settings.weeklyRotationPlaythroughs maps content entry IDs to parent playthrough IDs. Drafts, presets, weekly snapshots and history use optional playthroughs maps. Missing selection means combined progress; selected runs scope rotation sessions, HLTB and milestones through rotationRunMatches/rotationContentData. Preserve these maps through sync, imports, resets and reuse; never silently start a different run if a selection becomes unavailable.
