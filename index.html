@@ -5438,6 +5438,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 .planner-identity small,.planner-pick small,.planner-recorded { display:block; font-size:12px; color:var(--text2); line-height:1.6; }
 .rotation-estimate-number { color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
 .planner-recorded { margin-top:4px; }
+.planner-target-reached { display:inline-block; margin-left:8px; color:var(--green-ink); font-weight:600; }
 .planner-controls { display:grid; grid-template-columns:minmax(0,1fr) 120px 160px; align-items:end; gap:12px; margin-top:14px; }
 .planner-controls--no-run { grid-template-columns:120px 160px; }
 .planner-controls--no-run .planner-run { display:none; }
@@ -9864,12 +9865,16 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     budgetEl.classList.toggle('over-budget',(!!weeklyRotationBudgetMinutes() || !!settings.autoDailyGoal || !!settings.plannerDayBudgets) && planned>weeklyRotationBudgetMinutes());
     const list=document.getElementById('rotation-list');
     const today = plannedWeekdays[new Date().getDay()];
-    const candidates = activeSession ? ids.filter(id => id === sessionContentKey(activeSession)) : ids;
+    const candidates = activeSession ? ids.filter(id => id === sessionContentKey(activeSession)) : remaining;
     const visible = candidates.filter(id => {
       const day = settings.weeklyRotationDays?.[id];
       return !plannedWeekdays.includes(day) || day === today;
     }).sort((a,b)=>Number(settings.weeklyRotationPriorities?.[b]===true)-Number(settings.weeklyRotationPriorities?.[a]===true));
-    const empty = candidates.length ? '<p class="backup-hint">No rotation games planned for today.</p>' : '';
+    const empty = candidates.length
+      ? '<p class="backup-hint">No rotation games planned for today.</p>'
+      : ids.length && !remaining.length && !activeSession
+        ? '<p class="backup-hint">All weekly targets reached! Open Plan week to review your games.</p>'
+        : '';
     list.innerHTML=!visible.length ? empty : visible.map(id=>{
       const game=contentEntry(id),entry=progress.games[id];
       const target=rotationTargetMinutes(id),pct=target?Math.min(100,Math.floor(entry.ms/(target*60000)*100)):0;
@@ -15046,7 +15051,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const progress=rotationWeekProgress(draft.ids,new Date(),draft.playthroughs);
     for(const row of host.querySelectorAll('[data-planner-row]')){
       const id=row.dataset.plannerRow,target=Number(draft.targets[id])||0,ms=progress.games[id]?.ms||0;
-      row.querySelector('.planner-recorded').innerHTML=rotationEstimateNumbers(fmtDurationMinutes(ms)+' played this week'+(target>0?' / '+fmt(target)+' target':''));
+      row.querySelector('.planner-recorded').innerHTML=rotationEstimateNumbers(fmtDurationMinutes(ms)+' played this week'+(target>0?' / '+fmt(target)+' target':''))+(target>0&&ms>=target*60000?'<span class="planner-target-reached">Target reached</span>':'');
       const hltb=rotationHltbHtml(id,draft.playthroughs),validTarget=Number.isInteger(target/60)&&target>=60&&target<=10080;
       const pending=normalizeGameMilestones(rotationContentData(id,draft.playthroughs)?.milestones).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
       const estimates=validTarget?rotationCompletionEstimatesHtml(id,target,false,draft.playthroughs):pending.map(item=>'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+'</small>').join('')+(hltb||pending.length?'<small class="planner-estimate-hint">Set target hours to see completion dates.</small>':'');
