@@ -9636,7 +9636,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function rotationGoalCommitmentMinutes() {
     return Math.max(rotationCommittedMinutes(),settings.plannerDayBudgets?plannedWeekdayMinutes(settings.plannerDayHours):0);
   }
-  function rotationAvailableHours(minutes) { return Math.ceil(Math.max(0,minutes)/60)+'h'; }
+  function rotationAvailableHours(minutes) { return Math.floor(Math.max(0,minutes)/60)+'h'; }
   function rotationBudgetText(planned) {
     const budget=weeklyRotationBudgetMinutes();
     if(!budget && !settings.autoDailyGoal) return 'Set a daily goal to define your weekly rotation budget.';
@@ -9647,8 +9647,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const panel=document.getElementById(id+'-meter'),budget=weeklyRotationBudgetMinutes();
     panel.hidden=!budget && !settings.autoDailyGoal;
     if(!budget && !settings.autoDailyGoal) { panel.innerHTML=''; return; }
-    const remaining=Math.max(0,budget-planned),pct=Math.max(0,Math.min(100,(budget ? Math.round(remaining/budget*100) : 0)));
-    panel.innerHTML='<div class="rotation-budget-meter-label"><span>Available time</span><strong>'+(planned>budget?'Over budget':pct+'% available')+'</strong></div><div class="rotation-budget-meter'+(planned>budget?' over-budget':'')+'" role="progressbar" aria-label="Weekly time still available" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" aria-valuetext="'+escHtml(fmtDurationMinutes(remaining*60000)+' available of '+fmtDurationMinutes(budget*60000))+'"><div class="rotation-budget-meter-fill" style="width:'+pct+'%"></div></div>';
+    const remaining=Math.max(0,budget-planned),noWholeTime=remaining<60,pct=noWholeTime?0:Math.max(0,Math.min(100,(budget ? Math.round(remaining/budget*100) : 0)));
+    panel.innerHTML='<div class="rotation-budget-meter-label"><span>Available time</span><strong>'+(planned>budget?'Over budget':pct+'% available')+'</strong></div><div class="rotation-budget-meter'+(planned>budget?' over-budget':'')+'" role="progressbar" aria-label="Weekly time still available" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'" aria-valuetext="'+escHtml((noWholeTime?'0 whole hours':fmtDurationMinutes(remaining*60000))+' available of '+fmtDurationMinutes(budget*60000))+'"><div class="rotation-budget-meter-fill" style="width:'+pct+'%"></div></div>';
   }
   function rotationTargetMinutes(id) {
     const value=Number(settings.weeklyRotationTargets?.[id]);
@@ -14891,7 +14891,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>available.has(id));
     plannerUI.draft.targets=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.targets[id]!=null).map(id=>[id,plannerUI.draft.targets[id]]));
     plannerUI.draft.days=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.days[id]!=null).map(id=>[id,plannerUI.draft.days[id]]));
-    for(const id of plannerUI.draft.ids){const target=plannerUI.draft.targets[id];if(Number.isFinite(target)&&target>0)plannerUI.draft.targets[id]=Math.ceil(target/60)*60;}
     plannerUI.draftOriginal=d2PlannerSignature();plannerUI.raw={};plannerUI.weekdayOpen=false;
   }
   function d2PlannerSignature(){
@@ -14910,7 +14909,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const budget=d2DraftBudget(),gamesTotal=d2DraftGameTargets(),daysTotal=plannedWeekdayMinutes(draft.hours),fmt=value=>fmtDurationMinutes(value*60000);
     const allocation=(name,value)=>{
       const remaining=Math.max(0,Math.min(budget,budget-value)),noWholeGameTime=name==='Game targets'&&remaining<60,percent=budget>0&&!noWholeGameTime?Math.max(0,Math.min(100,remaining/budget*100)):0,over=value>budget;
-      const availableText=!over&&name==='Game targets'?Math.floor(remaining/60)+'h':fmt(Math.abs(budget-value));
+      const availableText=!over&&name==='Game targets'?rotationAvailableHours(remaining):fmt(Math.abs(budget-value));
       return '<span>'+name+': <strong>'+fmt(value)+'</strong></span><span class="'+(over?'d2-error':'')+'">'+(over?'Over budget: ':name==='Game targets'?'Remaining for games: ':'Remaining for weekdays: ')+'<strong>'+availableText+'</strong></span><div class="planner-remaining'+(over?' is-over':'')+'"><div class="progress-track" role="progressbar" aria-label="'+(name==='Game targets'?'Remaining for games':'Remaining for weekdays')+'" aria-valuemin="0" aria-valuemax="'+budget+'" aria-valuenow="'+(noWholeGameTime?0:remaining)+'" aria-valuetext="'+(over?'Over budget by '+fmt(value-budget):(noWholeGameTime?'0 whole hours':fmt(remaining))+' remaining of '+fmt(budget))+'"><div class="progress-fill" style="width:'+percent+'%"></div></div><small>'+ (over?'Over budget':Math.round(percent)+'% remaining')+'</small></div>';
     };
     budgetHost.innerHTML='<div class="planner-capacity">Weekly capacity <strong>'+fmt(budget)+'</strong></div><div class="planner-allocation">'+allocation('Game targets',gamesTotal)+'</div>'+(draft.enabled?'<div class="planner-allocation">'+allocation('Weekday plan',daysTotal)+'</div>':'');

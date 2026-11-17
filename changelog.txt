@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.2
 -------------------
+- Today and the Weekly rotation planner now show remaining game time consistently as complete hours, with 0% available below one hour; opening the planner preserves older minute-based totals instead of silently rounding targets up, while saving still requires whole-hour targets.
 - Centered desktop section icons and selection backgrounds within the sidebar, including when its list scrolls.
 - The desktop header spans the full window width while the section sidebar retains its content clearance.
 - Each page section now has a distinct navigation icon within its tab, including the combined Today and Sessions view.
