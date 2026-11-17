@@ -8752,11 +8752,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function restoredContentFitsBudget(keys) {
     const selected = keys.filter(key => archivedRotationIds().includes(key));
-    const progress = rotationProgressWithLive(selected);
-    const additional = selected.reduce((sum,key) => {
-      const target = rotationTargetMinutes(key);
-      return sum + target - Math.min(target, Math.floor(progress.games[key].ms / 60000));
-    },0);
+    const additional = selected.reduce((sum,key) => sum + rotationTargetMinutes(key),0);
     const budget = weeklyRotationBudgetMinutes();
     return !(budget || settings.autoDailyGoal || settings.plannerDayBudgets) || rotationCommittedMinutes() + additional <= budget;
   }
@@ -9599,12 +9595,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const selected=new Set(Array.isArray(settings.weeklyRotation)?settings.weeklyRotation:[]);
     return contentEntries().filter(game=>game.archived && selected.has(game.id)).map(game=>game.id);
   }
-  function archivedRotationSpentMinutes(now=new Date()) {
-    const ids=archivedRotationIds(),progress=rotationProgressWithLive(ids,now);
-    return ids.reduce((sum,id)=>sum+Math.min(rotationTargetMinutes(id),Math.floor(progress.games[id].ms/60000)),0);
-  }
   function rotationCommittedMinutes() {
-    return rotationGameIds().reduce((sum,id)=>sum+rotationTargetMinutes(id),0)+archivedRotationSpentMinutes();
+    return rotationGameIds().reduce((sum,id)=>sum+rotationTargetMinutes(id),0);
   }
   function weeklyRotationBudgetMinutes() {
     const daily=settings.autoDailyGoal?lastWeekAverageHours()*60:Number(settings.dailyGoalMinutes)||0;
@@ -14879,7 +14871,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     return d2Json({...draft,targets:Object.fromEntries(draft.ids.map(id=>[id,draft.targets[id]??0])),days:Object.fromEntries(draft.ids.map(id=>[id,draft.days[id]||'Any day']))});
   }
   function d2DraftBudget(){return weeklyRotationBudgetMinutes();}
-  function d2DraftGameTargets(){return plannerUI.draft.ids.reduce((sum,id)=>sum+(Number(plannerUI.draft.targets[id])||0),0)+archivedRotationSpentMinutes();}
+  function d2DraftGameTargets(){return plannerUI.draft.ids.reduce((sum,id)=>sum+(Number(plannerUI.draft.targets[id])||0),0);}
   function d2DraftPlanned(){return plannerUI.draft.enabled?plannedWeekdayMinutes(plannerUI.draft.hours):d2DraftGameTargets();}
   function plannerEntryLabel(entry){
     return '<strong>'+escHtml(entry.contentName||entry.name)+'</strong><small>'+escHtml(entry.dlcId?'DLC / '+(contentEntry(entry.parentId)?.name||'Game'):'Base game')+'</small>';
