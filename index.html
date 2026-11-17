@@ -5429,15 +5429,26 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 .planner-remaining small { color:var(--text2); font-size:12px; white-space:nowrap; }
 .planner-remaining.is-over .progress-track { outline:1px solid var(--red); }
 .planner-remaining.is-over small { color:var(--red); }
-.planner-row { display:grid; grid-template-columns:48px minmax(100px,1fr) 110px 145px auto; gap:12px; align-items:center; padding:16px 0; border-bottom:1px solid var(--border); }
+ .planner-list { display:grid; gap:14px; }
+.planner-row { min-width:0; padding:16px; border:1px solid var(--border); border-radius:16px; }
+.planner-heading { display:grid; grid-template-columns:48px minmax(0,1fr) auto; align-items:center; gap:12px; }
 .planner-row .library-game-cover,.planner-pick .library-game-cover { width:48px; height:48px; }
 .planner-identity { min-width:0; overflow-wrap:anywhere; }
 .planner-identity strong,.planner-pick strong { display:block; font-size:14px; }
 .planner-identity small,.planner-pick small,.planner-recorded { display:block; font-size:12px; color:var(--text2); line-height:1.6; }
 .rotation-estimate-number { color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
-.planner-recorded { margin-top:5px; color:var(--accent); }
-.planner-row .d2-field { margin:0; font-size:12px; align-self:end; }
-.planner-row > button { align-self:end; }
+.planner-recorded { margin-top:4px; }
+.planner-target-reached { display:inline-block; margin-left:8px; color:var(--green-ink); font-weight:600; }
+.planner-controls { display:grid; grid-template-columns:minmax(0,1fr) 120px 160px; align-items:end; gap:12px; margin-top:14px; }
+.planner-controls--no-run { grid-template-columns:120px 160px; }
+.planner-controls--no-run .planner-run { display:none; }
+.planner-run { min-width:0; }
+.planner-row .d2-field { margin:0; font-size:12px; }
+.planner-heading > button { align-self:start; }
+.planner-estimates { margin-top:14px; padding-top:12px; border-top:1px solid var(--border); overflow-wrap:anywhere; }
+.planner-estimates small { display:block; font-size:12px; line-height:1.7; color:var(--text2); }
+.planner-estimates .planner-estimate-hint { margin-top:4px; }
+.planner-estimates[hidden] { display:none; }
 input[data-d2-target] { padding:11px 32px 11px 10px; }
 .planner-hour-control { position:relative; display:block; }
 .planner-hour-arrows { position:absolute; right:3px; top:3px; bottom:3px; display:flex; flex-direction:column; width:26px; }
@@ -5456,18 +5467,19 @@ input[data-d2-target]::-webkit-inner-spin-button,input[data-d2-target]::-webkit-
 .planner-pick[hidden],#planner-weekday-fields[hidden] { display:none; }
 #planner-picker-search { width:100%; box-sizing:border-box; padding:12px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); color:var(--text); font:inherit; }
 @media(max-width:700px) {
- .planner-row { grid-template-columns:48px minmax(0,1fr) auto; gap:10px; }
- .planner-row .planner-identity { grid-column:2 / 4; padding-right:0; }
- .planner-row > .d2-field { grid-row:2; grid-column:1 / 3; }
- .planner-row > .d2-field + .d2-field { grid-row:3; grid-column:1 / 3; }
- .planner-row > button { grid-column:3; grid-row:3; }
+ .planner-row { padding:12px; }
+ .planner-heading { grid-template-columns:44px minmax(0,1fr) auto; gap:10px; }
+ .planner-heading .library-game-cover { width:44px; height:44px; }
+ .planner-controls,.planner-controls--no-run { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+ .planner-run { grid-column:1 / -1; }
  .planner-more { margin-left:0; }
  .d2-capacities { grid-template-columns:repeat(4,minmax(0,1fr)); }
 }
 
 #feature-editor { z-index:1200; }
 #feature-editor .modal { width:100%; max-width:700px; max-height:calc(100dvh - 32px); overflow:auto; }
-#general-date .cal-popover { position:relative; inset:auto; width:100%; max-width:336px; margin-top:8px; }
+#feature-editor .modal.compact-confirmation { max-width:460px; }
+#general-date .cal-popover,#d2-objective-date .cal-popover { position:relative; inset:auto; width:100%; max-width:336px; margin-top:8px; }
 .d2-section-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
 .d2-section-head h4 { margin:0; font-size:13px; }
 .d2-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
@@ -5567,9 +5579,9 @@ body:has(.modal-overlay.open,dialog[open]) :is(#section-navigation,#section-tool
 @media(min-width:1024px) {
   :root[data-section-navigation] body { padding-left:72px; }
   :root[data-section-navigation] header { margin-left:-72px; }
-  #section-navigation { position:fixed; left:8px; top:calc(var(--section-header-height,72px) + 12px); bottom:calc(var(--mx-nav-height,96px) + 16px); width:56px; padding:2px; border:1px solid var(--border); border-radius:18px; background:var(--surface); }
+  #section-navigation { display:flex; flex-direction:column; position:fixed; left:8px; top:var(--section-rail-top,calc(var(--section-header-height,72px) + 12px)); bottom:calc(var(--mx-nav-height,96px) + 16px); width:56px; padding:2px; border:1px solid var(--border); border-radius:18px; background:var(--surface); }
   #section-toggle { display:none; }
-  #section-navigation #section-links { display:flex; position:static; flex-direction:column; align-items:center; gap:6px; width:100%; max-height:100%; height:100%; overflow-y:auto; overflow-x:hidden; padding:0; border:0; border-radius:12px; background:transparent; box-shadow:none; scrollbar-width:none; }
+  #section-navigation #section-links { display:flex; position:static; flex-direction:column; align-items:center; gap:6px; width:100%; flex:1; min-height:0; max-height:none; height:auto; overflow-y:auto; overflow-x:hidden; overscroll-behavior-y:contain; padding:2px 0; border:0; border-radius:12px; background:transparent; box-shadow:none; scrollbar-width:none; }
   #section-navigation #section-links::-webkit-scrollbar { display:none; }
   .section-jump { flex-shrink:0; justify-content:center; width:44px; padding:10px; }
   .section-jump-label { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
@@ -5589,6 +5601,18 @@ body:has(.modal-overlay.open,dialog[open]) :is(#section-navigation,#section-tool
   :root input[type="checkbox"]:not(:where(.dbx-toggle input)) { appearance:auto; -webkit-appearance:auto; }
   :root input[type="checkbox"]:not(:where(.dbx-toggle input))::before { content:none; }
 }
+  .rotation-timing-before { color:var(--green-ink); font-weight:600; }
+  .rotation-timing-after { color:var(--red); font-weight:600; }
+
+.planner-actions { display:flex; align-items:center; gap:8px; align-self:start; }
+#weekly-planner-modal .planner-priority { width:44px; min-width:44px; min-height:44px; padding:10px!important; display:grid; place-items:center; color:var(--text2); }
+.planner-priority svg { width:20px; height:20px; }
+#weekly-planner-modal .planner-priority[aria-pressed="true"] { color:var(--accent); background:var(--accent-dim); border-color:var(--accent); }
+.planner-priority[aria-pressed="true"] svg { fill:currentColor; }
+.planner-row[data-high-priority="true"] { box-shadow:inset 3px 0 0 var(--accent); }
+.rotation-game-heading { display:flex; align-items:center; flex-wrap:wrap; gap:6px 8px; }
+.rotation-priority-badge { display:inline-flex; flex-shrink:0; margin:0; padding:3px 8px; border-radius:999px; background:var(--accent-dim); color:var(--accent); font-size:11px; font-weight:600; }
+@media(max-width:700px) { .planner-actions { flex-direction:column; align-items:flex-end; gap:6px; } }
 </style>
 <script>
 // Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
@@ -5776,7 +5800,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.1.2</span>
+    <span class="version-badge">2.1.3</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -6694,7 +6718,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div class="modal-overlay" id="history-health-modal">
   <div class="modal history-health-modal" role="dialog" aria-modal="true" aria-labelledby="history-health-title">
     <h3 id="history-health-title">Session history health check</h3>
-    <p class="backup-hint">Review overlapping completed sessions, sessions lasting 12 hours or more (elapsed or active), and missing games. Running sessions are excluded. Nothing changes automatically.</p>
+    <p class="backup-hint">Review overlapping completed sessions, sessions under 5 minutes of active playtime, sessions lasting 12 hours or more (elapsed or active), and missing games. Running sessions are excluded. Nothing changes automatically.</p>
     <p id="history-health-summary" role="status"></p>
     <div id="history-health-list" class="history-health-list"></div>
     <div class="modal-actions"><button type="button" class="btn-ghost" id="history-health-rescan">Rescan</button><button type="button" class="btn btn-start" id="history-health-close">Done</button></div>
@@ -6811,7 +6835,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div id="milestone-checklist-fields" hidden><p class="backup-hint">Name at least one step. Progress can be updated before prerequisites are met.</p><div id="milestone-steps"></div><button type="button" class="btn-ghost" id="milestone-step-add">+ Add step</button></div>
 <div id="milestone-counter-fields" hidden class="milestone-field-grid"><div class="field-group"><label for="milestone-current">Current count</label><input id="milestone-current" type="number" min="0" step="1"></div><div class="field-group"><label for="milestone-target">Target count</label><input id="milestone-target" type="number" min="1" step="1"></div><div class="field-group"><label for="milestone-unit">Unit (optional)</label><input id="milestone-unit" type="text" maxlength="40" placeholder="collectibles"></div></div>
 <div id="milestone-playtime-fields" hidden><div class="field-group"><label for="milestone-target-hours">Target hours</label><input id="milestone-target-hours" type="number" min="0.25" step="0.25"></div><div class="field-group"><label for="milestone-time-basis">Count recorded playtime</label><select id="milestone-time-basis"><option value="total">Total tracked time</option><option value="creation">Since creation</option></select></div><p class="backup-hint">Recorded Base game or DLC time only. HLTB already-played hours are excluded. Running time is provisional.</p></div>
-<details class="milestone-advanced"><summary>Advanced options</summary><div class="field-group"><label id="milestone-target-date-label">Target date (optional)</label><div class="cal-field" id="milestone-target-date" aria-labelledby="milestone-target-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-target-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><fieldset class="milestone-prerequisites"><legend>Prerequisites</legend><div id="milestone-prerequisite-options"></div></fieldset><label class="milestone-complete-toggle"><input id="milestone-pinned" type="checkbox"><span>Pin this milestone (replaces the current pin)</span></label></details><div class="field-group" id="milestone-estimate-field"><label for="milestone-hours-remaining">Hours remaining (optional)</label><input type="number" min="0.25" step="0.25" id="milestone-hours-remaining"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Mark done (waits for prerequisites)</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><div id="milestone-discard" class="milestone-warning" hidden><p>Changing type will discard the previous checklist or counter data. Save again to confirm, or Cancel to keep the original milestone.</p></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
+<details class="milestone-advanced"><summary>Advanced options</summary><div class="field-group"><label id="milestone-target-date-label">Target date (optional)</label><div class="cal-field" id="milestone-target-date" aria-labelledby="milestone-target-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-target-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><fieldset class="milestone-prerequisites"><legend>Prerequisites</legend><div id="milestone-prerequisite-options"></div></fieldset><label class="milestone-complete-toggle"><input id="milestone-pinned" type="checkbox"><span>Pin this milestone (replaces the current pin)</span></label></details><div class="field-group" id="milestone-estimate-source-field"><label for="milestone-estimate-source">Estimate completion using</label><select id="milestone-estimate-source"><option value="mainStory">Main Story (HLTB)</option><option value="mainExtra">Main + Extra (HLTB)</option><option value="hours">Custom hours remaining</option></select></div><div class="field-group" id="milestone-estimate-field"><label for="milestone-hours-remaining">Hours remaining (optional)</label><input type="number" min="0.25" step="0.25" id="milestone-hours-remaining"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Mark done (waits for prerequisites)</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><div id="milestone-discard" class="milestone-warning" hidden><p>Changing type will discard the previous checklist or counter data. Save again to confirm, or Cancel to keep the original milestone.</p></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
 <div class="modal-overlay" id="milestone-template-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-template-title"><h3 id="milestone-template-title">Milestone templates</h3><div class="field-group" id="milestone-template-name-field"><label for="milestone-template-name">Template name</label><input id="milestone-template-name" type="text" maxlength="80"></div><div class="field-group" id="milestone-template-select-field"><label for="milestone-template-select">Template</label><select id="milestone-template-select"></select></div><p class="backup-hint">Definitions, ordering, and prerequisites are copied. Progress, pins, and dates start fresh. Applying appends to your existing milestones.</p><div id="milestone-template-preview"></div><p id="milestone-template-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button id="milestone-template-delete" class="btn-danger" type="button" hidden>Delete template</button><button id="milestone-template-cancel" class="btn-ghost" type="button">Cancel</button><button id="milestone-template-confirm" class="btn-primary" type="button">Apply template</button></div></div></div>
 <div class="modal-overlay" id="milestone-delete-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-delete-title"><h3 id="milestone-delete-title">Delete milestone?</h3><p id="milestone-delete-message" class="backup-hint"></p><div class="modal-actions"><button class="btn-ghost" id="milestone-delete-cancel" type="button">Cancel</button><button class="btn-danger" id="milestone-delete-confirm" type="button">Delete</button></div></div></div>
 
@@ -9548,20 +9572,28 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     setTimeout(cleanup, 350);
   }
 
+  function validateRotationPriorities(value){
+    if(value===undefined)return;
+    if(!value||typeof value!=='object'||Array.isArray(value)||Object.entries(value).some(([key,priority])=>!key||typeof priority!=='boolean'))throw Error('Invalid rotation priorities');
+  }
+  function rotationPriorityBadge(id){return settings.weeklyRotationPriorities?.[id]===true?'<span class="rotation-priority-badge">High priority</span>':'';}
+  function plannerPriorityButton(id,entry,high){
+    return '<button class="btn-ghost planner-priority" type="button" data-d2="planner-priority" data-entry="'+d2Attr(id)+'" aria-pressed="'+high+'" aria-label="High priority for '+d2Attr(entry.name)+'" title="'+(high?'Remove high priority':'Mark high priority')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"/></svg></button>';
+  }
   function validateRotationPlaythroughs(value){
     if(value===undefined)return;
     if(!value||typeof value!=='object'||Array.isArray(value)||Object.entries(value).some(([key,id])=>!key||typeof id!=='string'||!id))throw Error('Invalid rotation playthrough selections');
   }
   function validateRotationHistory(state) {
     if(!state)return;
-    validateRotationPlaythroughs(state.weeklyRotationPlaythroughs);
+    validateRotationPlaythroughs(state.weeklyRotationPlaythroughs);validateRotationPriorities(state.weeklyRotationPriorities);
     if(state.weeklyRotationWeek!==undefined&&!milestoneValidDate(state.weeklyRotationWeek))throw Error('Invalid rotation week');
     if(state.weeklyRotationWeekAnchor!==undefined&&!milestoneValidDate(state.weeklyRotationWeekAnchor))throw Error('Invalid rotation week anchor');
     if(state.weeklyRotationWeekStartsOn!==undefined&&!['sunday','monday'].includes(state.weeklyRotationWeekStartsOn))throw Error('Invalid rotation week start');
     const saved=state.weeklyRotationLastWeek;if(saved===undefined)return;
     const record=value=>value&&typeof value==='object'&&!Array.isArray(value);
     if(!record(saved)||!milestoneValidDate(saved.weekStart)||!['sunday','monday'].includes(saved.weekStartsOn)||!Array.isArray(saved.ids)||saved.ids.some(id=>typeof id!=='string'||!id)||new Set(saved.ids).size!==saved.ids.length||!record(saved.targets)||!record(saved.days))throw Error('Invalid previous rotation');
-    validateRotationPlaythroughs(saved.playthroughs);
+    validateRotationPlaythroughs(saved.playthroughs);validateRotationPriorities(saved.priorities);
     for(const [id,value] of Object.entries(saved.targets))if(!saved.ids.includes(id)||!Number.isInteger(value)||value<=0||value>10080)throw Error('Invalid previous rotation target');
     for(const [id,value] of Object.entries(saved.days))if(!saved.ids.includes(id)||!['Any day','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].includes(value))throw Error('Invalid previous rotation day');
   }
@@ -9590,14 +9622,15 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     // A backward device-clock change must not clear the current plan.
     if(previous>=week)return false;
     const last=addDays(week,-7),ids=previous===last&&Array.isArray(state.weeklyRotation)?[...new Set(state.weeklyRotation.filter(id=>typeof id==='string'))]:[];
-    const targets={},days={},playthroughs={};
+    const targets={},days={},playthroughs={},priorities={};
     for(const id of ids){
+      if(state.weeklyRotationPriorities?.[id]===true)priorities[id]=true;
       if(state.weeklyRotationPlaythroughs?.[id])playthroughs[id]=state.weeklyRotationPlaythroughs[id];
       const target=state.weeklyRotationTargets?.[id];if(Number.isInteger(target)&&target>0&&target<=10080)targets[id]=target;
       const day=state.weeklyRotationDays?.[id];days[id]=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].includes(day)?day:'Any day';
     }
-    state.weeklyRotationLastWeek={weekStart:last,weekStartsOn:first,ids,targets,days,playthroughs};
-    state.weeklyRotation=[];state.weeklyRotationTargets={};state.weeklyRotationDays={};state.weeklyRotationPlaythroughs={};
+    state.weeklyRotationLastWeek={weekStart:last,weekStartsOn:first,ids,targets,days,playthroughs,priorities};
+    state.weeklyRotation=[];state.weeklyRotationTargets={};state.weeklyRotationDays={};state.weeklyRotationPlaythroughs={};state.weeklyRotationPriorities={};
     state.weeklyRotationWeek=week;state.weeklyRotationWeekAnchor=week;state.weeklyRotationWeekStartsOn=first;
     if(change)change.reset=true;
     return true;
@@ -9639,7 +9672,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function rotationRunPicker(key,selection){
     const entry=contentEntry(key),parent=games.find(game=>game.id===(entry?.parentId||entry?.id)),runs=parent?.playthroughs||[],selected=selection[key]||'';
     if(!runs.length&&!selected)return '';
-    return '<label class="d2-field" style="margin-top:8px">Playthrough<select aria-label="Playthrough for '+d2Attr(entry.name)+'" data-d2-run="'+d2Attr(key)+'"><option value="">Any playthrough</option>'+(!runs.some(run=>run.id===selected)&&selected?'<option value="'+d2Attr(selected)+'" selected disabled>Unavailable playthrough</option>':'')+runs.map(run=>'<option value="'+d2Attr(run.id)+'"'+(run.id===selected?' selected':'')+(run.finishedAt?' disabled':'')+'>'+escHtml(run.name)+(run.finishedAt?' (finished)':'')+'</option>').join('')+'</select></label>';
+    return '<label class="d2-field">Playthrough<select aria-label="Playthrough for '+d2Attr(entry.name)+'" data-d2-run="'+d2Attr(key)+'"><option value="">Any playthrough</option>'+(!runs.some(run=>run.id===selected)&&selected?'<option value="'+d2Attr(selected)+'" selected disabled>Unavailable playthrough</option>':'')+runs.map(run=>'<option value="'+d2Attr(run.id)+'"'+(run.id===selected?' selected':'')+(run.finishedAt?' disabled':'')+'>'+escHtml(run.name)+(run.finishedAt?' (finished)':'')+'</option>').join('')+'</select></label>';
   }
   function rotationPinnedMilestoneHtml(key,live=false){
     const data=rotationContentData(key),rows=sessions.filter(session=>rotationRunMatches(session,key));
@@ -9735,16 +9768,26 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const text=rotationHltbRemaining(key,selection);return text?'<small class="rotation-hltb" data-rotation-hltb>'+rotationEstimateNumbers(text)+'</small>':'';
   }
 
+  function milestoneEstimateSource(item,data={}){
+    if(['hours','mainStory','mainExtra'].includes(item?.estimateSource))return item.estimateSource;
+    if(Number.isFinite(item?.hoursRemaining))return 'hours';
+    return !data?.mainStoryHours&&data?.mainExtraHours?'mainExtra':'mainStory';
+  }
+  function milestoneEstimateSourceSelect(id,value,custom=true){
+    const options=[['mainStory','Main Story (HLTB)'],['mainExtra','Main + Extra (HLTB)'],...(custom?[['hours','Custom hours remaining']]:[])];
+    return '<label class="d2-field">Estimate completion using<select id="'+id+'">'+options.map(([key,label])=>'<option value="'+key+'"'+(key===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label>';
+  }
   function rotationMilestoneEstimates(key,targetMinutes,live=false,selection=settings.weeklyRotationPlaythroughs||{}) {
     if(!contentEntry(key)||contentEntry(key).archived)return [];
     const items=normalizeGameMilestones(rotationContentData(key,selection)?.milestones).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
     return items.map(item=>{
       const progress=item.type==='playtime'?milestoneProgress(item,contentEntry(key).parentId||contentEntry(key).id,contentEntry(key).dlcId||null,sessions.filter(session=>rotationRunMatches(session,key,selection)),live):null;
-      const fallback=!progress&&!Number.isFinite(item.hoursRemaining)?rotationHltbEstimates(key,selection)[0]:null;
-      const remaining=progress?Math.max(0,(progress.target-progress.value)/3600000):Number.isFinite(item.hoursRemaining)?item.hoursRemaining:fallback?.hoursRemaining;
+      const source=item.estimateSource,estimates=rotationHltbEstimates(key,selection);
+      const fallback=progress?null:source==='mainStory'||source==='mainExtra'?estimates.find(estimate=>estimate.label===(source==='mainExtra'?'Main + Extra':'Main Story')):source!=='hours'&&!Number.isFinite(item.hoursRemaining)?estimates[0]:null;
+      const remaining=progress?Math.max(0,(progress.target-progress.value)/3600000):fallback?fallback.hoursRemaining:(!source||source==='hours')&&Number.isFinite(item.hoursRemaining)?item.hoursRemaining:undefined;
       let text,targetTiming='';
       if(remaining===0)text=fallback?'The HLTB estimate has been reached; milestone completion stays manual.':'Playtime target reached; awaiting completion or prerequisites.';
-      else if(!Number.isFinite(remaining))text='Set Hours remaining to estimate days needed.';
+      else if(!Number.isFinite(remaining))text=source==='mainStory'||source==='mainExtra'?'Set '+(source==='mainExtra'?'Main + Extra':'Main Story')+' HLTB to estimate days needed.':'Set Hours remaining to estimate days needed.';
       else if(!Number.isInteger(targetMinutes/60)||targetMinutes<60||targetMinutes>10080)text='Set a whole-hour weekly target to estimate days needed.';
       else{
         const days=Math.ceil(remaining/(targetMinutes/60)*7),pace=fmtDurationMinutes(targetMinutes*60000)+'/week';
@@ -9757,11 +9800,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         }
       }
       if(fallback)text+=' Based on '+fallback.label+' HLTB.';
-      return {name:item.name,text,targetDate:item.targetDate,hltbFallback:!!fallback,targetTiming,blocked:milestoneBlocked(item,items).length>0};
+      return {name:item.name,text,targetDate:item.targetDate,hltbFallback:!!fallback,estimateLabel:fallback?.label,targetTiming,blocked:milestoneBlocked(item,items).length>0};
     });
   }
+  function rotationTargetTimingHtml(text) {
+    return rotationEstimateNumbers(text).replace(/\b(before target|after target)\b/g,phrase=>'<span class="rotation-timing-'+(phrase==='before target'?'before':'after')+'">'+phrase+'</span>');
+  }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false,selection=settings.weeklyRotationPlaythroughs||{}) {
-    return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+escHtml(item.targetTiming):'')+'. Completion stays manual.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers(item.text+' Target: '+item.targetDate)+'</small>').join('');
+    return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'. Completion stays manual.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>').join('');
   }
 
   function rotationHltbCompletionEstimates(key,targetMinutes,selection=settings.weeklyRotationPlaythroughs||{}) {
@@ -9823,11 +9869,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const visible = candidates.filter(id => {
       const day = settings.weeklyRotationDays?.[id];
       return !plannedWeekdays.includes(day) || day === today;
-    });
+    }).sort((a,b)=>Number(settings.weeklyRotationPriorities?.[b]===true)-Number(settings.weeklyRotationPriorities?.[a]===true));
     const empty = candidates.length
       ? '<p class="backup-hint">No rotation games planned for today.</p>'
       : ids.length && !remaining.length && !activeSession
-        ? '<p class="backup-hint">All weekly targets reached! Your games return next week.</p>'
+        ? '<p class="backup-hint">All weekly targets reached! Open Plan week to review your games.</p>'
         : '';
     list.innerHTML=!visible.length ? empty : visible.map(id=>{
       const game=contentEntry(id),entry=progress.games[id];
@@ -9835,7 +9881,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const targetHtml=target?'<div class="rotation-metrics" data-rotation-target-text><span class="rotation-time"><span class="rotation-elapsed" data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span><span class="rotation-target-text">/ '+fmtDurationMinutes(target*60000)+'</span></span><span class="rotation-percent" data-rotation-percent>'+(pct===100?'Target reached':pct+'%')+'</span></div><div class="progress-track" data-rotation-progress role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'<small><span data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span> this week</small>';
       const day = settings.weeklyRotationDays?.[id];
       const dayLabel = plannedWeekdays.includes(day) ? '<small>Planned day: ' + day + '</small>' : '';
-      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+(rotationRunLabel(id)?'<small>Playthrough: '+escHtml(rotationRunLabel(id))+'</small>':'')+dayLabel+targetHtml+rotationHltbHtml(id)+'<div data-rotation-milestone-estimates>'+rotationCompletionEstimatesHtml(id,target,!!activeSession)+'</div>'+rotationPinnedMilestoneHtml(id,!!activeSession)+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'"'+(settings.weeklyRotationPlaythroughs?.[id]&&(!rotationRun(id)||rotationRun(id).finishedAt)?' disabled title="Choose an open playthrough in Plan week"':'')+'>Start</button>')+'</div>';
+      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><div class="rotation-game-heading"><strong>'+escHtml(game.name)+'</strong>'+rotationPriorityBadge(id)+'</div>'+(rotationRunLabel(id)?'<small>Playthrough: '+escHtml(rotationRunLabel(id))+'</small>':'')+dayLabel+targetHtml+rotationHltbHtml(id)+'<div data-rotation-milestone-estimates>'+rotationCompletionEstimatesHtml(id,target,!!activeSession)+'</div>'+rotationPinnedMilestoneHtml(id,!!activeSession)+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'"'+(settings.weeklyRotationPlaythroughs?.[id]&&(!rotationRun(id)||rotationRun(id).finishedAt)?' disabled title="Choose an open playthrough in Plan week"':'')+'>Start</button>')+'</div>';
     }).join('');
   }
   const plannedWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -11507,16 +11553,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     checkStorageFresh();validateMilestoneRecords(items);
     const next={...settings,generalMilestones:items};saveSettings(next);settings=next;renderGeneralMilestones();renderTodayMilestones();
   }
+  function milestoneCalendarMarkup(id,labelId){
+    const calendar=document.getElementById('milestone-target-date').cloneNode(true);calendar.id=id;calendar.classList.remove('open');calendar.setAttribute('aria-labelledby',labelId);calendar.querySelector('.cal-trigger').setAttribute('aria-labelledby',labelId);calendar.querySelector('.cal-trigger').setAttribute('aria-expanded','false');calendar.querySelectorAll('button').forEach(button=>button.type='button');return calendar.outerHTML;
+  }
   function editGeneralMilestone(id){
     const original=(settings.generalMilestones||[]).find(item=>item.id===id);
-    const calendar=document.getElementById('milestone-target-date').cloneNode(true);calendar.id='general-date';calendar.classList.remove('open');calendar.setAttribute('aria-labelledby','general-date-label');calendar.querySelector('.cal-trigger').setAttribute('aria-labelledby','general-date-label');calendar.querySelector('.cal-trigger').setAttribute('aria-expanded','false');
-    calendar.querySelectorAll('button').forEach(button=>button.type='button');
     let dateField;
-    d2Edit(original?'Edit general milestone':'Add general milestone','<label class="d2-field">Name<input id="general-name" type="text" maxlength="140" value="'+milestoneAttr(original?.name||'')+'" required></label><div class="field-group"><label id="general-date-label">Target date (optional)</label>'+calendar.outerHTML+'</div><p class="backup-hint">Assign this objective when ready. You can then add checklists, counters, playtime goals, and prerequisites in the game dashboard.</p>',()=>{
+    d2Edit(original?'Edit general milestone':'Add general milestone','<label class="d2-field">Name<input id="general-name" type="text" maxlength="140" value="'+milestoneAttr(original?.name||'')+'" required></label><div class="field-group"><label id="general-date-label">Target date (optional)</label>'+milestoneCalendarMarkup('general-date','general-date-label')+'</div>'+milestoneEstimateSourceSelect('general-estimate-source',original?.estimateSource==='mainExtra'?'mainExtra':'mainStory',false)+'<p class="backup-hint">Assign this objective when ready. You can then add checklists, counters, playtime goals, and prerequisites in the game dashboard.</p>',()=>{
       const items=settings.generalMilestones||[],old=items.find(item=>item.id===id);if(id&&!old)throw Error('This milestone no longer exists.');
       const name=document.getElementById('general-name').value.trim(),targetDate=dateField.value||null;
       if(!name)throw Error('Enter a milestone name.');
-      const item={...old,id:old?.id||uid(),name,type:'manual',createdAt:old?.createdAt||new Date().toISOString(),targetDate,manualDone:false,completedAt:null};
+      const item={...old,id:old?.id||uid(),name,type:'manual',createdAt:old?.createdAt||new Date().toISOString(),targetDate,estimateSource:document.getElementById('general-estimate-source').value,manualDone:false,completedAt:null};
       delete item.hoursRemaining;
       saveGeneralMilestones(old?items.map(entry=>entry.id===id?item:entry):items.concat(item));
     },'Save',null,{onClose:()=>mxFieldRegistry.delete('general-date')});
@@ -13000,7 +13047,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       try {
         const data = validateBackupData(JSON.parse(reader.result));
         // Restore progression/planning data without replacing this device's appearance preferences.
-        const portable=['generalMilestones','milestoneTemplates','sessionMilestonePrompts','showTodayMilestones','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationPlaythroughs','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
+        const portable=['generalMilestones','milestoneTemplates','sessionMilestonePrompts','showTodayMilestones','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationPlaythroughs','weeklyRotationPriorities','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'];
         importData = { games:data.games, sessions:data.sessions, settings:data.settings?Object.fromEntries(portable.filter(key=>data.settings[key]!==undefined).map(key=>[key,data.settings[key]])):undefined };
         document.getElementById('import-modal').classList.add('open');
       } catch (error) {
@@ -13023,11 +13070,12 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       catch (error) { importData=null; toast('Invalid backup: '+error.message); document.getElementById('import-modal').classList.remove('open'); return; }
       checkStorageFresh();
       const localSettings=structuredClone(settings);
+      localSettings.weeklyRotationPriorities=structuredClone(importData.settings?.weeklyRotationPriorities||{});
       localSettings.weeklyRotationPlaythroughs=structuredClone(importData.settings?.weeklyRotationPlaythroughs||{});
       // Restore portable progression and planning data; retain other local preferences.
       if(importData.settings?.generalMilestones!==undefined)localSettings.generalMilestones=structuredClone(importData.settings.generalMilestones);
       if(importData.settings?.milestoneTemplates!==undefined)localSettings.milestoneTemplates=structuredClone(importData.settings.milestoneTemplates);
-      for(const key of ['sessionMilestonePrompts','showTodayMilestones','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationPlaythroughs','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
+      for(const key of ['sessionMilestonePrompts','showTodayMilestones','dailyGoalMinutes','autoDailyGoal','plannerDayBudgets','plannerDayHours','rotationPresets','weeklyPlanHistory','weeklyRotation','weeklyRotationTargets','weeklyRotationDays','weeklyRotationPlaythroughs','weeklyRotationPriorities','weeklyRotationWeek','weeklyRotationWeekAnchor','weeklyRotationWeekStartsOn','weeklyRotationLastWeek'])if(importData.settings?.[key]!==undefined)localSettings[key]=structuredClone(importData.settings[key]);
       if(importData.settings?.weeklyRotationWeek!==undefined&&importData.settings.weeklyRotationWeekAnchor===undefined)delete localSettings.weeklyRotationWeekAnchor;
       try{persistLibraryReplacement(importData.games,importData.sessions,localSettings);}
       catch(error){toast('Backup could not be imported: '+error.message);return;}
@@ -13547,6 +13595,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const rows=history.filter(session=>session.stop!==null).map(session=>({session,start:Date.parse(session.start),end:Date.parse(session.stop),reasons:[],overlaps:[]}));
     for(const row of rows){
       if(!gameIds.has(row.session.gameId))row.reasons.push('missing');
+      if(Number.isFinite(row.session.durationMs)&&row.session.durationMs>=0&&row.session.durationMs<5*60000)row.reasons.push('short');
       if(row.end-row.start>=12*3600000 || Number(row.session.durationMs)>=12*3600000)row.reasons.push('long');
     }
     const sorted=rows.filter(row=>Number.isFinite(row.start)&&Number.isFinite(row.end)&&row.end>row.start).sort((a,b)=>a.start-b.start);
@@ -13571,6 +13620,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       row.innerHTML='<h4>'+escHtml(name)+'</h4><p>'+escHtml(fmtDateShort(session.start)+' '+fmtTime(session.start)+' - '+fmtDateShort(session.stop)+' '+fmtTime(session.stop))+'</p><p>Active playtime: '+escHtml(fmtDuration(session.durationMs||0))+'</p>';
       const reasons=document.createElement('ul');
       if(missing){const li=document.createElement('li');li.textContent='Missing game: this session references a game no longer in the library.';reasons.append(li);}
+      if(issue.reasons.includes('short')){const li=document.createElement('li');li.textContent='Short session: under 5 minutes of active playtime.';reasons.append(li);}
       if(issue.reasons.includes('long')){const li=document.createElement('li');li.textContent='Unusually long: at least 12 hours of elapsed or active time. Elapsed: '+fmtDuration(issue.end-issue.start)+'.';reasons.append(li);}
       if(issue.overlaps.length){const li=document.createElement('li');li.textContent='Overlaps '+issue.overlaps.length+' other session'+(issue.overlaps.length===1?'':'s')+': '+issue.overlaps.map(other=>(games.find(game=>game.id===other.gameId)?.name||other.gameName||'Unknown game')+' ('+fmtDateShort(other.start)+' '+fmtTime(other.start)+' - '+fmtTime(other.stop)+')').join('; ');reasons.append(li);}
       row.append(reasons);
@@ -13589,11 +13639,22 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         };
         actions.append(select,assign);
       }
+      const remove=document.createElement('button');remove.type='button';remove.className='btn-ghost btn-danger';remove.textContent='Delete session';remove.setAttribute('aria-label','Delete session for '+name);
+      remove.onclick=()=>{
+        const current=sessions.find(entry=>entry.id===session.id);if(!current||current.stop===null){renderHistoryHealth();return;}
+        d2Edit('Delete session?','<p><strong>'+escHtml(name)+'</strong></p><p class="backup-hint">'+escHtml(fmtDateShort(current.start)+' '+fmtTime(current.start)+' / '+fmtDuration(current.durationMs||0)+' active playtime')+'</p><p>This cannot be undone.</p>',()=>{
+          const latest=sessions.find(entry=>entry.id===session.id);if(!latest||latest.stop===null)throw Error('This completed session is no longer available.');
+          persistSessionReplacement(sessions.filter(entry=>entry.id!==latest.id));
+          renderSessionsTab(false);renderTodayTab();renderStatsTab();renderAchievementsTab();renderProfileTab();renderGamesTab();renderTop();renderHistoryHealth();
+          toast('Session deleted');
+        },'Delete session',null,{destructive:true,compact:true});
+      };
+      actions.append(remove);
       row.append(actions);list.append(row);
     }
   }
   const healthButton=document.createElement('button');healthButton.type='button';healthButton.className='btn-ghost btn-danger';healthButton.style.cssText='padding:10px 14px;font-size:0.8rem;';healthButton.id='btn-history-health';healthButton.textContent='Check session history';healthButton.setAttribute('aria-haspopup','dialog');healthButton.setAttribute('aria-controls','history-health-modal');
-  const healthHint=document.createElement('p');healthHint.className='backup-hint';healthHint.style.margin='8px 0';healthHint.textContent='Review overlapping or unusually long completed sessions and sessions with missing games. Nothing changes automatically.';
+  const healthHint=document.createElement('p');healthHint.className='backup-hint';healthHint.style.margin='8px 0';healthHint.textContent='Review overlapping, short (under 5 minutes), or unusually long completed sessions and sessions with missing games. Nothing changes automatically.';
   document.querySelector('.settings-maintenance-card').append(healthHint,healthButton);
   healthButton.onclick=()=>{healthReturnFocus=document.activeElement;renderHistoryHealth();healthModal.classList.add('open');document.getElementById('history-health-close').focus();};
   document.getElementById('history-health-rescan').onclick=renderHistoryHealth;
@@ -13895,6 +13956,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         completedAt:milestoneValidDate(m.completedAt)?m.completedAt:null,
         manualDone:typeof m.manualDone==='boolean'?m.manualDone:!!m.completedAt,
         hoursRemaining:Number.isFinite(m.hoursRemaining)&&m.hoursRemaining>0?m.hoursRemaining:undefined,
+        estimateSource:['hours','mainStory','mainExtra'].includes(m.estimateSource)?m.estimateSource:undefined,
         group:typeof m.group==='string'?m.group.trim().slice(0,60):'',
         order:Number.isFinite(m.order)?m.order:index,groupOrder:Number.isFinite(m.groupOrder)?m.groupOrder:index,
         targetDate:milestoneValidDate(m.targetDate)?m.targetDate:null,
@@ -13979,6 +14041,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const type=m.type===undefined?'manual':m.type;
       if(!['manual','checklist','counter','playtime'].includes(type))throw Error('Invalid milestone type');
       if(m.completedAt!=null&&!milestoneValidDate(m.completedAt)||m.targetDate!=null&&!milestoneValidDate(m.targetDate)||m.createdAt!==undefined&&(typeof m.createdAt!=='string'||!Number.isFinite(Date.parse(m.createdAt))))throw Error('Invalid milestone date');
+      if(m.estimateSource!==undefined&&!['hours','mainStory','mainExtra'].includes(m.estimateSource))throw Error('Invalid milestone estimate source');
       if(m.hoursRemaining!=null&&(!Number.isFinite(m.hoursRemaining)||m.hoursRemaining<=0))throw Error('Invalid milestone estimate');
       for(const key of ['manualDone','pinned'])if(m[key]!==undefined&&typeof m[key]!=='boolean')throw Error('Invalid milestone state');
       if(m.pinned&&++pins>1)throw Error('Only one milestone may be pinned per content');
@@ -14074,7 +14137,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const counts={all:items.length,progress:items.filter(m=>milestoneStatus(m,items)==='progress').length,blocked:items.filter(m=>milestoneStatus(m,items)==='blocked').length,completed:done};
     const row=m=>{
       const p=milestoneSummary(m,game.id),blocked=milestoneBlocked(m,items),siblings=milestoneSorted(items);
-      const remaining=m.type==='playtime'?Math.max(0,(p.target-p.value)/3600000):m.hoursRemaining;
+      const remaining=m.type==='playtime'?Math.max(0,(p.target-p.value)/3600000):m.estimateSource==='mainStory'||m.estimateSource==='mainExtra'?rotationHltbEstimates(game.id,{}).find(estimate=>estimate.label===(m.estimateSource==='mainExtra'?'Main + Extra':'Main Story'))?.hoursRemaining:m.hoursRemaining;
       const due=milestoneTargetDateHtml(m);
       const info=(m.completedAt?'Completed '+m.completedAt:blocked.length?'Blocked: '+blocked.join(', '):'In progress')+(!m.completedAt?milestoneFinishEstimate(game.id,remaining):'');
       const tools=action('Edit','edit',m.id)+action(m.pinned?'Unpin':'Pin','pin',m.id)+'<details class="milestone-more" data-milestone-detail="more:'+milestoneAttr(m.id)+'"><summary>More</summary><div class="milestone-row-tools">'+action('Move up','up',m.id,siblings[0].id===m.id)+action('Move down','down',m.id,siblings.at(-1).id===m.id)+action('Delete','delete',m.id)+'</div></details>';
@@ -14181,14 +14244,16 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     for(const key of ['checklist','counter','playtime'])document.getElementById('milestone-'+key+'-fields').hidden=type!==key;
     document.getElementById('milestone-completed').closest('label').hidden=type!=='manual';
     document.getElementById('milestone-completion-date').hidden=type!=='manual'||!document.getElementById('milestone-completed').checked;
-    document.getElementById('milestone-estimate-field').hidden=type==='playtime';
+    document.getElementById('milestone-estimate-source-field').hidden=type==='playtime';
+    const custom=type!=='playtime'&&document.getElementById('milestone-estimate-source').value==='hours';
+    document.getElementById('milestone-estimate-field').hidden=!custom;document.getElementById('milestone-hours-remaining').disabled=!custom;
   }
   function openMilestoneEditor(game,id){
     milestoneEditorGame=game.id;milestoneEditorId=id||null;milestoneDiscardSignature=null;
     const items=normalizeGameMilestones(game.milestones),item=items.find(m=>m.id===id);
     const field=(key,value)=>{if(key==='target-date')milestoneTargetDateField.value=value||'';else document.getElementById('milestone-'+key).value=value??'';};
     document.getElementById('milestone-modal-title').textContent=item?'Edit milestone':'Add milestone';
-    field('name',item?.name);field('type',item?.type||'manual');field('hours-remaining',item?.hoursRemaining);
+    field('name',item?.name);field('type',item?.type||'manual');field('hours-remaining',item?.hoursRemaining);field('estimate-source',milestoneEstimateSource(item,game));
     field('current',item?.current??0);field('target',item?.target??1);field('unit',item?.unit);field('target-hours',item?.targetHours??1);field('time-basis',item?.timeBasis||'total');field('target-date',item?.targetDate);
     document.getElementById('milestone-pinned').checked=!!item?.pinned;
     document.getElementById('milestone-completed').checked=!!item?.manualDone;
@@ -14283,6 +14348,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
   });
   document.getElementById('milestone-type').onchange=updateMilestoneType;
+  document.getElementById('milestone-estimate-source').onchange=updateMilestoneType;
   document.getElementById('milestone-completed').onchange=updateMilestoneType;
   document.getElementById('milestone-step-add').onclick=()=>{milestoneStepDraft=readMilestoneSteps();milestoneStepDraft.push({id:uid(),name:'',done:false});paintMilestoneSteps();document.querySelector('#milestone-steps .milestone-step-edit:last-child input[type="text"]').focus();};
   document.getElementById('milestone-steps').onclick=event=>{const button=event.target.closest('[data-remove-step]');if(!button)return;milestoneStepDraft=readMilestoneSteps().filter(step=>step.id!==button.dataset.removeStep);paintMilestoneSteps();};
@@ -14296,8 +14362,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       manualDone:document.getElementById('milestone-completed').checked,
       completedAt:old?.completedAt||null,group,groupOrder:items.find(m=>m.group===group)?.groupOrder??Math.max(-1,...items.map(m=>m.groupOrder))+1,
       order:old?.order??Math.max(-1,...items.map(m=>m.order))+1,
-      targetDate:val('target-date')||null,prerequisites:[...document.querySelectorAll('#milestone-prerequisite-options input:checked')].map(input=>input.value),
-      pinned:document.getElementById('milestone-pinned').checked,hoursRemaining:val('hours-remaining')===''?undefined:Number(val('hours-remaining'))};
+      targetDate:val('target-date')||null,estimateSource:val('estimate-source'),prerequisites:[...document.querySelectorAll('#milestone-prerequisite-options input:checked')].map(input=>input.value),
+      pinned:document.getElementById('milestone-pinned').checked,hoursRemaining:val('estimate-source')==='hours'?(val('hours-remaining')===''?undefined:Number(val('hours-remaining'))):old?.hoursRemaining};
     if(type==='checklist')item.checklist=readMilestoneSteps();
     if(type==='counter'){item.current=val('current')===''?NaN:Number(val('current'));item.target=val('target')===''?NaN:Number(val('target'));item.unit=val('unit').trim();}
     if(type==='playtime'){item.targetHours=Number(val('target-hours'));item.timeBasis=val('time-basis');}
@@ -14641,13 +14707,17 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('d2-editor-title').textContent=title;
     document.getElementById('d2-editor-body').innerHTML=html;
     document.getElementById('d2-editor-save').textContent=label;
+    document.getElementById('d2-editor-cancel').hidden=!!options.acknowledge;
+    document.getElementById('d2-editor-save').className=options.destructive?'btn btn-danger':'btn btn-start';
+    d2Editor.querySelector('.modal').classList.toggle('compact-confirmation',!!options.compact);
     document.getElementById('d2-editor-error').textContent='';d2Editor.classList.add('open');
-    requestAnimationFrame(()=>{if(d2Editor.classList.contains('open'))d2Editor.querySelector('input:not([type=checkbox]),textarea,select,button')?.focus();});
+    requestAnimationFrame(()=>{if(d2Editor.classList.contains('open'))(options.acknowledge?document.getElementById('d2-editor-save'):d2Editor.querySelector('input:not([type=checkbox]),textarea,select,button'))?.focus();});
   }
   function restoreEditorFocus(){
     if(editorReturnFocus?.isConnected&&editorReturnFocus.getClientRects().length){editorReturnFocus.focus();return;}
     if(weeklyPlanner.classList.contains('open'))document.getElementById('weekly-planner-cancel').focus();
     else if(document.getElementById('dashboard-modal').classList.contains('open'))focusPlaythroughField('playthrough-selector');
+    else if(healthModal.classList.contains('open'))document.getElementById('history-health-rescan').focus();
     else if(currentTab==='games')document.querySelector('[data-general-action="add"]')?.focus();
     else if(currentTab==='settings')document.getElementById('dbxUploadBtn')?.focus();
     else if(activeSession&&currentTab==='today')document.getElementById('btn-pause')?.focus();
@@ -14680,7 +14750,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   document.getElementById('rotation-manage').addEventListener('click',openWeeklyPlanner);
   document.getElementById('weekly-planner-cancel').onclick=()=>closeWeeklyPlanner();
-  document.getElementById('weekly-planner-save').onclick=()=>{try{d2SavePlan();}catch(error){const hint=document.getElementById('d2-planner-error');hint.textContent=error.message;hint.scrollIntoView({block:'nearest'});}};
+  document.getElementById('weekly-planner-save').onclick=()=>{try{d2SavePlan();}catch(error){if(error.plannerField){d2Edit(error.missingHours?'Target hours missing':'Check planned hours','<p>'+escHtml(error.message)+'</p>',()=>{},'Back to plan',null,{compact:true,acknowledge:true});return;}const hint=document.getElementById('d2-planner-error');hint.textContent=error.message;hint.scrollIntoView({block:'nearest'});}};
   weeklyPlanner.addEventListener('click',event=>{if(event.target===weeklyPlanner)closeWeeklyPlanner();});
   d2Editor.addEventListener('click',event=>{if(event.target===d2Editor)cancelFeatureEditor();});
   document.addEventListener('keydown',event=>{
@@ -14753,8 +14823,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(plannerUI.draft.week!==settings.weeklyRotationWeek){d2LoadDraft();toast('A new week started. Loading into a fresh weekly draft.');}
     const snapshot=lastWeekRotation();if(!snapshot)return;
     const available=new Set(contentEntries().filter(rotationEntryEligible).map(entry=>entry.id));
-    plannerUI.raw={};plannerUI.draft.ids=snapshot.ids.filter(id=>available.has(id));plannerUI.draft.targets={};plannerUI.draft.days={};plannerUI.draft.playthroughs={};
-    for(const id of plannerUI.draft.ids){if(snapshot.playthroughs?.[id])plannerUI.draft.playthroughs[id]=snapshot.playthroughs[id];const target=Number(snapshot.targets?.[id]);if(Number.isInteger(target)&&target>0&&target<=10080)plannerUI.draft.targets[id]=Math.ceil(target/60)*60;plannerUI.draft.days[id]=plannedWeekdays.includes(snapshot.days?.[id])?snapshot.days[id]:'Any day';}
+    plannerUI.raw={};plannerUI.draft.ids=snapshot.ids.filter(id=>available.has(id));plannerUI.draft.targets={};plannerUI.draft.days={};plannerUI.draft.playthroughs={};plannerUI.draft.priorities={};
+    for(const id of plannerUI.draft.ids){if(snapshot.priorities?.[id]===true)plannerUI.draft.priorities[id]=true;if(snapshot.playthroughs?.[id])plannerUI.draft.playthroughs[id]=snapshot.playthroughs[id];const target=Number(snapshot.targets?.[id]);if(Number.isInteger(target)&&target>0&&target<=10080)plannerUI.draft.targets[id]=Math.ceil(target/60)*60;plannerUI.draft.days[id]=plannedWeekdays.includes(snapshot.days?.[id])?snapshot.days[id]:'Any day';}
     renderWeeklyPlanner();toast('Loaded '+plannerUI.draft.ids.length+' entries into the draft. Current weekday planned hours were kept.');
   }
   function handlePlannerAction(action,button){
@@ -14780,7 +14850,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(action==='planner-hour'){
       const field=document.getElementById('planner-hours-'+button.dataset.entry);if(!field)return;
       const current=Number(field.value),step=Number(button.dataset.step);
-      field.value=step<0&&current<=1?'':String(Math.max(1,Math.min(168,(Number.isFinite(current)?Math.floor(current):0)+step)));
+      field.value=String(Math.max(0,Math.min(168,(Number.isFinite(current)?Math.floor(current):0)+step)));
       field.dispatchEvent(new Event('input',{bubbles:true}));return;
     }
     if(action==='planner-add')return d2PlannerAdd();
@@ -14789,7 +14859,12 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(action==='planner-rebalance')return d2Rebalance();
     if(action==='planner-last-week')return d2PreviousWeek();
     if(action==='planner-load-last')return loadLastWeekIntoPlanner();
-    if(action==='planner-remove'){delete plannerUI.draft.targets[button.dataset.entry];delete plannerUI.draft.days[button.dataset.entry];delete plannerUI.draft.playthroughs[button.dataset.entry];delete plannerUI.raw['target:'+button.dataset.entry];plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>id!==button.dataset.entry);renderWeeklyPlanner();document.querySelector('#weekly-planner-body [data-d2="planner-add"]')?.focus();return;}
+    if(action==='planner-priority'){
+      const id=button.dataset.entry,high=plannerUI.draft.priorities[id]!==true;
+      if(high)plannerUI.draft.priorities[id]=true;else delete plannerUI.draft.priorities[id];
+      button.setAttribute('aria-pressed',String(high));button.title=high?'Remove high priority':'Mark high priority';button.closest('[data-planner-row]').dataset.highPriority=String(high);return;
+    }
+    if(action==='planner-remove'){delete plannerUI.draft.targets[button.dataset.entry];delete plannerUI.draft.days[button.dataset.entry];delete plannerUI.draft.playthroughs[button.dataset.entry];delete plannerUI.draft.priorities[button.dataset.entry];delete plannerUI.raw['target:'+button.dataset.entry];plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>id!==button.dataset.entry);renderWeeklyPlanner();document.querySelector('#weekly-planner-body [data-d2="planner-add"]')?.focus();return;}
 
   }
   function focusPlaythroughField(id){requestAnimationFrame(()=>{const field=document.getElementById(id);if(!field)return;(field.classList.contains('mx-native-select')?field.nextElementSibling:field)?.focus();});}
@@ -14907,7 +14982,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function d2EditObjective(key,id){
     const run=d2Run(),items=run?.content?.[key]?.milestones||[],item=items.find(m=>m.id===id);
-    d2Edit(item?'Edit playthrough milestone':'Add playthrough milestone',d2Input('Name','d2-objective-name',item?.name||'','type="text" maxlength="120" required')+'<label class="d2-field">Type<select id="d2-objective-type">'+[['manual','Manual'],['checklist','Checklist'],['counter','Counter'],['playtime','Tracked playtime']].map(([value,label])=>'<option value="'+value+'"'+((item?.type||'manual')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label><div class="d2-objective-fields">'+d2Input('Counter target','d2-objective-target',item?.target||1,'type="number" min="1" step="1"')+d2Input('Counter unit (optional)','d2-objective-unit',item?.unit||'','type="text" maxlength="40"')+d2Input('Playtime target (hours)','d2-objective-hours',item?.targetHours||1,'type="number" min="0.25" max="100000" step="0.25"')+'<label class="d2-field">Checklist (one item per line)<textarea id="d2-objective-steps" rows="4">'+escHtml((item?.checklist||[]).map(step=>step.name).join('\n'))+'</textarea></label></div><details><summary>Prerequisites</summary>'+items.filter(other=>other.id!==id).map(other=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-prereq="'+d2Attr(other.id)+'" '+(item?.prerequisites?.includes(other.id)?'checked':'')+'>'+escHtml(other.name)+'</label>').join('')+'</details><p class="backup-hint">Playtime uses completed sessions assigned to this playthrough and content. Changing type resets incompatible progress.</p>',()=>{
+    let dateField;
+    d2Edit(item?'Edit playthrough milestone':'Add playthrough milestone',d2Input('Name','d2-objective-name',item?.name||'','type="text" maxlength="120" required')+'<label class="d2-field">Type<select id="d2-objective-type">'+[['manual','Manual'],['checklist','Checklist'],['counter','Counter'],['playtime','Tracked playtime']].map(([value,label])=>'<option value="'+value+'"'+((item?.type||'manual')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label><div class="d2-objective-fields">'+d2Input('Counter target','d2-objective-target',item?.target||1,'type="number" min="1" step="1"')+d2Input('Counter unit (optional)','d2-objective-unit',item?.unit||'','type="text" maxlength="40"')+d2Input('Playtime target (hours)','d2-objective-hours',item?.targetHours||1,'type="number" min="0.25" max="100000" step="0.25"')+'<label class="d2-field">Checklist (one item per line)<textarea id="d2-objective-steps" rows="4">'+escHtml((item?.checklist||[]).map(step=>step.name).join('\n'))+'</textarea></label></div><div class="field-group"><label id="d2-objective-date-label">Target date (optional)</label>'+milestoneCalendarMarkup('d2-objective-date','d2-objective-date-label')+'</div>'+milestoneEstimateSourceSelect('d2-objective-estimate-source',milestoneEstimateSource(item,run?.content?.[key]))+d2Input('Custom hours remaining (optional)','d2-objective-remaining',item?.hoursRemaining??'','type="number" min="0.25" step="0.25"')+'<details><summary>Prerequisites</summary>'+items.filter(other=>other.id!==id).map(other=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-prereq="'+d2Attr(other.id)+'" '+(item?.prerequisites?.includes(other.id)?'checked':'')+'>'+escHtml(other.name)+'</label>').join('')+'</details><p class="backup-hint">Playtime uses completed sessions assigned to this playthrough and content. Changing type resets incompatible progress.</p>',()=>{
       const name=document.getElementById('d2-objective-name').value.trim(),type=document.getElementById('d2-objective-type').value;
       if(!name)throw Error('Enter a name.');
       const checklistNames=document.getElementById('d2-objective-steps').value.split('\n').map(name=>name.trim()).filter(Boolean);
@@ -14915,14 +14991,17 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(type==='counter'&&!(Number.isSafeInteger(Number(document.getElementById('d2-objective-target').value))&&Number(document.getElementById('d2-objective-target').value)>0))throw Error('Counter target must be a positive whole number.');
       const hours=Number(document.getElementById('d2-objective-hours').value);if(type==='playtime'&&!(hours>0&&Number.isInteger(hours*4)))throw Error('Use quarter-hour increments.');
       if(item&&item.type!==type&&!confirm('Change milestone type? Incompatible checklist or counter progress will be reset.'))return false;
+      const source=document.getElementById('d2-objective-estimate-source').value,raw=document.getElementById('d2-objective-remaining').value,remaining=source==='hours'&&type!=='playtime'?(raw===''?undefined:Number(raw)):item?.hoursRemaining;
+      if(remaining!==undefined&&(!Number.isFinite(remaining)||remaining<=0||!Number.isInteger(remaining*4)))throw Error('Use positive quarter-hour increments for hours remaining.');
       d2ChangeRun(target=>{
         const entry=target.content[key]||(target.content[key]={milestones:[]}),same=item?.type===type;
-        const milestone={...(same?item:{}),id:item?.id||uid(),name,type,createdAt:item?.createdAt||new Date().toISOString(),completedAt:same?item.completedAt:null,manualDone:same?item.manualDone:false,current:same?item.current:0,target:Number(document.getElementById('d2-objective-target').value)||1,unit:document.getElementById('d2-objective-unit').value.trim(),targetHours:hours||1,timeBasis:'total',prerequisites:[...document.querySelectorAll('[data-d2-prereq]:checked')].map(input=>input.dataset.d2Prereq),checklist:checklistNames.map((name,index)=>same&&item.checklist?.[index]?.name===name?item.checklist[index]:{id:uid(),name,done:false})};
+        const milestone={...(same?item:{}),id:item?.id||uid(),name,type,createdAt:item?.createdAt||new Date().toISOString(),completedAt:same?item.completedAt:null,targetDate:dateField.value||null,estimateSource:source,hoursRemaining:remaining,manualDone:same?item.manualDone:false,current:same?item.current:0,target:Number(document.getElementById('d2-objective-target').value)||1,unit:document.getElementById('d2-objective-unit').value.trim(),targetHours:hours||1,timeBasis:'total',prerequisites:[...document.querySelectorAll('[data-d2-prereq]:checked')].map(input=>input.dataset.d2Prereq),checklist:checklistNames.map((name,index)=>same&&item.checklist?.[index]?.name===name?item.checklist[index]:{id:uid(),name,done:false})};
         const next=normalizeGameMilestones([milestone])[0];entry.milestones=item?entry.milestones.map(other=>other.id===id?next:other):[...(entry.milestones||[]),next];validateMilestoneRecords(entry.milestones);
       });
-    });
+    },'Save',null,{onClose:()=>mxFieldRegistry.delete('d2-objective-date')});
+    dateField=createCalField('d2-objective-date');dateField.value=item?.targetDate||'';
     const type=document.getElementById('d2-objective-type');
-    const update=()=>{for(const [id,visible] of [['d2-objective-target',type.value==='counter'],['d2-objective-unit',type.value==='counter'],['d2-objective-hours',type.value==='playtime'],['d2-objective-steps',type.value==='checklist']]){const field=document.getElementById(id);field.closest('label').hidden=!visible;field.disabled=!visible;}};type.onchange=update;update();
+    const update=()=>{for(const [id,visible] of [['d2-objective-target',type.value==='counter'],['d2-objective-unit',type.value==='counter'],['d2-objective-hours',type.value==='playtime'],['d2-objective-steps',type.value==='checklist'],['d2-objective-estimate-source',type.value!=='playtime'],['d2-objective-remaining',type.value!=='playtime'&&document.getElementById('d2-objective-estimate-source').value==='hours']]){const field=document.getElementById(id);field.closest('label').hidden=!visible;field.disabled=!visible;}};document.getElementById('d2-objective-estimate-source').onchange=update;type.onchange=update;update();
   }
   function d2CompareRuns(){
     const parent=games.find(game=>game.id===playthroughUI.gameId);if(!parent)return;
@@ -14934,13 +15013,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   renderGoal=function(){d2NativeGoal();document.getElementById('setAutoDailyGoal').disabled=!!settings.plannerDayBudgets;if(settings.plannerDayBudgets){document.getElementById('goal-hours').disabled=true;document.getElementById('goal-save').disabled=true;document.getElementById('goal-week-budget').textContent=fmtDurationMinutes(weeklyRotationBudgetMinutes()*60000);if(!effectiveDailyGoalMinutes())document.getElementById('goal-text').textContent='No playtime planned today';const button=document.getElementById('btn-goal-edit');button.disabled=true;button.textContent='Weekly planner';}};
   function d2LoadDraft(source){
     ensureRotationWeek();
-    plannerUI.draft=source?d2Clone(source):{week:settings.weeklyRotationWeek,enabled:!!settings.plannerDayBudgets,hours:Object.fromEntries(plannedWeekdays.map(day=>[day,(Number.isFinite(settings.plannerDayHours?.[day])?settings.plannerDayHours[day]:Math.ceil(d2NativeDaily()/60))])),ids:rotationGameIds(),targets:d2Clone(settings.weeklyRotationTargets||{}),days:d2Clone(settings.weeklyRotationDays||{}),playthroughs:d2Clone(settings.weeklyRotationPlaythroughs||{})};
-    plannerUI.draft.week=settings.weeklyRotationWeek;plannerUI.draft.playthroughs=plannerUI.draft.playthroughs||{};
+    plannerUI.draft=source?d2Clone(source):{week:settings.weeklyRotationWeek,enabled:!!settings.plannerDayBudgets,hours:Object.fromEntries(plannedWeekdays.map(day=>[day,(Number.isFinite(settings.plannerDayHours?.[day])?settings.plannerDayHours[day]:Math.ceil(d2NativeDaily()/60))])),ids:rotationGameIds(),targets:d2Clone(settings.weeklyRotationTargets||{}),days:d2Clone(settings.weeklyRotationDays||{}),playthroughs:d2Clone(settings.weeklyRotationPlaythroughs||{}),priorities:d2Clone(settings.weeklyRotationPriorities||{})};
+    plannerUI.draft.week=settings.weeklyRotationWeek;plannerUI.draft.playthroughs=plannerUI.draft.playthroughs||{};plannerUI.draft.priorities=plannerUI.draft.priorities||{};
     const available=new Set(contentEntries().filter(rotationEntryEligible).map(entry=>entry.id));
     plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>available.has(id));
     plannerUI.draft.targets=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.targets[id]!=null).map(id=>[id,plannerUI.draft.targets[id]]));
     plannerUI.draft.days=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.days[id]!=null).map(id=>[id,plannerUI.draft.days[id]]));
     plannerUI.draft.playthroughs=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.playthroughs[id]).map(id=>[id,plannerUI.draft.playthroughs[id]]));
+    plannerUI.draft.priorities=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.priorities[id]===true).map(id=>[id,true]));
     plannerUI.draftOriginal=d2PlannerSignature();plannerUI.raw={};plannerUI.weekdayOpen=false;
   }
   function d2PlannerSignature(){
@@ -14964,17 +15044,20 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     };
     budgetHost.innerHTML='<div class="planner-capacity">Weekly capacity <strong>'+fmt(budget)+'</strong></div><div class="planner-allocation">'+allocation('Game targets',gamesTotal)+'</div>'+(draft.enabled?'<div class="planner-allocation">'+allocation('Weekday plan',daysTotal)+'</div>':'');
     host.querySelector('#planner-weekday-summary').textContent='Weekday targets / '+(draft.enabled?'Enabled / '+fmt(daysTotal)+' planned':'Off');
-    const invalid=[...host.querySelectorAll('input[data-d2-target],input[data-d2-capacity]')].find(field=>!field.checkValidity());
-    host.querySelector('#d2-planner-error').textContent=invalid?'Use whole hours: 1 to 168 for game targets (or blank), and 0 to 24 for weekdays.':gamesTotal>budget?'Game targets exceed weekly capacity by '+fmt(gamesTotal-budget)+'.':draft.enabled&&daysTotal>budget?'Weekday plan exceeds weekly capacity by '+fmt(daysTotal-budget)+'.':'';
+    host.querySelector('#d2-planner-error').textContent=gamesTotal>budget?'Game targets exceed weekly capacity by '+fmt(gamesTotal-budget)+'.':draft.enabled&&daysTotal>budget?'Weekday plan exceeds weekly capacity by '+fmt(daysTotal-budget)+'.':'';
     const invalidDay=[...host.querySelectorAll('input[data-d2-capacity]')].some(field=>!field.checkValidity());
     host.querySelector('#planner-weekday-fields').hidden=!draft.enabled&&!invalidDay;
     if((draft.enabled&&daysTotal>budget)||invalidDay)host.querySelector('#planner-weekdays').open=true;
     const progress=rotationWeekProgress(draft.ids,new Date(),draft.playthroughs);
     for(const row of host.querySelectorAll('[data-planner-row]')){
       const id=row.dataset.plannerRow,target=Number(draft.targets[id])||0,ms=progress.games[id]?.ms||0;
-      row.querySelector('.planner-recorded').textContent=fmtDurationShort(ms)+' played this week'+(target>0?' / '+fmt(target)+' target':'');
-      row.querySelector('[data-planner-hltb]').innerHTML=rotationHltbHtml(id,draft.playthroughs);
-      row.querySelector('[data-planner-milestone-estimates]').innerHTML=rotationCompletionEstimatesHtml(id,target,false,draft.playthroughs);
+      row.querySelector('.planner-recorded').innerHTML=rotationEstimateNumbers(fmtDurationMinutes(ms)+' played this week'+(target>0?' / '+fmt(target)+' target':''))+(target>0&&ms>=target*60000?'<span class="planner-target-reached">Target reached</span>':'');
+      const hltb=rotationHltbHtml(id,draft.playthroughs),validTarget=Number.isInteger(target/60)&&target>=60&&target<=10080;
+      const pending=normalizeGameMilestones(rotationContentData(id,draft.playthroughs)?.milestones).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
+      const estimates=validTarget?rotationCompletionEstimatesHtml(id,target,false,draft.playthroughs):pending.map(item=>'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+'</small>').join('')+(hltb||pending.length?'<small class="planner-estimate-hint">Set target hours to see completion dates.</small>':'');
+      row.querySelector('[data-planner-hltb]').innerHTML=hltb;
+      row.querySelector('[data-planner-milestone-estimates]').innerHTML=estimates;
+      row.querySelector('.planner-estimates').hidden=!hltb&&!estimates;
     }
   }
   function renderWeeklyPlanner(){
@@ -14987,35 +15070,43 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     html+='<p id="d2-planner-error" role="alert" class="d2-error"></p><div class="planner-list">';
     html+=draft.ids.length?draft.ids.map(id=>{
       const entry=contentEntry(id);if(!entry)return '';const target=draft.targets[id]||0;
-      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+rotationRunPicker(id,draft.playthroughs)+'<span class="planner-recorded"></span><div data-planner-hltb></div><div data-planner-milestone-estimates></div></div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" min="1" max="168" step="1" placeholder="Optional" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target?target/60:''))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label>'+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</article>';
+      const runPicker=rotationRunPicker(id,draft.playthroughs);
+      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'" data-high-priority="'+(draft.priorities[id]===true)+'"><div class="planner-heading">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+'<span class="planner-recorded"></span></div><div class="planner-actions">'+plannerPriorityButton(id,entry,draft.priorities[id]===true)+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</div></div><div class="planner-controls'+(runPicker?'':' planner-controls--no-run')+'"><div class="planner-run">'+runPicker+'</div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" required min="1" max="168" step="1" placeholder="Required" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target/60))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label></div><div class="planner-estimates"><div data-planner-hltb></div><div data-planner-milestone-estimates></div></div></article>';
     }).join(''):'<div class="planner-empty"><strong>Plan your next week of games</strong><p>Add Base games or DLCs, set optional targets, then choose days if you like. Reuse last week or a preset to get started.</p></div>';
-    html+='</div><details id="planner-weekdays"'+(plannerUI.weekdayOpen?' open':'')+'><summary id="planner-weekday-summary" tabindex="0">Weekday targets</summary><p class="backup-hint">Optional daily goals within the same weekly capacity. Weekday hours and game targets are independent allocations; they are never added together.</p><div id="planner-weekday-fields"><div class="d2-capacities">'+orderedWeekdays().map(day=>'<div class="d2-field"><label for="planner-weekday-hours-'+day+'">'+day.slice(0,3)+'</label><span class="planner-hour-control"><input id="planner-weekday-hours-'+day+'" type="number" required min="0" max="24" step="1" value="'+d2Attr(plannerValue('day:'+day,draft.hours[day]))+'" data-d2-capacity="'+day+'" aria-label="'+day+' planned hours"><span class="planner-hour-arrows"><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="1" aria-label="Increase '+day+' hours">&#9650;</button><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="-1" aria-label="Decrease '+day+' hours">&#9660;</button></span></span></div>').join('')+'</div><p class="backup-hint">Today&#39;s goal follows its weekday hours. Zero hours means a rest day. Your automatic-goal preference stays unchanged.</p>'+d2Button('Use daily goal instead','planner-weekday-off')+'</div></details><p class="backup-hint">Recorded sessions count toward each game target regardless of the planned day.</p>';
+    html+='</div><details id="planner-weekdays"'+(plannerUI.weekdayOpen?' open':'')+'><summary id="planner-weekday-summary" tabindex="0">Weekday targets</summary><p class="backup-hint">Optional daily goals within the same weekly capacity. Weekday hours and game targets are independent allocations; they are never added together.</p><div id="planner-weekday-fields"><div class="d2-capacities">'+orderedWeekdays().map(day=>'<div class="d2-field"><label for="planner-weekday-hours-'+day+'">'+day.slice(0,3)+'</label><span class="planner-hour-control"><input id="planner-weekday-hours-'+day+'" type="number" required min="0" max="24" step="1" value="'+d2Attr(plannerValue('day:'+day,draft.hours[day]))+'" data-d2-capacity="'+day+'" aria-label="'+day+' planned hours"><span class="planner-hour-arrows"><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="1" aria-label="Increase '+day+' hours">&#9650;</button><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="-1" aria-label="Decrease '+day+' hours">&#9660;</button></span></span></div>').join('')+'</div><p class="backup-hint">Today&#39;s goal follows its weekday hours. Zero hours means a rest day. Your automatic-goal preference stays unchanged.</p>'+d2Button('Use daily goal instead','planner-weekday-off')+'</div></details><p class="backup-hint">Set at least 1 hour for every selected game or DLC before saving. Recorded sessions count toward targets regardless of the planned day.</p>';
     host.innerHTML=html;updatePlannerSummary();host.scrollTop=scroll;
   }
   function validatePlannerFields(){
     const invalid=[...document.querySelectorAll('#weekly-planner-body input[data-d2-target],#weekly-planner-body input[data-d2-capacity]')].find(field=>!field.checkValidity());
-    if(invalid){if(invalid.dataset.d2Capacity)document.getElementById('planner-weekdays').open=true;invalid.focus();throw Error('Use whole hours: 1 to 168 for game targets (or blank), and 0 to 24 for weekdays.');}
+    if(invalid){
+      if(invalid.dataset.d2Capacity)document.getElementById('planner-weekdays').open=true;
+      invalid.focus();
+      const missingHours=!!invalid.dataset.d2Target&&(invalid.value.trim()===''||Number(invalid.value)===0);
+      const name=contentEntry(invalid.dataset.d2Target)?.name||'this game or DLC';
+      const error=Error(missingHours?'The target hours for '+name+' are empty or set to 0. Enter at least 1 whole hour before saving your plan.':invalid.dataset.d2Target?'Set a target of 1 to 168 whole hours for '+name+'.':'Weekday hours must be whole numbers from 0 to 24.');
+      error.plannerField=true;error.missingHours=missingHours;throw error;
+    }
   }
   function d2SavePlan(){
     validatePlannerFields();
     ensureRotationWeek();const draft=plannerUI.draft;if(draft.ids.some(id=>!rotationEntryEligible(contentEntry(id))))throw Error('Remove unavailable games from this plan before saving.');if(draft.week!==settings.weeklyRotationWeek)throw Error('A new week has started. Close and reopen the planner to start a fresh plan.');
     for(const day of plannedWeekdays)if(!Number.isInteger(draft.hours[day])||draft.hours[day]<0||draft.hours[day]>24)throw Error('Planned hours must be whole numbers from 0 to 24.');
-    for(const id of draft.ids){const target=draft.targets[id];if(target!=null&&target!==0&&(!Number.isInteger(target/60)||target<60||target>10080))throw Error('Targets must be whole hours from 1 to 168, or blank.');}
+    for(const id of draft.ids){const target=draft.targets[id];if(!Number.isInteger(target/60)||target<60||target>10080)throw Error('Set a target of 1 to 168 whole hours for '+(contentEntry(id)?.name||'each selected game or DLC')+'.');}
     const planned=d2DraftPlanned(),gameTargets=d2DraftGameTargets(),budget=d2DraftBudget();if(planned>budget)throw Error((draft.enabled?'Weekday plan':'Game targets')+' over weekly budget by '+fmtDurationMinutes((planned-budget)*60000)+'. Reduce planned hours or increase your weekly goal.');
     if(gameTargets>budget)throw Error('Game targets over weekly budget by '+fmtDurationMinutes((gameTargets-budget)*60000)+'. Reduce game targets or increase your weekly goal.');
     const next=d2Clone(settings),archived=archivedRotationIds();
-    next.weeklyRotation=[...draft.ids,...archived];next.weeklyRotationTargets={};next.weeklyRotationDays={};next.weeklyRotationPlaythroughs={};
-    for(const id of draft.ids){if(draft.playthroughs[id]){const run=rotationRun(id,draft.playthroughs);if(!run||run.finishedAt)throw Error('Choose an open playthrough for '+contentEntry(id).name+'.');next.weeklyRotationPlaythroughs[id]=run.id;}if(draft.targets[id])next.weeklyRotationTargets[id]=draft.targets[id];next.weeklyRotationDays[id]=draft.days[id]||'Any day';}
-    for(const id of archived){if(settings.weeklyRotationPlaythroughs?.[id])next.weeklyRotationPlaythroughs[id]=settings.weeklyRotationPlaythroughs[id];next.weeklyRotationTargets[id]=rotationTargetMinutes(id);next.weeklyRotationDays[id]=settings.weeklyRotationDays?.[id]||'Any day';}
+    next.weeklyRotation=[...draft.ids,...archived];next.weeklyRotationTargets={};next.weeklyRotationDays={};next.weeklyRotationPlaythroughs={};next.weeklyRotationPriorities={};
+    for(const id of draft.ids){if(draft.priorities[id]===true)next.weeklyRotationPriorities[id]=true;if(draft.playthroughs[id]){const run=rotationRun(id,draft.playthroughs);if(!run||run.finishedAt)throw Error('Choose an open playthrough for '+contentEntry(id).name+'.');next.weeklyRotationPlaythroughs[id]=run.id;}if(draft.targets[id])next.weeklyRotationTargets[id]=draft.targets[id];next.weeklyRotationDays[id]=draft.days[id]||'Any day';}
+    for(const id of archived){if(settings.weeklyRotationPriorities?.[id]===true)next.weeklyRotationPriorities[id]=true;if(settings.weeklyRotationPlaythroughs?.[id])next.weeklyRotationPlaythroughs[id]=settings.weeklyRotationPlaythroughs[id];next.weeklyRotationTargets[id]=rotationTargetMinutes(id);next.weeklyRotationDays[id]=settings.weeklyRotationDays?.[id]||'Any day';}
     next.plannerDayBudgets=draft.enabled;next.plannerDayHours=d2Clone(draft.hours);
-    const plans=next.weeklyPlanHistory||(next.weeklyPlanHistory={});plans[draft.week]={week:draft.week,ids:d2Clone(draft.ids),targets:d2Clone(draft.targets),days:d2Clone(draft.days),playthroughs:d2Clone(draft.playthroughs),hours:d2Clone(draft.hours),enabled:draft.enabled,savedAt:new Date().toISOString()};
+    const plans=next.weeklyPlanHistory||(next.weeklyPlanHistory={});plans[draft.week]={week:draft.week,ids:d2Clone(draft.ids),targets:d2Clone(draft.targets),days:d2Clone(draft.days),playthroughs:d2Clone(draft.playthroughs),priorities:d2Clone(draft.priorities),hours:d2Clone(draft.hours),enabled:draft.enabled,savedAt:new Date().toISOString()};
     for(const week of Object.keys(plans).sort().slice(0,-12))delete plans[week];
     d2SaveLibrary(games,sessions,next);d2LoadDraft();renderWeeklyPlanner();closeWeeklyPlanner(true);toast('Weekly plan saved');
   }
   function d2PlannerAdd(){
     const options=contentEntries().filter(entry=>rotationEntryEligible(entry)&&!plannerUI.draft.ids.includes(entry.id));
     d2Edit('Add games','<label class="d2-field">Search games and DLCs<input type="search" id="planner-picker-search" placeholder="Search by game or DLC name"></label><p class="backup-hint">Select any number. Targets and days can be set after adding.</p><label class="milestone-step-toggle"><input type="checkbox" id="planner-select-all"'+(options.length?'':' disabled')+'>Select all available games and DLCs</label><div id="planner-picker" class="d2-assign-list">'+options.map(entry=>'<label class="planner-pick" data-search="'+d2Attr(entry.name.toLocaleLowerCase())+'"><input type="checkbox" data-d2-plan-add="'+d2Attr(entry.id)+'">'+gameCoverHtml(entry)+'<span>'+plannerEntryLabel(entry)+'</span></label>').join('')+'</div><p id="planner-picker-empty" class="backup-hint"'+(options.length?' hidden':'')+'>No available games or DLCs match. All active content may already be selected.</p>',()=>{
-      for(const input of document.querySelectorAll('[data-d2-plan-add]:checked')){plannerUI.draft.ids.push(input.dataset.d2PlanAdd);plannerUI.draft.days[input.dataset.d2PlanAdd]='Any day';}renderWeeklyPlanner();
+      for(const input of document.querySelectorAll('[data-d2-plan-add]:checked')){plannerUI.draft.ids.push(input.dataset.d2PlanAdd);plannerUI.draft.targets[input.dataset.d2PlanAdd]=0;delete plannerUI.raw['target:'+input.dataset.d2PlanAdd];plannerUI.draft.days[input.dataset.d2PlanAdd]='Any day';}renderWeeklyPlanner();
     },'Add selected');
     const selectAll=document.getElementById('planner-select-all'),picker=document.getElementById('planner-picker');
     const updateAll=()=>{const inputs=[...picker.querySelectorAll('[data-d2-plan-add]')],selected=inputs.filter(input=>input.checked).length;selectAll.checked=inputs.length>0&&selected===inputs.length;selectAll.indeterminate=selected>0&&selected<inputs.length;};
@@ -15037,7 +15128,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const available=new Set(contentEntries().filter(rotationEntryEligible).map(entry=>entry.id)),skipped=preset.plan.ids.filter(id=>!available.has(id)).length;
       const original=plannerUI.draftOriginal;d2LoadDraft(preset.plan);plannerUI.draftOriginal=original;renderWeeklyPlanner();toast('Preset loaded into draft'+(skipped?' · '+skipped+' unavailable entries skipped':''));
     },'Load into draft');
-    const paint=()=>{const preset=presets.find(item=>item.id===document.getElementById('d2-preset-choice').value);document.getElementById('d2-preset-preview').innerHTML=preset?'<ul>'+preset.plan.ids.map(id=>'<li>'+escHtml(contentEntry(id)?.name||'Unavailable content')+' · '+fmtDurationMinutes((preset.plan.targets[id]||0)*60000)+' · '+escHtml(preset.plan.days[id]||'Any day')+(rotationRunLabel(id,preset.plan.playthroughs||{})?' · '+escHtml(rotationRunLabel(id,preset.plan.playthroughs)):'')+'</li>').join('')+'</ul>':'<p class="backup-hint">No saved presets yet.</p>';};document.getElementById('d2-preset-choice').onchange=paint;paint();
+    const paint=()=>{const preset=presets.find(item=>item.id===document.getElementById('d2-preset-choice').value);document.getElementById('d2-preset-preview').innerHTML=preset?'<ul>'+preset.plan.ids.map(id=>'<li>'+escHtml(contentEntry(id)?.name||'Unavailable content')+' · '+fmtDurationMinutes((preset.plan.targets[id]||0)*60000)+' · '+escHtml(preset.plan.days[id]||'Any day')+(preset.plan.priorities?.[id]===true?' · High priority':'')+(rotationRunLabel(id,preset.plan.playthroughs||{})?' · '+escHtml(rotationRunLabel(id,preset.plan.playthroughs)):'')+'</li>').join('')+'</ul>':'<p class="backup-hint">No saved presets yet.</p>';};document.getElementById('d2-preset-choice').onchange=paint;paint();
   }
   function d2Rebalance(){
     const draft=d2Clone(plannerUI.draft),today=plannedWeekdays[new Date().getDay()],week=orderedWeekdays(),todayIndex=week.indexOf(today),remainingDays=week.slice(todayIndex),progress=rotationWeekProgress(draft.ids,new Date(),draft.playthroughs),moves=[],load=Object.fromEntries(remainingDays.map(day=>[day,0]));
@@ -15055,7 +15146,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const bounds={start:new Date(key+'T00:00:00'),end:new Date(addDays(key,7)+'T00:00:00')};
     d2Edit('Last week: plan versus play','<div class="d2-table-wrap"><table class="d2-table"><thead><tr><th>Content</th><th>Planned</th><th>Played</th><th>Result</th></tr></thead><tbody>'+(plan.ids||[]).map(id=>{
       const target=plan.targets?.[id]||0,played=sessions.filter(session=>session.stop!==null&&new Date(session.start)>=bounds.start&&new Date(session.start)<bounds.end&&rotationRunMatches(session,id,plan.playthroughs||{})).reduce((sum,session)=>sum+contentMs(session,id),0);
-      return '<tr><th>'+escHtml(contentEntry(id)?.name||'Archived / removed content')+(rotationRunLabel(id,plan.playthroughs||{})?'<small>'+escHtml(rotationRunLabel(id,plan.playthroughs))+'</small>':'')+'</th><td>'+fmtDurationMinutes(target*60000)+'</td><td>'+fmtDurationShort(played)+'</td><td>'+(target?played>=target*60000?'Target reached':fmtDurationShort(target*60000-played)+' remaining':'Flexible')+'</td></tr>';
+      return '<tr><th>'+escHtml(contentEntry(id)?.name||'Archived / removed content')+(plan.priorities?.[id]===true?' / High priority':'')+(rotationRunLabel(id,plan.playthroughs||{})?'<small>'+escHtml(rotationRunLabel(id,plan.playthroughs))+'</small>':'')+'</th><td>'+fmtDurationMinutes(target*60000)+'</td><td>'+fmtDurationShort(played)+'</td><td>'+(target?played>=target*60000?'Target reached':fmtDurationShort(target*60000-played)+' remaining':'Flexible')+'</td></tr>';
     }).join('')+'</tbody></table></div>',()=>{},'Done');
   }
   // Persist record fingerprints only; downloaded libraries stay in memory until reviewed.
@@ -15324,7 +15415,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(preferences.plannerDayBudgets!==undefined&&typeof preferences.plannerDayBudgets!=='boolean')throw Error('Invalid planner mode.');
     if(preferences.plannerDayHours!==undefined)capacities(preferences.plannerDayHours);
     if(preferences.plannerDayBudgets&&!preferences.plannerDayHours)throw Error('Missing weekday planned hours.');
-    const plan=value=>{validateRotationPlaythroughs(value?.playthroughs);if(!record(value)||!Array.isArray(value.ids)||value.ids.some(id=>typeof id!=='string'||!id)||new Set(value.ids).size!==value.ids.length||!record(value.targets)||!record(value.days))throw Error('Invalid saved rotation plan.');if(value.hours!==undefined)capacities(value.hours);for(const target of Object.values(value.targets))if(!Number.isInteger(target)||target<0||target>10080||target%60)throw Error('Saved targets must use whole hours.');for(const day of Object.values(value.days))if(!['Any day',...plannedWeekdays].includes(day))throw Error('Invalid saved planned day.');};
+    const plan=value=>{validateRotationPlaythroughs(value?.playthroughs);validateRotationPriorities(value?.priorities);if(!record(value)||!Array.isArray(value.ids)||value.ids.some(id=>typeof id!=='string'||!id)||new Set(value.ids).size!==value.ids.length||!record(value.targets)||!record(value.days))throw Error('Invalid saved rotation plan.');if(value.hours!==undefined)capacities(value.hours);for(const target of Object.values(value.targets))if(!Number.isInteger(target)||target<0||target>10080||target%60)throw Error('Saved targets must use whole hours.');for(const day of Object.values(value.days))if(!['Any day',...plannedWeekdays].includes(day))throw Error('Invalid saved planned day.');};
     if(preferences.rotationPresets!==undefined){if(!Array.isArray(preferences.rotationPresets))throw Error('Invalid rotation presets.');const ids=new Set(),names=new Set();for(const preset of preferences.rotationPresets){if(!record(preset)||typeof preset.id!=='string'||!preset.id||ids.has(preset.id)||typeof preset.name!=='string'||!preset.name.trim()||names.has(preset.name.trim().toLowerCase()))throw Error('Invalid or duplicate rotation preset.');ids.add(preset.id);names.add(preset.name.trim().toLowerCase());plan(preset.plan);}}
     if(preferences.weeklyPlanHistory!==undefined){if(!record(preferences.weeklyPlanHistory))throw Error('Invalid weekly plan history.');for(const [week,saved] of Object.entries(preferences.weeklyPlanHistory)){if(!milestoneValidDate(week))throw Error('Invalid saved plan week.');plan(saved);}}
 
@@ -15434,7 +15525,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.1.2';
+    const APP_VERSION = '2.1.3';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
@@ -15585,20 +15676,31 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     updateSectionLocation();
   }
   function scheduleSectionNavigation(){if(!sectionFrame)sectionFrame=requestAnimationFrame(refreshSectionNavigation);}
+  function sectionHeaderClearance(){
+    const box=document.querySelector('header').getBoundingClientRect(),visible=Math.max(0,Math.min(box.bottom,box.height,innerHeight));
+    const top=(visible>0?Math.ceil(visible)+12:8)+'px';
+    if(document.documentElement.style.getPropertyValue('--section-rail-top')!==top)document.documentElement.style.setProperty('--section-rail-top',top);
+    return innerWidth>=1024?visible:box.height;
+  }
   function updateSectionLocation(){
-    sectionScrollFrame=0;if(sectionNav.hidden||!sectionEntries.length)return;
-    const offset=document.querySelector('header').getBoundingClientRect().height+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+20;
+    sectionScrollFrame=0;const headerClearance=sectionHeaderClearance();if(sectionNav.hidden||!sectionEntries.length)return;
+    const offset=headerClearance+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+20;
     let selected=sectionEntries[0];
     for(const entry of sectionEntries)if(entry.node.getBoundingClientRect().top<=offset)selected=entry;
-    const preferred=sectionEntries.find(entry=>entry.id===sectionPreferred);if(preferred&&Math.abs(preferred.node.getBoundingClientRect().top-selected.node.getBoundingClientRect().top)<4)selected=preferred;
+    const preferred=sectionEntries.find(entry=>entry.id===sectionPreferred),scroller=document.scrollingElement||document.documentElement,maxScroll=Math.max(0,scroller.scrollHeight-scroller.clientHeight),atBottom=window.scrollY>=maxScroll-16;
+    const visible=entry=>{const box=entry.node.getBoundingClientRect();return box.bottom>offset&&box.top<innerHeight;};
+    // Keep an explicitly opened section selected while visible; manual scrolling releases it.
+    if(preferred&&(visible(preferred)||Math.abs(preferred.node.getBoundingClientRect().top-selected.node.getBoundingClientRect().top)<4))selected=preferred;
+    else if(atBottom&&maxScroll>0){const lastVisible=sectionEntries.filter(visible).at(-1);if(lastVisible)selected=lastVisible;}
     for(const button of sectionLinks.querySelectorAll('button')){const value=button.dataset.section===selected.id?'location':'false';if(button.getAttribute('aria-current')!==value)button.setAttribute('aria-current',value);}
   }
   sectionToggle.onclick=()=>{const open=!sectionNav.hasAttribute('data-open');sectionNav.toggleAttribute('data-open',open);sectionToggle.setAttribute('aria-expanded',String(open));if(open)sectionLinks.querySelector('[aria-current="location"]')?.focus();};
   sectionLinks.addEventListener('click',event=>{
     const button=event.target.closest('[data-section]'),entry=sectionEntries.find(item=>item.id===button?.dataset.section);if(!entry)return;
-    sectionPreferred=entry.id;sectionClose();const offset=document.querySelector('header').getBoundingClientRect().height+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+16;
+    sectionPreferred=entry.id;sectionClose();const offset=sectionHeaderClearance()+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+16;
     entry.node.setAttribute('tabindex','-1');entry.node.focus({preventScroll:true});
     window.scrollTo({top:Math.max(0,window.scrollY+entry.node.getBoundingClientRect().top-offset),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    requestAnimationFrame(updateSectionLocation);
   });
   sectionNav.addEventListener('keydown',event=>{
     if(event.key==='Escape'){event.preventDefault();sectionClose(true);return;}
@@ -15607,11 +15709,21 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     event.preventDefault();buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowDown'?1:-1)+buttons.length)%buttons.length]?.focus();
   });
   function sectionShowTooltip(button){if(innerWidth<1024||!button)return;sectionTooltip.textContent=button.getAttribute('aria-label');sectionTooltip.hidden=false;const box=button.getBoundingClientRect();sectionTooltip.style.left='72px';sectionTooltip.style.top=Math.max(8,Math.min(innerHeight-sectionTooltip.offsetHeight-8,box.top+(box.height-sectionTooltip.offsetHeight)/2))+'px';button.setAttribute('aria-describedby','section-tooltip');}
+  sectionNav.addEventListener('wheel',event=>{
+    if(event.ctrlKey||innerWidth<1024||sectionNav.hidden||sectionLinks.scrollHeight<=sectionLinks.clientHeight)return;
+    const scale=event.deltaMode===1?16:event.deltaMode===2?sectionLinks.clientHeight:1;
+    if(event.deltaY){event.preventDefault();sectionLinks.scrollTop+=event.deltaY*scale;sectionTooltip.hidden=true;}
+  },{passive:false});
   sectionLinks.addEventListener('pointerover',event=>sectionShowTooltip(event.target.closest('button')));
   sectionLinks.addEventListener('focusin',event=>sectionShowTooltip(event.target.closest('button')));
   sectionLinks.addEventListener('pointerleave',()=>sectionTooltip.hidden=true);
   sectionLinks.addEventListener('focusout',event=>{event.target.removeAttribute('aria-describedby');sectionTooltip.hidden=true;});
   document.addEventListener('click',event=>{if(!sectionNav.contains(event.target))sectionClose();});
+  const clearSectionPreference=event=>{if(!sectionNav.contains(event.target))sectionPreferred=null;};
+  document.addEventListener('wheel',clearSectionPreference,{passive:true});
+  document.addEventListener('touchstart',clearSectionPreference,{passive:true});
+  document.addEventListener('pointerdown',clearSectionPreference,{passive:true});
+  document.addEventListener('keydown',event=>{if(['PageUp','PageDown','Home','End','ArrowUp','ArrowDown',' '].includes(event.key))clearSectionPreference(event);});
   window.addEventListener('scroll',()=>{sectionTooltip.hidden=true;if(!sectionScrollFrame)sectionScrollFrame=requestAnimationFrame(updateSectionLocation);},{passive:true});
   window.addEventListener('resize',()=>{sectionClose();scheduleSectionNavigation();});
   new ResizeObserver(scheduleSectionNavigation).observe(document.querySelector('header'));

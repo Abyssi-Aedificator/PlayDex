@@ -198,8 +198,11 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - milestoneTrackedMs uses recorded content allocations and clips segments and overlapping pauses for since-creation goals. Running sessions are provisional and must not save completion. HLTB already-played hours do not count.
 - Group names/order live on milestones; prerequisites resolve only within the same content. validateMilestoneRecords rejects cycles and invalid progress before imports.
 - settings.milestoneTemplates sync through Dropbox and are restored by JSON import without replacing other local preferences. Template application remaps milestone/checklist IDs and dependencies and resets manual progress, pins, and dates.
+- Optional milestone estimateSource selects mainStory, mainExtra, or hours. Explicit HLTB choices override retained custom hours and never silently fall back to another track; missing values preserve legacy behavior. Tracked-playtime milestones always use their own target. Preserve the field through templates, general assignment, playthroughs and backups.
 
 ## Weekly rotation reset
+
+- Optional settings.weeklyRotationPriorities maps content IDs to booleans; draft/preset/history/snapshot maps use priorities. Missing flags mean normal priority. Keep draft row order stable, sort high-priority entries first only in Today, and preserve flags through reset snapshots, reuse, sync and backups.
 
 - weeklyRotationWeek and weeklyRotationWeekStartsOn tag the current plan. rollWeeklyRotation clears games, targets, and days on a new calendar week and keeps weeklyRotationLastWeek as a synced snapshot. First-upgrade data adopts the current week without discarding selections.
 - ensureRotationWeek guards rendering, settings saves, midnight, and resume. When Week starts on changes, rebase the plan's original week using the optional synced weeklyRotationWeekAnchor before testing for rollover; preserve same-week plans, reset across a newly elapsed boundary, and never clear a plan because the device clock moved backward.
@@ -236,3 +239,5 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - Section navigation icons must be unique within the current page, including merged Today/Sessions. Use the dedicated section icon catalog and its unused-icon fallback.
 
 - Optional settings.weeklyRotationPlaythroughs maps content entry IDs to parent playthrough IDs. Drafts, presets, weekly snapshots and history use optional playthroughs maps. Missing selection means combined progress; selected runs scope rotation sessions, HLTB and milestones through rotationRunMatches/rotationContentData. Preserve these maps through sync, imports, resets and reuse; never silently start a different run if a selection becomes unavailable.
+
+- Saving Weekly rotation requires every selected Base game or DLC target to be 1 to 168 whole hours. New/re-added entries may start at 0 in the draft but cannot save until corrected; weekday rest days may remain 0. Keep older zero-target backups readable.
