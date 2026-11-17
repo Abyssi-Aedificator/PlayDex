@@ -239,3 +239,5 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - Section navigation icons must be unique within the current page, including merged Today/Sessions. Use the dedicated section icon catalog and its unused-icon fallback.
 
 - Optional settings.weeklyRotationPlaythroughs maps content entry IDs to parent playthrough IDs. Drafts, presets, weekly snapshots and history use optional playthroughs maps. Missing selection means combined progress; selected runs scope rotation sessions, HLTB and milestones through rotationRunMatches/rotationContentData. Preserve these maps through sync, imports, resets and reuse; never silently start a different run if a selection becomes unavailable.
+
+- Saving Weekly rotation requires every selected Base game or DLC target to be 1 to 168 whole hours. New/re-added entries may start at 0 in the draft but cannot save until corrected; weekday rest days may remain 0. Keep older zero-target backups readable.
