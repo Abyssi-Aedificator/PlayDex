@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.2
 -------------------
+- The Weekly rotation game picker now lets you select or deselect all available games and DLCs at once before adding them to the draft.
 - Checkboxes throughout the app now follow the selected interface and theme colour, with consistent sizing, keyboard focus, disabled states, and Material indeterminate styling; existing switches are preserved.
 - Today's Milestone targets stay hidden during active or paused timer sessions and return after the session ends.
 - Today and the Weekly rotation planner now show remaining game time consistently as complete hours, with 0% available below one hour; opening the planner preserves older minute-based totals instead of silently rounding targets up, while saving still requires whole-hour targets.
