@@ -3,6 +3,8 @@ PlayDex - Changelog
 
 Version 2.1.1
 -------------------
+- Personal milestones now use one ordered list without groups or group controls; existing objectives, progress, prerequisites, and templates remain available.
+- General milestones now live in Games instead of Profile, alongside the library they can be assigned to.
 - Rotation entries with dated milestones now use the same separate Main Story and Main + Extra completion lines as other HLTB entries, with milestone targets shown beneath without duplicate HLTB predictions.
 - Profile now holds General milestones with optional target dates and hours remaining; add, edit, delete, or move them to a game or DLC later, with Dropbox sync and backup support.
 - Recent sessions in game dashboards show content breakdowns on a separate line with spacing below the date and time.
