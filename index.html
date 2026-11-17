@@ -1457,6 +1457,8 @@ opacity: 0.18;
   .stats-run-table td { vertical-align:top; }
   .stats-objective-link { color:var(--accent); text-decoration:none; font-weight:600; font-size:14px; overflow-wrap:anywhere; }
   #today-milestone-list .stats-objective-link { color:var(--text); flex:1; min-width:0; }
+  #today-milestone-list .stats-objective-link { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 10px; }
+  .today-milestone-game { color:var(--text3); font-size:12px; font-weight:400; overflow-wrap:anywhere; }
   .today-milestone-heading { display:flex; align-items:baseline; justify-content:space-between; gap:8px 16px; }
   .today-milestone-heading .milestone-due { flex:0 1 auto; max-width:60%; margin:0; text-align:right; overflow-wrap:anywhere; }
   .stats-objective-link:hover { text-decoration:underline; }
@@ -9793,7 +9795,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.getElementById('setTodayMilestones').checked=enabled;
     document.getElementById('setSessionMilestonePrompts').checked=settings.sessionMilestonePrompts!==false;
     const rows=enabled?todayMilestoneRows():[];card.hidden=!rows.length;
-    host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" '+(row.general?'data-general-target="'+milestoneAttr(row.item.id)+'"':'data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':''))+'>'+escHtml(row.item.name)+'</a>'+milestoneTargetDateHtml(row.item)+'</div>'+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
+    host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" '+(row.general?'data-general-target="'+milestoneAttr(row.item.id)+'"':'data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':''))+'>'+escHtml(row.item.name)+(row.general?'':'<span class="today-milestone-game">'+escHtml(games.find(game=>game.id===row.parentId)?.name||'')+'</span>')+'</a>'+milestoneTargetDateHtml(row.item)+'</div>'+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
   }
   document.getElementById('setTodayMilestones').addEventListener('change',event=>{
     const next={...settings,showTodayMilestones:event.target.checked};
