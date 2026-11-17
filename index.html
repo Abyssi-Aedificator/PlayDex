@@ -9781,17 +9781,19 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return weekStartsOnMonday() ? plannedWeekdays.slice(1).concat(plannedWeekdays[0]) : plannedWeekdays;
   }
   function todayMilestoneRows() {
-    return statsMilestoneData().filter(row=>{
+    const assigned=statsMilestoneData().filter(row=>{
       const entry=contentEntry(row.key);if(!entry||entry.archived||row.item.completedAt||!milestoneValidDate(row.item.targetDate))return false;
       return !row.runId||!games.find(game=>game.id===row.parentId)?.playthroughs?.find(run=>run.id===row.runId)?.finishedAt;
-    }).sort((a,b)=>a.item.targetDate.localeCompare(b.item.targetDate)||a.item.name.localeCompare(b.item.name));
+    });
+    const general=(settings.generalMilestones||[]).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate)).map(item=>({item,general:true,blocked:[]}));
+    return assigned.concat(general).sort((a,b)=>a.item.targetDate.localeCompare(b.item.targetDate)||a.item.name.localeCompare(b.item.name));
   }
   function renderTodayMilestones() {
     const enabled=settings.showTodayMilestones!==false,card=document.getElementById('today-milestone-card'),host=document.getElementById('today-milestone-list');
     document.getElementById('setTodayMilestones').checked=enabled;
     document.getElementById('setSessionMilestonePrompts').checked=settings.sessionMilestonePrompts!==false;
     const rows=enabled?todayMilestoneRows():[];card.hidden=!rows.length;
-    host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a>'+milestoneTargetDateHtml(row.item)+'</div>'+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
+    host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" '+(row.general?'data-general-target="'+milestoneAttr(row.item.id)+'"':'data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':''))+'>'+escHtml(row.item.name)+'</a>'+milestoneTargetDateHtml(row.item)+'</div>'+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
   }
   document.getElementById('setTodayMilestones').addEventListener('change',event=>{
     const next={...settings,showTodayMilestones:event.target.checked};
@@ -10327,7 +10329,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     requestAnimationFrame(()=>document.querySelector(link.dataset.run?'#dashboard-playthroughs':'#dashboard-body .milestone-system')?.scrollIntoView({block:'nearest'}));
   }
   document.getElementById('stats-milestone-progress').addEventListener('click',openDatedMilestoneDashboard);
-  document.getElementById('today-milestone-list').addEventListener('click',openDatedMilestoneDashboard);
+  document.getElementById('today-milestone-list').addEventListener('click',event=>{
+    const general=event.target.closest('[data-general-target]');
+    if(general){event.preventDefault();goTab('games');editGeneralMilestone(general.dataset.generalTarget);return;}
+    openDatedMilestoneDashboard(event);
+  });
 
   function statsRunComparisons(parent) {
     return (parent.playthroughs||[]).map(run=>{const stats=d2RunStats(parent,run);return {id:run.id,name:run.name,finishedAt:run.finishedAt,total:stats.total,count:stats.rows.length,average:stats.rows.length?stats.total/stats.rows.length:0,completed:stats.completed,milestones:stats.items.length};});
@@ -11433,7 +11439,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function saveGeneralMilestones(items){
     checkStorageFresh();validateMilestoneRecords(items);
-    const next={...settings,generalMilestones:items};saveSettings(next);settings=next;renderGeneralMilestones();
+    const next={...settings,generalMilestones:items};saveSettings(next);settings=next;renderGeneralMilestones();renderTodayMilestones();
   }
   function editGeneralMilestone(id){
     const original=(settings.generalMilestones||[]).find(item=>item.id===id);
