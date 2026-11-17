@@ -5567,7 +5567,7 @@ body:has(.modal-overlay.open,dialog[open]) :is(#section-navigation,#section-tool
 @media(min-width:1024px) {
   :root[data-section-navigation] body { padding-left:72px; }
   :root[data-section-navigation] header { margin-left:-72px; }
-  #section-navigation { display:flex; flex-direction:column; position:fixed; left:8px; top:calc(var(--section-header-height,72px) + 12px); bottom:calc(var(--mx-nav-height,96px) + 16px); width:56px; padding:2px; border:1px solid var(--border); border-radius:18px; background:var(--surface); }
+  #section-navigation { display:flex; flex-direction:column; position:fixed; left:8px; top:var(--section-rail-top,calc(var(--section-header-height,72px) + 12px)); bottom:calc(var(--mx-nav-height,96px) + 16px); width:56px; padding:2px; border:1px solid var(--border); border-radius:18px; background:var(--surface); }
   #section-toggle { display:none; }
   #section-navigation #section-links { display:flex; position:static; flex-direction:column; align-items:center; gap:6px; width:100%; flex:1; min-height:0; max-height:none; height:auto; overflow-y:auto; overflow-x:hidden; overscroll-behavior-y:contain; padding:2px 0; border:0; border-radius:12px; background:transparent; box-shadow:none; scrollbar-width:none; }
   #section-navigation #section-links::-webkit-scrollbar { display:none; }
@@ -15590,9 +15590,15 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     updateSectionLocation();
   }
   function scheduleSectionNavigation(){if(!sectionFrame)sectionFrame=requestAnimationFrame(refreshSectionNavigation);}
+  function sectionHeaderClearance(){
+    const box=document.querySelector('header').getBoundingClientRect(),visible=Math.max(0,Math.min(box.bottom,box.height,innerHeight));
+    const top=(visible>0?Math.ceil(visible)+12:8)+'px';
+    if(document.documentElement.style.getPropertyValue('--section-rail-top')!==top)document.documentElement.style.setProperty('--section-rail-top',top);
+    return innerWidth>=1024?visible:box.height;
+  }
   function updateSectionLocation(){
-    sectionScrollFrame=0;if(sectionNav.hidden||!sectionEntries.length)return;
-    const offset=document.querySelector('header').getBoundingClientRect().height+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+20;
+    sectionScrollFrame=0;const headerClearance=sectionHeaderClearance();if(sectionNav.hidden||!sectionEntries.length)return;
+    const offset=headerClearance+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+20;
     let selected=sectionEntries[0];
     for(const entry of sectionEntries)if(entry.node.getBoundingClientRect().top<=offset)selected=entry;
     const preferred=sectionEntries.find(entry=>entry.id===sectionPreferred),scroller=document.scrollingElement||document.documentElement,maxScroll=Math.max(0,scroller.scrollHeight-scroller.clientHeight),atBottom=window.scrollY>=maxScroll-16;
@@ -15605,7 +15611,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   sectionToggle.onclick=()=>{const open=!sectionNav.hasAttribute('data-open');sectionNav.toggleAttribute('data-open',open);sectionToggle.setAttribute('aria-expanded',String(open));if(open)sectionLinks.querySelector('[aria-current="location"]')?.focus();};
   sectionLinks.addEventListener('click',event=>{
     const button=event.target.closest('[data-section]'),entry=sectionEntries.find(item=>item.id===button?.dataset.section);if(!entry)return;
-    sectionPreferred=entry.id;sectionClose();const offset=document.querySelector('header').getBoundingClientRect().height+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+16;
+    sectionPreferred=entry.id;sectionClose();const offset=sectionHeaderClearance()+(innerWidth<1024?sectionNav.getBoundingClientRect().height:0)+16;
     entry.node.setAttribute('tabindex','-1');entry.node.focus({preventScroll:true});
     window.scrollTo({top:Math.max(0,window.scrollY+entry.node.getBoundingClientRect().top-offset),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
     requestAnimationFrame(updateSectionLocation);

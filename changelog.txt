@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.3
 -------------------
+- The desktop section sidebar expands upward as the title header scrolls out of view, reclaiming space while preserving bottom-navigation clearance.
 - Fixed the final section icon appearing unreachable: section jumps now select the correct icon when the page reaches its scroll limit or already fits on screen.
 - Fixed section-menu scrolling on short screens: the full sidebar responds to the mouse wheel, keeps its final icon reachable, and prevents scrolling the page behind it.
 
