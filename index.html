@@ -5575,6 +5575,20 @@ body:has(.modal-overlay.open,dialog[open]) :is(#section-navigation,#section-tool
   .section-jump-label { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 }
 @media(max-width:1023px) { #section-tooltip { display:none; } }
+
+/* Shared checkbox states, including controls created by focused editors. */
+:root input[type="checkbox"] { accent-color:var(--accent); color-scheme:inherit; cursor:pointer; flex-shrink:0; }
+:root input[type="checkbox"]:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+:root input[type="checkbox"]:disabled { cursor:not-allowed; opacity:.5; }
+:root:is([data-ui="classic"],:not([data-ui])) input[type="checkbox"]:not(:where(.dbx-toggle input)) { width:18px; height:18px; margin:0; padding:0; }
+:root[data-ui="apple"] input[type="checkbox"]:not(:where(.dbx-toggle input)) { width:22px; height:22px; margin:0; padding:0; accent-color:var(--apple-ink); }
+:root[data-ui="material"] input[type="checkbox"]:not(:where(.dbx-toggle input)) { width:20px; height:20px; margin:0; padding:0; }
+:root[data-ui="material"] input[type="checkbox"]:indeterminate { background:var(--md-primary); border-color:var(--md-primary); }
+:root[data-ui="material"] input[type="checkbox"]:indeterminate::before { content:''; position:absolute; left:3px; top:7px; width:10px; height:2px; border:0; background:var(--md-on-primary); transform:none; }
+@media(forced-colors:active) {
+  :root input[type="checkbox"]:not(:where(.dbx-toggle input)) { appearance:auto; -webkit-appearance:auto; }
+  :root input[type="checkbox"]:not(:where(.dbx-toggle input))::before { content:none; }
+}
 </style>
 <script>
 // Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
