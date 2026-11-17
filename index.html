@@ -5609,7 +5609,8 @@ body:has(.modal-overlay.open,dialog[open]) :is(#section-navigation,#section-tool
 #weekly-planner-modal .planner-priority[aria-pressed="true"] { color:var(--accent); background:var(--accent-dim); border-color:var(--accent); }
 .planner-priority[aria-pressed="true"] svg { fill:currentColor; }
 .planner-row[data-high-priority="true"] { box-shadow:inset 3px 0 0 var(--accent); }
-.rotation-priority-badge { display:inline-flex; margin:5px 0 2px; padding:3px 8px; border-radius:999px; background:var(--accent-dim); color:var(--accent); font-size:11px; font-weight:600; }
+.rotation-game-heading { display:flex; align-items:center; flex-wrap:wrap; gap:6px 8px; }
+.rotation-priority-badge { display:inline-flex; flex-shrink:0; margin:0; padding:3px 8px; border-radius:999px; background:var(--accent-dim); color:var(--accent); font-size:11px; font-weight:600; }
 @media(max-width:700px) { .planner-actions { flex-direction:column; align-items:flex-end; gap:6px; } }
 </style>
 <script>
@@ -9879,7 +9880,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const targetHtml=target?'<div class="rotation-metrics" data-rotation-target-text><span class="rotation-time"><span class="rotation-elapsed" data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span><span class="rotation-target-text">/ '+fmtDurationMinutes(target*60000)+'</span></span><span class="rotation-percent" data-rotation-percent>'+(pct===100?'Target reached':pct+'%')+'</span></div><div class="progress-track" data-rotation-progress role="progressbar" aria-label="Weekly playtime target" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><div class="progress-fill" style="width:'+pct+'%"></div></div>':'<small><span data-rotation-elapsed>'+rotationPlayedTime(entry.ms)+'</span> this week</small>';
       const day = settings.weeklyRotationDays?.[id];
       const dayLabel = plannedWeekdays.includes(day) ? '<small>Planned day: ' + day + '</small>' : '';
-      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><strong>'+escHtml(game.name)+'</strong>'+rotationPriorityBadge(id)+(rotationRunLabel(id)?'<small>Playthrough: '+escHtml(rotationRunLabel(id))+'</small>':'')+dayLabel+targetHtml+rotationHltbHtml(id)+'<div data-rotation-milestone-estimates>'+rotationCompletionEstimatesHtml(id,target,!!activeSession)+'</div>'+rotationPinnedMilestoneHtml(id,!!activeSession)+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'"'+(settings.weeklyRotationPlaythroughs?.[id]&&(!rotationRun(id)||rotationRun(id).finishedAt)?' disabled title="Choose an open playthrough in Plan week"':'')+'>Start</button>')+'</div>';
+      return '<div class="rotation-row" data-rotation-game="'+escHtml(id)+'"><div class="rotation-game"><div class="rotation-game-heading"><strong>'+escHtml(game.name)+'</strong>'+rotationPriorityBadge(id)+'</div>'+(rotationRunLabel(id)?'<small>Playthrough: '+escHtml(rotationRunLabel(id))+'</small>':'')+dayLabel+targetHtml+rotationHltbHtml(id)+'<div data-rotation-milestone-estimates>'+rotationCompletionEstimatesHtml(id,target,!!activeSession)+'</div>'+rotationPinnedMilestoneHtml(id,!!activeSession)+'</div>'+(activeSession?'':'<button class="btn-ghost btn-accent" type="button" data-rotation-start="'+escHtml(id)+'"'+(settings.weeklyRotationPlaythroughs?.[id]&&(!rotationRun(id)||rotationRun(id).finishedAt)?' disabled title="Choose an open playthrough in Plan week"':'')+'>Start</button>')+'</div>';
     }).join('');
   }
   const plannedWeekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
