@@ -9813,13 +9813,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function orderedWeekdays() {
     return weekStartsOnMonday() ? plannedWeekdays.slice(1).concat(plannedWeekdays[0]) : plannedWeekdays;
   }
+  function milestoneTargetOrder(a,b) {
+    const first=milestoneValidDate(a.targetDate)?a.targetDate:'9999-99-99',second=milestoneValidDate(b.targetDate)?b.targetDate:'9999-99-99';
+    return first.localeCompare(second)||a.name.localeCompare(b.name)||a.id.localeCompare(b.id);
+  }
   function todayMilestoneRows() {
     const assigned=statsMilestoneData().filter(row=>{
       const entry=contentEntry(row.key);if(!entry||entry.archived||row.item.completedAt||!milestoneValidDate(row.item.targetDate))return false;
       return !row.runId||!games.find(game=>game.id===row.parentId)?.playthroughs?.find(run=>run.id===row.runId)?.finishedAt;
     });
     const general=(settings.generalMilestones||[]).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate)).map(item=>({item,general:true,blocked:[]}));
-    return assigned.concat(general).sort((a,b)=>a.item.targetDate.localeCompare(b.item.targetDate)||a.item.name.localeCompare(b.item.name));
+    return assigned.concat(general).sort((a,b)=>milestoneTargetOrder(a.item,b.item));
   }
   function renderTodayMilestones() {
     const enabled=settings.showTodayMilestones!==false,card=document.getElementById('today-milestone-card'),host=document.getElementById('today-milestone-list');
@@ -11467,7 +11471,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   });
 
   function renderGeneralMilestones(){
-    const items=settings.generalMilestones||[],host=document.getElementById('general-milestones');
+    const items=(settings.generalMilestones||[]).slice().sort(milestoneTargetOrder),host=document.getElementById('general-milestones');
     host.innerHTML='<div class="milestone-toolbar"><button class="btn-ghost" type="button" data-general-action="add">+ Add milestone</button></div>'+(!items.length?'<p class="backup-hint">No unassigned milestones yet.</p>':'<ul class="completion-timeline">'+items.map(item=>'<li><div class="completion-timeline-info"><strong>'+escHtml(item.name)+'</strong>'+(item.targetDate?'<small>'+milestoneTargetDateHtml(item)+'</small>':'')+'</div><div class="milestone-toolbar"><button class="btn-ghost" type="button" data-general-action="assign" data-general-id="'+milestoneAttr(item.id)+'">Assign</button><button class="btn-ghost" type="button" data-general-action="edit" data-general-id="'+milestoneAttr(item.id)+'">Edit</button><button class="btn-ghost" type="button" data-general-action="delete" data-general-id="'+milestoneAttr(item.id)+'">Delete</button></div></li>').join('')+'</ul>');
   }
   function saveGeneralMilestones(items){
