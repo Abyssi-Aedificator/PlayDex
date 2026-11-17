@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.2
 -------------------
+- Centered desktop section icons and selection backgrounds within the sidebar, including when its list scrolls.
 - The desktop header spans the full window width while the section sidebar retains its content clearance.
 - Each page section now has a distinct navigation icon within its tab, including the combined Today and Sessions view.
 - Jump between visible page sections using a desktop icon rail or a mobile Sections menu, with current-section highlighting, keyboard navigation, and themed controls; bottom tabs still switch pages.
