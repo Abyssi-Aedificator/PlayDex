@@ -5467,6 +5467,7 @@ input[data-d2-target]::-webkit-inner-spin-button,input[data-d2-target]::-webkit-
 
 #feature-editor { z-index:1200; }
 #feature-editor .modal { width:100%; max-width:700px; max-height:calc(100dvh - 32px); overflow:auto; }
+#general-date .cal-popover { position:relative; inset:auto; width:100%; max-width:336px; margin-top:8px; }
 .d2-section-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
 .d2-section-head h4 { margin:0; font-size:13px; }
 .d2-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
@@ -11446,6 +11447,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function editGeneralMilestone(id){
     const original=(settings.generalMilestones||[]).find(item=>item.id===id);
     const calendar=document.getElementById('milestone-target-date').cloneNode(true);calendar.id='general-date';calendar.classList.remove('open');calendar.setAttribute('aria-labelledby','general-date-label');calendar.querySelector('.cal-trigger').setAttribute('aria-labelledby','general-date-label');calendar.querySelector('.cal-trigger').setAttribute('aria-expanded','false');
+    calendar.querySelectorAll('button').forEach(button=>button.type='button');
     let dateField;
     d2Edit(original?'Edit general milestone':'Add general milestone','<label class="d2-field">Name<input id="general-name" type="text" maxlength="140" value="'+milestoneAttr(original?.name||'')+'" required></label><div class="field-group"><label id="general-date-label">Target date (optional)</label>'+calendar.outerHTML+'</div><p class="backup-hint">Assign this objective when ready. You can then add checklists, counters, playtime goals, and prerequisites in the game dashboard.</p>',()=>{
       const items=settings.generalMilestones||[],old=items.find(item=>item.id===id);if(id&&!old)throw Error('This milestone no longer exists.');

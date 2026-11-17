@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.1
 -------------------
+- Fixed the general milestone calendar being oversized and clipped inside its editor; calendar navigation no longer submits the form.
 - Today's Milestone targets show the linked game beside each assigned objective in muted text.
 - General milestones now use the app's themed target-date calendar and no longer show or request hours remaining.
 - Removed the duplicate Multiplayer game status and explanation from game dashboards; the option remains in Edit Game.
