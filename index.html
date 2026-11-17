@@ -5467,6 +5467,7 @@ input[data-d2-target]::-webkit-inner-spin-button,input[data-d2-target]::-webkit-
 
 #feature-editor { z-index:1200; }
 #feature-editor .modal { width:100%; max-width:700px; max-height:calc(100dvh - 32px); overflow:auto; }
+#feature-editor .modal.compact-confirmation { max-width:460px; }
 #general-date .cal-popover { position:relative; inset:auto; width:100%; max-width:336px; margin-top:8px; }
 .d2-section-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
 .d2-section-head h4 { margin:0; font-size:13px; }
@@ -13599,12 +13600,12 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const remove=document.createElement('button');remove.type='button';remove.className='btn-ghost btn-danger';remove.textContent='Delete session';remove.setAttribute('aria-label','Delete session for '+name);
       remove.onclick=()=>{
         const current=sessions.find(entry=>entry.id===session.id);if(!current||current.stop===null){renderHistoryHealth();return;}
-        if(!confirm('Delete this session for '+name+'?\n'+fmtDateShort(current.start)+' '+fmtTime(current.start)+' / '+fmtDuration(current.durationMs||0)+' active playtime.\nThis cannot be undone.'))return;
-        try{
-          persistSessionReplacement(sessions.filter(entry=>entry.id!==current.id));
+        d2Edit('Delete session?','<p><strong>'+escHtml(name)+'</strong></p><p class="backup-hint">'+escHtml(fmtDateShort(current.start)+' '+fmtTime(current.start)+' / '+fmtDuration(current.durationMs||0)+' active playtime')+'</p><p>This cannot be undone.</p>',()=>{
+          const latest=sessions.find(entry=>entry.id===session.id);if(!latest||latest.stop===null)throw Error('This completed session is no longer available.');
+          persistSessionReplacement(sessions.filter(entry=>entry.id!==latest.id));
           renderSessionsTab(false);renderTodayTab();renderStatsTab();renderAchievementsTab();renderProfileTab();renderGamesTab();renderTop();renderHistoryHealth();
-          document.getElementById('history-health-rescan').focus();toast('Session deleted');
-        }catch(error){toast(error.message||'Could not delete the session.');}
+          toast('Session deleted');
+        },'Delete session',null,{destructive:true,compact:true});
       };
       actions.append(remove);
       row.append(actions);list.append(row);
@@ -14659,6 +14660,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('d2-editor-title').textContent=title;
     document.getElementById('d2-editor-body').innerHTML=html;
     document.getElementById('d2-editor-save').textContent=label;
+    document.getElementById('d2-editor-save').className=options.destructive?'btn btn-danger':'btn btn-start';
+    d2Editor.querySelector('.modal').classList.toggle('compact-confirmation',!!options.compact);
     document.getElementById('d2-editor-error').textContent='';d2Editor.classList.add('open');
     requestAnimationFrame(()=>{if(d2Editor.classList.contains('open'))d2Editor.querySelector('input:not([type=checkbox]),textarea,select,button')?.focus();});
   }
@@ -14666,6 +14669,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(editorReturnFocus?.isConnected&&editorReturnFocus.getClientRects().length){editorReturnFocus.focus();return;}
     if(weeklyPlanner.classList.contains('open'))document.getElementById('weekly-planner-cancel').focus();
     else if(document.getElementById('dashboard-modal').classList.contains('open'))focusPlaythroughField('playthrough-selector');
+    else if(healthModal.classList.contains('open'))document.getElementById('history-health-rescan').focus();
     else if(currentTab==='games')document.querySelector('[data-general-action="add"]')?.focus();
     else if(currentTab==='settings')document.getElementById('dbxUploadBtn')?.focus();
     else if(activeSession&&currentTab==='today')document.getElementById('btn-pause')?.focus();
