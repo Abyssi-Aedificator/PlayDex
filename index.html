@@ -5589,6 +5589,8 @@ body:has(.modal-overlay.open,dialog[open]) :is(#section-navigation,#section-tool
   :root input[type="checkbox"]:not(:where(.dbx-toggle input)) { appearance:auto; -webkit-appearance:auto; }
   :root input[type="checkbox"]:not(:where(.dbx-toggle input))::before { content:none; }
 }
+  .rotation-timing-before { color:var(--green-ink); font-weight:600; }
+  .rotation-timing-after { color:var(--red); font-weight:600; }
 </style>
 <script>
 // Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
@@ -9760,8 +9762,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       return {name:item.name,text,targetDate:item.targetDate,hltbFallback:!!fallback,targetTiming,blocked:milestoneBlocked(item,items).length>0};
     });
   }
+  function rotationTargetTimingHtml(text) {
+    return rotationEstimateNumbers(text).replace(/\b(before target|after target)\b/g,phrase=>'<span class="rotation-timing-'+(phrase==='before target'?'before':'after')+'">'+phrase+'</span>');
+  }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false,selection=settings.weeklyRotationPlaythroughs||{}) {
-    return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+escHtml(item.targetTiming):'')+'. Completion stays manual.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers(item.text+' Target: '+item.targetDate)+'</small>').join('');
+    return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+'. Completion stays manual.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>').join('');
   }
 
   function rotationHltbCompletionEstimates(key,targetMinutes,selection=settings.weeklyRotationPlaythroughs||{}) {

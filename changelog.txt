@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.2
 -------------------
+- Rotation completion estimates show before target in contrast-safe green and after target in red, including planner edits and live updates.
 - Weekly rotation entries can select an open playthrough, with run-specific weekly progress, HLTB and milestone estimates, and direct session starts; selections sync and carry through presets, saved plans, and Load last week.
 - Fixed large empty gaps between lifetime statistics and session history in game dashboards with tall playthrough or milestone sections.
 - Moved General milestones to the bottom of the Games tab, below the library and filters.
