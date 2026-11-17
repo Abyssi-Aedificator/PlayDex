@@ -12121,7 +12121,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '<div class="dash-row"><span class="dash-label">Paused time</span><span class="dash-value">' + (pausedCount > 0 ? '&#9208; ' + pausedCount + '\u00d7 \u00b7 ' + fmtDuration(pausedMs) : '-') + '</span></div>' +
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
-    html += '<div class="dash-row"><label class="milestone-step-toggle"><input type="checkbox" data-game-multiplayer="'+milestoneAttr(game.parentId||game.id)+'"'+(game.multiplayer?' checked':'')+(game.parentId?' disabled':'')+'>Multiplayer game'+(game.parentId?' (inherited)':'')+'</label></div><p class="backup-hint">Multiplayer games and their DLCs cannot be selected for weekly rotation.</p>';
+    html += '<div class="dash-row"><label class="milestone-step-toggle"><input type="checkbox" data-game-multiplayer="'+milestoneAttr(game.parentId||game.id)+'"'+(game.multiplayer?' checked':'')+' disabled>Multiplayer game'+(game.parentId?' (inherited)':'')+'</label></div><p class="backup-hint">Multiplayer games and their DLCs cannot be selected for weekly rotation.</p>';
     html = '<div class="milestone-dashboard-summary">' + html + '</div><div class="dashboard-milestone-column">' +
       beatTimeSection(game, contentSessions(game.id).filter(s => s.stop !== null).reduce((sum,s) => sum + (s.durationMs || 0),0)) + gameMilestonesHtml(game) + '</div><div class="milestone-dashboard-history">';
 
@@ -12347,14 +12347,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     preferences.weeklyRotation=(preferences.weeklyRotation||[]).filter(id=>!ids.has(id));
     for(const key of ['weeklyRotationTargets','weeklyRotationDays']){preferences[key]={...(preferences[key]||{})};for(const id of ids)delete preferences[key][id];}
   }
-  document.getElementById('dashboard-body').addEventListener('change',event=>{
-    const control=event.target.closest('[data-game-multiplayer]');if(!control)return;
-    const parent=games.find(game=>game.id===control.dataset.gameMultiplayer);if(!parent)return;
-    const key=playthroughUI.dashboardKey||parent.id,library=structuredClone(games),next=library.find(game=>game.id===parent.id),preferences=structuredClone(settings);
-    if(control.checked)next.multiplayer=true;else delete next.multiplayer;excludeMultiplayerRotation(next,preferences,!!parent.multiplayer);
-    try{d2SaveLibrary(library,sessions,preferences);openDashboard(key);document.querySelector('#dashboard-body [data-game-multiplayer]')?.focus();}
-    catch(error){control.checked=!!parent.multiplayer;toast(error.message);}
-  });
 
   function openRenameModal(id) {
     const game = games.find(g => g.id === id);
