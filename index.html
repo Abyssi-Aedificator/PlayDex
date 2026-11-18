@@ -3839,6 +3839,7 @@ opacity: 0.18;
     gap: 10px;
     margin-bottom: 16px;
   }
+  .milestone-settings-options { display:grid; gap:12px; margin-bottom:12px; }
   .dbx-toggle {
     display: flex;
     align-items: center;
@@ -6397,8 +6398,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     </div>
     <div class="card">
       <div class="card-header">Personal milestones</div>
+      <div class="milestone-settings-options">
       <label class="dbx-toggle"><input type="checkbox" id="setTodayMilestones"><span class="dbx-toggle-label">Show milestone targets on Today</span></label>
       <label class="dbx-toggle"><input type="checkbox" id="setSessionMilestonePrompts"><span class="dbx-toggle-label">Ask about milestone completion after sessions</span></label>
+      </div>
       <p class="backup-hint">Update manual objectives, checklist steps or counters in Session saved. Playtime milestones complete automatically when their targets and prerequisites are met.</p>
       <p class="backup-hint">Show unfinished objectives with target dates, including days left and overdue targets. Archived content and finished playthroughs stay out of Today. This setting syncs across devices.</p>
     </div>
