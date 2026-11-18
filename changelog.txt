@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.4
 -------------------
+- Set one open playthrough per game as the default from Run actions; it is preselected for new sessions and cleared when finished or removed, without changing existing session assignments.
 - Removed the “Completion stays manual.” reminder from weekly rotation milestone estimates.
 - Assign milestone lists games alphabetically, with Base game first and alphabetized DLCs beneath each parent.
 - This week's rotation lists games alphabetically within high-priority and normal-priority entries.

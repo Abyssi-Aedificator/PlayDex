@@ -7144,6 +7144,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return (Array.isArray(arr) ? arr : []).map(g => {
       const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform), milestones: normalizeGameMilestones(g.milestones) };
       if (Array.isArray(g.playthroughs)) o.playthroughs = structuredClone(g.playthroughs);
+      if (typeof g.defaultPlaythroughId === 'string' && o.playthroughs?.some(run=>run.id===g.defaultPlaythroughId&&!run.finishedAt)) o.defaultPlaythroughId=g.defaultPlaythroughId;
       if (Array.isArray(g.dlcs)) o.dlcs = normalizeGames(g.dlcs.map(({dlcs, ...dlc}) => dlc));
       for (const key of ['mainStoryHours', 'mainExtraHours', 'beatAlreadyPlayedHours']) {
         if (Number.isFinite(g[key]) && g[key] > 0) o[key] = g[key];
@@ -9058,7 +9059,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     addPlaythroughAllocationField(panel);
   }
   function setupAllocationEditor(panel, session) {
-    panel.dataset.playthroughId = session.playthroughId || '';
+    panel.dataset.playthroughId = session.playthroughId || (panel.id==='add-content-allocation'?defaultPlaythrough(games.find(game=>game.id===session.gameId))?.id:'') || '';
     panel.dataset.gameId = session.gameId;
     panel.dataset.start = session.start;
     panel.dataset.stop = session.stop;
@@ -14783,25 +14784,25 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const parent=games.find(entry=>entry.id===(game.parentId||game.id));if(!parent)return;
     playthroughUI.gameId=parent.id;playthroughUI.contentId=game.parentId?game.dlcId:null;playthroughUI.dashboardKey=game.id;
     const selected=playthroughUI.selection.get(parent.id);
-    playthroughUI.runId=parent.playthroughs?.some(run=>run.id===selected)?selected:parent.playthroughs?.find(run=>!run.finishedAt)?.id||parent.playthroughs?.[0]?.id||null;
+    playthroughUI.runId=parent.playthroughs?.some(run=>run.id===selected)?selected:defaultPlaythrough(parent)?.id||parent.playthroughs?.find(run=>!run.finishedAt)?.id||parent.playthroughs?.[0]?.id||null;
     const section=document.createElement('section');section.id='dashboard-playthroughs';section.className='game-milestones playthrough-section';
     document.querySelector('#dashboard-body .dashboard-milestone-column').append(section);renderDashboardPlaythroughs();
   }
   function renderDashboardPlaythroughs(){
     const host=document.getElementById('dashboard-playthroughs'),parent=games.find(game=>game.id===playthroughUI.gameId);if(!host||!parent)return;
     const runs=parent.playthroughs||[];
-    if(!runs.some(run=>run.id===playthroughUI.runId))playthroughUI.runId=runs.find(run=>!run.finishedAt)?.id||runs[0]?.id||null;
+    if(!runs.some(run=>run.id===playthroughUI.runId))playthroughUI.runId=defaultPlaythrough(parent)?.id||runs.find(run=>!run.finishedAt)?.id||runs[0]?.id||null;
     playthroughUI.selection.set(parent.id,playthroughUI.runId);
     const run=d2Run(),isDlc=!!playthroughUI.contentId;
     let html='<div class="game-milestones-heading"><div><h4>Playthroughs</h4><p>'+(isDlc?'Runs for '+escHtml(parent.name):'Separate progress for each run; lifetime totals stay in the game summary.')+'</p></div>'+d2Button('New playthrough','run-new')+'</div>';
     if(!run){host.innerHTML=html+'<p class="backup-hint">No playthroughs yet. Create a run when you want fresh objectives and HLTB progress. Existing sessions stay unassigned.</p>';return;}
-    html+='<label class="d2-field">Playthrough<select id="playthrough-selector" aria-label="Playthrough">'+runs.map(item=>'<option value="'+d2Attr(item.id)+'"'+(item.id===run.id?' selected':'')+'>'+escHtml(item.name)+(item.finishedAt?' (finished)':'')+'</option>').join('')+'</select></label>';
+    html+='<label class="d2-field">Playthrough<select id="playthrough-selector" aria-label="Playthrough">'+runs.map(item=>'<option value="'+d2Attr(item.id)+'"'+(item.id===run.id?' selected':'')+'>'+escHtml(item.name)+(parent.defaultPlaythroughId===item.id?' (default)':'')+(item.finishedAt?' (finished)':'')+'</option>').join('')+'</select></label>';
     const stats=d2RunStats(parent,run),content=d2RunContent(parent,run),selectedKey=isDlc?playthroughUI.contentId:playthroughUI.contentSelection.get(parent.id)||'base';
     const selected=content.find(item=>item.key===selectedKey)||content[0];
     const relevantRows=isDlc?stats.rows.filter(session=>(allocatedPlaytime(session).get(playthroughUI.contentId)||0)>0):stats.rows;
     const milestones=isDlc?selected.data.milestones||[]:stats.items;
     html+='<p class="backup-hint">'+(run.finishedAt?'Finished '+fmtDateShort(run.finishedAt):'In progress · Created '+fmtDateShort(run.createdAt))+'</p><dl class="feature-summary"><div><dt>Recorded time</dt><dd>'+fmtDurationShort(isDlc?d2RunMs(parent.id,run.id,playthroughUI.contentId):stats.total)+'</dd></div><div><dt>Sessions</dt><dd>'+relevantRows.length+'</dd></div><div><dt>Milestones</dt><dd>'+milestones.filter(item=>item.completedAt).length+' / '+milestones.length+'</dd></div></dl>';
-    html+='<div class="d2-actions">'+(!run.finishedAt&&!parent.archived?d2Button('Start run','run-start',activeSession?'disabled':''):'')+'<details class="playthrough-actions"><summary>Run actions</summary><div class="d2-actions">'+d2Button('Rename','run-rename')+d2Button(run.finishedAt?'Reopen':'Finish run','run-finish')+d2Button('Assign sessions','run-assign')+d2Button('Compare runs','run-compare',runs.length<2?'disabled':'')+d2Button('Remove run','run-delete')+'</div></details></div>';
+    html+='<div class="d2-actions">'+(!run.finishedAt&&!parent.archived?d2Button('Start run','run-start',activeSession?'disabled':''):'')+'<details class="playthrough-actions"><summary>Run actions</summary><div class="d2-actions">'+d2Button('Rename','run-rename')+(!run.finishedAt?d2Button(parent.defaultPlaythroughId===run.id?'Clear default':'Set as default','run-default'):'')+d2Button(run.finishedAt?'Reopen':'Finish run','run-finish')+d2Button('Assign sessions','run-assign')+d2Button('Compare runs','run-compare',runs.length<2?'disabled':'')+d2Button('Remove run','run-delete')+'</div></details></div>';
     html+='<div class="playthrough-progress"><h4>Playthrough progress</h4>';
     if(!isDlc&&content.length>1)html+='<label class="d2-field">Content<select id="playthrough-content" aria-label="Playthrough content">'+content.map(entry=>'<option value="'+d2Attr(entry.key)+'"'+(entry.key===selected.key?' selected':'')+'>'+escHtml(entry.name)+'</option>').join('')+'</select></label>';
     else html+='<p class="backup-hint">'+escHtml(selected.name)+'</p>';
@@ -14931,7 +14932,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
 
   function d2ChangeRun(change){
     const library=d2Clone(games),parent=library.find(game=>game.id===playthroughUI.gameId),run=parent?.playthroughs?.find(item=>item.id===playthroughUI.runId);
-    if(!parent||!run)throw Error('This playthrough no longer exists.');change(run,parent);d2SaveLibrary(library);renderDashboardPlaythroughs();
+    if(!parent||!run)throw Error('This playthrough no longer exists.');change(run,parent);if(run.finishedAt&&parent.defaultPlaythroughId===run.id)delete parent.defaultPlaythroughId;d2SaveLibrary(library);renderDashboardPlaythroughs();
   }
   function d2NewRun(){
     const parent=games.find(game=>game.id===playthroughUI.gameId);if(!parent)return;
@@ -14949,9 +14950,10 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       d2SaveLibrary(library);playthroughUI.runId=id;renderDashboardPlaythroughs();toast('Playthrough created');
     },'Create playthrough');
   }
+  function defaultPlaythrough(game){return game?.playthroughs?.find(run=>run.id===game.defaultPlaythroughId&&!run.finishedAt)||null;}
   function choosePlaythrough(gameId,dlcId){
     const game=games.find(g=>g.id===gameId);if(!game)return;
-    d2Edit('Choose playthrough','<p>'+escHtml(game.name)+' · '+escHtml(contentName(gameId,dlcId))+'</p><label class="d2-field">Playthrough<select id="d2-start-run"><option value="">Unassigned / lifetime only</option>'+(game.playthroughs||[]).filter(run=>!run.finishedAt).map(run=>'<option value="'+d2Attr(run.id)+'">'+escHtml(run.name)+'</option>').join('')+'</select></label>',()=>{startGame(gameId,dlcId,document.getElementById('d2-start-run').value||null);},'Start session');
+    d2Edit('Choose playthrough','<p>'+escHtml(game.name)+' · '+escHtml(contentName(gameId,dlcId))+'</p><label class="d2-field">Playthrough<select id="d2-start-run"><option value="">Unassigned / lifetime only</option>'+(game.playthroughs||[]).filter(run=>!run.finishedAt).map(run=>'<option value="'+d2Attr(run.id)+'"'+(defaultPlaythrough(game)?.id===run.id?' selected':'')+'>'+escHtml(run.name)+(defaultPlaythrough(game)?.id===run.id?' (default)':'')+'</option>').join('')+'</select></label>',()=>{startGame(gameId,dlcId,document.getElementById('d2-start-run').value||null);},'Start session');
   }
   function addPlaythroughAllocationField(panel){
     const game=games.find(game=>game.id===panel.dataset.gameId);if(!game?.playthroughs?.length)return;
@@ -15402,6 +15404,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         }
       }
     }
+    for(const game of snapshot.games)if(game.defaultPlaythroughId!==undefined&&(typeof game.defaultPlaythroughId!=='string'||!game.playthroughs?.some(run=>run.id===game.defaultPlaythroughId&&!run.finishedAt)))throw Error('Invalid default playthrough.');
     const sessionIds=new Set();for(const session of snapshot.sessions){
       if(!session.id||sessionIds.has(session.id))throw Error('Duplicate session ID.');sessionIds.add(session.id);
       const parent=snapshot.games.find(game=>game.id===session.gameId);if(!parent){const known=sessions.find(row=>row.id===session.id&&row.gameId===session.gameId);if(!known||games.some(game=>game.id===session.gameId))throw Error('A change would leave a session referencing a missing game. Keep its game or reassign the session first.');continue;}
@@ -15427,6 +15430,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const dependents=run.content[key].milestones.filter(row=>row.prerequisites?.includes(id));
       return d2Edit('Remove milestone?','<p>Remove '+escHtml(item.name)+' from this playthrough?</p>'+(dependents.length?'<p>Prerequisite links will also be removed from: '+escHtml(dependents.map(row=>row.name).join(', '))+'.</p>':''),()=>d2ChangeRun(target=>{target.content[key].milestones=target.content[key].milestones.filter(row=>row.id!==id).map(row=>({...row,prerequisites:(row.prerequisites||[]).filter(required=>required!==id)}));}),'Remove milestone');
     }
+    if(action==='run-default'){const run=d2Run();if(!run||run.finishedAt)return;d2ChangeRun((item,parent)=>{if(parent.defaultPlaythroughId===item.id)delete parent.defaultPlaythroughId;else parent.defaultPlaythroughId=item.id;});return;}
     if(action==='run-new')return d2NewRun();
     if(action==='run-assign')return d2AssignHistory();
     if(action==='run-compare')return d2CompareRuns();
@@ -15449,7 +15453,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const run=d2Run();if(!run)return;
       if(activeSession?.playthroughId===run.id){toast('Stop this playthrough\'s active session first.');return;}
       return d2Edit('Remove playthrough?','<p>Remove '+escHtml(run.name)+' and its separate milestone and HLTB progress? Its sessions will become unassigned. All tracked playtime, DLC allocations and lifetime totals are preserved.</p>',()=>{
-        const library=d2Clone(games),parent=library.find(game=>game.id===playthroughUI.gameId);parent.playthroughs=parent.playthroughs.filter(item=>item.id!==run.id);
+        const library=d2Clone(games),parent=library.find(game=>game.id===playthroughUI.gameId);parent.playthroughs=parent.playthroughs.filter(item=>item.id!==run.id);if(parent.defaultPlaythroughId===run.id)delete parent.defaultPlaythroughId;
         d2SaveLibrary(library,sessions.map(session=>session.gameId===parent.id&&session.playthroughId===run.id?{...session,playthroughId:null}:session));playthroughUI.runId=null;renderDashboardPlaythroughs();
       },'Remove playthrough');
     }
