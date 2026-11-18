@@ -5807,7 +5807,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">3.0.0</span>
+    <span class="version-badge">3.0.1</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -9539,7 +9539,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const names=[...new Set(members.map(scope))].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base',numeric:true})).join('\n');
       const differentDates=new Set(members.map(member=>member.item.targetDate)).size>1;
       const date=milestoneTargetDateHtml(row.item).replace('Target:',differentDates?'Earliest target:':'Target:');
-      return '<article class="stats-insight-row"><details class="today-milestone-group" data-today-group="'+milestoneAttr(key)+'"'+(expanded.has(key)?' open':'')+'><summary class="today-milestone-heading" title="'+milestoneAttr(names)+'" aria-label="'+milestoneAttr(row.item.name+'. Multiple targets: '+names.replace(/\n/g,'; ')+'. Earliest target: '+row.item.targetDate)+'"><span class="today-milestone-group-label"><span class="today-milestone-multiple" title="'+milestoneAttr(names)+'">Multiple</span><span class="today-milestone-group-name">'+escHtml(row.item.name)+'</span><span class="today-milestone-chevron" aria-hidden="true">&#9662;</span></span>'+date+'</summary><div class="today-milestone-members">'+members.map(member=>'<div class="today-milestone-member"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" '+attributes(member)+'>'+escHtml(scope(member))+'</a>'+milestoneTargetDateHtml(member.item)+'</div>'+blocked(member)+'</div>').join('')+'</div></details></article>';
+      return '<article class="stats-insight-row"><details class="today-milestone-group" data-today-group="'+milestoneAttr(key)+'"'+(expanded.has(key)?' open':'')+'><summary class="today-milestone-heading" title="'+milestoneAttr(names)+'" aria-label="'+milestoneAttr(row.item.name+'. Multiple targets: '+names.replace(/\n/g,'; ')+'. Earliest target: '+row.item.targetDate)+'"><span class="today-milestone-group-label"><span class="today-milestone-group-name">'+escHtml(row.item.name)+'</span><span class="today-milestone-multiple" title="'+milestoneAttr(names)+'">Multiple</span><span class="today-milestone-chevron" aria-hidden="true">&#9662;</span></span>'+date+'</summary><div class="today-milestone-members">'+members.map(member=>'<div class="today-milestone-member"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" '+attributes(member)+'>'+escHtml(scope(member))+'</a>'+milestoneTargetDateHtml(member.item)+'</div>'+blocked(member)+'</div>').join('')+'</div></details></article>';
     }).join('');
   }
   document.getElementById('setTodayMilestones').addEventListener('change',event=>{
@@ -15202,7 +15202,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   },true);
 
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '3.0.0';
+    const APP_VERSION = '3.0.1';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');

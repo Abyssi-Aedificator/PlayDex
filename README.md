@@ -72,7 +72,7 @@ To move an existing game objective into a run, open its **More → Move to playt
 
 **General milestones**, at the bottom of Games, hold unassigned objectives with optional target dates. **Assign** moves one to an active game without losing its identity or dates. Unassigned objectives do not count toward completion badges.
 
-Today's **Milestone targets** lists unfinished dated objectives in target-date order with time left or overdue status. Matching names share one row with a **Multiple** label on the left; hover it for the linked game/run names, or expand the row to open each target. The summary uses the earliest date when targets differ. It is hidden during a running session and excludes archived games and finished playthroughs. Settings → Session tracking → Personal milestones controls its visibility and the optional completion prompts in **Session saved**. Profile's **Completion timeline** shows recently completed objectives with dates and artwork.
+Today's **Milestone targets** lists unfinished dated objectives in target-date order with time left or overdue status. Matching names share one row with a **Multiple** label after the name, followed by the expand arrow; hover it for the linked game/run names, or expand the row to open each target. The summary uses the earliest date when targets differ. It is hidden during a running session and excludes archived games and finished playthroughs. Settings → Session tracking → Personal milestones controls its visibility and the optional completion prompts in **Session saved**. Profile's **Completion timeline** shows recently completed objectives with dates and artwork.
 
 ## Stats, Top, and Profile
 

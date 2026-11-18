@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 3.0.1
+-------------------
+- Grouped milestone targets show the milestone name first, followed by Multiple and its expand arrow.
+
 Version 3.0.0
 -------------------
 - Weekly rotation and its planner show remaining Main Story and Main + Extra HLTB time, with separate completion projections at the allocated weekly pace and theme-coloured playtime, day counts, and dates.
