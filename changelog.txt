@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 2.1.6
+-------------------
+- Weekly rotation preselects a game's default playthrough when adding it or opening a plan without a saved run choice; explicit run and Any playthrough selections are preserved through saving and reuse.
+
 Version 2.1.5
 -------------------
 - Set one open playthrough per game as the default from Run actions; it is preselected for new sessions and cleared when finished or removed, without changing existing session assignments.

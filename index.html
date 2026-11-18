@@ -5775,7 +5775,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.1.5</span>
+    <span class="version-badge">2.1.6</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -9132,7 +9132,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function validateRotationPlaythroughs(value){
     if(value===undefined)return;
-    if(!value||typeof value!=='object'||Array.isArray(value)||Object.entries(value).some(([key,id])=>!key||typeof id!=='string'||!id))throw Error('Invalid rotation playthrough selections');
+    if(!value||typeof value!=='object'||Array.isArray(value)||Object.entries(value).some(([key,id])=>!key||typeof id!=='string'))throw Error('Invalid rotation playthrough selections');
   }
   function validateRotationHistory(state) {
     if(!state)return;
@@ -9175,7 +9175,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const targets={},days={},playthroughs={},priorities={};
     for(const id of ids){
       if(state.weeklyRotationPriorities?.[id]===true)priorities[id]=true;
-      if(state.weeklyRotationPlaythroughs?.[id])playthroughs[id]=state.weeklyRotationPlaythroughs[id];
+      if(Object.hasOwn(state.weeklyRotationPlaythroughs||{},id))playthroughs[id]=state.weeklyRotationPlaythroughs[id];
       const target=state.weeklyRotationTargets?.[id];if(Number.isInteger(target)&&target>0&&target<=10080)targets[id]=target;
       const day=state.weeklyRotationDays?.[id];days[id]=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].includes(day)?day:'Any day';
     }
@@ -14314,7 +14314,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const snapshot=lastWeekRotation();if(!snapshot)return;
     const available=new Set(contentEntries().filter(rotationEntryEligible).map(entry=>entry.id));
     plannerUI.raw={};plannerUI.draft.ids=snapshot.ids.filter(id=>available.has(id));plannerUI.draft.targets={};plannerUI.draft.days={};plannerUI.draft.playthroughs={};plannerUI.draft.priorities={};
-    for(const id of plannerUI.draft.ids){if(snapshot.priorities?.[id]===true)plannerUI.draft.priorities[id]=true;if(snapshot.playthroughs?.[id])plannerUI.draft.playthroughs[id]=snapshot.playthroughs[id];const target=Number(snapshot.targets?.[id]);if(Number.isInteger(target)&&target>0&&target<=10080)plannerUI.draft.targets[id]=Math.ceil(target/60)*60;plannerUI.draft.days[id]=plannedWeekdays.includes(snapshot.days?.[id])?snapshot.days[id]:'Any day';}
+    for(const id of plannerUI.draft.ids){if(snapshot.priorities?.[id]===true)plannerUI.draft.priorities[id]=true;if(Object.hasOwn(snapshot.playthroughs||{},id)||contentEntry(id)?.playthroughs?.length)plannerUI.draft.playthroughs[id]=snapshot.playthroughs?.[id]||'';const target=Number(snapshot.targets?.[id]);if(Number.isInteger(target)&&target>0&&target<=10080)plannerUI.draft.targets[id]=Math.ceil(target/60)*60;plannerUI.draft.days[id]=plannedWeekdays.includes(snapshot.days?.[id])?snapshot.days[id]:'Any day';}
     renderWeeklyPlanner();toast('Loaded '+plannerUI.draft.ids.length+' entries into the draft. Current weekday planned hours were kept.');
   }
   function handlePlannerAction(action,button){
@@ -14374,7 +14374,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(field.dataset.d2Capacity){plannerUI.raw['day:'+field.dataset.d2Capacity]=field.value;draft.hours[field.dataset.d2Capacity]=field.validity.badInput||field.value===''?NaN:Number(field.value);}
     else if(field.dataset.d2Target){plannerUI.raw['target:'+field.dataset.d2Target]=field.value;draft.targets[field.dataset.d2Target]=field.validity.badInput?NaN:field.value===''?0:Number(field.value)*60;}
     else if(field.dataset.d2Day)draft.days[field.dataset.d2Day]=field.value;
-    else if(field.dataset.d2Run){if(field.value)draft.playthroughs[field.dataset.d2Run]=field.value;else delete draft.playthroughs[field.dataset.d2Run];}
+    else if(field.dataset.d2Run){draft.playthroughs[field.dataset.d2Run]=field.value;}
     else return;
     updatePlannerSummary();
   }
@@ -14507,7 +14507,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>available.has(id));
     plannerUI.draft.targets=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.targets[id]!=null).map(id=>[id,plannerUI.draft.targets[id]]));
     plannerUI.draft.days=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.days[id]!=null).map(id=>[id,plannerUI.draft.days[id]]));
-    plannerUI.draft.playthroughs=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.playthroughs[id]).map(id=>[id,plannerUI.draft.playthroughs[id]]));
+    plannerUI.draft.playthroughs=Object.fromEntries(plannerUI.draft.ids.filter(id=>Object.hasOwn(plannerUI.draft.playthroughs,id)||contentEntry(id)?.playthroughs?.length).map(id=>[id,Object.hasOwn(plannerUI.draft.playthroughs,id)?plannerUI.draft.playthroughs[id]:source?'':defaultPlaythrough(contentEntry(id))?.id||'']));
     plannerUI.draft.priorities=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.priorities[id]===true).map(id=>[id,true]));
     plannerUI.draftOriginal=d2PlannerSignature();plannerUI.raw={};plannerUI.weekdayOpen=false;
   }
@@ -14584,8 +14584,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(gameTargets>budget)throw Error('Game targets over weekly budget by '+fmtDurationMinutes((gameTargets-budget)*60000)+'. Reduce game targets or increase your weekly goal.');
     const next=d2Clone(settings),archived=archivedRotationIds();
     next.weeklyRotation=[...draft.ids,...archived];next.weeklyRotationTargets={};next.weeklyRotationDays={};next.weeklyRotationPlaythroughs={};next.weeklyRotationPriorities={};
-    for(const id of draft.ids){if(draft.priorities[id]===true)next.weeklyRotationPriorities[id]=true;if(draft.playthroughs[id]){const run=rotationRun(id,draft.playthroughs);if(!run||run.finishedAt)throw Error('Choose an open playthrough for '+contentEntry(id).name+'.');next.weeklyRotationPlaythroughs[id]=run.id;}if(draft.targets[id])next.weeklyRotationTargets[id]=draft.targets[id];next.weeklyRotationDays[id]=draft.days[id]||'Any day';}
-    for(const id of archived){if(settings.weeklyRotationPriorities?.[id]===true)next.weeklyRotationPriorities[id]=true;if(settings.weeklyRotationPlaythroughs?.[id])next.weeklyRotationPlaythroughs[id]=settings.weeklyRotationPlaythroughs[id];next.weeklyRotationTargets[id]=rotationTargetMinutes(id);next.weeklyRotationDays[id]=settings.weeklyRotationDays?.[id]||'Any day';}
+    for(const id of draft.ids){if(draft.priorities[id]===true)next.weeklyRotationPriorities[id]=true;if(draft.playthroughs[id]){const run=rotationRun(id,draft.playthroughs);if(!run||run.finishedAt)throw Error('Choose an open playthrough for '+contentEntry(id).name+'.');next.weeklyRotationPlaythroughs[id]=run.id;}else if(Object.hasOwn(draft.playthroughs,id))next.weeklyRotationPlaythroughs[id]='';if(draft.targets[id])next.weeklyRotationTargets[id]=draft.targets[id];next.weeklyRotationDays[id]=draft.days[id]||'Any day';}
+    for(const id of archived){if(settings.weeklyRotationPriorities?.[id]===true)next.weeklyRotationPriorities[id]=true;if(Object.hasOwn(settings.weeklyRotationPlaythroughs||{},id))next.weeklyRotationPlaythroughs[id]=settings.weeklyRotationPlaythroughs[id];next.weeklyRotationTargets[id]=rotationTargetMinutes(id);next.weeklyRotationDays[id]=settings.weeklyRotationDays?.[id]||'Any day';}
     next.plannerDayBudgets=draft.enabled;next.plannerDayHours=d2Clone(draft.hours);
     const plans=next.weeklyPlanHistory||(next.weeklyPlanHistory={});plans[draft.week]={week:draft.week,ids:d2Clone(draft.ids),targets:d2Clone(draft.targets),days:d2Clone(draft.days),playthroughs:d2Clone(draft.playthroughs),priorities:d2Clone(draft.priorities),hours:d2Clone(draft.hours),enabled:draft.enabled,savedAt:new Date().toISOString()};
     for(const week of Object.keys(plans).sort().slice(0,-12))delete plans[week];
@@ -14594,7 +14594,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   function d2PlannerAdd(){
     const options=contentEntries().filter(entry=>rotationEntryEligible(entry)&&!plannerUI.draft.ids.includes(entry.id)).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
     d2Edit('Add games','<label class="d2-field">Search games<input type="search" id="planner-picker-search" placeholder="Search by game name"></label><p class="backup-hint">Select any number. Targets and days can be set after adding.</p><label class="milestone-step-toggle"><input type="checkbox" id="planner-select-all"'+(options.length?'':' disabled')+'>Select all available games</label><div id="planner-picker" class="d2-assign-list">'+options.map(entry=>'<label class="planner-pick" data-search="'+d2Attr(entry.name.toLocaleLowerCase())+'"><input type="checkbox" data-d2-plan-add="'+d2Attr(entry.id)+'">'+gameCoverHtml(entry)+'<span>'+plannerEntryLabel(entry)+'</span></label>').join('')+'</div><p id="planner-picker-empty" class="backup-hint"'+(options.length?' hidden':'')+'>No available games match. All active content may already be selected.</p>',()=>{
-      for(const input of document.querySelectorAll('[data-d2-plan-add]:checked')){plannerUI.draft.ids.push(input.dataset.d2PlanAdd);plannerUI.draft.targets[input.dataset.d2PlanAdd]=0;delete plannerUI.raw['target:'+input.dataset.d2PlanAdd];plannerUI.draft.days[input.dataset.d2PlanAdd]='Any day';}renderWeeklyPlanner();
+      for(const input of document.querySelectorAll('[data-d2-plan-add]:checked')){plannerUI.draft.ids.push(input.dataset.d2PlanAdd);plannerUI.draft.targets[input.dataset.d2PlanAdd]=0;delete plannerUI.raw['target:'+input.dataset.d2PlanAdd];plannerUI.draft.days[input.dataset.d2PlanAdd]='Any day';const game=contentEntry(input.dataset.d2PlanAdd);if(game?.playthroughs?.length)plannerUI.draft.playthroughs[game.id]=defaultPlaythrough(game)?.id||'';}renderWeeklyPlanner();
     },'Add selected');
     const selectAll=document.getElementById('planner-select-all'),picker=document.getElementById('planner-picker');
     const updateAll=()=>{const inputs=[...picker.querySelectorAll('[data-d2-plan-add]')],selected=inputs.filter(input=>input.checked).length;selectAll.checked=inputs.length>0&&selected===inputs.length;selectAll.indeterminate=selected>0&&selected<inputs.length;};
@@ -15029,7 +15029,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.1.5';
+    const APP_VERSION = '2.1.6';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');

@@ -243,3 +243,5 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - Saving Weekly rotation requires every selected game target to be 1 to 168 whole hours. New/re-added entries may start at 0 in the draft but cannot save until corrected; weekday rest days may remain 0. Keep older zero-target backups readable.
 
 - Optional game.defaultPlaythroughId points to one open parent playthrough. Use defaultPlaythrough for new-session preselection only; preserve explicit session edits and rotation selections. Clear the preference when its run is finished or removed, and preserve it through normalization and backups.
+
+- Weekly rotation preselects defaultPlaythrough for newly added games and current-plan entries with no saved selection. An empty string in a playthroughs map means an explicit Any playthrough choice; preserve it through saves, presets, history, resets and reuse. Missing selections in reused older plans stay combined rather than adopting a new default.

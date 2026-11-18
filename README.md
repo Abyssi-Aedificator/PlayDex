@@ -128,3 +128,5 @@ Saving a weekly rotation requires every selected game to have a target of 1 to 1
 In a game's Playthroughs section, open Run actions and choose Set as default. The default is preselected when starting or adding a session; existing sessions and explicit weekly rotation run choices are preserved. Clear default removes the preference, and finishing or removing that run clears it automatically.
 
 DLC support has been removed. Older DLC-enabled libraries and backups are converted to ordinary game sessions without changing their recorded active durations, pauses, session counts, sync flags, or playthrough assignments. DLC metadata and DLC-only rotation entries are discarded. Game HLTB and milestones count all recorded time for that game. Settings > Dropbox > Local recovery offers Export pre-conversion copy after an existing library is upgraded.
+
+Weekly rotation preselects the game's default playthrough for newly added games and existing entries without a saved run choice. Save plan applies the draft choice. Explicit run choices and Any playthrough stay saved; presets and Load last week retain their original choices.
