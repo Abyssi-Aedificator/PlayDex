@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.0.1
 -------------------
+- Selecting a specific open playthrough displays milestone sections from all open runs of that game; Any playthrough hides those extra sections.
 - Extra playthrough milestone sections appear only for the specifically selected open run and are hidden for Any playthrough.
 - Selecting a specific playthrough in Weekly rotation hides other runs' milestone sections; Any playthrough continues to show all open runs.
 - Rotation milestone projections now add the current playthrough and milestone playthrough remaining time using the saved estimate source, show the two-part breakdown, and include other open-run milestones alongside a selected run without double-counting the same run.
