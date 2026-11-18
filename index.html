@@ -11570,7 +11570,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     dateField=createCalField('general-date');dateField.value=original?.targetDate||'';
   }
   function assignGeneralMilestone(id){
-    const options=games.filter(game=>!game.archived).flatMap(game=>[{key:game.id,name:game.name+' / Base game'},...(game.dlcs||[]).filter(dlc=>!dlc.archived).map(dlc=>({key:dlcKey(game.id,dlc.id),name:game.name+' / '+dlc.name}))]);
+    const options=games.filter(game=>!game.archived).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id)).flatMap(game=>[{key:game.id,name:game.name+' / Base game'},...(game.dlcs||[]).filter(dlc=>!dlc.archived).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id)).map(dlc=>({key:dlcKey(game.id,dlc.id),name:game.name+' / '+dlc.name}))]);
     if(!options.length){toast('Add an active game before assigning a milestone.');return;}
     d2Edit('Assign milestone','<p class="backup-hint">Move this objective into a game or DLC. It will leave General milestones.</p><label class="d2-field">Game / content<select id="general-destination">'+options.map(option=>'<option value="'+milestoneAttr(option.key)+'">'+escHtml(option.name)+'</option>').join('')+'</select></label>',()=>{
       checkStorageFresh();
