@@ -1,9 +1,9 @@
 /* PlayDex service worker */
 const SW_VERSION = '2.1.6';
-const CACHE_NAME = 'playdex-v0315';
+const CACHE_NAME = 'playdex-v0316';
 const UPDATE_CACHE = 'playdex-update-control';
 const APPROVED_KEY = new URL('./__approved-version__', self.registration.scope).href;
-const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './icon-maskable-512.png', './assets/material/RobotoFlex.ttf'];
+const APP_SHELL = ['./', './index.html', './changelog.txt', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './icon-maskable-512.png', './assets/material/RobotoFlex.ttf'];
 
 async function approvedCache() {
   const control = await caches.open(UPDATE_CACHE);
@@ -39,6 +39,10 @@ self.addEventListener('message', event => {
     try {
       if (event.data.type === 'PLAYDEX_UPDATE_INFO') {
         port.postMessage({ version:SW_VERSION, cache:CACHE_NAME, pending:(await approvedCache()) !== CACHE_NAME });
+      } else if (event.data.type === 'PLAYDEX_CHANGELOG') {
+        const cache=await caches.open(CACHE_NAME),notes=await cache.match('./changelog.txt');
+        if(!notes)throw new Error('Release notes are not available for this update.');
+        port.postMessage({version:SW_VERSION,text:await notes.text()});
       } else if (event.data.type === 'PLAYDEX_APPROVE_UPDATE' && event.data.cache === CACHE_NAME) {
         const cache = await caches.open(CACHE_NAME);
         if (!await cache.match('./index.html')) throw new Error('Update download is incomplete. Try again online.');

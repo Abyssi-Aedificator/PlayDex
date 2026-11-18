@@ -100,7 +100,9 @@ Choose Classic, Material 3, or Liquid Glass, with light/dark themes and accent c
 
 The bottom tabs switch pages. On desktop, the left section rail jumps between features within the current page; smaller screens use **Sections**. Hover or focus a section icon for its label.
 
-Serve over HTTPS or localhost to install the PWA and use offline caching. Use the header's **Install app** or the browser's install action. On iOS, use Safari → Share → Add to Home Screen. When a new worker is ready, **Update available** lets you apply it.
+Settings → Data → About PlayDex opens either the latest release notes or the full changelog in a scrollable themed dialog. Release history is cached with the app for offline access.
+
+Serve over HTTPS or localhost to install the PWA and use offline caching. Use the header's **Install app** or the browser's install action. On iOS, use Safari → Share → Add to Home Screen. When a new worker is ready, **Update available** lets you apply it. The update popup also offers **What's new**, which reads the pending release's notes without installing it; **Update now** remains a separate action.
 
 ## Repository layout
 

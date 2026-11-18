@@ -2080,6 +2080,20 @@ opacity: 0.18;
 
   .add-game-form .btn { flex-shrink: 0; padding: 10px 18px; }
 
+  #changelog-modal { z-index:500; }
+  #changelog-retry[hidden] { display:none!important; }
+  #changelog-modal .modal { width:100%; max-width:760px; max-height:calc(100dvh - 40px); display:flex; flex-direction:column; box-sizing:border-box; }
+  .changelog-modes { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .changelog-modes [aria-pressed="true"] { color:var(--accent); border-color:var(--accent); }
+  #changelog-body { overflow-y:auto; overscroll-behavior:contain; min-height:0; padding-right:8px; line-height:1.6; overflow-wrap:anywhere; }
+  #changelog-body section + section { border-top:1px solid var(--border); margin-top:20px; padding-top:20px; }
+  #changelog-body h4 { font-size:.95rem; margin:0 0 10px; }
+  #changelog-body ul { padding-left:22px; }
+  #changelog-body li { margin:8px 0; font-size:.85rem; }
+  #changelog-body p { margin:8px 0; font-size:.85rem; color:var(--text2); }
+  #changelog-modal .modal-actions { flex-shrink:0; margin-top:16px; }
+  #update-modal .modal-actions { flex-wrap:wrap; }
+
   /* Modal overlay */
   .modal-overlay {
     display: none;
@@ -6451,6 +6465,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         </div>
       </div>
     </div>
+    <div class="card" id="settings-about-card">
+      <div class="card-header">About PlayDex</div>
+      <p class="backup-hint">Read what changed in the latest release or browse the full release history.</p>
+      <div class="backup-actions">
+        <button type="button" class="btn-ghost" id="settings-changelog-latest" aria-haspopup="dialog" aria-controls="changelog-modal">Latest release</button>
+        <button type="button" class="btn-ghost" id="settings-changelog-full" aria-haspopup="dialog" aria-controls="changelog-modal">Full changelog</button>
+      </div>
+    </div>
     <div class="card">
       <div class="card-header">Backup</div>
       <p class="modal-subheader" style="margin:0 0 10px;">Export your games and sessions as a JSON file or CSV, or restore from a backup.</p>
@@ -6950,6 +6972,19 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
+<!-- Release history -->
+<div class="modal-overlay" id="changelog-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="changelog-title">
+    <h3 id="changelog-title">Changelog</h3>
+    <div class="changelog-modes" role="group" aria-label="Release history view">
+      <button type="button" class="btn-ghost" id="changelog-latest" aria-pressed="true">Latest release</button>
+      <button type="button" class="btn-ghost" id="changelog-full" aria-pressed="false">Full changelog</button>
+    </div>
+    <div id="changelog-body" tabindex="0" aria-label="Release notes" aria-live="polite"></div>
+    <div class="modal-actions"><button type="button" class="btn-ghost" id="changelog-retry" hidden>Try again</button><button type="button" class="btn btn-start" id="changelog-close">Close</button></div>
+  </div>
+</div>
+
 <!-- Update available modal -->
 <div class="modal-overlay" id="update-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="update-title">
@@ -6957,6 +6992,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     <p class="modal-subheader">A new version of PlayDex is ready. Choose Update now to install it, or Later to keep your current version.</p>
     <div class="modal-actions">
       <button class="btn-ghost" id="update-dismiss">Later</button>
+      <button type="button" class="btn-ghost" id="update-whats-new" aria-haspopup="dialog" aria-controls="changelog-modal">What's new</button>
       <button class="btn-primary" id="update-reload">Update now</button>
     </div>
   </div>
@@ -12132,7 +12168,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   // Close modals on overlay click (except the target-reached alert, which needs explicit confirmation)
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    if (['target-reached-modal','idle-reminder-modal','weekly-planner-modal','feature-editor','rotation-reset-modal'].includes(overlay.id)) return;
+    if (['target-reached-modal','idle-reminder-modal','weekly-planner-modal','feature-editor','rotation-reset-modal','changelog-modal'].includes(overlay.id)) return;
     overlay.addEventListener('click', e => {
       if (e.target === overlay) overlay.classList.remove('open');
     });
@@ -13062,7 +13098,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const cards=[...panel.children].filter(element=>element.classList.contains('card'));
     const find=title=>cards.find(card=>card.querySelector('.card-header')?.textContent.trim()===title);
     const appearance=find('Appearance'),live=find('Live session'),library=find('Game list'),dropbox=find('Dropbox Sync'),backup=find('Backup'),maintenance=find('Achievements'),shortcuts=find('Keyboard shortcuts');
-    const sections=[['appearance','Appearance',[appearance]],['tracking','Session tracking',[find('Playtime goal'),find('Personal milestones'),live,library,shortcuts]],['dropbox','Dropbox',[dropbox]],['data','Data',[backup,maintenance]]];
+    const sections=[['appearance','Appearance',[appearance]],['tracking','Session tracking',[find('Playtime goal'),find('Personal milestones'),live,library,shortcuts]],['dropbox','Dropbox',[dropbox]],['data','Data',[backup,maintenance,find('About PlayDex')]]];
     const nav=document.createElement('nav');nav.className='settings-nav';nav.setAttribute('aria-label','Settings sections');
     panel.prepend(nav);
     sections.forEach(([id,title,items])=>{
@@ -15028,16 +15064,70 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.getElementById('target-reached-ok').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
+  const changelogModal=document.getElementById('changelog-modal'),changelogBody=document.getElementById('changelog-body');
+  let changelogReturnFocus=null,changelogGeneration=0,changelogMode='latest',changelogLoader=null,changelogData=null;
+  function changelogReleases(text){
+    const lines=text.replace(/\r/g,'').split('\n'),releases=[];let current=null;
+    for(const line of lines){const match=line.match(/^Version\s+(\d+(?:\.\d+)+)\s*$/);
+      if(match){current={version:match[1],lines:[]};releases.push(current);}
+      else if(current&&line.trim()&&!/^[-=]{3,}$/.test(line.trim()))current.lines.push(line);
+    }
+    return releases;
+  }
+  async function fetchChangelog(){
+    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),10000);
+    try{const response=await fetch('changelog.txt',{signal:controller.signal});if(!response.ok)throw Error('Changelog request failed ('+response.status+').');return {text:await response.text()};}
+    finally{clearTimeout(timeout);}
+  }
+  function renderChangelog(){
+    const releases=changelogReleases(changelogData.text),expected=changelogData.version;
+    const latest=expected?releases.find(release=>release.version===expected):releases[0];
+    const selected=changelogMode==='full'?releases:latest?[latest]:[];
+    if(!selected.length)throw Error(expected?'Release notes for Version '+expected+' are not available.':'No release notes are available.');
+    changelogBody.replaceChildren();
+    for(const release of selected){
+      const section=document.createElement('section'),heading=document.createElement('h4');heading.textContent='Version '+release.version;section.append(heading);let list=null;
+      for(const line of release.lines){if(line.startsWith('- ')){if(!list){list=document.createElement('ul');section.append(list);}const item=document.createElement('li');item.textContent=line.slice(2);list.append(item);}else{list=null;const paragraph=document.createElement('p');paragraph.textContent=line;section.append(paragraph);}}
+      if(!release.lines.length){const empty=document.createElement('p');empty.textContent='No release notes have been added for this version yet.';section.append(empty);}
+      changelogBody.append(section);
+    }
+    changelogBody.scrollTop=0;
+  }
+  async function loadChangelog(){
+    const generation=++changelogGeneration;changelogBody.textContent='Loading release notes…';changelogBody.setAttribute('aria-busy','true');document.getElementById('changelog-retry').hidden=true;
+    try{const data=changelogData||await changelogLoader();if(generation!==changelogGeneration||!changelogModal.classList.contains('open'))return;changelogData=data;renderChangelog();}
+    catch(error){if(generation!==changelogGeneration||!changelogModal.classList.contains('open'))return;changelogData=null;changelogBody.textContent='Could not load release notes. '+(error.name==='AbortError'?'The request timed out.':error.message);document.getElementById('changelog-retry').hidden=false;}
+    finally{if(generation===changelogGeneration)changelogBody.removeAttribute('aria-busy');}
+  }
+  function selectChangelogMode(mode){changelogMode=mode;document.getElementById('changelog-latest').setAttribute('aria-pressed',String(mode==='latest'));document.getElementById('changelog-full').setAttribute('aria-pressed',String(mode==='full'));loadChangelog();}
+  function openChangelog(mode='latest',loader=fetchChangelog){changelogReturnFocus=document.activeElement;mxOverlayFocus.set(changelogModal,changelogReturnFocus);changelogLoader=loader;changelogData=null;changelogModal.classList.add('open');selectChangelogMode(mode);document.getElementById('changelog-close').focus();}
+  function closeChangelog(){++changelogGeneration;changelogModal.classList.remove('open');mxOverlayFocus.delete(changelogModal);changelogBody.removeAttribute('aria-busy');if(changelogReturnFocus?.isConnected&&changelogReturnFocus.getClientRects().length)changelogReturnFocus.focus();}
+  document.getElementById('settings-changelog-latest').onclick=()=>openChangelog('latest');
+  document.getElementById('settings-changelog-full').onclick=()=>openChangelog('full');
+  document.getElementById('changelog-latest').onclick=()=>selectChangelogMode('latest');
+  document.getElementById('changelog-full').onclick=()=>selectChangelogMode('full');
+  document.getElementById('changelog-retry').onclick=loadChangelog;
+  document.getElementById('changelog-close').onclick=closeChangelog;
+  changelogModal.addEventListener('click',event=>{if(event.target===changelogModal)closeChangelog();});
+  document.addEventListener('keydown',event=>{if(mxTopOverlay()!==changelogModal||document.querySelector('dialog[open]'))return;
+    if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();closeChangelog();}
+    else if(event.key==='Tab'){const fields=mxOverlayControls(changelogModal),first=fields[0],last=fields.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
+  },true);
+
   if ('serviceWorker' in navigator) {
     const APP_VERSION = '2.1.6';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
     updateAvailable.addEventListener('click',()=>{if(offeredUpdate){updateModal().classList.add('open');document.getElementById('update-reload').focus();}});
-    function askWorker(worker, message) {
+    document.getElementById('update-whats-new').addEventListener('click',()=>{
+      const offered=offeredUpdate;if(!offered)return;
+      openChangelog('latest',async()=>{const result=await askWorker(offered.worker,{type:'PLAYDEX_CHANGELOG'},5000);if(typeof result.text!=='string')throw Error('This update does not include release notes.');return {text:result.text,version:offered.version||result.version};});
+    });
+    function askWorker(worker, message, timeoutMs=15000) {
       return new Promise((resolve,reject) => {
         const channel=new MessageChannel();
-        const timer=setTimeout(()=>{channel.port1.close();reject(new Error('Update check timed out. Please try again.'));},15000);
+        const timer=setTimeout(()=>{channel.port1.close();reject(new Error('Update check timed out. Please try again.'));},timeoutMs);
         channel.port1.onmessage=event=>{
           clearTimeout(timer);channel.port1.close();
           event.data.error ? reject(new Error(event.data.error)) : resolve(event.data);
@@ -15055,7 +15145,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         if(check!==updateCheck)return;
         if (!info.pending) {offeredUpdate=null;updateAvailable.hidden=true;updateModal().classList.remove('open');return;}
         if (!offeredUpdate || offeredUpdate.cache !== info.cache) updateDismissed=false;
-        offeredUpdate={worker,cache:info.cache};
+        offeredUpdate={worker,cache:info.cache,version:info.version};
         updateAvailable.hidden=false;
         if (!updateDismissed) updateModal().classList.add('open');
       } catch(error) { console.warn('Update check:',error.message); }

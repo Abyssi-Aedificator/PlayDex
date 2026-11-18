@@ -242,3 +242,8 @@ Before proposing or implementing features, consult `plan_dontwant.txt`. Do not p
 - Collect visible card/category headings, including Sessions when merged with Today. Use stable semantic destination keys across rerenders, omit hidden sections, and preserve menu focus and scroll position.
 - Reserve 72px on desktop only while section navigation is present. Measure the sticky header for section-jump offsets, keep mobile menus above bottom navigation, and respect system reduced motion.
 - Section navigation icons must be unique within the current page, including merged Today/Sessions. Use the dedicated section icon catalog and its unused-icon fallback.
+
+## Release notes
+
+- Settings → Data → About PlayDex opens the latest release or full changelog in the shared changelog viewer. Render release text as text nodes and restore focus to the triggering control when closing.
+- Cache changelog.txt in APP_SHELL. The update popup must obtain pending-release notes from that worker's PLAYDEX_CHANGELOG message, never from the approved old cache or an unrelated network release. Viewing notes must not approve or install an update.
