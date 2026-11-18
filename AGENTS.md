@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Single-file PWA game-session tracker. No build, lint, test, or typecheck tooling exists.
+Single-file PWA game-session tracker. The repository has no build, lint, test, or typecheck command.
 
 ## Files
 
@@ -8,7 +8,7 @@ Single-file PWA game-session tracker. No build, lint, test, or typecheck tooling
 |------|---------|
 | `index.html` | Entire app (UI, styles, logic, data model) in one file |
 | `changelog.txt` | Plain-text changelog, most recent version first |
-| `sw.js` | Service worker — offline cache. Bump the `CACHE` name (e.g. `playdex-v3`) and `SW_VERSION` whenever `index.html` changes. |
+| `sw.js` | Service worker — offline cache. Advance `CACHE_NAME` whenever `index.html` changes; `SW_VERSION` mirrors the app release version. |
 | `manifest.webmanifest` | PWA install manifest, identity locked to `/PlayDex/` |
 | `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` | App icons |
 | `README.md` | User-facing docs |
@@ -17,22 +17,20 @@ Single-file PWA game-session tracker. No build, lint, test, or typecheck tooling
 
 Before proposing or implementing features, consult `plan_dontwant.txt`. Do not propose or implement its rejected ideas unless the user explicitly changes their decision.
 
-## Commands
+## Validation
 
-- **No `node`/npm/make is installed.** There is no build/test/lint command in this repo.
-- **Validation is manual:** use a string-aware brace balancer on the JS and check `<div>`/`<span>` open/close counts. Small throwaway Python/PowerShell checks under `%TEMP%\opencode` are the established pattern (never leave them in the repo).
-- Verify JSON (`manifest.webmanifest`) parses and `sw.js` braces balance after editing them.
+- No package installation or build step is required. Do not assume Node/npm/make is on PATH. An optional bundled runtime may be available in the execution environment; inspect it before use.
+- Validate inline JavaScript and `sw.js` with a syntax parser when available; otherwise use a string/comment-aware brace balancer. Check static `<div>`/`<span>` open/close counts and parse `manifest.webmanifest` as JSON.
+- For behavior changes, use isolated browser storage and mocked Dropbox requests. Never load test fixtures into the user's real library or contact their Dropbox account for tests.
+- Keep throwaway checks and screenshots under `%TEMP%\opencode`, never in the repository. Check mobile/desktop layouts in Classic, Material 3 and Liquid Glass for affected interfaces.
+- Documentation-only changes need link, consistency and `git diff --check` checks; they do not require an app/cache version change.
 
-## Branches
+## Branches and delivery
 
-- `dev` — active development (current default)
-- `main` — production / stable
-
-**Never commit or push unless explicitly asked.** Commit/push only when explicitly asked. Follow existing message style (`git log --oneline`).
-
-**Never push `main`.** Do not push `main` under any circumstances, including when a release is
-requested. Releasing — merging `dev` into `main` and publishing it — is the user's job; the agent
-stays on `dev`. Pushing `dev` when asked is fine.
+- `main` is the current local branch and the remote default. The user removed local `dev`; do not recreate it automatically or follow stale remote-tracking refs as if they were live branches.
+- Inspect branch and working-tree state before changes. Respect the user's explicit branch selection and preserve unrelated work.
+- The user has requested an individual commit for each completed change. Follow that standing instruction and the existing message style (`git log --oneline`). Push only when explicitly requested.
+- **Never push `main`.** Publishing the production branch remains the user's job. No documentation update or release request implicitly authorizes pushing it.
 
 ## Commit policy
 
@@ -45,10 +43,10 @@ stays on `dev`. Pushing `dev` when asked is fine.
 
 ## Version representation
 
-- `APP_VERSION` constant in `index.html` (~line 3695), used by the new-version prompt.
-- Displayed version: the `.version-badge` span in `index.html` (~line 1460).
-- Service worker version: `SW_VERSION` constant in `sw.js` (~line 2) — also used in the `playdex-vX` cache name.
-- Keep the badge, `APP_VERSION`, and `SW_VERSION`/cache name in sync whenever version changes.
+- `APP_VERSION` in `index.html`, used by the new-version prompt.
+- Displayed version: the `.version-badge` span in `index.html`.
+- `SW_VERSION` in `sw.js` matches `APP_VERSION`; `CACHE_NAME` uses its own increasing `playdex-v` numeric suffix.
+- Keep the badge, `APP_VERSION`, and `SW_VERSION` equal on release changes. Advance the cache suffix for every app change, preserving zero padding; never infer an app-version bump from a cache change.
 
 ## Version consolidation
 
@@ -73,20 +71,20 @@ stays on `dev`. Pushing `dev` when asked is fine.
 ## Workflow
 
 - **Always update the changelog when you make something.** Every user-facing feature or bugfix commit ships its `changelog.txt` bullet in the same commit (under the current pending-release version block), unless the user explicitly defers logging to a release/changelog pass. Never a standalone "no-op" commit when user-facing work is involved.
-- After finishing each feature: update `changelog.txt` (new bullet), commit, then update AGENTS.md if needed.
+- After finishing each change: update its documentation and `changelog.txt` when user-facing, validate the affected behavior, then commit the related files together. Update these instructions in the same commit when conventions change.
 
 ## Architecture
 
-- **Everything lives in `index.html`** (~3500 lines). CSS is in `<head><style>`; JS is a single IIFE from `<script>` (~line 1950) closing with `})();` near the end.
+- Application markup, CSS and logic live in `index.html`. Scripts include pre-paint setup and the main application IIFE. Search by function or semantic element ID rather than relying on fixed line numbers.
 - There are no external frameworks or build artifacts. Data lives in `localStorage`; optional Dropbox sync is XHR/cloud (the browser's own storage, not server-side).
 - PWA identity is locked to `/PlayDex/` (see `manifest.webmanifest`) because sibling PWAs (e.g. `MedsADay`) live on the **same GitHub Pages origin**. Never reintroduce `clients.claim()` or a global `caches.keys().filter(k => k !== X).forEach(delete)` — that crosses app scopes.
 
 ## Theming / layout gotchas (recurring bugs)
 
-- **CSS specificity tripping over global input rules:** `input[type="text"], input[type="number"], input[type="time"] { width:100%; padding:11px 14px; ... }` (line ~481) has specificity (0,1,1) and will silently override class `.foo { ... }` (0,1,0). When theming a control built on a native input, target it as `input.foo` (0,2,0) or the width/padding/radius will not apply (this bit the themed time picker).
+- **CSS specificity tripping over global input rules:** `input[type="text"], input[type="number"], input[type="time"] { width:100%; padding:11px 14px; ... }` has specificity (0,1,1) and will silently override class `.foo { ... }` (0,1,0). When theming a control built on a native input, target it as `input.foo` (0,2,0) or the width/padding/radius will not apply (this bit the themed time picker).
 - **Keep the nav clearance:** `.app-content` needs `padding-bottom:96px`, but the `@media (min-width:768px)` `padding` shorthand overrides it. Keep `padding:28px 28px 96px` on desktop. Re-verify whenever you touch `.app-content` padding.
 - **Time picker (Add/Edit Session):** the four HH/MM inputs are custom RTF controls, not `<input type="time">`. The trigger ids (`add-session-time`, ...) live on the `.cal-field` wrapper divs, set via `createTimeField()`. `setCalDateTime`/`getCalDateTime(dateField, timeField, iso)` take field *objects*, not string ids. Value is stored 24h `HH:MM` but shown as AM/PM.
-- **Animations:** all smooth motion is `cubic-bezier(0.4,0,0.2,1)`; stagger delays are capped (`Math.min(i*40,320)`). A `@media (prefers-reduced-motion: reduce)` block (line ~1445) forces durations to 0.01ms. `renderSessionsTab(animate=true)` — pass `animate=false` for in-place updates (sync/delete toggles) so the whole list doesn't re-animate.
+- **Animations:** all smooth motion is `cubic-bezier(0.4,0,0.2,1)`; stagger delays are capped (`Math.min(i*40,320)`). A `@media (prefers-reduced-motion: reduce)` block forces durations to 0.01ms. `renderSessionsTab(animate=true)` — pass `animate=false` for in-place updates (sync/delete toggles) so the whole list doesn't re-animate.
 
 ## Interface skins (Classic / Material 3 / Apple)
 
@@ -151,10 +149,7 @@ stays on `dev`. Pushing `dev` when asked is fine.
   no `padding-left` and `.app-content` keeps `28px 28px 96px`. A 88px M3
   navigation rail was built and then removed at the user's request — do not
   reintroduce it without asking.
-- Deliberate scope limits: native `<select>` popups stay native (only the closed
-  state is themed); the custom RTF time picker keeps its own compact HH/MM boxes
-  rather than an M3 dial; the HSL palette is close to, but not exactly,
-  Material You.
+- Material uses the existing custom select adapter (`mx-native-select` and its visible trigger/menu); keep the source select and change events intact. The custom RTF time picker remains compact HH/MM controls, and the HSL palette approximates Material You.
 - Watch the equal-specificity trap: `:root[data-ui="material"] input[type="text"]`
   and `:root[data-ui="material"] input.time-input` are both (0,3,1), so the
   `.time-input` override must stay **after** the generic input rule.
@@ -196,17 +191,27 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - Milestones belong to games or their playthroughs. Missing type migrates to manual; manualDone stores intent separately from completedAt. Preserve IDs, creation timestamps, and valid completion dates.
 - Reuse milestoneProgress and reconcileMilestoneLibrary for completion, dependencies, and reopening. saveGames/saveSessions reconcile before writing; session saves roll back both records on failure. Never trigger recursive saves from reconciliation.
 - milestoneTrackedMs uses recorded game time and clips session intervals and overlapping pauses for since-creation goals. Running sessions are provisional and must not save completion. HLTB already-played hours do not count.
-- Group names/order live on milestones; prerequisites resolve only within the same content. validateMilestoneRecords rejects cycles and invalid progress before imports.
+- Milestones render as one ordered list without group controls. Legacy group fields may remain in stored records; do not reintroduce the removed group feature. Prerequisites stay within one game or playthrough; validateMilestoneRecords rejects cycles and invalid progress before imports.
 - settings.milestoneTemplates sync through Dropbox and are restored by JSON import without replacing other local preferences. Template application remaps milestone/checklist IDs and dependencies and resets manual progress, pins, and dates.
 - Optional milestone estimateSource selects mainStory, mainExtra, or hours. Explicit HLTB choices override retained custom hours and never silently fall back to another track; missing values preserve legacy behavior. Tracked-playtime milestones always use their own target. Preserve the field through templates, general assignment, playthroughs and backups.
 
 ## Weekly rotation reset
 
-- Optional settings.weeklyRotationPriorities maps content IDs to booleans; draft/preset/history/snapshot maps use priorities. Missing flags mean normal priority. Keep draft row order stable, sort high-priority entries first only in Today, and preserve flags through reset snapshots, reuse, sync and backups.
+- Optional settings.weeklyRotationPriorities maps game IDs to booleans; draft/preset/history/snapshot maps use priorities. Missing flags mean normal priority. Keep draft row order stable, sort high-priority entries first on Today and alphabetically within each priority level, and preserve flags through reset snapshots, reuse, sync and backups.
 
-- weeklyRotationWeek and weeklyRotationWeekStartsOn tag the current plan. rollWeeklyRotation clears games, targets, and days on a new calendar week and keeps weeklyRotationLastWeek as a synced snapshot. First-upgrade data adopts the current week without discarding selections.
+- weeklyRotationWeek and weeklyRotationWeekStartsOn tag the current plan. rollWeeklyRotation clears games, targets, days, run selections, and priorities on a new calendar week and keeps weeklyRotationLastWeek as a synced snapshot. First-upgrade data adopts the current week without discarding selections.
 - ensureRotationWeek guards rendering, settings saves, midnight, and resume. When Week starts on changes, rebase the plan's original week using the optional synced weeklyRotationWeekAnchor before testing for rollover; preserve same-week plans, reset across a newly elapsed boundary, and never clear a plan because the device clock moved backward.
 - Load last week populates the rotation editor only, skips unavailable content, and retains Save rotation budget checks. Check the editor week before saving so a draft from an expired week cannot silently repopulate a reset rotation.
+
+- Optional settings.weeklyRotationPlaythroughs maps game IDs to parent playthrough IDs. Drafts, presets, weekly snapshots and history use optional playthroughs maps. Missing selection means combined progress; selected runs scope rotation sessions, HLTB and milestones through rotationRunMatches/rotationContentData. Preserve these maps through sync, imports, resets and reuse; never silently start a different run if a selection becomes unavailable.
+
+- Saving Weekly rotation requires every selected game target to be 1 to 168 whole hours. New/re-added entries may start at 0 in the draft but cannot save until corrected; weekday rest days may remain 0. Keep older zero-target backups readable.
+
+- Optional game.defaultPlaythroughId points to one open parent playthrough. Use defaultPlaythrough for new-session and eligible planner-draft preselection; preserve explicit session edits and rotation selections. Clear the preference when its run is finished or removed, and preserve it through normalization and backups.
+
+- Weekly rotation preselects defaultPlaythrough for newly added games and current-plan entries with no saved selection. An empty string in a playthroughs map means an explicit Any playthrough choice; preserve it through saves, presets, history, resets and reuse. Missing selections in reused older plans stay combined rather than adopting a new default.
+
+- Today hides entries once their weekly target is reached and respects planned-day visibility. The editor keeps reached entries visible with Target reached. Remaining game hours are floored for display; exact minutes still drive validation. Missing/zero hours are explained in a themed popup on Save plan.
 
 ## Backup replacement safety
 
@@ -237,11 +242,3 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - Collect visible card/category headings, including Sessions when merged with Today. Use stable semantic destination keys across rerenders, omit hidden sections, and preserve menu focus and scroll position.
 - Reserve 72px on desktop only while section navigation is present. Measure the sticky header for section-jump offsets, keep mobile menus above bottom navigation, and respect system reduced motion.
 - Section navigation icons must be unique within the current page, including merged Today/Sessions. Use the dedicated section icon catalog and its unused-icon fallback.
-
-- Optional settings.weeklyRotationPlaythroughs maps game IDs to parent playthrough IDs. Drafts, presets, weekly snapshots and history use optional playthroughs maps. Missing selection means combined progress; selected runs scope rotation sessions, HLTB and milestones through rotationRunMatches/rotationContentData. Preserve these maps through sync, imports, resets and reuse; never silently start a different run if a selection becomes unavailable.
-
-- Saving Weekly rotation requires every selected game target to be 1 to 168 whole hours. New/re-added entries may start at 0 in the draft but cannot save until corrected; weekday rest days may remain 0. Keep older zero-target backups readable.
-
-- Optional game.defaultPlaythroughId points to one open parent playthrough. Use defaultPlaythrough for new-session preselection only; preserve explicit session edits and rotation selections. Clear the preference when its run is finished or removed, and preserve it through normalization and backups.
-
-- Weekly rotation preselects defaultPlaythrough for newly added games and current-plan entries with no saved selection. An empty string in a playthroughs map means an explicit Any playthrough choice; preserve it through saves, presets, history, resets and reuse. Missing selections in reused older plans stay combined rather than adopting a new default.

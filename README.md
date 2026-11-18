@@ -1,132 +1,122 @@
 # PlayDex
 
-A lightweight, installable web app that tracks your game sessions, playtime by game, and daily playtime goals. Everything runs locally in your browser as a single file, with optional Dropbox backup.
+![PlayDex icon](icon-192.png)
 
-![PlayDex icon](icon-512.png)
-
-## Features
-
-- **Track sessions** – start/stop with live elapsed time, pause/resume, and an optional time target (notifies when reached).
-- **Session log** – review, edit, sync-flag, and delete sessions; use each game's assigned platform, filter by game and date range, and export matching sessions; overlap warnings help catch conflicting times; the running session shows in the tab title.
-- **Playtime stats** – last 7 / last 30 days charts, playtime by platform, a this-week review, side-by-side game comparisons, and monthly/yearly gaming recaps.
-- **Daily goal & quests** – daily playtime goal, daily/weekly quests, and play-streaks with earned streak freezes.
-- **Play suggestions & rotation** - find games for the time you have using typical session lengths; choose any number of weekly focus games and track which you have played.
-- **Game library** – add, edit, archive, pin, and search games; see how long ago each was last played.
-- **Top insights** - rank games by period or custom dates, with biggest movers, a cover-art podium, most consistent games, new discoveries, and playtime distribution; optionally include archived games.
-- **Player profile & badges** – achievements and levels, milestones, a time-of-day heatmap, and a cumulative playtime curve.
-- **Backup & export** – JSON export/import and CSV export, plus optional Dropbox sync across devices with the five previous changes and rollback from Settings.
-- **Installable PWA** – works offline; install it as a standalone app on desktop or mobile.
-- **Themes & interfaces** – dark / light (follows your system) with accent-colour choices, and a choice of Classic, Google Material 3 Expressive, or an Apple-inspired Liquid Glass interface with grouped surfaces, adaptive translucent navigation, and accessibility display options.
-
-The Liquid Glass interface follows [Apple's Liquid Glass material guidance](https://developer.apple.com/design/human-interface-guidelines/materials): stronger optical glass effects belong to navigation and temporary controls, while content panels use a softer translucent material over a Theme Colour background. It follows supported system display preferences and offers additional Reduce transparency and Increase contrast controls. Increased contrast follows the chosen Theme Colour, while reduced-motion support follows the system preference automatically. The theme-coloured backdrop drifts gently while the app is visible and stays static when the system requests reduced motion. This is a browser implementation with progressive blur and edge-refraction effects; Apple's native platform renderer is not part of this PWA.
-
-
-Personal milestones support manual objectives, checklists, counters, and recorded-playtime goals for each game. Use Advanced options for prerequisites, target dates, and a pinned objective. Milestones use one ordered list without groups. Progress updates can reopen dependent milestones after corrections. Save milestone sets as templates to reuse them with fresh checklists and counts; templates are included in Dropbox sync and JSON backups.
-
-Weekly rotations start empty each calendar week, following Week starts on. Choose games, then use Load last week to reuse the previous week's games, targets, and planned days. Review the loaded plan and save it within the current weekly budget; archived and deleted content is skipped.
-
-
-
-
-Open a game dashboard from Games to use its Playthroughs section below HLTB and Personal milestones. Create named runs, assign existing sessions without changing their totals, and track independent game objectives and HLTB progress. A new run starts with fresh milestone progress; unassigned history and lifetime statistics remain intact. Run completions also count toward personal-milestone badges.
-
-Use Plan week on Today's rotation card to open the single Weekly rotation editor. Enable weekday planning to distribute your fixed weekly goal across the week. Changing a weekday's hours changes the Weekday plan allocation, while Weekly capacity remains the saved daily goal times seven (or the automatic last-week average times seven). Today's goal follows its planned hours. Weekday planning and game targets are checked separately against the same weekly limit, and automatic-goal preferences are preserved. Zero-hour days are rest days and do not break goal streaks. Choose planned days in each game row, review unfinished-target moves, save named presets, and compare last week's plan with actual playtime. Changes remain drafts until saved; Cancel, Escape and backdrop dismissal confirm before discarding edits. Load last week restores available games, targets and planned days without replacing weekday planned hours.
-
-Sync and recovery are integrated into Settings > Dropbox, below the connection controls. Refresh and review actions load cloud data; opening Settings alone does not. It reads the live Dropbox revision, compares individual games, sessions and shared settings, and asks you to resolve competing changes before applying them. Restoring a saved version creates a new Dropbox revision and first saves local recovery data. Device names identify uploads; appearance preferences stay local. Automatic transfers pause during an active review or restore, and resume after it closes. The session's Synced flag is a separate manual status. No second full library is stored for change detection: only record fingerprints are persisted.
+PlayDex is an installable game-session tracker that runs in your browser. Track active playtime, plan your week, and follow personal milestones and playthroughs. Your library stays in local browser storage, with optional Dropbox sync and JSON backups.
 
 ## Getting started
 
-PlayDex is a static, self-contained app. No build step or server is required to develop it.
+Open `index.html` directly for basic local use, or serve the app over localhost for service-worker, installation, and Dropbox features. From the PlayDex folder, run:
 
-### Run locally
-
-Open `index.html` directly in a browser, or serve the folder with any static server:
-
-```bash
-# Python
-python -m http.server 8080
-
-# or Node
-npx serve .
+```sh
+python -m http.server 8080 --bind 127.0.0.1 --directory ..
 ```
 
-Then visit `http://localhost:8080`.
+Visit **http://localhost:8080/PlayDex/**. Keeping the `/PlayDex/` path matches the app's PWA identity and GitHub Pages deployment. There is no build step, package installation, or backend server.
 
-> Data is stored in your browser's `localStorage`. To keep it across devices, enable Dropbox sync.
+Browser storage belongs to the browser profile and origin you use. Export a backup before switching browsers, moving the app, or clearing site data.
 
-### PWA install
+## Games and sessions
 
-Because it's a PWA, PlayDex needs to be served over **HTTPS** (or `localhost`) for installation and the service worker to work.
+- Add games with optional artwork, tags, and a platform. Pin, search, filter, archive, or restore them from Games. Platform statistics use the game's assigned platform.
+- Start a session with an optional time target, pause and resume it, then stop to review active time, paused time, daily totals, HLTB progress, and pending milestones.
+- Add or correct sessions manually. Unchanged timing preserves the recorded duration; changed timing accounts for saved pauses. Overlap warnings help identify conflicting sessions.
+- Use Sessions to filter history, edit or delete entries, and export matching rows. A session's **Synced** flag is a manual status, separate from Dropbox synchronization.
+- Settings includes **Check session history** for overlaps, sessions under five active minutes, unusually long sessions, and missing game references. Review, edit, reassign, or delete flagged sessions; nothing is changed automatically.
 
-- Desktop (Chrome/Edge): open the app, then click **Install app** in the header (or use the browser's install icon in the address bar).
-- Mobile (iOS): open the app in Safari → **Share** → **Add to Home Screen**.
-- Mobile (Android): open the app in Chrome → **Install app** (or the browser menu → *Add to Home screen*).
+### HLTB and playthroughs
 
-## Project structure
+Set **Main Story**, **Main + Extra**, and already-played hours in a game's HLTB section. Progress combines recorded time with already-played hours, while statistics and tracked-playtime milestones exclude already-played hours. Games can also be marked as not requiring HLTB or having no available estimate.
 
-```
-PlayDex/
-├── index.html              # The whole app (HTML, CSS, and JS)
-├── manifest.webmanifest    # PWA manifest (name, icons, display mode)
-├── sw.js                   # Service worker (offline app shell + caching)
-├── icon-192.png            # Install icon (192px)
-├── icon-512.png            # Install icon (512px)
-├── apple-touch-icon.png    # iOS home-screen icon
-└── README.md
-```
+Create named playthroughs from the game's dashboard. Each run has independent HLTB and milestone progress, while lifetime totals continue to include all sessions. Assign older sessions to a run, compare runs, or finish and reopen them through **Run actions**. Unassigned sessions remain part of lifetime history.
 
-## Dropbox sync
+Use **Run actions → Set as default** to preselect an open run for new sessions. **Clear default** removes the preference; finishing or removing the run clears it automatically. Editing an existing session preserves its assignment.
 
-The sync features need HTTPS (or `localhost`). To connect your own Dropbox account:
+## Weekly rotation
 
-1. Create a Dropbox app in the [App Console](https://www.dropbox.com/developers/apps) (permission type: *App folder*).
-2. Register the exact URL of this page as a **Redirect URI** for your app.
-3. Enter your app key in PlayDex → **Dropbox Sync** → connect.
+Open **Plan week** from **This week's rotation** on Today:
 
-Your data is sent directly from your browser to Dropbox — nothing is stored on a server. For more detail, open **Dropbox Sync** inside the app.
+1. Use the alphabetical **Add games** picker to select games individually or select all available games.
+2. Give each selected game a target of **1 to 168 whole hours** within the weekly budget. New and re-added entries start at 0 and cannot be saved until a positive target is set.
+3. Optionally choose a planned day, mark high priority with the star, or select a playthrough.
+4. Review the budget and choose **Save plan**. Cancel, Escape, and backdrop dismissal ask before discarding changed drafts.
+
+Games with a default playthrough use it when newly added or when the current plan has no saved run choice. Explicit run choices and **Any playthrough** remain saved. A selected run scopes weekly progress, HLTB, and milestone estimates to that run. Presets and **Load last week** preserve their original run choices.
+
+The weekly capacity comes from the daily goal times seven, or the automatic average from the previous calendar week times seven. **Game targets** and optional **Weekday targets** are independent allocations against that capacity; they are never added together. Zero-hour weekdays are rest days. Remaining game time is displayed as complete hours, rounded down; less than one hour shows 0h and 0% remaining. Budget validation still uses exact values.
+
+Today lists high-priority games first, alphabetically within each priority level. A game assigned to a specific day appears only on that day, although all sessions in the week count toward its target. Games disappear from Today's rotation once their targets are reached; the editor keeps them visible with **Target reached**. Rotation games are excluded from **Start a Game**.
+
+Plans reset to empty at the start of the calendar week selected in **Week starts on**. **Load last week** copies available games, targets, days, and run choices into the draft while retaining current weekday hours. **More actions** includes presets, previous-week comparisons, and unfinished-target reviews. Archived or unavailable games are skipped when reusing a plan.
+
+Where estimates are available, rotation entries show remaining HLTB time and completion projections at the allocated weekly hours. Dated milestones show target timing and before/on/after-target status. Projections assume an even weekly pace and never complete objectives automatically.
+
+## Personal milestones
+
+Milestones support four progress types:
+
+| Type | How progress is recorded |
+|------|--------------------------|
+| Manual | Mark the objective done |
+| Checklist | Complete named steps |
+| Counter | Update a whole-number count toward a target |
+| Tracked playtime | Accumulate recorded hours, either total time or time since creation |
+
+Use prerequisites, optional target dates, and manual ordering. Pin a game milestone to show it during play and in rotation. Progress can be updated while prerequisites are incomplete, but completion waits for them. Corrections can reopen objectives and their dependents. Milestones use a single ordered list without groups.
+
+Choose **Estimate completion using** to base a dated objective on Main Story HLTB, Main + Extra HLTB, or custom hours remaining. Explicit HLTB choices do not fall back to another track when unavailable. Older objectives retain their existing fallback behavior until edited; tracked-playtime milestones use their own remaining target.
+
+Save milestone sets as templates, preview and apply independent copies, or delete unused templates. Applied templates start with fresh progress and remapped prerequisite links.
+
+**General milestones**, at the bottom of Games, hold unassigned objectives with optional target dates. **Assign** moves one to an active game without losing its identity or dates. Unassigned objectives do not count toward completion badges.
+
+Today's **Milestone targets** lists unfinished dated objectives in target-date order with time left or overdue status. It is hidden during a running session and excludes archived games and finished playthroughs. Settings → Session tracking → Personal milestones controls its visibility and the optional completion prompts in **Session saved**. Profile's **Completion timeline** shows recently completed objectives with dates and artwork.
+
+## Stats, Top, and Profile
+
+Stats includes recent daily playtime, a twelve-month playtime chart, session-length ranges, a twelve-week trend, monthly gaming consistency, platform totals, milestone progress, playthrough comparisons, game comparisons, and month/year recaps. Charts use recorded active duration and exclude running sessions. Calendar activity is grouped by each session's local start date; calendar-week views follow **Week starts on**.
+
+Top supports **This week**, **7 days**, **Month**, and **All time**, with rankings, trends, most consistent games, and distribution insights. Profile brings together personal records, favorite-game information, completion history, badges, quests, and earned levels.
+
+## Dropbox, backups, and recovery
+
+JSON export/import and CSV session export are available in Settings. Importing replaces the local library after confirmation. Keep regular exports even when using sync.
+
+To connect Dropbox, create an app with **App folder** access in the [Dropbox App Console](https://www.dropbox.com/developers/apps), register the app's exact URL as a redirect URI, then enter the app key in Settings → Dropbox. Use HTTPS or localhost. Requests go directly from the browser to Dropbox.
+
+**Review changes** compares local and remote game, session, and shared-setting records. **Preview download** and version-history previews show replacements before applying them. Competing edits require explicit choices. Opening Settings alone does not fetch remote data, and unchanged uploads do not rewrite the backup or its history.
+
+The five previous remote versions are retained. Restores first save a local recovery copy and, when connected, create a new remote revision. Automatic transfers pause during an active review or restore. Theme, interface, and accent stay on the device; a session's manual Synced flag does not control these transfers.
+
+### Older DLC-enabled backups
+
+DLC support has been removed. Older libraries and backups convert to ordinary game sessions while preserving recorded active durations, pauses, session IDs and counts, sync flags, and playthrough assignments. DLC details and DLC-only rotation entries are discarded. Game HLTB and milestones subsequently count all recorded time for the game.
+
+An existing local library receives a pre-conversion recovery copy before its first upgrade. Find **Export pre-conversion copy** under Settings → Dropbox → Local recovery. Failed conversions preserve the original records and block editing until the problem is resolved.
+
+## Appearance, navigation, and installation
+
+Choose Classic, Material 3, or Liquid Glass, with light/dark themes and accent colours. Liquid Glass includes device-local transparency and contrast options. Motion follows the system's reduced-motion preference.
+
+The bottom tabs switch pages. On desktop, the left section rail jumps between features within the current page; smaller screens use **Sections**. Hover or focus a section icon for its label.
+
+Serve over HTTPS or localhost to install the PWA and use offline caching. Use the header's **Install app** or the browser's install action. On iOS, use Safari → Share → Add to Home Screen. When a new worker is ready, **Update available** lets you apply it.
+
+## Repository layout
+
+| File | Purpose |
+|------|---------|
+| `index.html` | Application markup, styles, logic, and local data model |
+| `sw.js` | Scoped offline cache and update handling |
+| `manifest.webmanifest` | PWA identity at `/PlayDex/` |
+| `icon-*.png`, `apple-touch-icon.png` | App icons |
+| `assets/material/` | Bundled Material font assets |
+| `changelog.txt` | Release history |
+| `plan_dontwant.txt` | Rejected ideas |
+| `AGENTS.md` | Contributor instructions and implementation constraints |
+
+There is no project build, lint, or test command. See [AGENTS.md](AGENTS.md) for validation and contribution conventions, and [changelog.txt](changelog.txt) for release changes.
 
 ## License
 
 This project is for personal/portfolio use. No warranty is provided.
-
-Weekly rotation uses a game-first list: Add games supports search and multiple selection, then set whole-hour targets and planned days without changing row order. Load last week keeps current weekday hours; More actions holds presets and previous-week reviews. Opening Weekday targets enables optional daily goals; Use daily goal instead turns weekday planning off. Game targets and weekday hours each have their own remaining allocation against the same fixed weekly capacity; these totals are never added together. Cancel, Escape, or dismissing the dialog confirms before discarding edits.
-
-Stats includes a 12-calendar-week playtime trend following Week starts on. Zero-play weeks remain visible, and the current week is marked So far; only completed recorded sessions count.
-
-
-Gaming consistency lets you choose a month. Days played require completed active playtime; the average divides recorded playtime by active days. The current month counts days only through today, while historical months count every calendar day.
-
-Milestone progress in Stats combines lifetime and playthrough objectives for active games. Archived games are excluded from shared milestone summaries and reminders; their saved milestones remain in individual dashboards. Blocked and overdue counts are subsets of unfinished objectives. Upcoming/overdue links open the matching dashboard and playthrough.
-
-Playthrough comparison in Stats compares runs of a selected game, including archived games. Run names open the dashboard with that run selected. Totals combine recorded game sessions, exclude running/unassigned sessions and HLTB previously played hours, and mark unfinished runs as In progress.
-
-Today shows unfinished milestone targets in date order, with days left, Due today, or overdue days. Click an objective to open its game or playthrough dashboard. The card is hidden when there are no eligible targets. Settings > Session tracking > Personal milestones controls visibility; it is enabled by default and syncs with shared settings. Archived content and finished playthroughs are excluded from Today.
-
-Weekly rotation shows estimated calendar days needed for dated game milestones: remaining hours divided by allocated weekly hours, multiplied by seven and rounded up. This assumes an even pace across the week. The projected completion date adds those days to today and indicates whether it is before, on or after the target date; it is an estimate, not a scheduled or automatic completion. Manual, checklist and counter milestones use their editable Hours remaining estimate. Tracked-playtime milestones derive remaining hours from recorded progress, including provisional live progress in Today. An unset target or missing estimate is labelled; milestone completion stays unchanged.
-
-
-Settings > Session tracking > Personal milestones includes Ask about milestone completion after sessions (enabled by default and synced). Session saved lets you mark manual objectives, update checklist steps or save counter progress for the played content/playthrough. Prerequisites still control completion; tracked-playtime milestones remain automatic. Done skips without changing milestones. Turning the option off leaves the existing read-only milestone summary.
-
-Profile includes a Completion timeline for completed personal milestones across active games and playthroughs. It uses saved completion dates, newest first, with five initial entries and Show more. Missing or broken artwork uses the existing placeholder. Entries open the matching completed objective in its dashboard; reopening an objective removes it from the timeline. Archived content is excluded without deleting milestone history.
-
-For dated manual/checklist/counter milestones without Hours remaining, rotation estimates fall back to remaining Main Story HLTB time (or Main + Extra if Main Story is unset). The HLTB source is labelled and includes the content-specific tracked/prior time shown in the HLTB row. Enter Hours remaining to override this fallback for a specific objective. HLTB never marks a milestone complete.
-
-HLTB remaining time in rotation entries is followed by separate Main Story and Main + Extra completion projections at the allocated weekly hours. These update while editing a plan and during play, assume an even weekly pace, and never mark content complete. Dated milestones appear beneath these projections; milestones using HLTB as their estimate show their target separately without repeating the HLTB projection.
-
-General milestones in Games keep unassigned objectives with optional target dates. Use Assign to move an objective into an active game without losing its ID, creation time, or target date. Assigned objectives use the full Personal milestones editor. Unassigned objectives do not count toward game progress or completion badges. General milestones are shared settings included in Dropbox sync and JSON backups.
-
-Page sections: on screens at least 1024px wide, the left icon rail jumps to visible features on the current page. Hover or focus an icon for its name. Smaller screens show a Sections button beneath the header, opening the same destinations with labels. The current section is highlighted as you scroll, and the bottom tabs continue switching pages. Section jumps follow your system reduced-motion preference.
-
-Weekly rotation playthroughs: when a game has playthroughs, each game row in Plan week offers a Playthrough selector. Any playthrough preserves combined progress. Choosing an open run limits the entry's weekly progress, HLTB projections and milestone details to that run, and Start launches the selected game in that run. Targets still share the same weekly budget. Selections are saved with the plan and its presets, sync through Dropbox, and are retained by Load last week. Finished or removed selections require choosing an available run or Any playthrough before starting or saving.
-
-Milestone target-date estimates: choose Estimate completion using in a milestone editor to use Main Story (HLTB), Main + Extra (HLTB), or Custom hours remaining. General milestones can choose their HLTB basis before assignment. The deadline stays unchanged. In Weekly rotation, projections and before/after-target status use the selected estimate and weekly allocation. Explicit HLTB choices do not fall back to another track when its estimate is unavailable. Tracked-playtime milestones always use their own progress and target. Existing milestones retain their previous estimate behavior until edited. The selected basis carries through templates, JSON backups and Dropbox sync.
-
-Weekly rotation priority: use the star beside Remove in Plan week to mark a game as High priority. Changes stay in the draft until Save plan. High-priority entries appear first on Today with a text badge; planner rows retain their editing order, and priority never changes targets, planned-day visibility or budget allocations. Priorities are saved with presets and previous-week plans and included in Dropbox sync and JSON backups. Removing an entry resets its priority.
-
-Saving a weekly rotation requires every selected game to have a target of 1 to 168 whole hours within the weekly budget. New or re-added entries start at 0 in the draft and must be assigned a positive target before saving. Weekday targets can still be 0 for rest days. Older saved plans and backups remain readable.
-
-In a game's Playthroughs section, open Run actions and choose Set as default. The default is preselected when starting or adding a session; existing sessions and explicit weekly rotation run choices are preserved. Clear default removes the preference, and finishing or removing that run clears it automatically.
-
-DLC support has been removed. Older DLC-enabled libraries and backups are converted to ordinary game sessions without changing their recorded active durations, pauses, session counts, sync flags, or playthrough assignments. DLC metadata and DLC-only rotation entries are discarded. Game HLTB and milestones count all recorded time for that game. Settings > Dropbox > Local recovery offers Export pre-conversion copy after an existing library is upgraded.
-
-Weekly rotation preselects the game's default playthrough for newly added games and existing entries without a saved run choice. Save plan applies the draft choice. Explicit run choices and Any playthrough stay saved; presets and Load last week retain their original choices.
