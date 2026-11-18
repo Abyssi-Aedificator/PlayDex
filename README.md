@@ -68,6 +68,8 @@ Choose **Estimate completion using** to base a dated objective on Main Story HLT
 
 Save milestone sets as templates, preview and apply independent copies, or delete unused templates. Applied templates start with fresh progress and remapped prerequisite links.
 
+To move an existing game objective into a run, open its **More → Move to playthrough** action and choose an open playthrough of the same game. The confirmation lists any prerequisites and dependent milestones that must move together. Entered progress, IDs, creation dates, and target dates are retained; sessions do not move. Tracked-playtime goals recalculate using the destination run and may reopen. An existing playthrough pin takes precedence over a moved pin.
+
 **General milestones**, at the bottom of Games, hold unassigned objectives with optional target dates. **Assign** moves one to an active game without losing its identity or dates. Unassigned objectives do not count toward completion badges.
 
 Today's **Milestone targets** lists unfinished dated objectives in target-date order with time left or overdue status. It is hidden during a running session and excludes archived games and finished playthroughs. Settings → Session tracking → Personal milestones controls its visibility and the optional completion prompts in **Session saved**. Profile's **Completion timeline** shows recently completed objectives with dates and artwork.

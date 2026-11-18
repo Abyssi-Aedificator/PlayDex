@@ -2080,6 +2080,8 @@ opacity: 0.18;
 
   .add-game-form .btn { flex-shrink: 0; padding: 10px 18px; }
 
+  .milestone-move-list { padding-left:22px; margin:14px 0; max-height:32dvh; overflow-y:auto; overflow-wrap:anywhere; }
+  .milestone-move-list li { margin:6px 0; font-size:.85rem; }
   #changelog-modal { z-index:500; }
   #changelog-retry[hidden] { display:none!important; }
   #changelog-modal .modal { width:100%; max-width:760px; max-height:calc(100dvh - 40px); display:flex; flex-direction:column; box-sizing:border-box; }
@@ -13672,7 +13674,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const remaining=m.type==='playtime'?Math.max(0,(p.target-p.value)/3600000):m.estimateSource==='mainStory'||m.estimateSource==='mainExtra'?rotationHltbEstimates(game.id,{}).find(estimate=>estimate.label===(m.estimateSource==='mainExtra'?'Main + Extra':'Main Story'))?.hoursRemaining:m.hoursRemaining;
       const due=milestoneTargetDateHtml(m);
       const info=(m.completedAt?'Completed '+m.completedAt:blocked.length?'Blocked: '+blocked.join(', '):'In progress')+(!m.completedAt?milestoneFinishEstimate(game.id,remaining):'');
-      const tools=action('Edit','edit',m.id)+action(m.pinned?'Unpin':'Pin','pin',m.id)+'<details class="milestone-more" data-milestone-detail="more:'+milestoneAttr(m.id)+'"><summary>More</summary><div class="milestone-row-tools">'+action('Move up','up',m.id,siblings[0].id===m.id)+action('Move down','down',m.id,siblings.at(-1).id===m.id)+action('Delete','delete',m.id)+'</div></details>';
+      const tools=action('Edit','edit',m.id)+action(m.pinned?'Unpin':'Pin','pin',m.id)+'<details class="milestone-more" data-milestone-detail="more:'+milestoneAttr(m.id)+'"><summary>More</summary><div class="milestone-row-tools">'+action('Move up','up',m.id,siblings[0].id===m.id)+action('Move down','down',m.id,siblings.at(-1).id===m.id)+action('Move to playthrough','move-run',m.id)+action('Delete','delete',m.id)+'</div></details>';
       let updates='';
       if(m.type==='manual')updates='<label class="milestone-complete-toggle"><input type="checkbox" data-milestone-action="toggle" data-milestone-id="'+milestoneAttr(m.id)+'" '+(m.manualDone?'checked':'')+'>Mark done</label>';
       if(m.type==='checklist')updates=m.checklist.map(step=>'<label class="milestone-step-toggle"><input type="checkbox" data-milestone-action="step" data-milestone-id="'+milestoneAttr(m.id)+'" data-step-id="'+milestoneAttr(step.id)+'" '+(step.done?'checked':'')+'>'+escHtml(step.name)+'</label>').join('');
@@ -13806,6 +13808,42 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const pin=document.getElementById('live-milestone');if(pin)delete pin.dataset.tick;
     refreshMilestoneDashboard();renderWeeklyRotation();refreshLiveProgress();renderAchievementsTab();renderProfileTab();renderMilestoneStats();renderTodayMilestones();
   }
+  function linkedMilestones(items,id){
+    if(!items.some(item=>item.id===id))throw Error('This milestone no longer exists.');
+    const ids=new Set([id]);let changed=true;
+    while(changed){changed=false;for(const item of items){
+      if(ids.has(item.id)){for(const prerequisite of item.prerequisites)if(!ids.has(prerequisite)){ids.add(prerequisite);changed=true;}}
+      else if(item.prerequisites.some(required=>ids.has(required))){ids.add(item.id);changed=true;}
+    }}
+    return milestoneSorted(items.filter(item=>ids.has(item.id)));
+  }
+  function prepareMilestoneMove(library,gameId,id,runId){
+    const next=structuredClone(library),game=next.find(game=>game.id===gameId),run=game?.playthroughs?.find(run=>run.id===runId&&!run.finishedAt);
+    if(!game||!run)throw Error('Choose an open playthrough for this game.');
+    const items=normalizeGameMilestones(game.milestones),moving=linkedMilestones(items,id),ids=new Set(moving.map(item=>item.id));
+    const target=normalizeGameMilestones(run.content?.base?.milestones),existingIds=new Set(target.map(item=>item.id)),stepIds=new Set(target.flatMap(item=>item.checklist.map(step=>step.id)));
+    if(moving.some(item=>existingIds.has(item.id)||item.checklist.some(step=>stepIds.has(step.id))))throw Error('This playthrough already contains one of these milestone or checklist IDs. Choose another playthrough.');
+    let order=target.reduce((max,item)=>Math.max(max,item.order),-1)+1;
+    const keepPin=target.some(item=>item.pinned);
+    for(const item of moving){item.order=order++;if(keepPin)item.pinned=false;}
+    game.milestones=items.filter(item=>!ids.has(item.id));
+    run.content=run.content||{};run.content.base=run.content.base||{milestones:[]};run.content.base.milestones=target.concat(moving);
+    validateMilestoneRecords(game.milestones);validateMilestoneRecords(run.content.base.milestones);
+    return {library:next,count:moving.length};
+  }
+  function openMoveMilestone(gameId,id){
+    const game=games.find(game=>game.id===gameId),items=normalizeGameMilestones(game?.milestones);if(!game||!items.some(item=>item.id===id))return;
+    const runs=(game.playthroughs||[]).filter(run=>!run.finishedAt).slice().sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true}));
+    if(!runs.length){d2Edit('Move to playthrough','<p>Create or reopen a playthrough in this game\'s Playthroughs section before moving a milestone.</p>',()=>{},'Close',null,{compact:true,acknowledge:true});return;}
+    const moving=linkedMilestones(items,id),signature=JSON.stringify(game.milestones||[]),preferred=runs.some(run=>run.id===playthroughUI.runId)?playthroughUI.runId:defaultPlaythrough(game)?.id||runs[0].id;
+    d2Edit('Move to playthrough','<p class="backup-hint">Move '+(moving.length===1?'this milestone':moving.length+' linked milestones')+' out of Personal milestones. Sessions remain assigned as they are.</p><label class="d2-field">Playthrough<select id="milestone-move-run">'+runs.map(run=>'<option value="'+milestoneAttr(run.id)+'"'+(run.id===preferred?' selected':'')+'>'+escHtml(run.name)+'</option>').join('')+'</select></label>'+(moving.length>1?'<p class="backup-hint">Prerequisites and dependent milestones move together to preserve their links.</p>':'')+'<ul class="milestone-move-list">'+moving.map(item=>'<li>'+escHtml(item.name)+'</li>').join('')+'</ul><p class="backup-hint">Checklist and counter progress, manual completion choices, and target dates are kept. Tracked-playtime progress uses only the destination playthrough\'s completed sessions and may reopen milestones.</p><p class="backup-hint" id="milestone-move-pin"></p>',()=>{
+      checkStorageFresh();const current=games.find(game=>game.id===gameId);if(!current||JSON.stringify(current.milestones||[])!==signature)throw Error('These milestones changed. Close and reopen the move dialog to review them again.');
+      const runId=document.getElementById('milestone-move-run').value,result=prepareMilestoneMove(games,gameId,id,runId);
+      d2SaveLibrary(result.library);playthroughUI.runId=runId;playthroughUI.selection.set(gameId,runId);refreshMilestoneDashboard();
+      toast(result.count===1?'Milestone moved to the playthrough.':result.count+' linked milestones moved to the playthrough.');
+    },moving.length===1?'Move milestone':'Move milestones');
+    const select=document.getElementById('milestone-move-run'),paint=()=>{const target=runs.find(run=>run.id===select.value);document.getElementById('milestone-move-pin').textContent=moving.some(item=>item.pinned)&&target?.content?.base?.milestones?.some(item=>item.pinned)?'The playthrough already has a pinned milestone. Its pin is kept, and moved milestones are unpinned.':'';};select.onchange=paint;paint();
+  }
   function openMilestoneTemplates(key,mode){
     milestoneEditorGame=key;milestoneTemplateMode=mode;
     const templates=settings.milestoneTemplates||[];
@@ -13850,6 +13888,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const game=contentEntry(document.getElementById('dashboard-modal').dataset.gameId);if(!game)return;
     const id=control.dataset.milestoneId,action=control.dataset.milestoneAction,items=normalizeGameMilestones(game.milestones),item=items.find(m=>m.id===id);
     if(action==='add'||action==='edit'){openMilestoneEditor(game,id);return;}
+    if(action==='move-run'){openMoveMilestone(game.id,id);return;}
     if(action==='template-save'||action==='template-apply'){openMilestoneTemplates(game.id,action==='template-save'?'save':'apply');return;}
     if(action==='delete'){
       if(!item)return;
