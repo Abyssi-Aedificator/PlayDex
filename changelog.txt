@@ -1,107 +1,56 @@
 PlayDex - Changelog
 ====================
 
-Version 2.1.6
+Version 3.0.0
 -------------------
+- Weekly rotation and its planner show remaining Main Story and Main + Extra HLTB time, with separate completion projections at the allocated weekly pace and theme-coloured playtime, day counts, and dates.
+- Turning off weekday planning discards invalid weekday entries so they cannot block saving a game-only plan, and reverting planner edits no longer prompts to discard unchanged data.
+- Today and the planner consistently display remaining game time as complete hours rounded down, with 0% and an empty bar below one hour; exact budget calculations and older minute-based totals are preserved until a valid whole-hour plan is saved.
+- Removing a rotation entry clears its draft target and planned day; re-added games start at 0 hours, and unavailable entries or removed targets no longer block saving the remaining plan.
+- Added an Update available header button that reopens the update confirmation after Later without automatically installing the pending version.
+- Session saved shows unfinished personal milestones with optional manual, checklist, and counter completion prompts, plus days left, Due today, or overdue status for dated objectives; prerequisites and automatic playtime rules remain enforced.
+- Stats This Week Review follows Week starts on for totals, session counts, top game, best day, and previous-week comparisons, with visible date ranges; Last 7 Days remains rolling and uses a clearer Total Time label.
+- Changing Week starts on resets the rotation when the newly selected week boundary has already passed and preserves the previous plan for Load last week.
+- Monthly playtime and Session lengths bars use aligned columns so varying duration and count lengths do not shift individual rows.
+- After a weekly rotation resets, a popup offers Plan week or Later, waiting until startup and other dialogs have finished.
+- Added a 12-week playtime trend to Stats, following Week starts on and marking the current week as incomplete.
+- Added monthly gaming consistency with days played, days without playtime, and average playtime per active day; the current month excludes future days.
+- Stats shows completed, unfinished, blocked, and overdue milestone counts, target-date countdowns, and links to the matching game or playthrough dashboard.
+- Added Stats playthrough comparisons by game with recorded time, sessions, average session length, and milestone completion, distinguishing finished and ongoing runs.
+- Today includes a milestone-targets card with objective links, muted linked-game names, and right-aligned target-date countdowns; its synced Settings toggle controls visibility, and completed, archived, and finished-run objectives are excluded.
+- Dated rotation milestones show remaining playtime, estimated days, and projected completion dates at the allocated weekly pace, with live allocation updates and before/on/after-target comparisons; explicit milestone estimates take priority over labelled HLTB fallbacks.
+- Shared milestone summaries, reminders, and session reviews exclude archived games and their playthrough objectives while preserving their saved milestones in individual dashboards.
+- Profile includes a completion timeline with recent personal milestones, saved completion dates, game artwork, playthrough context, dashboard links, and Show more; archived games remain excluded.
+- General milestones live at the bottom of Games and support target dates, assignment to games, sync, and backups; they appear alongside game objectives in Today and are ordered by earliest target date, with undated entries last in Games.
+- General milestone editors use the themed target-date calendar without an hours-remaining field; fixed oversized or clipped calendars and prevented calendar navigation from submitting the form.
+- Personal milestones use one ordered list without group controls, preserving objectives, progress, prerequisites, and reusable templates; saved templates can be deleted without removing objectives already created from them.
+- Improved spacing between session timestamps and details in game dashboards and removed large empty gaps between lifetime statistics and history beside tall milestone or playthrough sections.
+- Rotation HLTB entries use consistent separate Main Story and Main + Extra completion lines, with dated milestone targets beneath them and no duplicate HLTB predictions or redundant standalone pace/manual-completion reminders.
+- Weekly rotation entries can select an open playthrough for run-specific progress, HLTB, milestone estimates, and direct session starts; selections sync and carry through presets, saved plans, and Load last week.
+- Before-target rotation estimates use contrast-safe green and after-target estimates use red, including planner edits and live updates.
+- The rotation game picker supports selecting or deselecting all available games before adding them to the draft.
+- Checkboxes follow the chosen interface and theme colour, with consistent sizing, focus, disabled states, and Material indeterminate styling while preserving existing switches.
+- Today hides Milestone targets during active or paused sessions and restores them after the session ends.
+- Added in-page section navigation with a desktop icon rail and mobile Sections menu, unique icons, current-section highlighting, keyboard access, and themed controls; bottom tabs continue switching pages.
+- Fixed section-sidebar icon alignment, header clearance, wheel scrolling, and final-section jumps; the rail expands upward when the title scrolls out of view while retaining bottom-navigation clearance.
+- The Weekly rotation editor expands to 1120px on larger screens and uses compact game cards with aligned playthrough, target, and planned-day controls, a clear header, and grouped estimates.
+- Archived rotation entries no longer reserve recorded minutes in planned allocations; empty rotations show zero planned time, and restoring entries validates their full targets.
+- Removed the Multiplayer game feature throughout the app so all active games can be selected in rotations, presets, and reused plans.
+- Check session history flags completed sessions under five active minutes and allows deleting flagged sessions with a compact themed confirmation, Cancel, a destructive Delete action, and inline save errors; totals and issues refresh after deletion.
+- Milestone completion estimates can explicitly use Main Story HLTB, Main + Extra HLTB, or custom hours remaining; selections persist for general milestones, playthroughs, templates, sync, and backups.
+- Rotation games can be marked High priority with a star; their badges appear beside game names, high-priority entries come first on Today, and flags persist through presets, previous-week reuse, sync, and backups.
+- Save plan requires at least one whole hour per selected game; zero or blank targets remain in the draft, and a themed popup identifies the first target needing correction instead of displaying a persistent validation line.
+- Games whose weekly targets are reached stay hidden on Today; the editor keeps them visible with Target reached and updates the status when allocated hours change.
+- The rotation Add games picker and milestone-assignment game list are alphabetical; Today sorts rotation games alphabetically within each priority level.
+- One open playthrough per game can be set as the default from Run actions; it is preselected for new sessions and cleared when finished or removed without changing existing session assignments.
+- Removed DLC management, content switching, allocation editing, filters, and split-time statistics; existing sessions retain full active durations under their games, with a pre-conversion recovery export and automatic conversion of older backups.
+- Weekly rotation preselects a game's default playthrough for newly added games and current entries without a saved run choice, preserving explicit runs and Any playthrough through saving and reuse.
+- Reorganized the README and contributor guidance around current workflows, playthrough defaults, rotation behavior, legacy-backup conversion, validation, and branch delivery.
+- Settings opens the latest release notes or the full changelog in a themed viewer, and the update popup offers What's new from the pending release; release history is cached for offline access.
+- Personal milestones can move into an open playthrough of the same game from More; the preview includes linked prerequisites and dependents, preserves entered progress and dates, and recalculates tracked goals for the destination run.
+- Today groups matching milestone target names into one row with a Multiple label and game names on hover; expanding the row opens individual targets, with the earliest date shown in the summary.
+- Any playthrough in Weekly rotation shows all milestones from every open run, labelled by playthrough with run-specific progress and estimates; finished runs are excluded.
 - Added clearer spacing between the two Personal milestones options in Settings.
-- Any playthrough in Weekly rotation now shows all milestones from every open run, labelled by playthrough with run-specific progress and estimates; finished runs are excluded.
-- Today groups matching milestone target names into one row with a Multiple label and game names on hover; expand the row to open individual targets, with the earliest date shown in the summary.
-- Personal milestones can move into an open playthrough of the same game from More; a preview includes linked prerequisites and dependents, preserves entered progress and dates, and recalculates tracked goals for the destination run.
-- Settings now opens the latest release notes or full changelog in a themed viewer, and the update popup offers What's new for the pending release; release history is cached for offline access.
-- Reorganized the README around current app workflows and refreshed contributor guidance for playthrough defaults, rotation behavior, legacy-backup conversion, validation, and the current branch setup.
-- Weekly rotation preselects a game's default playthrough when adding it or opening a plan without a saved run choice; explicit run and Any playthrough selections are preserved through saving and reuse.
-
-Version 2.1.5
--------------------
-- Set one open playthrough per game as the default from Run actions; it is preselected for new sessions and cleared when finished or removed, without changing existing session assignments.
-- Removed DLC management, content switching, allocation editing, filters, and split-time statistics; existing sessions retain their full active durations under their games, with a pre-conversion recovery export and automatic conversion of older backups.
-
-Version 2.1.4
--------------------
-- Removed the “Completion stays manual.” reminder from weekly rotation milestone estimates.
-- Assign milestone lists games alphabetically, with Base game first and alphabetized DLCs beneath each parent.
-- This week's rotation lists games alphabetically within high-priority and normal-priority entries.
-- The Weekly rotation Add games picker lists available games and DLCs alphabetically by name.
-
-Version 2.1.3
--------------------
-- Games with completed weekly targets stay hidden on Today; the Weekly rotation editor shows Target reached beside their recorded progress and updates it as target hours change.
-- Weekly rotation explains missing or zero target hours in a themed popup when saving, instead of displaying a persistent validation line.
-- High priority badges now appear beside game names in This week's rotation, wrapping neatly when space is limited.
-- Save plan now requires a target of at least one whole hour for every selected game or DLC; zero and blank targets stay in the draft until corrected, and the first invalid target is focused on save.
-- Plan week entries can be marked High priority with a star; saved priorities appear first on Today and carry through presets, previous-week reuse, sync, and backups without changing targets or budgets.
-- Redesigned Weekly rotation entries as compact cards with aligned playthrough, target, and day controls, a clear game header, and grouped estimates; zero-hour targets show one concise completion hint.
-- Removing and re-adding a weekly rotation entry resets its Target (hours) to 0; zero is shown explicitly and reserves no weekly budget.
-- Milestone completion estimates can use Main Story or Main + Extra HLTB, with Custom hours remaining retained for manual estimates; the choice is preserved for general milestones, DLCs, playthroughs, templates, sync, and backups.
-- Session deletion in the history health check now uses a compact app-themed confirmation with Cancel, a destructive Delete action, and inline save errors instead of a browser popup.
-- Flagged sessions can now be deleted directly from Check session history after confirmation; totals and remaining issues refresh immediately.
-- Check session history now flags completed sessions with under five minutes of recorded active playtime for review, without changing them automatically.
-- The desktop section sidebar expands upward as the title header scrolls out of view, reclaiming space while preserving bottom-navigation clearance.
-- Fixed the final section icon appearing unreachable: section jumps now select the correct icon when the page reaches its scroll limit or already fits on screen.
-- Fixed section-menu scrolling on short screens: the full sidebar responds to the mouse wheel, keeps its final icon reachable, and prevents scrolling the page behind it.
-
-Version 2.1.2
--------------------
-- Rotation completion estimates show before target in contrast-safe green and after target in red, including planner edits and live updates.
-- Weekly rotation entries can select an open playthrough, with run-specific weekly progress, HLTB and milestone estimates, and direct session starts; selections sync and carry through presets, saved plans, and Load last week.
-- Fixed large empty gaps between lifetime statistics and session history in game dashboards with tall playthrough or milestone sections.
-- Moved General milestones to the bottom of the Games tab, below the library and filters.
-- General milestones are ordered by earliest target date in Games and Today, with undated entries last in Games and matching dates ordered by name.
-- The Weekly rotation game picker now lets you select or deselect all available games and DLCs at once before adding them to the draft.
-- Checkboxes throughout the app now follow the selected interface and theme colour, with consistent sizing, keyboard focus, disabled states, and Material indeterminate styling; existing switches are preserved.
-- Today's Milestone targets stay hidden during active or paused timer sessions and return after the session ends.
-- Today and the Weekly rotation planner now show remaining game time consistently as complete hours, with 0% available below one hour; opening the planner preserves older minute-based totals instead of silently rounding targets up, while saving still requires whole-hour targets.
-- Centered desktop section icons and selection backgrounds within the sidebar, including when its list scrolls.
-- The desktop header spans the full window width while the section sidebar retains its content clearance.
-- Each page section now has a distinct navigation icon within its tab, including the combined Today and Sessions view.
-- Jump between visible page sections using a desktop icon rail or a mobile Sections menu, with current-section highlighting, keyboard navigation, and themed controls; bottom tabs still switch pages.
-- Weekly rotation now expands up to 1120px on larger screens, giving game names, estimates, and controls more room while retaining its responsive mobile layout.
-- Archived rotation entries no longer leave recorded minutes in planned allocations; empty rotations show zero planned time and the full available budget, and restoring entries validates their full targets.
-- Removed the Multiplayer game feature throughout the app; all active games and DLCs can be selected in weekly rotations, presets, and reused plans.
-
-Version 2.1.1
--------------------
-- Fixed the general milestone calendar being oversized and clipped inside its editor; calendar navigation no longer submits the form.
-- Today's Milestone targets show the linked game beside each assigned objective in muted text.
-- General milestones now use the app's themed target-date calendar and no longer show or request hours remaining.
-- Removed the duplicate Multiplayer game status and explanation from game dashboards; the option remains in Edit Game.
-- Removed the weekly-pace explanatory line beneath rotation HLTB completion estimates.
-- Dated general milestones now appear in Today's Milestone targets with countdowns, ordered alongside game milestones; select one to edit it in Games.
-- Personal milestones now use one ordered list without groups or group controls; existing objectives, progress, prerequisites, and templates remain available.
-- General milestones now live in Games instead of Profile, alongside the library they can be assigned to.
-- Rotation entries with dated milestones now use the same separate Main Story and Main + Extra completion lines as other HLTB entries, with milestone targets shown beneath without duplicate HLTB predictions.
-- Profile now holds General milestones with optional target dates and hours remaining; add, edit, delete, or move them to a game or DLC later, with Dropbox sync and backup support.
-- Recent sessions in game dashboards show content breakdowns on a separate line with spacing below the date and time.
-- Delete saved milestone templates from the template picker with confirmation, keeping milestones already created from them.
-- The game dashboard shows Multiplayer game as read-only; change this setting through Edit Game.
-- Rotation entries without dated milestone estimates now show projected Main Story and Main + Extra completion dates using their weekly allocation, updating in the planner and during live play without duplicating milestone estimates.
-- Rotation milestone and HLTB estimates use the theme colour for days, playtime amounts and dates, including live updates.
-
-Version 2.1.0
--------------------
-- Weekly rotation and its planner show remaining Main Story and Main + Extra HLTB time when estimates are available, using Base game or DLC tracked time plus previously played hours.
-- Turning off weekday planning discards invalid weekday entries so they cannot block saving a game-only plan.
-- Older partial-hour rotation targets round up to whole hours in the planner draft, allowing corrections and saving without changing stored targets until Save plan.
-- Reverting planner edits to their original values no longer prompts to discard unchanged data.
-- Removing a rotation game clears its draft target and planned day; invalid targets and unavailable entries no longer block saving the remaining plan.
-- Added an Update available button in the header when a new app version is ready, allowing the confirmation to be reopened after choosing Later.
-- Session saved shows unfinished milestones for the played Base game, DLC or playthrough, with an optional synced completion prompt for manual, checklist and counter progress; prerequisites and automatic playtime rules remain enforced, and target dates show days left, Due today or overdue days.
-- Stats This Week Review now follows Week starts on for totals, sessions, top game, best day and the previous-week comparison, with visible date ranges; Last 7 Days remains rolling and uses a clearer Total Time label.
-- Switching Week starts on now resets the rotation when the newly selected week's boundary has already passed, preserving the previous plan for Load last week instead of carrying it into the new week.
-- Aligned Monthly playtime and Session lengths bars using shared columns so different duration and count lengths do not shift individual rows.
-- After a weekly rotation resets, a popup offers Plan week or Later, waiting until startup and any other dialogs are finished.
-- Added a 12-week playtime trend to Stats, following Week starts on and labelling the current week as incomplete.
-- Stats shows the Base game and DLC playtime split with percentages and per-game breakdowns, using recorded allocations and excluding HLTB previously played hours.
-- Added monthly gaming consistency with days played, days without playtime and average playtime per active day; the current month excludes future days.
-- Added Stats milestone counts for completed, unfinished, blocked and overdue objectives, plus target-date countdowns and dashboard links for Base games, DLCs and playthroughs.
-- Added a Stats playthrough comparison by game with recorded time, sessions, average session length and milestone completion, clearly distinguishing finished and ongoing runs.
-- Added a Today milestone-targets card with objective links, normal-colour names and target-date countdowns aligned on the right, plus a synced Settings toggle; completed, archived and finished-run objectives are excluded.
-- This week's rotation rounds displayed available time up to whole hours while retaining exact budget calculations and over-budget amounts.
-- Dated rotation milestones show remaining playtime, days needed and a projected completion date at the allocated weekly pace, with target-date comparisons and live allocation updates; explicit milestone estimates take priority over labelled Main Story or Main + Extra HLTB fallbacks.
-- Added a Multiplayer game checkbox in game details and Edit Game; marked games and their DLCs leave weekly rotation and are skipped by selection, Load last week and presets while retaining tracked history.
-- Shared milestone summaries, reminders and session reviews exclude archived games and DLCs, including their playthrough objectives; saved milestones remain accessible in their dashboards.
-- Added a Profile completion timeline showing recent personal milestones with saved completion dates, game artwork, content/playthrough context, dashboard links and Show more; archived content stays excluded.
-- The weekly planner shows Remaining for games as complete hours (8h 53m becomes 8h), with 0% and an empty bar when less than one hour remains; exact budget validation and over-budget amounts are preserved.
 
 Version 2.0.0
 -------------------
