@@ -184,18 +184,18 @@ stays on `dev`. Pushing `dev` when asked is fine.
 
 - This repo is served via GitHub Pages under `/PlayDex/`; asset links are relative so they work at any subpath.
 
-## DLC content tracking
+## Legacy content compatibility
 
-- Child DLCs live in game.dlcs. Sessions retain the parent gameId and optional contiguous segments with dlcId, start, and stop. Legacy sessions are Base game only.
-- Reuse allocatedPlaytime/contentMs for content durations. Pauses remain session-level and must be subtracted only where they intersect a segment.
-- Parent rankings and session counts are combined. HLTB, milestone estimates, and rotation targets use Base game or DLC allocations. Resolve compound rotation/dashboard IDs with contentEntry/contentData, never games.find alone.
-- Preserve DLC metadata and segments in normalization, exports, Dropbox history, and recovery. validateDlcData rejects discontinuous boundaries and invalid child references.
+- DLC support is removed. Games own sessions directly, with optional playthroughId. Do not recreate child libraries, segment editors, content choosers, or split-time displays.
+- validateLegacyContentData validates older fields before stripLegacyContent removes DLC metadata and segments. Keep recorded durationMs, timestamps, pauses, IDs, sync flags and run assignments unchanged. Current sessions never generate segments.
+- Startup conversion saves an exportable pre-conversion copy and uses persistLibraryReplacement for an atomic replacement. Failed conversion blocks editing and preserves the original records. Older imports/downloads/restores convert through validateBackupData; never reintroduce removed fields.
+- Parent HLTB and milestones use recordedSessionMs/contentMs game totals. Run content.base remains the stored representation for playthrough objectives and HLTB compatibility.
 
 ## Personal milestone progression
 
-- Milestones belong to Base game or DLC content. Missing type migrates to manual; manualDone stores intent separately from completedAt. Preserve IDs, creation timestamps, and valid completion dates.
+- Milestones belong to games or their playthroughs. Missing type migrates to manual; manualDone stores intent separately from completedAt. Preserve IDs, creation timestamps, and valid completion dates.
 - Reuse milestoneProgress and reconcileMilestoneLibrary for completion, dependencies, and reopening. saveGames/saveSessions reconcile before writing; session saves roll back both records on failure. Never trigger recursive saves from reconciliation.
-- milestoneTrackedMs uses recorded content allocations and clips segments and overlapping pauses for since-creation goals. Running sessions are provisional and must not save completion. HLTB already-played hours do not count.
+- milestoneTrackedMs uses recorded game time and clips session intervals and overlapping pauses for since-creation goals. Running sessions are provisional and must not save completion. HLTB already-played hours do not count.
 - Group names/order live on milestones; prerequisites resolve only within the same content. validateMilestoneRecords rejects cycles and invalid progress before imports.
 - settings.milestoneTemplates sync through Dropbox and are restored by JSON import without replacing other local preferences. Template application remaps milestone/checklist IDs and dependencies and resets manual progress, pins, and dates.
 - Optional milestone estimateSource selects mainStory, mainExtra, or hours. Explicit HLTB choices override retained custom hours and never silently fall back to another track; missing values preserve legacy behavior. Tracked-playtime milestones always use their own target. Preserve the field through templates, general assignment, playthroughs and backups.
@@ -210,7 +210,7 @@ stays on `dev`. Pushing `dev` when asked is fine.
 
 ## Backup replacement safety
 
-- Use persistLibraryReplacement for JSON imports, game/DLC deletion and Undo, and Dropbox download/rollback application. Prepare and reconcile cloned data first, restore successful storage writes on failure, and replace games/sessions/settings/activeSession only after all records are saved. Keep failed manual imports available for retry.
+- Use persistLibraryReplacement for JSON imports, game deletion and Undo, and Dropbox download/rollback application. Prepare and reconcile cloned data first, restore successful storage writes on failure, and replace games/sessions/settings/activeSession only after all records are saved. Keep failed manual imports available for retry.
 - Top rolling-day ranges use local calendar date arithmetic (setDate), not fixed 24-hour offsets, so DST does not change the number of included dates.
 
 - Cover uploads use editor revision guards and capture their original game identity. Ignore canceled/superseded callbacks, keep Save disabled during image processing, and re-enable it when decoding fails. URL fields preserve quotes; escape at rendering instead of stripping URL characters.
@@ -223,12 +223,12 @@ stays on `dev`. Pushing `dev` when asked is fine.
 
 ## Playthroughs, planner, and sync review
 
-- Parent games own optional playthroughs; sessions keep an optional playthroughId. Run content stores independent Base game/DLC milestones and HLTB values. Reconcile each run using only its assigned sessions; lifetime rankings and counts stay combined. Legacy sessions remain unassigned.
+- Parent games own optional playthroughs; sessions keep an optional playthroughId. Run content stores independent game milestones and HLTB values. Reconcile each run using only its assigned sessions; lifetime rankings and counts stay combined. Legacy sessions remain unassigned.
 - plannerDayBudgets/plannerDayHours set planned weekday hours and Today's goal, never Weekly capacity. Weekly capacity comes from the saved daily goal times seven or the automatic last-week average times seven; the sum of weekday hours drives Planned targets when weekday planning is enabled. Validate weekday allocations and game commitments separately against that fixed budget, without adding them together or disabling automatic goals on save. Zero-hour days are rest days. rotationPresets and weeklyPlanHistory sync as shared settings; validate them on import and restore. Keep planner drafts separate until Save plan.
 - The Sync & Recovery Centre uses real Dropbox requests and strict revision updates. playdex.dropbox.record-index stores per-record hashes and the synced revision, never a full baseline library. Unknown baselines require explicit choices for differing records.
 - Keep automatic uploads paused while reviewing sync conflicts. Recheck local state, connection and remote revision before applying; preserve later local edits, take a recovery copy first, and retain the previous five remote versions. Device identity is local metadata and accompanies uploads.
 
-- Keep feature UI contextual: playthroughs render inline in the game/DLC dashboard, one Plan week action opens the Weekly rotation editor, and sync/recovery renders inside Dropbox settings. Do not reintroduce a shared feature hub or Games shortcuts.
+- Keep feature UI contextual: playthroughs render inline in the game dashboard, one Plan week action opens the Weekly rotation editor, and sync/recovery renders inside Dropbox settings. Do not reintroduce a shared feature hub or Games shortcuts.
 - UI state is independent for playthrough selection, planner drafts, sync review and focused editors. Opening Settings must not fetch Dropbox; pause automatic transfers only for explicit review/restore and release the guard on cancel, success or navigation away during loading.
 
 ## In-page section navigation
@@ -238,8 +238,8 @@ stays on `dev`. Pushing `dev` when asked is fine.
 - Reserve 72px on desktop only while section navigation is present. Measure the sticky header for section-jump offsets, keep mobile menus above bottom navigation, and respect system reduced motion.
 - Section navigation icons must be unique within the current page, including merged Today/Sessions. Use the dedicated section icon catalog and its unused-icon fallback.
 
-- Optional settings.weeklyRotationPlaythroughs maps content entry IDs to parent playthrough IDs. Drafts, presets, weekly snapshots and history use optional playthroughs maps. Missing selection means combined progress; selected runs scope rotation sessions, HLTB and milestones through rotationRunMatches/rotationContentData. Preserve these maps through sync, imports, resets and reuse; never silently start a different run if a selection becomes unavailable.
+- Optional settings.weeklyRotationPlaythroughs maps game IDs to parent playthrough IDs. Drafts, presets, weekly snapshots and history use optional playthroughs maps. Missing selection means combined progress; selected runs scope rotation sessions, HLTB and milestones through rotationRunMatches/rotationContentData. Preserve these maps through sync, imports, resets and reuse; never silently start a different run if a selection becomes unavailable.
 
-- Saving Weekly rotation requires every selected Base game or DLC target to be 1 to 168 whole hours. New/re-added entries may start at 0 in the draft but cannot save until corrected; weekday rest days may remain 0. Keep older zero-target backups readable.
+- Saving Weekly rotation requires every selected game target to be 1 to 168 whole hours. New/re-added entries may start at 0 in the draft but cannot save until corrected; weekday rest days may remain 0. Keep older zero-target backups readable.
 
 - Optional game.defaultPlaythroughId points to one open parent playthrough. Use defaultPlaythrough for new-session preselection only; preserve explicit session edits and rotation selections. Clear the preference when its run is finished or removed, and preserve it through normalization and backups.

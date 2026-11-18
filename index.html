@@ -389,29 +389,7 @@ button.milestone-remove-step { width:44px; min-width:44px; height:44px; padding:
   .session-filter-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
   .session-filter-heading .card-header { margin:0; }
   .session-heading-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
-  #live-content[hidden],[data-library-parent][hidden],[data-allocation-error][hidden],#dlc-editor-error[hidden] { display:none; }
-  #switch-content[hidden] { display:none; }
-  #live-content { margin:8px 0; text-align:center; }
-  #live-content-times { overflow-wrap:anywhere; color:var(--accent); }
-  .dlc-section { grid-column:1 / -1; padding-top:18px; margin-top:18px; border-top:1px solid var(--border); }
-  .dlc-actions { display:flex; flex-wrap:wrap; gap:6px; }
-  .dlc-dashboard-row,.dlc-library-row { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); }
-  .dlc-dashboard-row > div:first-child { flex:1; min-width:0; display:grid; gap:5px; }
-  .dlc-dashboard-row { display:grid; grid-template-columns:minmax(0,1fr); }
-  .dlc-dashboard-row > div:first-child > button { justify-self:start; max-width:100%; white-space:normal; overflow-wrap:anywhere; }
-  .dlc-library-row .session-info > button { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
-  .dlc-name-link { color:var(--text); font-size:.85rem; font-weight:600; text-decoration:none; overflow-wrap:anywhere; }
-  .dlc-name-link:hover { color:var(--accent); text-decoration:underline; }
-  .library-dlcs { margin:0 0 14px 16px; padding:8px 12px; border-left:2px solid var(--accent); }
-  .library-dlcs summary { cursor:pointer; font-size:.85rem; color:var(--text2); padding:8px 0; }
-  .dlc-library-row .game-cover { flex-shrink:0; }
-  .allocation-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto; align-items:end; gap:8px; padding:10px 0; }
-  .allocation-row label { display:grid; gap:4px; min-width:0; font-size:.75rem; color:var(--text2); }
-  .allocation-row :is(input,select) { min-width:0; width:100%; box-sizing:border-box; padding:8px; }
-  .allocation-row input[type="datetime-local"] { color:var(--text); background:var(--surface2); border:1px solid var(--border); border-radius:10px; font:inherit; }
-  .content-allocation { margin:12px 0; }
-  #dlc-editor,#dlc-delete,#content-chooser { z-index:270; }
-  @media(max-width:600px) { .allocation-row { grid-template-columns:minmax(0,1fr); } .dlc-library-row .dlc-actions { flex-basis:100%; } }
+
 
   #history-health-modal .modal { width:100%; max-width:620px; }
   #history-health-summary { margin:16px 0; }
@@ -1445,9 +1423,6 @@ opacity: 0.18;
   .playtime-month-controls { display:flex; justify-content:space-between; align-items:center; gap:8px; }
   .stats-month-label { display:flex; flex-direction:column; gap:8px; font-size:13px; color:var(--text2); margin:12px 0; }
   input#stats-consistency-month { box-sizing:border-box; width:100%; min-height:44px; padding:11px 14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); color:var(--text); font:inherit; color-scheme:inherit; }
-  .stats-content-bar { display:flex; height:8px; border-radius:999px; overflow:hidden; background:var(--surface2); margin:12px 0; }
-  .stats-content-bar > span { background:var(--accent); }
-  .stats-content-bar > span + span { opacity:.45; }
   .stats-insight-row { padding:12px 0; border-bottom:1px solid var(--border); min-width:0; overflow-wrap:anywhere; }
   .stats-insight-row > strong { display:block; font-size:14px; }
   .stats-insight-row p { margin:6px 0; color:var(--text2); font-size:12px; line-height:1.6; }
@@ -5800,7 +5775,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.1.4</span>
+    <span class="version-badge">2.1.5</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -5823,7 +5798,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     <div id="active-session-card" class="card active-session" style="display:none">
       <div class="live-label"><span class="live-dot"></span> <span id="live-text">LIVE</span></div>
       <div class="game-name" id="active-game-name"></div>
-      <div id="live-content" hidden><strong id="live-content-name"></strong><div id="live-content-times" class="backup-hint"></div><button class="btn-ghost" id="switch-content" type="button">Switch content</button></div>
+      <div id="live-milestone" hidden></div>
       <div class="active-session-clock">
         <div class="clock-side side-start">
           <span class="clock-label">Start Time</span>
@@ -6019,7 +5994,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     </div>
     <div class="card"><div class="card-header">Monthly playtime</div><div id="stats-monthly-playtime"></div></div>
     <div class="card"><div class="card-header">Session lengths</div><div id="stats-session-lengths"></div></div>
-    <div class="card" id="content-playtime-card"><div class="card-header">Base game vs DLC</div><p class="backup-hint">All completed recorded playtime. Previously played HLTB hours are excluded.</p><div id="stats-content-playtime"></div></div>
     <div class="card" id="platform-stats-card"><div class="card-header">Playtime by Platform</div><div id="platform-stats"></div></div>
     <div class="card" id="stats-milestones-card"><div class="card-header">Milestone progress</div><div id="stats-milestone-progress"></div></div>
     <div class="card" id="comparison-card">
@@ -6247,7 +6221,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <button class="btn-ghost" id="games-clear-filters" type="button">Clear filters</button>
       </div>
     </aside>
-    <div class="card" style="grid-column:1 / -1"><div class="card-header">General milestones</div><p class="backup-hint">Keep objectives here until you are ready to assign them to a game or DLC.</p><div id="general-milestones"></div></div>
+    <div class="card" style="grid-column:1 / -1"><div class="card-header">General milestones</div><p class="backup-hint">Keep objectives here until you are ready to assign them to a game.</p><div id="general-milestones"></div></div>
     </div>
   </div>
 
@@ -6577,7 +6551,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       <input type="text" id="rename-tags" placeholder="Tags, comma separated (e.g. PC, Co-op)" maxlength="180" autocomplete="off">
       <label for="rename-tags">Tags, comma separated</label>
     </div>
-    <p class="backup-hint">Exclude this game and its DLCs from weekly rotation. Existing sessions and statistics are kept.</p>
+    <p class="backup-hint">Exclude this game from weekly rotation. Existing sessions and statistics are kept.</p>
     <div class="modal-actions">
       <button class="btn-ghost" id="rename-cancel">Cancel</button>
       <button class="btn btn-start" id="rename-save" style="padding:8px 16px;font-size:0.85rem;">Save</button>
@@ -6604,7 +6578,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div class="modal-overlay" id="add-session-modal">
   <div class="modal">
     <h3>Add Session</h3>
-    <section class="content-allocation" id="add-content-allocation"></section>
+    <section id="add-session-playthrough"></section>
     <div class="field-group">
       <label for="add-session-game">Game</label>
       <select id="add-session-game"></select>
@@ -6729,7 +6703,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div class="modal-overlay" id="edit-session-modal">
   <div class="modal">
     <h3>Edit Session</h3>
-    <section class="content-allocation" id="edit-content-allocation"></section>
+    <section id="edit-session-playthrough"></section>
     <div class="field-group">
       <label for="edit-session-time">Start</label>
       <div class="field-date-grid">
@@ -6834,7 +6808,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div class="modal-overlay" id="milestone-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-modal-title"><h3 id="milestone-modal-title">Add milestone</h3><div class="field-group"><label for="milestone-name">Milestone name</label><input id="milestone-name" type="text" maxlength="80" placeholder="e.g. Finish Chapter 1" autocomplete="off"></div><div class="field-group"><label for="milestone-type">Type</label><select id="milestone-type"><option value="manual">Manual</option><option value="checklist">Checklist</option><option value="counter">Counter</option><option value="playtime">Tracked playtime</option></select></div>
 <div id="milestone-checklist-fields" hidden><p class="backup-hint">Name at least one step. Progress can be updated before prerequisites are met.</p><div id="milestone-steps"></div><button type="button" class="btn-ghost" id="milestone-step-add">+ Add step</button></div>
 <div id="milestone-counter-fields" hidden class="milestone-field-grid"><div class="field-group"><label for="milestone-current">Current count</label><input id="milestone-current" type="number" min="0" step="1"></div><div class="field-group"><label for="milestone-target">Target count</label><input id="milestone-target" type="number" min="1" step="1"></div><div class="field-group"><label for="milestone-unit">Unit (optional)</label><input id="milestone-unit" type="text" maxlength="40" placeholder="collectibles"></div></div>
-<div id="milestone-playtime-fields" hidden><div class="field-group"><label for="milestone-target-hours">Target hours</label><input id="milestone-target-hours" type="number" min="0.25" step="0.25"></div><div class="field-group"><label for="milestone-time-basis">Count recorded playtime</label><select id="milestone-time-basis"><option value="total">Total tracked time</option><option value="creation">Since creation</option></select></div><p class="backup-hint">Recorded Base game or DLC time only. HLTB already-played hours are excluded. Running time is provisional.</p></div>
+<div id="milestone-playtime-fields" hidden><div class="field-group"><label for="milestone-target-hours">Target hours</label><input id="milestone-target-hours" type="number" min="0.25" step="0.25"></div><div class="field-group"><label for="milestone-time-basis">Count recorded playtime</label><select id="milestone-time-basis"><option value="total">Total tracked time</option><option value="creation">Since creation</option></select></div><p class="backup-hint">Recorded game time only. HLTB already-played hours are excluded. Running time is provisional.</p></div>
 <details class="milestone-advanced"><summary>Advanced options</summary><div class="field-group"><label id="milestone-target-date-label">Target date (optional)</label><div class="cal-field" id="milestone-target-date" aria-labelledby="milestone-target-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-target-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><fieldset class="milestone-prerequisites"><legend>Prerequisites</legend><div id="milestone-prerequisite-options"></div></fieldset><label class="milestone-complete-toggle"><input id="milestone-pinned" type="checkbox"><span>Pin this milestone (replaces the current pin)</span></label></details><div class="field-group" id="milestone-estimate-source-field"><label for="milestone-estimate-source">Estimate completion using</label><select id="milestone-estimate-source"><option value="mainStory">Main Story (HLTB)</option><option value="mainExtra">Main + Extra (HLTB)</option><option value="hours">Custom hours remaining</option></select></div><div class="field-group" id="milestone-estimate-field"><label for="milestone-hours-remaining">Hours remaining (optional)</label><input type="number" min="0.25" step="0.25" id="milestone-hours-remaining"></div><label class="milestone-complete-toggle"><input id="milestone-completed" type="checkbox"><span>Mark done (waits for prerequisites)</span></label><div class="field-group" id="milestone-completion-date" hidden><label id="milestone-date-label">Completion date</label><div class="cal-field" id="milestone-date" aria-labelledby="milestone-date-label"><button class="cal-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-labelledby="milestone-date-label"><span class="cal-label placeholder">yyyy-mm-dd</span><span class="cal-chevron">&#9662;</span></button><div class="cal-popover"><div class="cal-head"><button class="cal-nav" type="button" data-dir="-1" aria-label="Previous month">&#8249;</button><span class="cal-title"></span><button class="cal-nav" type="button" data-dir="1" aria-label="Next month">&#8250;</button></div><div class="cal-weekdays"></div><div class="cal-grid"></div><div class="cal-foot"><button class="cal-action" type="button" data-action="today">Today</button><button class="cal-action" type="button" data-action="clear">Clear</button></div></div></div></div><div id="milestone-discard" class="milestone-warning" hidden><p>Changing type will discard the previous checklist or counter data. Save again to confirm, or Cancel to keep the original milestone.</p></div><p id="milestone-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button class="btn-ghost" id="milestone-cancel" type="button">Cancel</button><button class="btn-primary" id="milestone-save" type="button">Save milestone</button></div></div></div>
 <div class="modal-overlay" id="milestone-template-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-template-title"><h3 id="milestone-template-title">Milestone templates</h3><div class="field-group" id="milestone-template-name-field"><label for="milestone-template-name">Template name</label><input id="milestone-template-name" type="text" maxlength="80"></div><div class="field-group" id="milestone-template-select-field"><label for="milestone-template-select">Template</label><select id="milestone-template-select"></select></div><p class="backup-hint">Definitions, ordering, and prerequisites are copied. Progress, pins, and dates start fresh. Applying appends to your existing milestones.</p><div id="milestone-template-preview"></div><p id="milestone-template-error" class="backup-hint" role="alert" hidden></p><div class="modal-actions"><button id="milestone-template-delete" class="btn-danger" type="button" hidden>Delete template</button><button id="milestone-template-cancel" class="btn-ghost" type="button">Cancel</button><button id="milestone-template-confirm" class="btn-primary" type="button">Apply template</button></div></div></div>
 <div class="modal-overlay" id="milestone-delete-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="milestone-delete-title"><h3 id="milestone-delete-title">Delete milestone?</h3><p id="milestone-delete-message" class="backup-hint"></p><div class="modal-actions"><button class="btn-ghost" id="milestone-delete-cancel" type="button">Cancel</button><button class="btn-danger" id="milestone-delete-confirm" type="button">Delete</button></div></div></div>
@@ -6888,34 +6862,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
 </div>
 
-<div class="modal-overlay" id="content-chooser"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="content-chooser-title">
-  <h3 id="content-chooser-title">Choose content</h3>
-  <div class="field-group"><label for="content-chooser-select">Content</label><select id="content-chooser-select"></select></div>
-  <div class="modal-actions"><button class="btn-ghost" id="content-chooser-cancel">Cancel</button><button class="btn-primary" id="content-chooser-confirm">Continue</button></div>
-</div></div>
-<div class="modal-overlay" id="dlc-editor"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="dlc-editor-title">
-  <h3 id="dlc-editor-title">DLC</h3>
-  <form id="dlc-editor-form">
-    <div class="dash-cover" id="dlc-cover-preview"></div>
-    <div class="dash-cover-actions">
-      <button type="button" class="btn-ghost" id="dlc-upload-btn" style="padding:6px 10px;font-size:0.75rem;">Upload</button>
-      <input id="dlc-upload" type="file" accept="image/jpeg,image/png,image/webp" style="display:none">
-      <input id="dlc-image" class="cover-url" type="text" placeholder="https://image url" autocomplete="off" maxlength="500" aria-label="DLC cover URL">
-      <button type="button" class="btn-ghost" id="dlc-set-url" style="padding:6px 10px;font-size:0.75rem;">Set URL</button>
-      <button type="button" class="btn-ghost btn-danger" id="dlc-clear-cover" style="padding:6px 10px;font-size:0.75rem;">Remove</button>
-    </div>
-    <p class="backup-hint" id="dlc-inherited-platform"></p>
-    <div class="m3-field"><input id="dlc-name" type="text" maxlength="80" placeholder="DLC name" required><label for="dlc-name">Name</label></div>
-    <p id="dlc-editor-error" class="backup-hint" role="alert" hidden></p>
-    <div class="modal-actions"><button type="button" class="btn-ghost" id="dlc-editor-cancel">Cancel</button><button class="btn btn-start" type="submit" style="padding:8px 16px;font-size:0.85rem;">Save</button></div>
-  </form>
-</div></div>
-<div class="modal-overlay" id="dlc-delete"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="dlc-delete-title">
-  <h3 id="dlc-delete-title">Delete DLC?</h3><p id="dlc-delete-message"></p><p class="backup-hint">Tracked time will move to Base game. The DLC cover, estimates, and milestones will be removed.</p>
-  <div class="modal-actions"><button class="btn-ghost" id="dlc-delete-cancel">Cancel</button><button class="btn-ghost" id="dlc-delete-archive">Archive instead</button><button class="btn-danger" id="dlc-delete-confirm">Move time and delete</button></div>
-</div></div>
-
-<!-- Goal modal -->
 <div class="modal-overlay" id="goal-modal">
   <div class="modal">
     <h3>Daily Playtime Goal</h3>
@@ -7108,9 +7054,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   // --- Storage ---
   const mxFieldRegistry = new Map();
   const KEYS = { games: 'playdex_games', sessions: 'playdex_sessions', settings: 'playdex_settings' };
+  let libraryConversionBlocked=false;
   // Reject stale writes even before the other tab's storage event is delivered.
   const storageBaseline = Object.fromEntries(Object.values(KEYS).map(key => [key, localStorage.getItem(key)]));
   function checkStorageFresh() {
+    if(libraryConversionBlocked)throw Error('Reload after resolving the library conversion error before saving.');
     if (Object.keys(storageBaseline).some(key => localStorage.getItem(key) !== storageBaseline[key])) {
       location.reload();
       throw new Error('PlayDex changed in another tab; reloading before saving.');
@@ -7140,12 +7088,46 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
 
+  function stripLegacyContent(data){
+    for(const game of data.games||[]){
+      delete game.dlcs;
+      for(const run of game.playthroughs||[])run.content={base:run.content?.base||{milestones:[]}};
+    }
+    for(const session of data.sessions||[])delete session.segments;
+    const parentIds=new Set((data.games||[]).map(game=>game.id));
+    const legacy=id=>typeof id==='string'&&id.startsWith('dlc:')&&!parentIds.has(id);
+    const cleanMap=value=>{if(value&&typeof value==='object'&&!Array.isArray(value))for(const id of Object.keys(value))if(legacy(id))delete value[id];};
+    const cleanPlan=plan=>{if(!plan||typeof plan!=='object')return;if(Array.isArray(plan.ids))plan.ids=plan.ids.filter(id=>!legacy(id));for(const key of ['targets','days','playthroughs','priorities'])cleanMap(plan[key]);};
+    const prefs=data.settings;
+    if(prefs){
+      delete prefs.dlcRotationExplained;
+      if(Array.isArray(prefs.weeklyRotation))prefs.weeklyRotation=prefs.weeklyRotation.filter(id=>!legacy(id));
+      for(const key of ['weeklyRotationTargets','weeklyRotationDays','weeklyRotationPlaythroughs','weeklyRotationPriorities'])cleanMap(prefs[key]);
+      cleanPlan(prefs.weeklyRotationLastWeek);
+      for(const preset of prefs.rotationPresets||[])cleanPlan(preset.plan);
+      for(const plan of Object.values(prefs.weeklyPlanHistory||{}))cleanPlan(plan);
+    }
+    for(const item of data.history||[])if(item&&Array.isArray(item.games)&&Array.isArray(item.sessions))stripLegacyContent(item);
+    return data;
+  }
+  function migrateLegacyContent(){
+    const raw={games:JSON.parse(localStorage.getItem(KEYS.games)||'[]'),sessions:JSON.parse(localStorage.getItem(KEYS.sessions)||'[]'),settings:JSON.parse(localStorage.getItem(KEYS.settings)||'{}')};
+    const converted=stripLegacyContent(structuredClone(raw));
+    if(JSON.stringify(raw)===JSON.stringify(converted))return;
+    // Validate before taking a recovery copy or touching any library record.
+    validateBackupData(structuredClone(raw));
+    const copy=JSON.stringify({app:'PlayDex',version:1,reason:'content conversion',exportedAt:new Date().toISOString(),...raw});
+    if(!localStorage.getItem('playdex.content-conversion.recovery'))localStorage.setItem('playdex.content-conversion.recovery',copy);
+    localStorage.setItem(DBX_RECOVERY_KEY,copy);
+    persistLibraryReplacement(converted.games,converted.sessions,Object.assign(defaultSettings(),converted.settings));
+    document.getElementById('dbx-recovery-export').style.display='';
+  }
   function normalizeGames(arr) {
     return (Array.isArray(arr) ? arr : []).map(g => {
       const o = { id: g.id, name: g.name, archived: !!g.archived, image: null, pinned: !!g.pinned, tags: normalizeTags(g.tags), platform: normalizePlatform(g.platform), milestones: normalizeGameMilestones(g.milestones) };
       if (Array.isArray(g.playthroughs)) o.playthroughs = structuredClone(g.playthroughs);
       if (typeof g.defaultPlaythroughId === 'string' && o.playthroughs?.some(run=>run.id===g.defaultPlaythroughId&&!run.finishedAt)) o.defaultPlaythroughId=g.defaultPlaythroughId;
-      if (Array.isArray(g.dlcs)) o.dlcs = normalizeGames(g.dlcs.map(({dlcs, ...dlc}) => dlc));
+      for(const run of o.playthroughs||[])run.content={base:run.content?.base||{milestones:[]}};
       for (const key of ['mainStoryHours', 'mainExtraHours', 'beatAlreadyPlayedHours']) {
         if (Number.isFinite(g[key]) && g[key] > 0) o[key] = g[key];
       }
@@ -7194,8 +7176,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function persistLibraryReplacement(library,history,preferences) {
     checkStorageFresh();
-    validateProgressionData({games:library,sessions:history,settings:preferences});
-    const nextGames=normalizeGames(library),nextSessions=structuredClone(history),nextSettings=structuredClone(preferences);
+    const converted=validateBackupData(structuredClone({games:library,sessions:history,settings:preferences}));
+    const nextGames=normalizeGames(converted.games),nextSessions=converted.sessions,nextSettings=converted.settings;
     rollWeeklyRotation(nextSettings);
     const result=reconcileMilestoneLibrary(nextGames,nextSessions);
     const records=[[KEYS.games,nextGames],[KEYS.sessions,nextSessions],[KEYS.settings,nextSettings]];
@@ -7272,7 +7254,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   let gamesArchiveFilter = 'all';
   const gameAttributeFilters = {
     pinned: ['Pin status', { yes:'Pinned games', no:'Unpinned games' }],
-    dlc: ['Content', { parents:'Games only', children:'DLC only', with:'Games with DLC', without:'Games without DLC' }],
     cover: ['Cover', { yes:'Has cover', no:'No cover' }],
     hltb: ['HLTB', { set:'Estimates set', missing:'HLTB not set', unavailable:'HLTB not available', exempt:'HLTB not needed' }],
     milestones: ['Personal milestones', { none:'No milestones', open:'Has unfinished milestones', done:'All milestones completed' }],
@@ -7871,7 +7852,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if(dbxDirty)scheduleAutoUpload();
   }
 
-  function validateBackupData(data) {
+  function validateBackupData(data, convert = true) {
     const record=value=>value && typeof value==='object' && !Array.isArray(value);
     const text=value=>typeof value==='string' && value.trim().length>0;
     const date=value=>typeof value==='string' && Number.isFinite(Date.parse(value));
@@ -7894,11 +7875,15 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       if (session.pausedAt!=null && !date(session.pausedAt)) throw new Error('Invalid pause date');
       if (session.targetMs!=null && (!Number.isFinite(session.targetMs) || session.targetMs<0)) throw new Error('Invalid session target');
     });
-    validateDlcData(data);
+    validateLegacyContentData(data);
     validateMilestoneData(data);
     validateRotationHistory(data.settings);
     validateProgressionData(data);
-    return data;
+    if(data.history!==undefined){
+      if(!Array.isArray(data.history))throw Error('Invalid backup history');
+      for(const entry of data.history)validateBackupData(entry,false);
+    }
+    return convert?stripLegacyContent(data):data;
   }
   function dbxValidateFile(data) {
     return validateBackupData(data);
@@ -8616,8 +8601,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const totals = platformTotals(rows);
     return totals.length ? totals.map(([name, ms]) => '<div class="platform-summary-row"><span>' + escHtml(name) + '</span><strong>' + fmtDurationShort(ms) + '</strong></div>').join('') : '<p class="backup-hint">No completed sessions yet.</p>';
   }
-  // DLC entries inherit their parent platform and retain the parent session identity.
-  function validateDlcData(data) {
+  // Read-only validation of older backups before removing legacy content metadata.
+  function validateLegacyContentData(data) {
     const allIds = new Set(data.games.map(game => game.id));
     for (const parent of data.games) {
       if (parent.dlcs === undefined) continue;
@@ -8673,273 +8658,25 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       });
       if (session.stop === null ? boundary !== null : boundary !== Date.parse(session.stop)) throw new Error('Content segments must match the session end');
       if (session.stop !== null) {
-        const allocated = [...allocatedPlaytime(session)].reduce((sum,[,ms]) => sum + ms,0);
+        const pauses=sessionPauseIntervals(session,Date.parse(session.stop));
+        const allocated=session.segments.reduce((sum,segment)=>{const start=Date.parse(segment.start),end=Date.parse(segment.stop);return sum+Math.max(0,end-start-pauses.reduce((total,[from,to])=>total+Math.max(0,Math.min(end,to)-Math.max(start,from)),0));},0);
         if (Math.abs(allocated - session.durationMs) > 1) throw new Error('Content duration does not match session playtime');
       }
     }
   }
-  function dlcKey(parentId, dlcId) {
-    return 'dlc:' + encodeURIComponent(parentId) + ':' + encodeURIComponent(dlcId);
-  }
-  function dlcEntry(parent, dlc) {
-    return {
-      ...dlc, id:dlcKey(parent.id, dlc.id), parentId:parent.id, dlcId:dlc.id,
-      name:parent.name + ' / ' + dlc.name, contentName:dlc.name,
-      archived:parent.archived || dlc.archived, platform:parent.platform, tags:parent.tags || []
-    };
-  }
-  function contentEntries() {
-    return games.flatMap(parent => [
-      parent,
-      ...(parent.dlcs || []).map(dlc => dlcEntry(parent, dlc))
-    ]);
-  }
-  function contentEntry(key) {
-    const parent = games.find(game => game.id === key);
-    if (parent) return parent;
-    if (typeof key !== 'string' || !key.startsWith('dlc:')) return null;
-    try {
-      const [parentId, dlcId] = key.slice(4).split(':').map(decodeURIComponent);
-      const game = games.find(game => game.id === parentId);
-      const dlc = game?.dlcs?.find(entry => entry.id === dlcId);
-      return dlc ? dlcEntry(game, dlc) : null;
-    } catch { return null; }
-  }
-  function contentData(key) {
-    const entry = contentEntry(key);
-    if (!entry) return null;
-    return entry.parentId ? games.find(game => game.id === entry.parentId).dlcs.find(dlc => dlc.id === entry.dlcId) : games.find(game => game.id === key);
-  }
-  function sessionSegments(session) {
-    return session.segments || [{id:session.id, dlcId:null, start:session.start, stop:session.stop}];
-  }
-  function sessionContentKey(session) {
-    const dlcId = sessionSegments(session).at(-1)?.dlcId;
-    return dlcId ? dlcKey(session.gameId, dlcId) : session.gameId;
-  }
-  function contentName(parentId, dlcId) {
-    return dlcId ? games.find(game => game.id === parentId)?.dlcs?.find(dlc => dlc.id === dlcId)?.name || 'Missing DLC' : 'Base game';
-  }
-  function allocatedPlaytime(session, now = Date.now()) {
-    if (!session.segments) {
-      const ms = session.stop === null ? Math.max(0, activeElapsedMs(session, now)) : session.durationMs || 0;
-      return new Map([[null, ms]]);
-    }
-    const totals = new Map();
-    const merged = sessionPauseIntervals(session,now);
-    for (const segment of session.segments) {
-      const start = Date.parse(segment.start), end = segment.stop === null ? now : Date.parse(segment.stop);
-      let ms = Math.max(0, end - start);
-      for (const [from, to] of merged) ms -= Math.max(0, Math.min(end, to) - Math.max(start, from));
-      totals.set(segment.dlcId, (totals.get(segment.dlcId) || 0) + Math.max(0, ms));
-    }
-    return totals;
-  }
-  function contentMs(session, key, now = Date.now()) {
-    const entry = contentEntry(key);
-    if (!entry || session.gameId !== (entry.parentId || entry.id)) return 0;
-    return allocatedPlaytime(session, now).get(entry.dlcId || null) || 0;
-  }
-  function contentSessions(key) {
-    const entry = contentEntry(key);
-    if (!entry) return [];
-    const parentId = entry.parentId || entry.id;
-    return sessions.filter(session => session.gameId === parentId && sessionSegments(session).some(segment => segment.dlcId === (entry.dlcId || null)))
-      .map(session => {
-        const pauses = [];
-        for (const segment of sessionSegments(session).filter(segment => segment.dlcId === (entry.dlcId || null))) {
-          for (const pause of session.pauses || []) {
-            const from = Math.max(Date.parse(segment.start), Date.parse(pause.from));
-            const to = Math.min(segment.stop === null ? Date.now() : Date.parse(segment.stop), Date.parse(pause.to));
-            if (to > from) pauses.push({from:new Date(from).toISOString(),to:new Date(to).toISOString()});
-          }
-        }
-        return {...session, pauses, durationMs:allocatedPlaytime(session).get(entry.dlcId || null) || 0};
-      });
-  }
-  function contentBreakdown(session, now = Date.now()) {
-    return [...allocatedPlaytime(session, now)].map(([id, ms]) => contentName(session.gameId, id) + ': ' + fmtDuration(ms)).join(' · ');
-  }
-  function dlcDashboardSection(game) {
-    const parent = games.find(entry => entry.id === (game.parentId || game.id));
-    if (!parent) return '';
-    const all = sessions.filter(session => session.gameId === parent.id && session.stop !== null);
-    const totals = new Map();
-    for (const session of all) {
-      for (const [id, ms] of allocatedPlaytime(session)) totals.set(id, (totals.get(id) || 0) + ms);
-    }
-    if (game.parentId) {
-      return '<section class="dlc-section"><button class="btn-ghost" type="button" data-content-dashboard="' + milestoneAttr(parent.id) + '">Back to ' + escHtml(parent.name) + '</button>' +
-        '<p class="backup-hint">DLC · Platform: ' + escHtml(parent.platform || 'Unspecified') + '</p>' +
-        dlcActionButtons(game) + '</section>';
-    }
-    return '<section class="dlc-section"><div class="game-milestones-heading"><h4>DLCs</h4><button class="btn-ghost" type="button" data-dlc-add="' + milestoneAttr(parent.id) + '">+ Add DLC</button></div>' +
-      '<div class="dash-row"><button class="btn-ghost" type="button" data-content-dashboard="' + milestoneAttr(parent.id) + '" data-base-only>Base game</button><strong>' + fmtDuration(totals.get(null) || 0) + '</strong></div>' +
-      '<div class="dash-row"><span>DLC total</span><strong>' + fmtDuration([...totals].reduce((sum,[id,ms]) => sum + (id ? ms : 0),0)) + '</strong></div>' +
-      '<button class="btn-ghost" type="button" data-content-dashboard="' + milestoneAttr(parent.id) + '">Combined history</button>' +
-      (parent.dlcs || []).map(dlc => {
-        const entry = contentEntry(dlcKey(parent.id, dlc.id));
-        return '<div class="dlc-dashboard-row"><div><button class="btn-ghost" type="button" data-content-dashboard="' + milestoneAttr(entry.id) + '">' + escHtml(dlc.name) + '</button>' +
-          '<span class="backup-hint">' + (dlc.archived ? 'Archived · ' : '') + fmtDuration(totals.get(dlc.id) || 0) + '</span></div>' + dlcActionButtons(entry) + '</div>';
-      }).join('') + '</section>';
-  }
-  function dlcActionButtons(entry) {
-    return '<div class="dlc-actions">' + (!entry.archived ? '<button type="button" class="btn-ghost" data-dlc-start="' + milestoneAttr(entry.id) + '">Start</button>' : '') +
-      '<button type="button" class="btn-ghost" data-dlc-edit="' + milestoneAttr(entry.id) + '">Edit</button>' +
-      '<button type="button" class="btn-ghost" data-dlc-archive="' + milestoneAttr(entry.id) + '">' + (contentData(entry.id)?.archived ? 'Restore' : 'Archive') + '</button>' +
-      '<button type="button" class="btn-ghost btn-danger" data-dlc-delete="' + milestoneAttr(entry.id) + '">Delete</button></div>';
-  }
-  function openDlcEditor(parentId, key = null) {
-    const modal = document.getElementById('dlc-editor');
-    advanceCoverRevision(modal);
-    rememberContentFocus(modal);
-    const dlc = key ? contentData(key) : null;
-    modal.dataset.parentId = parentId;
-    modal.dataset.contentKey = key || '';
-    modal.dataset.cover = dlc?.image || '';
-    document.getElementById('dlc-name').value = dlc?.name || '';
-    document.getElementById('dlc-image').value = dlc?.image?.startsWith('http') ? dlc.image : '';
-    document.getElementById('dlc-upload').value = '';
-    paintCover(document.getElementById('dlc-cover-preview'), dlc, 'Add a cover');
-    document.getElementById('dlc-inherited-platform').textContent = 'Platform: ' + (games.find(game => game.id === parentId)?.platform || 'Unspecified') + ' (from game)';
-    document.getElementById('dlc-editor-error').hidden = true;
-    document.getElementById('dlc-editor-title').textContent = dlc ? 'Edit DLC' : 'Add DLC';
-    modal.classList.add('open');
-    document.getElementById('dlc-name').focus();
-  }
-  function refreshContentViews() {
-    render();
-    const key = document.getElementById('dashboard-modal').dataset.gameId;
-    const entry = contentEntry(key);
-    if (entry) {
-      document.getElementById('dashboard-title').textContent = entry.name;
-      paintCover(document.getElementById('dashboard-cover'), entry, 'No cover');
-      renderDashboardBody(entry);
-    }
-  }
+  function contentEntries(){return games.slice();}
+  function contentEntry(key){return games.find(game=>game.id===key)||null;}
+  function contentData(key){return contentEntry(key);}
+  function sessionContentKey(session){return session.gameId;}
+  function recordedSessionMs(session,now=Date.now()){return session.stop===null?Math.max(0,activeElapsedMs(session,now)):session.durationMs||0;}
+  function contentMs(session,key,now=Date.now()){return session.gameId===key?recordedSessionMs(session,now):0;}
+  function contentSessions(key){return sessions.filter(session=>session.gameId===key);}
+  function refreshContentViews(){render();const entry=contentEntry(document.getElementById('dashboard-modal').dataset.gameId);if(entry)renderDashboardBody(entry);}
   function restoredContentFitsBudget(keys) {
     const selected = keys.filter(key => archivedRotationIds().includes(key));
     const additional = selected.reduce((sum,key) => sum + rotationTargetMinutes(key),0);
     const budget = weeklyRotationBudgetMinutes();
     return !(budget || settings.autoDailyGoal || settings.plannerDayBudgets) || rotationCommittedMinutes() + additional <= budget;
-  }
-  function setDlcArchived(key, archived) {
-    const entry = contentEntry(key), dlc = contentData(key);
-    if (!entry?.parentId || !dlc) return false;
-    if (activeSession && sessionContentKey(activeSession) === key) { toast('Stop or switch content before archiving this DLC.'); return false; }
-    const parent = games.find(game => game.id === entry.parentId);
-    if (!archived && !parent.archived && !restoredContentFitsBudget([key])) { toast('Restoring this DLC would exceed the weekly rotation budget.'); return false; }
-    checkStorageFresh();
-    const nextGames = structuredClone(games);
-    nextGames.find(game => game.id === entry.parentId).dlcs.find(item => item.id === entry.dlcId).archived = archived;
-    saveGames(nextGames);
-    games = nextGames;
-    refreshContentViews();
-    return true;
-  }
-  document.getElementById('dlc-editor-cancel').onclick = () => document.getElementById('dlc-editor').classList.remove('open');
-  document.getElementById('dlc-upload-btn').onclick = () => document.getElementById('dlc-upload').click();
-  document.getElementById('dlc-set-url').onclick = () => {
-    const image = document.getElementById('dlc-image').value.trim();
-    const error = document.getElementById('dlc-editor-error');
-    if (!/^https?:\/\//i.test(image)) { error.textContent = 'Enter an HTTP(S) image URL.'; error.hidden = false; return; }
-    error.hidden = true;
-    advanceCoverRevision(document.getElementById('dlc-editor'));
-    document.getElementById('dlc-editor').dataset.cover = image;
-    paintCover(document.getElementById('dlc-cover-preview'), {image}, 'Add a cover');
-  };
-  document.getElementById('dlc-image').addEventListener('input',()=>advanceCoverRevision(document.getElementById('dlc-editor')));
-  document.getElementById('dlc-clear-cover').onclick = () => {
-    advanceCoverRevision(document.getElementById('dlc-editor'));
-    document.getElementById('dlc-editor').dataset.cover = '';
-    document.getElementById('dlc-image').value = '';
-    document.getElementById('dlc-upload').value = '';
-    paintCover(document.getElementById('dlc-cover-preview'), null, 'Add a cover');
-  };
-  document.getElementById('dlc-upload').onchange = event => {
-    const file=event.target.files[0];event.target.value='';if(!file)return;
-    if(!file.type.startsWith('image/')){toast('Please pick an image file');return;}
-    const modal=document.getElementById('dlc-editor'),revision=advanceCoverRevision(modal,true);
-    fileToThumb(file,image=>{
-      if(!currentCoverUpload(modal,revision))return;
-      modal.dataset.cover=image;document.getElementById('dlc-image').value='';
-      advanceCoverRevision(modal);paintCover(document.getElementById('dlc-cover-preview'),{image},'Add a cover');
-    },()=>{if(!currentCoverUpload(modal,revision))return false;advanceCoverRevision(modal);return true;});
-  };
-  document.getElementById('dlc-editor-form').onsubmit = event => {
-    event.preventDefault();
-    checkStorageFresh();
-    const modal = document.getElementById('dlc-editor');
-    if(modal.dataset.coverLoading==='true'){toast('Wait for the cover upload to finish.');return;}
-    const parent = games.find(game => game.id === modal.dataset.parentId);
-    if (!parent) return;
-    const name = document.getElementById('dlc-name').value.trim();
-    const error = document.getElementById('dlc-editor-error');
-    const existing = contentData(modal.dataset.contentKey);
-    if (!name || (parent.dlcs || []).some(dlc => dlc.id !== existing?.id && dlc.name.toLocaleLowerCase() === name.toLocaleLowerCase())) {
-      error.textContent = 'Enter a unique DLC name for this game.'; error.hidden = false; return;
-    }
-    const image = document.getElementById('dlc-image').value.trim() || modal.dataset.cover || null;
-    if (image && !/^(https?:\/\/|data:image\/(jpeg|png|webp);base64,)/i.test(image)) { error.textContent = 'Use an HTTP(S) image URL or upload a cover.'; error.hidden = false; return; }
-    const nextGames = structuredClone(games);
-    const updated = nextGames.find(game => game.id === parent.id);
-    updated.dlcs = updated.dlcs || [];
-    if (existing) {
-      const dlc = updated.dlcs.find(item => item.id === existing.id);
-      dlc.name = name; dlc.image = image;
-    } else updated.dlcs.push({id:uid(),name,image,archived:false,milestones:[]});
-    saveGames(nextGames);
-    games = nextGames;
-    modal.classList.remove('open');
-    refreshContentViews();
-  };
-  document.addEventListener('click', event => {
-    const button = event.target.closest('[data-content-dashboard],[data-dlc-add],[data-dlc-edit],[data-dlc-archive],[data-dlc-delete],[data-dlc-start]');
-    if (!button) return;
-    if (button.hasAttribute('data-content-dashboard')) { event.preventDefault(); openDashboard(button.dataset.contentDashboard, button.hasAttribute('data-base-only')); return; }
-    if (button.hasAttribute('data-dlc-add')) { openDlcEditor(button.dataset.dlcAdd); return; }
-    if (button.hasAttribute('data-dlc-start')) { startGameFromList(button.dataset.dlcStart); return; }
-    const key = button.dataset.dlcEdit || button.dataset.dlcArchive || button.dataset.dlcDelete;
-    const entry = contentEntry(key), dlc = contentData(key);
-    if (!entry?.parentId || !dlc) return;
-    if (button.hasAttribute('data-dlc-edit')) { openDlcEditor(entry.parentId, key); return; }
-    if (button.hasAttribute('data-dlc-archive')) { setDlcArchived(key, !dlc.archived); return; }
-    if (activeSession && sessionContentKey(activeSession) === key) { toast('Stop or switch content before deleting this DLC.'); return; }
-    const modal = document.getElementById('dlc-delete');
-    rememberContentFocus(modal);
-    modal.dataset.contentKey = key;
-    const count = sessions.filter(session => session.gameId === entry.parentId && sessionSegments(session).some(segment => segment.dlcId === entry.dlcId)).length;
-    document.getElementById('dlc-delete-message').textContent = 'Delete ' + dlc.name + '? ' + count + ' sessions contain this DLC.';
-    modal.classList.add('open');
-  });
-  document.getElementById('dlc-delete-cancel').onclick = () => document.getElementById('dlc-delete').classList.remove('open');
-  document.getElementById('dlc-delete-archive').onclick = () => {
-    const modal = document.getElementById('dlc-delete');
-    if (setDlcArchived(modal.dataset.contentKey, true)) modal.classList.remove('open');
-  };
-  document.getElementById('dlc-delete-confirm').onclick = () => {
-    checkStorageFresh();
-    const modal = document.getElementById('dlc-delete'), entry = contentEntry(modal.dataset.contentKey);
-    if (!entry) return;
-    if (activeSession && sessionContentKey(activeSession) === entry.id) { toast('Stop or switch content first.'); return; }
-    const nextGames = structuredClone(games), nextSessions = structuredClone(sessions), nextSettings = structuredClone(settings);
-    nextGames.find(game => game.id === entry.parentId).dlcs = nextGames.find(game => game.id === entry.parentId).dlcs.filter(dlc => dlc.id !== entry.dlcId);
-    nextSessions.forEach(session => {
-      if (session.gameId === entry.parentId) session.segments?.forEach(segment => { if (segment.dlcId === entry.dlcId) segment.dlcId = null; });
-    });
-    nextSettings.weeklyRotation = (nextSettings.weeklyRotation || []).filter(key => key !== entry.id);
-    if (nextSettings.weeklyRotationTargets) delete nextSettings.weeklyRotationTargets[entry.id];
-    if (nextSettings.weeklyRotationDays) delete nextSettings.weeklyRotationDays[entry.id];
-    try{persistLibraryReplacement(nextGames,nextSessions,nextSettings);}
-    catch(error){toast('DLC deletion could not be saved: '+error.message);return;}
-    modal.classList.remove('open');
-    openDashboard(entry.parentId);
-    refreshContentViews();
-  };
-  function contentOptions(parentId, selected = null, archived = false) {
-    const game = games.find(entry => entry.id === parentId);
-    return '<option value="">Base game</option>' + (game?.dlcs || []).filter(dlc => archived || !dlc.archived).map(dlc =>
-      '<option value="' + milestoneAttr(dlc.id) + '"' + (dlc.id === selected ? ' selected' : '') + '>' + escHtml(dlc.name) + (dlc.archived ? ' (archived)' : '') + '</option>').join('');
   }
   function persistSessionReplacement(next) {
     validateProgressionData({games,sessions:next,settings});
@@ -8947,197 +8684,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     sessions = next;
     activeSession = sessions.find(session => session.stop === null) || null;
   }
-  function openContentChooser(parentId, switching = false) {
-    const game = games.find(entry => entry.id === parentId);
-    if (!game || game.archived) return;
-    const modal = document.getElementById('content-chooser');
-    rememberContentFocus(modal);
-    modal.dataset.parentId = parentId;
-    modal.dataset.switching = String(switching);
-    document.getElementById('content-chooser-title').textContent = switching ? 'Switch content' : 'Choose content';
-    document.getElementById('content-chooser-select').innerHTML = contentOptions(parentId, switching && activeSession ? sessionSegments(activeSession).at(-1).dlcId : null);
-    document.getElementById('content-chooser-confirm').textContent = switching ? 'Switch content' : 'Start session';
-    modal.classList.add('open');
-    document.getElementById('content-chooser-select').focus();
+  function refreshLiveProgress(){
+    const pin=document.getElementById('live-milestone');
+    const html=activeSession?pinnedMilestoneHtml(activeSession.gameId,true):'';
+    if(pin.innerHTML!==html)pin.innerHTML=html;pin.hidden=!html;refreshLivePlaythrough();
   }
-  function switchContent(dlcId) {
-    checkStorageFresh();
-    if (!activeSession) return;
-    const parent = games.find(game => game.id === activeSession.gameId);
-    if (parent?.archived || dlcId && !parent?.dlcs?.some(dlc => dlc.id === dlcId && !dlc.archived)) return;
-    const next = structuredClone(activeSession);
-    const segments = structuredClone(sessionSegments(next));
-    if (segments.at(-1).dlcId === dlcId) return;
-    const now = new Date().toISOString();
-    segments.at(-1).stop = now;
-    next.segments = segments.filter(segment => Date.parse(segment.stop) > Date.parse(segment.start));
-    next.segments.push({id:uid(), dlcId, start:now, stop:null});
-    persistSessionReplacement(sessions.map(session => session.id === next.id ? next : session));
-    render();
-    explainDlcRotation();
+  function localDateTime(iso){const date=new Date(iso);return dateKey(iso)+'T'+[date.getHours(),date.getMinutes(),date.getSeconds()].map(value=>String(value).padStart(2,'0')).join(':')+'.'+String(date.getMilliseconds()).padStart(3,'0');}
+  function setupSessionPlaythrough(panel,session){
+    panel.dataset.gameId=session.gameId;panel.dataset.playthroughId=session.playthroughId||(panel.id==='add-session-playthrough'?defaultPlaythrough(games.find(game=>game.id===session.gameId))?.id:'')||'';
+    panel.dataset.start=session.start;panel.dataset.stop=session.stop;panel.innerHTML='';addSessionPlaythroughField(panel);panel.hidden=!panel.children.length;
   }
-  function explainDlcRotation() {
-    if (settings.dlcRotationExplained) return;
-    const rotation = new Set(settings.weeklyRotation || []);
-    if (!sessions.some(session => rotation.has(session.gameId) && session.segments?.some(segment => segment.dlcId))) return;
-    settings.dlcRotationExplained = true;
-    saveSettings(settings);
-    toast('Rotation game targets now count Base game time only. Add separate DLC targets in Plan week.', null, null, 10000);
-  }
-  const contentDialogFocus = new Map();
-  function rememberContentFocus(overlay) {
-    contentDialogFocus.set(overlay.id, document.activeElement);
-  }
-  for (const id of ['content-chooser','dlc-editor','dlc-delete']) {
-    const overlay = document.getElementById(id);
-    new MutationObserver(() => {
-      if (overlay.classList.contains('open')) return;
-      const previous = contentDialogFocus.get(id);
-      contentDialogFocus.delete(id);
-      requestAnimationFrame(() => {
-        if (document.querySelector('#content-chooser.open,#dlc-editor.open,#dlc-delete.open')) return;
-        if (previous?.isConnected && previous.getClientRects().length) previous.focus();
-        else if (document.getElementById('dashboard-modal').classList.contains('open')) document.querySelector('#dashboard-body button')?.focus();
-      });
-    }).observe(overlay,{attributes:true,attributeFilter:['class']});
-    overlay.addEventListener('keydown', event => {
-      if (event.key === 'Escape') {
-        event.stopPropagation();
-        overlay.classList.remove('open');
-      }
-      if (event.key !== 'Tab') return;
-      const fields = [...overlay.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled)')].filter(field => field.getClientRects().length);
-      const first = fields[0], last = fields.at(-1);
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
-    });
-  }
-  document.getElementById('content-chooser-cancel').onclick = () => document.getElementById('content-chooser').classList.remove('open');
-  document.getElementById('content-chooser-confirm').onclick = () => {
-    const modal = document.getElementById('content-chooser');
-    const dlcId = document.getElementById('content-chooser-select').value || null;
-    const parentId = modal.dataset.parentId;
-    modal.classList.remove('open');
-    if (modal.dataset.switching === 'true') switchContent(dlcId);
-    else startGame(parentId, dlcId);
-  };
-  document.getElementById('switch-content').onclick = () => {
-    if (activeSession) openContentChooser(activeSession.gameId, true);
-  };
-  function refreshLiveContent() {
-    let pin=document.getElementById('live-milestone');
-    if(!pin){pin=document.createElement('div');pin.id='live-milestone';document.getElementById('live-content').after(pin);}
-    const pinTick=(activeSession?.id||'none')+':'+Math.floor(Date.now()/1000);
-    if(pin.dataset.tick!==pinTick){
-      pin.dataset.tick=pinTick;
-      const pinHtml=activeSession?pinnedMilestoneHtml(sessionContentKey(activeSession),true):'';
-      if(pin.innerHTML!==pinHtml)pin.innerHTML=pinHtml;
-      pin.hidden=!pinHtml;
-    }
-    const panel = document.getElementById('live-content');
-    panel.hidden = !activeSession;
-    refreshLivePlaythrough();
-    if (!activeSession) return;
-    const game = games.find(entry => entry.id === activeSession.gameId);
-    panel.hidden = !game?.dlcs?.length;
-    document.getElementById('switch-content').hidden = !game?.dlcs?.some(dlc => !dlc.archived);
-    document.getElementById('live-content-name').textContent = contentName(activeSession.gameId, sessionSegments(activeSession).at(-1).dlcId);
-    document.getElementById('live-content-times').textContent = contentBreakdown(activeSession);
-    refreshLivePlaythrough();
-  }
-  function localDateTime(iso) {
-    const date = new Date(iso);
-    return dateKey(iso) + 'T' + [date.getHours(),date.getMinutes(),date.getSeconds()].map(value => String(value).padStart(2,'0')).join(':') + '.' + String(date.getMilliseconds()).padStart(3,'0');
-  }
-  function paintAllocationEditor(panel, segments) {
-    panel.innerHTML = '<h4>Content allocation</h4><p class="backup-hint">Each row continues from the previous boundary. The session start and end follow the time fields below.</p>' +
-      segments.map((segment, index) => '<div class="allocation-row" data-segment-id="' + milestoneAttr(segment.id) + '"><label>Content<select>' +
-        contentOptions(panel.dataset.gameId, segment.dlcId, true) + '</select></label>' +
-        (index < segments.length - 1 ? '<label>Until<input type="datetime-local" step="0.001" value="' + localDateTime(segment.stop) + '" data-original-stop="' + milestoneAttr(segment.stop) + '" required></label>' : '<span class="backup-hint">Until session end</span>') +
-        (segments.length > 1 ? '<button type="button" class="btn-ghost" data-remove-segment="' + index + '">Remove</button>' : '') + '</div>').join('') +
-      '<button type="button" class="btn-ghost" data-add-segment>Add content segment</button><p class="backup-hint" role="alert" data-allocation-error hidden></p>';
-    addPlaythroughAllocationField(panel);
-  }
-  function setupAllocationEditor(panel, session) {
-    panel.dataset.playthroughId = session.playthroughId || (panel.id==='add-content-allocation'?defaultPlaythrough(games.find(game=>game.id===session.gameId))?.id:'') || '';
-    panel.dataset.gameId = session.gameId;
-    panel.dataset.start = session.start;
-    panel.dataset.stop = session.stop;
-    paintAllocationEditor(panel, structuredClone(sessionSegments(session)));
-  }
-  function readAllocation(panel, start, stop) {
-    const rows = [...panel.querySelectorAll('.allocation-row')];
-    let previous = start;
-    const segments = rows.map((row, index) => {
-      const input = row.querySelector('input');
-      const end = index === rows.length - 1 ? stop :
-        Date.parse(input.value) === Date.parse(localDateTime(input.dataset.originalStop)) ? Date.parse(input.dataset.originalStop) : Date.parse(input.value);
-      if (!Number.isFinite(end) || end <= previous || end > stop) throw new Error('Content boundaries must be inside the session, in chronological order. Edit or remove internal boundaries before changing these times.');
-      const dlcId = row.querySelector('select').value || null;
-      const parent = games.find(game => game.id === panel.dataset.gameId);
-      if (dlcId && !parent?.dlcs?.some(dlc => dlc.id === dlcId)) throw new Error('This DLC no longer exists.');
-      const segment = {id:row.dataset.segmentId, dlcId, start:new Date(previous).toISOString(), stop:new Date(end).toISOString()};
-      previous = end;
-      return segment;
-    });
-    return segments;
-  }
-  function allocationForSave(panel, start, stop) {
-    try { return readAllocation(panel, start, stop); }
-    catch (error) {
-      const label = panel.querySelector('[data-allocation-error]');
-      label.hidden = false;
-      label.textContent = error.message;
-      label.scrollIntoView({block:'nearest'});
-      return null;
-    }
-  }
-  function removeAllocationRow(panel,index,start,stop) {
-    const rows=[...panel.querySelectorAll('.allocation-row')];
-    if(rows.length<=1||!Number.isInteger(index)||index<0||index>=rows.length)return;
-    if(index>0){
-      const previous=rows[index-1],boundary=previous.querySelector('input'),following=rows[index].querySelector('input');
-      if(following){
-        boundary.value=following.value;
-        boundary.dataset.originalStop=following.dataset.originalStop;
-      }else{
-        boundary.closest('label').remove();
-        const until=document.createElement('span');until.className='backup-hint';until.textContent='Until session end';
-        previous.querySelector('[data-remove-segment]').before(until);
-      }
-    }
-    rows[index].remove();
-    const remaining=[...panel.querySelectorAll('.allocation-row')];
-    remaining.forEach((row,i)=>{const button=row.querySelector('[data-remove-segment]');if(remaining.length===1)button?.remove();else if(button)button.dataset.removeSegment=String(i);});
-    panel.querySelector('[data-allocation-error]').hidden=true;
-    // Other invalid boundaries stay editable; removing one never requires it to be valid first.
-    try{readAllocation(panel,start,stop);}catch(error){allocationForSave(panel,start,stop);}
-  }
-  document.querySelectorAll('.content-allocation').forEach(panel => {
-    panel.addEventListener('click', event => {
-      const button = event.target.closest('button[data-add-segment],button[data-remove-segment]');
-      if (!button) return;
-      let segments;
-      const adding = panel.id === 'add-content-allocation';
-      const from = getCalDateTime(adding ? addSessionStartDate : editSessionStartDate, adding ? addSessionStartTime : editSessionStartTime);
-      const to = getCalDateTime(adding ? addSessionEndDate : editSessionEndDate, adding ? addSessionEndTime : editSessionEndTime);
-      const preserveSeconds = (value, initial) => value.slice(0,16) === localDateTime(initial).slice(0,16) ? Date.parse(initial) : Date.parse(value);
-      const startTime = preserveSeconds(from, panel.dataset.start), stopTime = preserveSeconds(to, panel.dataset.stop);
-      if(button.hasAttribute('data-remove-segment')){removeAllocationRow(panel,Number(button.dataset.removeSegment),startTime,stopTime);return;}
-      try { segments = readAllocation(panel, startTime, stopTime); }
-      catch (error) { allocationForSave(panel, startTime, stopTime); return; }
-      if (button.hasAttribute('data-add-segment')) {
-        const last = segments.at(-1), start = Date.parse(last.start), stop = Date.parse(last.stop);
-        if (stop - start < 2) return;
-        const boundary = new Date(Math.floor((start + stop) / 2)).toISOString();
-        last.stop = boundary;
-        segments.push({id:uid(), dlcId:null, start:boundary, stop:new Date(stop).toISOString()});
-      }
-      paintAllocationEditor(panel, segments);
-    });
-  });
-
-  function startGame(gameId, dlcId, playthroughId) {
+  function startGame(gameId, playthroughId) {
     if (activeSession) { toast('Stop the current session first'); return; }
     const customTarget=document.getElementById('target-custom');
     if(!customTarget.checkValidity()){
@@ -9145,12 +8702,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       toast('Enter a whole-minute target from 1 to 1440, or choose Off.');return;
     }
     const entry = contentEntry(gameId);
-    if (entry?.parentId) { dlcId = entry.dlcId; gameId = entry.parentId; }
     const game = games.find(g => g.id === gameId);
     if (!game || game.archived) return;
-    if (dlcId === undefined && game.dlcs?.some(dlc => !dlc.archived)) { openContentChooser(game.id); return; }
-    if (dlcId && !game.dlcs?.some(dlc => dlc.id === dlcId && !dlc.archived)) return;
-    if(playthroughId===undefined && game.playthroughs?.some(run=>!run.finishedAt)){choosePlaythrough(gameId,dlcId);return;}
+    if(playthroughId===undefined && game.playthroughs?.some(run=>!run.finishedAt)){choosePlaythrough(gameId);return;}
     if(playthroughId&&!game.playthroughs?.some(run=>run.id===playthroughId&&!run.finishedAt)){toast('This playthrough is no longer available. Choose an open playthrough or start unassigned.');return;}
     const session = {
       id: uid(),
@@ -9166,7 +8720,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       targetMs: pendingTargetMin * 60000 || 0
     };
     targetToastShown = false;
-    session.segments = [{id:uid(), dlcId:dlcId || null, start:session.start, stop:null}];
     persistSessionReplacement([...sessions, session]);
     pendingTargetMin = 0;
     document.querySelectorAll('#target-presets .target-opt').forEach(button => button.classList.toggle('on', button.dataset.target === '0'));
@@ -9279,7 +8832,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (activeSession) { toast('Stop the current session first'); return; }
     const g = contentEntry(pickLastId);
     document.getElementById('pick-modal').classList.remove('open');
-    if (g) { startGame(g.id, null); goTab('today'); }
+    if (g) { startGame(g.id); goTab('today'); }
   }
 
   ['pick-game-btn', 'pick-game-btn-today'].forEach(id => {
@@ -9313,12 +8866,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       stopped.pauses.push({ from: stopped.pausedAt, to: now.toISOString() });
       stopped.pausedAt = null;
     }
-    if (stopped.segments) {
-      stopped.segments.at(-1).stop = now.toISOString();
-      stopped.segments = stopped.segments.filter(segment => Date.parse(segment.stop) > Date.parse(segment.start));
-      if (!stopped.segments.length) stopped.segments = [{id:uid(), dlcId:null, start:stopped.start, stop:stopped.stop}];
-      stopped.durationMs = [...allocatedPlaytime(stopped)].reduce((total,[,ms]) => total + ms,0);
-    }
+
     const stoppedId = stopped.id;
     persistSessionReplacement(sessions.map(session => session.id === stoppedId ? stopped : session));
     render();
@@ -9450,6 +8998,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   // --- Render ---
   function render() {
+    if(libraryConversionBlocked)return;
     renderTodayTab();
     renderSessionsTab();
     renderStatsTab();
@@ -9637,6 +9186,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return true;
   }
   function ensureRotationWeek() {
+    if(libraryConversionBlocked)return false;
     const first=settings.weekStartsOn==='sunday'?'sunday':'monday';
     if(settings.weeklyRotationWeekStartsOn===first && milestoneValidDate(settings.weeklyRotationWeek) && settings.weeklyRotationWeek>=rotationWeekKey(new Date(),first))return false;
     const next=structuredClone(settings),rotationChange={};
@@ -9664,7 +9214,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function rotationRunMatches(session,key,selection=settings.weeklyRotationPlaythroughs||{}) { return !selection[key]||session.playthroughId===selection[key]; }
   function rotationContentData(key,selection=settings.weeklyRotationPlaythroughs||{}) {
     if(!selection[key])return contentData(key);
-    return rotationRun(key,selection)?.content?.[contentEntry(key)?.dlcId||'base']||{};
+    return rotationRun(key,selection)?.content?.base||{};
   }
   function rotationRunLabel(key,selection=settings.weeklyRotationPlaythroughs||{}) {
     if(!selection[key])return '';
@@ -9685,10 +9235,9 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     sessions.forEach(session=>{
       const start=new Date(session.start);
       if(session.stop!==null && start>=bounds.start && start<=bounds.end && start<=now) {
-        const allocation = allocatedPlaytime(session);
         for (const [id, entry] of entries) {
           if (!entry || session.gameId !== (entry.parentId || entry.id)||!rotationRunMatches(session,id,selection)) continue;
-          const ms = allocation.get(entry.dlcId || null) || 0;
+          const ms = recordedSessionMs(session);
           if (ms > 0) { result[id].count++; result[id].ms += ms; }
         }
       }
@@ -9782,7 +9331,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if(!contentEntry(key)||contentEntry(key).archived)return [];
     const items=normalizeGameMilestones(rotationContentData(key,selection)?.milestones).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
     return items.map(item=>{
-      const progress=item.type==='playtime'?milestoneProgress(item,contentEntry(key).parentId||contentEntry(key).id,contentEntry(key).dlcId||null,sessions.filter(session=>rotationRunMatches(session,key,selection)),live):null;
+      const progress=item.type==='playtime'?milestoneProgress(item,key,sessions.filter(session=>rotationRunMatches(session,key,selection)),live):null;
       const source=item.estimateSource,estimates=rotationHltbEstimates(key,selection);
       const fallback=progress?null:source==='mainStory'||source==='mainExtra'?estimates.find(estimate=>estimate.label===(source==='mainExtra'?'Main + Extra':'Main Story')):source!=='hours'&&!Number.isFinite(item.hoursRemaining)?estimates[0]:null;
       const remaining=progress?Math.max(0,(progress.target-progress.value)/3600000):fallback?fallback.hoursRemaining:(!source||source==='hours')&&Number.isFinite(item.hoursRemaining)?item.hoursRemaining:undefined;
@@ -9924,7 +9473,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const startCard = document.getElementById('start-game-card');
     const card = document.getElementById('active-session-card');
 
-    refreshLiveContent();
+    refreshLiveProgress();
     if (isActive) {
       document.getElementById('active-game-name').textContent = activeSession.gameName;
       document.getElementById('active-start').textContent = fmtTime(activeSession.start);
@@ -10124,7 +9673,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         return heading + '<div class="session-item' + (animate ? ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms' : '') + '">' +
           '<div class="session-info">' +
             '<div class="session-game">' + escHtml(s.gameName) + (s.synced ? ' <span class="sync-badge">' + iconSvg('check') + '</span>' : '') + '</div>' +
-            (s.segments ? '<div class="backup-hint">' + escHtml(contentBreakdown(s)) + '</div>' : '') +
             '<div class="session-times"><span>' + fmtTime(s.start) + ' &ndash; ' + fmtTime(s.stop) + '</span><span class="session-game-total" title="Total recorded playtime for this game on this day">Total: ' + fmtDurationShort(gameTotals.get(JSON.stringify([day,s.gameId])) || 0) + '</span></div>' +
           '</div>' +
           '<span class="session-duration">' + fmtDuration(s.durationMs) + pauseTag + '</span>' +
@@ -10334,7 +9882,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const heading = '<div class="session-day-heading"><strong>' + calendarSelectedDay + '</strong><span>' + fmtDuration(dayTotal) + ' total</span></div>';
     document.getElementById('playtime-day-details').innerHTML = heading + (groups.size ? [...groups.values()].map(entries => {
       const total = entries.reduce((sum, session) => sum + (session.durationMs || 0), 0);
-      const rows = entries.map(session => '<li class="playtime-session-row"><span>' + fmtTime(session.start) + ' &ndash; ' + fmtTime(session.stop) + (session.segments ? ' · ' + escHtml(contentBreakdown(session)) : '') + '</span><span>' + fmtDuration(session.durationMs || 0) + '</span></li>').join('');
+      const rows = entries.map(session => '<li class="playtime-session-row"><span>' + fmtTime(session.start) + ' &ndash; ' + fmtTime(session.stop) + '</span><span>' + fmtDuration(session.durationMs || 0) + '</span></li>').join('');
       return '<div class="playtime-game-group"><div class="playtime-game-heading"><strong>' + escHtml(entries[0].gameName) + '</strong><span>' + fmtDuration(total) + '</span></div><ul class="playtime-session-list">' + rows + '</ul></div>';
     }).join('') : '<p class="backup-hint">No completed sessions on this day.</p>');
   }
@@ -10386,22 +9934,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.getElementById('stats-weekly-trend').innerHTML=weeks.some(week=>week.count)?weeks.map(week=>statsDistributionRow(week.start+' - '+addDays(week.start,6)+(week.current?' / So far':''),fmtDuration(week.ms),week.ms/max*100)).join(''):'<p class="backup-hint">No completed sessions in the last 12 weeks.</p>';
   }
 
-  function contentPlaytimeData() {
-    const byGame=new Map();let base=0,dlc=0,count=0;
-    for(const session of sessions){if(session.stop===null)continue;count++;let row=byGame.get(session.gameId);if(!row){row={id:session.gameId,name:games.find(game=>game.id===session.gameId)?.name||session.gameName||'Removed game',base:0,dlc:0};byGame.set(session.gameId,row);}
-      for(const [id,ms]of allocatedPlaytime(session)){if(id===null){row.base+=ms;base+=ms;}else{row.dlc+=ms;dlc+=ms;}}
-    }
-    return {base,dlc,count,games:[...byGame.values()].sort((a,b)=>(b.base+b.dlc)-(a.base+a.dlc))};
-  }
-  function contentPlaytimeBar(base,dlc) {
-    const total=base+dlc,basePercent=total?base/total*100:0,dlcPercent=total?dlc/total*100:0;
-    return '<div class="stats-content-bar" role="img" aria-label="'+milestoneAttr('Base game '+fmtDuration(base)+'; DLC '+fmtDuration(dlc))+'"><span style="width:'+basePercent+'%"></span><span style="width:'+dlcPercent+'%"></span></div><p class="backup-hint">Base game: '+fmtDuration(base)+' ('+Math.round(basePercent)+'%) / DLC: '+fmtDuration(dlc)+' ('+Math.round(dlcPercent)+'%)</p>';
-  }
-  function renderContentPlaytime() {
-    const data=contentPlaytimeData(),host=document.getElementById('stats-content-playtime');
-    host.innerHTML=data.count?contentPlaytimeBar(data.base,data.dlc)+'<details class="stats-details"><summary>By game ('+data.games.length+')</summary><div class="stats-scroll">'+data.games.map(game=>'<div class="stats-insight-row"><strong>'+escHtml(game.name)+'</strong>'+contentPlaytimeBar(game.base,game.dlc)+'</div>').join('')+'</div></details>':'<p class="backup-hint">No completed sessions.</p>';
-  }
-
   function consistencyData(month,now=new Date()) {
     if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))return null;
     const [year,m]=month.split('-').map(Number),current=dateKey(now).slice(0,7),elapsed=month===current?now.getDate():month<current?new Date(year,m,0).getDate():0;
@@ -10423,9 +9955,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     for(const parent of games){
       if(parent.archived)continue;
       const append=(key,data,scope,runId=null)=>{const entry=contentEntry(key);if(!entry||entry.archived)return;const items=normalizeGameMilestones(data?.milestones);for(const item of items)rows.push({key,parentId:parent.id,scope,runId,item,blocked:milestoneBlocked(item,items)});};
-      append(parent.id,parent,parent.name+' / Base game'+(parent.archived?' / Archived':''));
-      for(const dlc of parent.dlcs||[])append(dlcKey(parent.id,dlc.id),dlc,parent.name+' / '+dlc.name+(parent.archived||dlc.archived?' / Archived':''));
-      for(const run of parent.playthroughs||[])for(const [id,data]of Object.entries(run.content||{}))append(id==='base'?parent.id:dlcKey(parent.id,id),data,parent.name+' / '+(id==='base'?'Base game':contentName(parent.id,id))+' / '+run.name,run.id);
+      append(parent.id,parent,parent.name+(parent.archived?' / Archived':''));
+      for(const run of parent.playthroughs||[])if(run.content?.base)append(parent.id,run.content.base,parent.name+' / '+run.name,run.id);
     }
     return rows;
   }
@@ -10433,7 +9964,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const rows=statsMilestoneData(),pending=rows.filter(row=>!row.item.completedAt),today=todayStr();
     const due=pending.filter(row=>row.item.targetDate).sort((a,b)=>a.item.targetDate.localeCompare(b.item.targetDate)||a.item.name.localeCompare(b.item.name));
     const metric=(label,value)=>'<div class="stat-box"><div class="stat-value">'+value+'</div><div class="stat-label">'+label+'</div></div>';
-    document.getElementById('stats-milestone-progress').innerHTML=rows.length?'<div class="stat-grid">'+metric('Completed',rows.length-pending.length)+metric('Unfinished',pending.length)+metric('Blocked',pending.filter(row=>row.blocked.length).length)+metric('Overdue',pending.filter(row=>row.item.targetDate&&row.item.targetDate<today).length)+'</div><p class="backup-hint">Includes active Base games, DLCs and playthroughs. Archived content is excluded. Blocked and overdue objectives are included in Unfinished.</p><details class="stats-details" open><summary>Upcoming and overdue targets ('+due.length+')</summary><div class="stats-scroll">'+(due.length?due.map(row=>'<article class="stats-insight-row"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a><p>'+escHtml(row.scope)+'</p>'+milestoneTargetDateHtml(row.item)+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join(''):'<p class="backup-hint">No unfinished milestones with target dates.</p>')+'</div></details>':'<p class="backup-hint">No personal milestones yet. Add objectives from a game or DLC dashboard.</p>';
+    document.getElementById('stats-milestone-progress').innerHTML=rows.length?'<div class="stat-grid">'+metric('Completed',rows.length-pending.length)+metric('Unfinished',pending.length)+metric('Blocked',pending.filter(row=>row.blocked.length).length)+metric('Overdue',pending.filter(row=>row.item.targetDate&&row.item.targetDate<today).length)+'</div><p class="backup-hint">Includes active games and playthroughs. Archived content is excluded. Blocked and overdue objectives are included in Unfinished.</p><details class="stats-details" open><summary>Upcoming and overdue targets ('+due.length+')</summary><div class="stats-scroll">'+(due.length?due.map(row=>'<article class="stats-insight-row"><a class="stats-objective-link" href="#milestones" data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'')+'>'+escHtml(row.item.name)+'</a><p>'+escHtml(row.scope)+'</p>'+milestoneTargetDateHtml(row.item)+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join(''):'<p class="backup-hint">No unfinished milestones with target dates.</p>')+'</div></details>':'<p class="backup-hint">No personal milestones yet. Add objectives from a game dashboard.</p>';
   }
   function openDatedMilestoneDashboard(event){
     const link=event.target.closest('[data-stats-objective]');if(!link)return;event.preventDefault();
@@ -10460,7 +9991,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const parent=options.find(game=>game.id===select.value);
     if(!parent){host.innerHTML='<p class="backup-hint">Create a playthrough from a game dashboard to compare its runs here.</p>';return;}
     const rows=statsRunComparisons(parent);
-    host.innerHTML=(rows.length===1?'<p class="backup-hint">One playthrough so far. Create another from this game&#39;s dashboard to compare runs.</p>':'')+'<div class="d2-table-wrap" tabindex="0" role="region" aria-label="Playthrough comparison table"><table class="d2-table stats-run-table"><thead><tr><th scope="col">Playthrough</th><th scope="col">State</th><th scope="col">Recorded time</th><th scope="col">Sessions</th><th scope="col">Avg. session</th><th scope="col">Milestones</th></tr></thead><tbody>'+rows.map(row=>'<tr><th scope="row"><button type="button" class="btn-ghost" data-stats-run-open="'+milestoneAttr(row.id)+'" data-parent="'+milestoneAttr(parent.id)+'">'+escHtml(row.name)+'</button></th><td>'+(row.finishedAt?'Finished '+escHtml(fmtDateShort(row.finishedAt)):'In progress')+'</td><td>'+fmtDurationShort(row.total)+'</td><td>'+row.count+'</td><td>'+fmtDurationShort(row.average)+'</td><td>'+row.completed+' / '+row.milestones+'</td></tr>').join('')+'</tbody></table></div><p class="backup-hint">Base game and DLC time are combined within each run. Unassigned sessions and HLTB previously played hours are excluded; ongoing runs are incomplete.</p>';
+    host.innerHTML=(rows.length===1?'<p class="backup-hint">One playthrough so far. Create another from this game&#39;s dashboard to compare runs.</p>':'')+'<div class="d2-table-wrap" tabindex="0" role="region" aria-label="Playthrough comparison table"><table class="d2-table stats-run-table"><thead><tr><th scope="col">Playthrough</th><th scope="col">State</th><th scope="col">Recorded time</th><th scope="col">Sessions</th><th scope="col">Avg. session</th><th scope="col">Milestones</th></tr></thead><tbody>'+rows.map(row=>'<tr><th scope="row"><button type="button" class="btn-ghost" data-stats-run-open="'+milestoneAttr(row.id)+'" data-parent="'+milestoneAttr(parent.id)+'">'+escHtml(row.name)+'</button></th><td>'+(row.finishedAt?'Finished '+escHtml(fmtDateShort(row.finishedAt)):'In progress')+'</td><td>'+fmtDurationShort(row.total)+'</td><td>'+row.count+'</td><td>'+fmtDurationShort(row.average)+'</td><td>'+row.completed+' / '+row.milestones+'</td></tr>').join('')+'</tbody></table></div><p class="backup-hint">All recorded time is combined within each run. Unassigned sessions and HLTB previously played hours are excluded; ongoing runs are incomplete.</p>';
   }
   document.getElementById('stats-playthrough-game').addEventListener('change',renderPlaythroughComparison);
   document.getElementById('stats-playthrough-comparison').addEventListener('click',event=>{
@@ -10473,7 +10004,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     renderPlaythroughComparison();
     renderMilestoneStats();
     renderConsistency();
-    renderContentPlaytime();
     renderWeeklyTrend();
     renderPlaytimeDistributions();
     renderPlaytimeCalendar();
@@ -10807,7 +10337,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     for (const session of rows) {
       if (session.stop !== null) getDay(dateKey(session.start)).sessions.push(session);
     }
-    for (const game of library.flatMap(parent => [parent, ...(parent.dlcs || []), ...(parent.playthroughs || []).flatMap(run => Object.values(run.content || {}))])) {
+    for (const game of library.flatMap(parent => [parent, ...(parent.playthroughs || []).map(run => run.content?.base).filter(Boolean)])) {
       for (const milestone of game.milestones || []) {
         if (milestoneValidDate(milestone.completedAt)) getDay(milestone.completedAt).milestones++;
       }
@@ -11527,7 +11057,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function renderCompletionTimeline() {
     const rows=completedMilestoneTimeline(),host=document.getElementById('profile-completion-timeline');
-    if(!rows.length){host.innerHTML='<p class="backup-hint">No completed personal milestones yet. Completed objectives from active games and DLCs will appear here.</p>';return;}
+    if(!rows.length){host.innerHTML='<p class="backup-hint">No completed personal milestones yet. Completed objectives from active games will appear here.</p>';return;}
     const visible=rows.slice(0,profileCompletionLimit);
     host.innerHTML='<p class="backup-hint">Newest first / '+visible.length+' of '+rows.length+' completed objectives. Archived content is excluded.</p><ol class="completion-timeline">'+visible.map(row=>{
       const entry=contentEntry(row.key),parent=games.find(game=>game.id===row.parentId),cover={...entry,image:entry?.image||parent?.image};
@@ -11571,13 +11101,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     dateField=createCalField('general-date');dateField.value=original?.targetDate||'';
   }
   function assignGeneralMilestone(id){
-    const options=games.filter(game=>!game.archived).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id)).flatMap(game=>[{key:game.id,name:game.name+' / Base game'},...(game.dlcs||[]).filter(dlc=>!dlc.archived).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id)).map(dlc=>({key:dlcKey(game.id,dlc.id),name:game.name+' / '+dlc.name}))]);
+    const options=games.filter(game=>!game.archived).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id)).map(game=>({key:game.id,name:game.name}));
     if(!options.length){toast('Add an active game before assigning a milestone.');return;}
-    d2Edit('Assign milestone','<p class="backup-hint">Move this objective into a game or DLC. It will leave General milestones.</p><label class="d2-field">Game / content<select id="general-destination">'+options.map(option=>'<option value="'+milestoneAttr(option.key)+'">'+escHtml(option.name)+'</option>').join('')+'</select></label>',()=>{
+    d2Edit('Assign milestone','<p class="backup-hint">Move this objective into a game. It will leave General milestones.</p><label class="d2-field">Game<select id="general-destination">'+options.map(option=>'<option value="'+milestoneAttr(option.key)+'">'+escHtml(option.name)+'</option>').join('')+'</select></label>',()=>{
       checkStorageFresh();
       const item=(settings.generalMilestones||[]).find(entry=>entry.id===id);if(!item)throw Error('This milestone no longer exists.');
-      const key=document.getElementById('general-destination').value,entry=contentEntry(key);if(!entry||entry.archived)throw Error('Choose an active game or DLC.');
-      const library=structuredClone(games),parent=library.find(game=>game.id===(entry.parentId||entry.id)),content=entry.parentId?parent.dlcs.find(dlc=>dlc.id===entry.dlcId):parent;
+      const key=document.getElementById('general-destination').value,entry=contentEntry(key);if(!entry||entry.archived)throw Error('Choose an active game.');
+      const library=structuredClone(games),parent=library.find(game=>game.id===(entry.parentId||entry.id)),content=parent;
       if(!content||parent.archived)throw Error('This content is no longer available.');
       const existing=normalizeGameMilestones(content.milestones);if(existing.some(m=>m.id===id))throw Error('This milestone is already assigned.');
       content.milestones=existing.concat({...structuredClone(item),order:Math.max(-1,...existing.map(m=>m.order))+1,groupOrder:existing.find(m=>!m.group)?.groupOrder??Math.max(-1,...existing.map(m=>m.groupOrder))+1});
@@ -12000,13 +11530,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const textMatch = g => !q || g.name.toLowerCase().includes(q) || (g.tags || []).some(t => t.toLowerCase().includes(q));
     const platformMatch = g => !gamesPlatformFilter || (gamesPlatformFilter==='missing' ? !normalizePlatform(g.platform) : normalizePlatform(g.platform)===gamesPlatformFilter);
     const rotationIds = new Set(rotationGameIds());
-    const playedIds = new Set(sessions.filter(session => session.stop !== null).flatMap(session =>
-      [session.gameId, ...sessionSegments(session).filter(segment => segment.dlcId).map(segment => dlcKey(session.gameId,segment.dlcId))]));
+    const playedIds = new Set(sessions.filter(session=>session.stop!==null).map(session=>session.gameId));
     const attributesMatch = g => {
       const milestones = g.milestones || [];
       const values = {
         pinned: g.pinned ? 'yes' : 'no',
-        dlc: g.parentId ? 'children' : 'parents',
         cover: g.image ? 'yes' : 'no',
         hltb: g.beatNotNeeded ? 'exempt' : g.beatUnavailable ? 'unavailable' : g.mainStoryHours || g.mainExtraHours ? 'set' : 'missing',
         milestones: !milestones.length ? 'none' : milestones.every(item => item.completedAt) ? 'done' : 'open',
@@ -12014,7 +11542,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         played: playedIds.has(g.id) ? 'yes' : 'no'
       };
       return Object.entries(gameAttributeSelections).every(([key, value]) =>
-        key === 'dlc' && (value === 'with' || value === 'without') ? !g.parentId && (!!g.dlcs?.length === (value === 'with')) : values[key] === value);
+        values[key] === value);
     };
     const matches = g => textMatch(g) && tagMatch(g) && platformMatch(g) && attributesMatch(g) && (gamesArchiveFilter==='all' || (gamesArchiveFilter==='archived' ? g.archived : !g.archived));
     const platformFilter=document.getElementById('games-platform-filter');
@@ -12046,8 +11574,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
     const matchingEntries = contentEntries().filter(matches);
     const matchingIds = new Set(matchingEntries.map(entry => entry.id));
-    const filtered = games.filter(game => matchingIds.has(game.id) || (game.dlcs || []).some(dlc => matchingIds.has(dlcKey(game.id,dlc.id))));
-    document.getElementById('games-filter-count').textContent=matchingEntries.length+' of '+contentEntries().length+' games and DLCs';
+    const filtered = games.filter(game => matchingIds.has(game.id));
+    document.getElementById('games-filter-count').textContent=matchingEntries.length+' of '+contentEntries().length+' games';
     const active = filtered.filter(g => !g.archived).sort(pinnedFirst);
     const archived = filtered.filter(g => g.archived).sort(pinnedFirst);
 
@@ -12102,7 +11630,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         const count = sessions.filter(s => s.gameId === g.id).length;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
         const running = activeSession && activeSession.gameId === g.id;
-        return '<div data-library-parent="' + milestoneAttr(g.id) + '" class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
+        return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' + missingBeatTimeBadge(g) +
@@ -12126,7 +11654,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       html += archived.map((g, i) => {
         const count = sessions.filter(s => s.gameId === g.id).length;
         const e = gs[g.id] || { count: 0, first: 0, last: 0 };
-        return '<div data-library-parent="' + milestoneAttr(g.id) + '" class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
+        return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span><span class="classic-archived-label">Archived</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
             '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' + missingBeatTimeBadge(g) +
@@ -12145,21 +11673,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
 
     container.innerHTML = html;
-    container.querySelectorAll('[data-library-parent]').forEach(row => {
-      const parent = games.find(game => game.id === row.dataset.libraryParent);
-      const children = (parent.dlcs || []).map(dlc => contentEntry(dlcKey(parent.id,dlc.id))).filter(entry => matchingIds.has(entry.id));
-      if (children.length) {
-        const details = document.createElement('details');
-        details.className = 'library-dlcs';
-        details.open = !!q || !!gameAttributeSelections.dlc;
-        details.innerHTML = '<summary>' + children.length + ' DLCs for ' + escHtml(parent.name) + '</summary>' + children.map(entry =>
-          '<div class="dlc-library-row">' + gameCoverHtml(entry) + '<div class="session-info"><a class="dlc-name-link" href="#dlc" data-content-dashboard="' + milestoneAttr(entry.id) + '">' +
-          escHtml(entry.contentName) + '</a>' + (entry.archived ? '<span class="game-platform-badge">Archived</span>' : '') + missingBeatTimeBadge(entry) + '</div>' + dlcActionButtons(entry) + '</div>').join('');
-        row.after(details);
-      }
-      if (!matchingIds.has(parent.id)) row.hidden = true;
-    });
-
     container.querySelectorAll('.btn-icon').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
@@ -12174,12 +11687,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     });
   }
 
-  function openDashboard(id, baseOnly = false) {
+  function openDashboard(id) {
     const game = contentEntry(id);
     if (!game) return;
     document.getElementById('dashboard-modal').dataset.gameId = game.id;
-    document.getElementById('dashboard-modal').dataset.baseOnly = String(baseOnly);
-    document.getElementById('dashboard-title').textContent = game.name + (baseOnly ? ' / Base game' : '');
+    document.getElementById('dashboard-title').textContent = game.name;
     paintCover(document.getElementById('dashboard-cover'), game, 'No cover');
     renderDashboardBody(game);
     document.getElementById('dashboard-modal').classList.add('open');
@@ -12202,7 +11714,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const revision=String((Number(modal.dataset.coverRevision)||0)+1);
     modal.dataset.coverRevision=revision;modal.dataset.coverLoading=String(busy);
     const save=modal.querySelector('#rename-save,button[type="submit"]');if(save)save.disabled=busy;
-    const upload=modal.querySelector('#cover-upload-btn,#dlc-upload-btn');
+    const upload=modal.querySelector('#cover-upload-btn');
     if(upload){upload.textContent=busy?'Loading...':'Upload';upload.setAttribute('aria-busy',String(busy));}
     return revision;
   }
@@ -12233,8 +11745,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function renderDashboardBody(game) {
-    const baseOnly = document.getElementById('dashboard-modal').dataset.baseOnly === 'true';
-    const gs = game.parentId || baseOnly ? contentSessions(game.id) : sessions.filter(s => s.gameId === game.id);
+    const gs = contentSessions(game.id);
     const completed = gs.filter(s => s.stop !== null);
     const body = document.getElementById('dashboard-body');
     const totalMs = completed.reduce((sum,s) => sum + (s.durationMs || 0), 0);
@@ -12326,7 +11837,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       html += '<div class="modal-subheader">Last 5 sessions</div><ul class="dash-sessions">' +
         recent.map(s =>
           '<li class="dash-session">' +
-            '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + (!game.parentId && !baseOnly && s.segments ? '<small class="backup-hint">' + escHtml(contentBreakdown(s)) + '</small>' : '') + '</span>' +
+            '<span class="dash-session-time">' + fmtDate(s.start) + ' ' + fmtTime(s.start) + '</span>' +
             '<span class="dash-session-dur">' + fmtDuration(s.durationMs) + '</span>' +
           '</li>'
         ).join('') + '</ul>';
@@ -12334,7 +11845,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       html += '<div class="empty-state" style="padding:20px 10px;"><span class="empty-icon">' + iconSvg('emptySessions') + '</span>No sessions recorded for this game yet.</div>';
     }
 
-    body.innerHTML = html + '</div>' + dlcDashboardSection(game);
+    body.innerHTML = html + '</div>';
     appendDashboardPlaythroughs(game);
   }
 
@@ -12558,7 +12069,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (!game) return;
     pendingDeleteGameId = id;
     const count = sessions.filter(s => s.gameId === id).length;
-    document.getElementById('delete-msg').textContent = 'Delete "' + game.name + '"?' + (game.dlcs?.length ? ' This also deletes its ' + game.dlcs.length + ' DLCs and their milestones.' : '') + (game.playthroughs?.length?' Its playthroughs and their independent progress will also be removed.':'');
+    document.getElementById('delete-msg').textContent = 'Delete "' + game.name + '"?' + (game.playthroughs?.length?' Its playthroughs and their independent progress will also be removed.':'');
     const warn = document.getElementById('delete-warning');
     if (count > 0) {
       warn.style.display = '';
@@ -12611,8 +12122,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function restoreGame(id) {
     const game = games.find(g => g.id === id);
     if (!game || !game.archived) return;
-    const restoredKeys = [id, ...(game.dlcs || []).filter(dlc => !dlc.archived).map(dlc => dlcKey(id, dlc.id))];
-    if (!restoredContentFitsBudget(restoredKeys)) { toast('Restoring this game and its DLCs would exceed the weekly rotation budget.'); return; }
+    const restoredKeys = [id];
+    if (!restoredContentFitsBudget(restoredKeys)) { toast('Restoring this game would exceed the weekly rotation budget.'); return; }
     game.archived = false;
     saveGames(games);
     toast('Restored: ' + game.name);
@@ -12846,13 +12357,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const now = new Date();
     setCalDateTime(addSessionStartDate, addSessionStartTime, new Date(now.getTime() - 3600000));
     setCalDateTime(addSessionEndDate, addSessionEndTime, now);
-    setupAllocationEditor(document.getElementById('add-content-allocation'), {id:uid(), gameId:sel.value, start:new Date(now.getTime()-3600000).toISOString(), stop:now.toISOString()});
+    setupSessionPlaythrough(document.getElementById('add-session-playthrough'), {id:uid(), gameId:sel.value, start:new Date(now.getTime()-3600000).toISOString(), stop:now.toISOString()});
     document.getElementById('add-session-modal').classList.add('open');
   }
 
   document.getElementById('add-session-game').addEventListener('change', event => {
-    const panel = document.getElementById('add-content-allocation');
-    setupAllocationEditor(panel, {id:uid(),gameId:event.target.value,start:panel.dataset.start,stop:panel.dataset.stop});
+    const panel = document.getElementById('add-session-playthrough');
+    setupSessionPlaythrough(panel, {id:uid(),gameId:event.target.value,start:panel.dataset.start,stop:panel.dataset.stop});
   });
   document.getElementById('btn-add-session').addEventListener('click', openAddSessionModal);
   document.getElementById('m3-fab-log').addEventListener('click', openAddSessionModal);
@@ -12871,8 +12382,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if (!(t2 > t1)) { toast('End must be after start'); return; }
     const game = games.find(g => g.id === gameId);
     if (!game) return;
-    const segments = allocationForSave(document.getElementById('add-content-allocation'), t1, t2);
-    if (!segments) return;
     if (!await confirmSessionOverlap(t1,t2)) return;
     checkStorageFresh();
     const session = {
@@ -12882,8 +12391,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       start: new Date(t1).toISOString(),
       stop: new Date(t2).toISOString(),
       durationMs: t2 - t1,
-      playthroughId: document.querySelector('#add-content-allocation [data-playthrough-choice]')?.value || null,
-      segments,
+      playthroughId: document.querySelector('#add-session-playthrough [data-playthrough-choice]')?.value || null,
       synced: false
     };
     persistSessionReplacement([...sessions, session]);
@@ -12895,7 +12403,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   // --- Edit session modal ---
   function openEditSessionModal(s) {
     editSessionId = s.id;
-    setupAllocationEditor(document.getElementById('edit-content-allocation'), s);
+    setupSessionPlaythrough(document.getElementById('edit-session-playthrough'), s);
     setCalDateTime(editSessionStartDate, editSessionStartTime, s.start);
     setCalDateTime(editSessionEndDate, editSessionEndTime, s.stop);
     document.getElementById('edit-session-modal').classList.add('open');
@@ -12917,12 +12425,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const t1 = new Date(sameMinute(startStr, s.start) ? s.start : startStr).getTime();
     const t2 = new Date(sameMinute(endStr, s.stop) ? s.stop : endStr).getTime();
     if (!(t2 > t1)) { toast('End must be after start'); return; }
-    const segments = allocationForSave(document.getElementById('edit-content-allocation'), t1, t2);
-    if (!segments) return;
     if (!await confirmSessionOverlap(t1,t2,s.id)) return;
     checkStorageFresh();
-    s.playthroughId=document.querySelector('#edit-content-allocation [data-playthrough-choice]')?.value || null;
-    const unchangedLegacy=!original.segments && t1===Date.parse(original.start) && t2===Date.parse(original.stop) && segments.length===1 && segments[0].dlcId===null;
+    s.playthroughId=document.querySelector('#edit-session-playthrough [data-playthrough-choice]')?.value || null;
+    const unchangedLegacy=t1===Date.parse(original.start)&&t2===Date.parse(original.stop);
     // An untouched legacy duration may intentionally differ from the wall-clock range.
     if(!unchangedLegacy){
       s.pauses = (s.pauses || []).map(p => ({ from: Math.max(t1, new Date(p.from).getTime()), to: Math.min(t2, new Date(p.to).getTime()) }))
@@ -12936,7 +12442,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       s.start = new Date(t1).toISOString();
       s.stop = new Date(t2).toISOString();
       s.durationMs = t2 - t1 - totalPausedMs(s, t2);
-      s.segments = segments;
     }
     persistSessionReplacement(sessions.map(session => session.id === s.id ? s : session));
     toast('Session updated');
@@ -13015,7 +12520,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const durationFor = session => session.stop === null ? Math.max(0,activeElapsedMs(session,exportAt)) : session.durationMs || 0;
     const esc = v => '"' + String(v).split('"').join('""') + '"';
     const csv = '\uFEFF' + [
-      ['Date', 'Start', 'End', 'Game', 'Platform', 'Duration', 'Minutes', 'Synced', 'Base game time', 'DLC time', 'Content breakdown'],
+      ['Date', 'Start', 'End', 'Game', 'Platform', 'Duration', 'Minutes', 'Synced'],
       ...rows.map(s => [
         fmtDate(s.start),
         fmtTime(s.start),
@@ -13025,9 +12530,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         fmtDuration(durationFor(s)),
         Math.round(durationFor(s) / 60000),
         s.synced ? 'yes' : 'no',
-        fmtDuration(allocatedPlaytime(s,exportAt).get(null) || 0),
-        fmtDuration([...allocatedPlaytime(s,exportAt)].reduce((total, [id, ms]) => total + (id ? ms : 0), 0)),
-        contentBreakdown(s,exportAt),
       ])
     ].map(r => r.map(esc).join(',')).join('\r\n');
     triggerDownload('playdex-sessions-' + todayStr() + '.csv', new Blob([csv], { type: 'text/csv;charset=utf-8' }));
@@ -13250,7 +12752,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         void el.offsetWidth;
         el.classList.add('tick');
       }
-      refreshLiveContent();
+      refreshLiveProgress();
       const progressMinute=Math.floor(elapsed/60000);
       if(progressMinute!==lastProgressMinute || activeSession.id!==lastProgressSessionId) {
         lastProgressMinute=progressMinute;lastProgressSessionId=activeSession.id;
@@ -13523,7 +13025,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
 
   document.getElementById('rotation-list').addEventListener('click',event=>{
     const button=event.target.closest('button[data-rotation-start]');
-    if(button){const key=button.dataset.rotationStart,entry=contentEntry(key),runId=settings.weeklyRotationPlaythroughs?.[key];if(!entry)return;if(runId&&(!rotationRun(key)||rotationRun(key).finishedAt)){toast('Choose an open playthrough in Plan week first.');return;}startGame(entry.parentId||entry.id,entry.dlcId||null,runId||undefined);}
+    if(button){const key=button.dataset.rotationStart,entry=contentEntry(key),runId=settings.weeklyRotationPlaythroughs?.[key];if(!entry)return;if(runId&&(!rotationRun(key)||rotationRun(key).finishedAt)){toast('Choose an open playthrough in Plan week first.');return;}startGame(entry.id,runId||undefined);}
   });
 
   function renderGameFilterChips() {
@@ -13631,12 +13133,12 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         const select=document.createElement('select');select.setAttribute('aria-label','Assign '+name+' session to game');
         const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Choose a game to repair reference';select.append(placeholder);
         for(const game of games.slice().sort((a,b)=>a.name.localeCompare(b.name))){const option=document.createElement('option');option.value=game.id;option.textContent=game.name+(game.archived?' (archived)':'');select.append(option);}
-        const assign=document.createElement('button');assign.type='button';assign.className='btn-ghost';assign.textContent='Reassign to Base game';assign.disabled=true;select.onchange=()=>assign.disabled=!select.value;
+        const assign=document.createElement('button');assign.type='button';assign.className='btn-ghost';assign.textContent='Reassign to game';assign.disabled=true;select.onchange=()=>assign.disabled=!select.value;
         assign.onclick=()=>{
           const current=sessions.find(entry=>entry.id===session.id),game=games.find(entry=>entry.id===select.value);
           if(!current||!game||games.some(entry=>entry.id===current.gameId)){renderHistoryHealth();return;}
-          if(!confirm('Move this session to '+game.name+' (Base game)? All content allocations become Base game. Times, pauses, recorded duration and sync status stay unchanged.'))return;
-          try{checkStorageFresh();const repaired=structuredClone(current);repaired.gameId=game.id;repaired.gameName=game.name;if(repaired.segments)repaired.segments.forEach(segment=>segment.dlcId=null);persistSessionReplacement(sessions.map(entry=>entry.id===current.id?repaired:entry));render();renderHistoryHealth();toast('Session game reference repaired');}catch(error){toast(error.message||'Could not save. No correction was applied.');}
+          if(!confirm('Move this session to '+game.name+'? Times, pauses, recorded duration and sync status stay unchanged.'))return;
+          try{checkStorageFresh();const repaired=structuredClone(current);repaired.gameId=game.id;repaired.gameName=game.name;persistSessionReplacement(sessions.map(entry=>entry.id===current.id?repaired:entry));render();renderHistoryHealth();toast('Session game reference repaired');}catch(error){toast(error.message||'Could not save. No correction was applied.');}
         };
         actions.append(select,assign);
       }
@@ -13972,45 +13474,38 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     });
   }
   // Progress calculations take an explicit library and session list, including during imports.
-  function milestoneTrackedMs(parentId,dlcId,rows,since=null,live=false,now=Date.now()) {
+  function milestoneTrackedMs(parentId,rows,since=null,live=false,now=Date.now()) {
     let total=0;
     for(const session of rows){
       if(session.gameId!==parentId||(!live&&session.stop===null))continue;
-      if(!since){total+=allocatedPlaytime(session,now).get(dlcId)||0;continue;}
+      if(!since){total+=recordedSessionMs(session,now);continue;}
       const floor=Date.parse(since),end=session.stop===null?now:Date.parse(session.stop);
       if(end<=floor)continue;
       const union=sessionPauseIntervals(session,end);
       const active=(a,b)=>Math.max(0,b-a-union.reduce((sum,[from,to])=>sum+Math.max(0,Math.min(b,to)-Math.max(a,from)),0));
-      if(!session.segments?.length){
-        if(dlcId!==null)continue;
-        const start=Date.parse(session.start),full=active(start,end),clipped=active(Math.max(start,floor),end);
-        total+=session.stop===null?clipped:full?clipped*(session.durationMs||0)/full:0;
-      }else for(const segment of session.segments){
-        if(segment.dlcId!==dlcId)continue;
-        const a=Math.max(Date.parse(segment.start),floor),b=segment.stop===null?now:Date.parse(segment.stop);
-        if(b>a)total+=active(a,b);
-      }
+      const start=Date.parse(session.start),full=active(start,end),clipped=active(Math.max(start,floor),end);
+      total+=session.stop===null?clipped:full?clipped*(session.durationMs||0)/full:0;
     }
     return total;
   }
-  function milestoneProgress(item,parentId,dlcId,rows,live=false){
+  function milestoneProgress(item,parentId,rows,live=false){
     let value=0,target=1,text='';
     if(item.type==='checklist'){value=item.checklist.filter(step=>step.done).length;target=item.checklist.length;text=value+' / '+target+' steps';}
     else if(item.type==='counter'){value=item.current;target=item.target;text=value+' / '+target+(item.unit?' '+item.unit:'');}
-    else if(item.type==='playtime'){value=milestoneTrackedMs(parentId,dlcId,rows,item.timeBasis==='creation'?item.createdAt:null,live);target=item.targetHours*3600000;text=fmtDurationShort(value)+' / '+item.targetHours+'h'+(live?' (live)':'');}
+    else if(item.type==='playtime'){value=milestoneTrackedMs(parentId,rows,item.timeBasis==='creation'?item.createdAt:null,live);target=item.targetHours*3600000;text=fmtDurationShort(value)+' / '+item.targetHours+'h'+(live?' (live)':'');}
     else {value=item.manualDone?1:0;text=item.manualDone?'Marked done':'Not completed';}
     return {value,target,text,percent:target?Math.min(100,Math.max(0,value/target*100)):0,ready:target>0&&value>=target};
   }
   function reconcileMilestoneLibrary(library,rows){
     const completed=[];let changed=false;
-    for(const parent of library)for(const content of [parent,...(parent.dlcs||[])]){
+    for(const parent of library)for(const content of [parent]){
       const before=JSON.stringify(content.milestones||[]),items=normalizeGameMilestones(content.milestones),byId=new Map(items.map(m=>[m.id,m]));
       const results=new Map(),visiting=new Set();let pin=false;
       function resolve(item){
         if(results.has(item.id))return results.get(item.id);
         if(visiting.has(item.id))return false;
         visiting.add(item.id);
-        const eligible=milestoneProgress(item,parent.id,content===parent?null:content.id,rows).ready;
+        const eligible=milestoneProgress(item,parent.id,rows).ready;
         const allowed=item.prerequisites.every(id=>byId.has(id)&&resolve(byId.get(id)));
         const done=eligible&&allowed;visiting.delete(item.id);results.set(item.id,done);return done;
       }
@@ -14088,8 +13583,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(!contentEntry(key)||contentEntry(key).archived)return '';
     const items=normalizeGameMilestones(data?.milestones),pending=milestoneSorted(items.filter(item=>!item.completedAt));if(!pending.length)return '';
     const context=milestoneContext(key),prompt=settings.sessionMilestonePrompts!==false;
-    return '<section class="finish-milestones"><h4>'+escHtml(contentName(context.parentId,context.dlcId)+(scope?' / '+scope:''))+' - Personal milestones</h4>'+(prompt?'<p class="backup-hint">Completed any milestones? Update your progress below, or choose Done to skip.</p>':'')+pending.map(item=>{
-      const p=milestoneProgress(item,context.parentId,context.dlcId,history),blocked=milestoneBlocked(item,items);let controls='';
+    return '<section class="finish-milestones"><h4>'+escHtml(scope?scope+' - Personal milestones':'Personal milestones')+'</h4>'+(prompt?'<p class="backup-hint">Completed any milestones? Update your progress below, or choose Done to skip.</p>':'')+pending.map(item=>{
+      const p=milestoneProgress(item,context.parentId,history),blocked=milestoneBlocked(item,items);let controls='';
       if(prompt){
         if(item.type==='manual')controls='<label class="milestone-complete-toggle"><input type="checkbox" data-finish-manual '+(item.manualDone?'checked':'')+'>Mark done'+(blocked.length?' (waits for prerequisites)':'')+'</label>';
         else if(item.type==='checklist')controls=item.checklist.map(step=>'<label class="milestone-step-toggle"><input type="checkbox" data-finish-step="'+milestoneAttr(step.id)+'" '+(step.done?'checked':'')+'>'+escHtml(step.name)+'</label>').join('');
@@ -14116,10 +13611,10 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if (days > 36500) return ' · Estimate beyond 100 years';
     return ' · Estimated finish: ' + addDays(todayStr(), days);
   }
-  function milestoneContext(key){const entry=contentEntry(key);return {entry,parentId:entry?.parentId||entry?.id,dlcId:entry?.dlcId||null};}
+  function milestoneContext(key){const entry=contentEntry(key);return {entry,parentId:entry?.id};}
   function milestoneBlocked(item,items){return item.prerequisites.map(id=>items.find(m=>m.id===id)).filter(m=>!m?.completedAt).map(m=>m?.name||'Missing prerequisite');}
   function milestoneStatus(item,items){return item.completedAt?'completed':milestoneBlocked(item,items).length?'blocked':'progress';}
-  function milestoneSummary(item,key,live=false,history=sessions){const c=milestoneContext(key);return milestoneProgress(item,c.parentId,c.dlcId,history,live);}
+  function milestoneSummary(item,key,live=false,history=sessions){const c=milestoneContext(key);return milestoneProgress(item,c.parentId,history,live);}
   function milestoneProgressHtml(item,key,live=false,history=sessions){
     const p=milestoneSummary(item,key,live,history);
     return '<div class="milestone-progress-label"><span>'+escHtml(p.text)+'</span><strong>'+Math.floor(p.percent)+'%</strong></div><div class="progress-track" role="progressbar" aria-label="'+milestoneAttr(item.name)+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.floor(p.percent)+'"><div class="progress-fill" style="width:'+p.percent+'%"></div></div>';
@@ -14273,7 +13768,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     try{saveGames(games);}catch(error){content.milestones=previous;throw error;}
     backfillUnlockDates('gentle');
     const pin=document.getElementById('live-milestone');if(pin)delete pin.dataset.tick;
-    refreshMilestoneDashboard();renderWeeklyRotation();refreshLiveContent();renderAchievementsTab();renderProfileTab();renderMilestoneStats();renderTodayMilestones();
+    refreshMilestoneDashboard();renderWeeklyRotation();refreshLiveProgress();renderAchievementsTab();renderProfileTab();renderMilestoneStats();renderTodayMilestones();
   }
   function openMilestoneTemplates(key,mode){
     milestoneEditorGame=key;milestoneTemplateMode=mode;
@@ -14450,24 +13945,21 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       ['Paused time', fmtDuration(totalPausedMs(session, Date.parse(session.stop)))]
     ];
     let beatProgress = '',pendingMilestones = '';
-    const contents = [...allocatedPlaytime(session).keys()];
-    for (const dlcId of contents) {
-      const key = dlcId ? dlcKey(session.gameId, dlcId) : session.gameId;
+    for (const key of [session.gameId]) {
       const entry = contentEntry(key);
       if (!entry) continue;
       pendingMilestones+=finishMilestonesHtml(key,contentData(key));
       const dayMs = sessions.filter(row => row.stop !== null && row.gameId === session.gameId && dateKey(row.start) === sessionDay)
         .reduce((sum,row) => sum + contentMs(row,key),0);
-      const prefix = dlcId ? contentName(session.gameId,dlcId) + ' - ' : '';
-      rows.push([prefix + 'Day total', fmtDuration(dayMs)]);
+      rows.push(['Day total', fmtDuration(dayMs)]);
       const target = rotationTargetMinutes(key);
       if (target && rotationGameIds().includes(key)) {
         const progress = rotationWeekProgress([key]).games[key].ms;
-        rows.push([contentName(session.gameId,dlcId) + ' - weekly rotation', fmtDurationMinutes(progress) + ' / ' + fmtDurationMinutes(target*60000)]);
+        rows.push(['Weekly rotation', fmtDurationMinutes(progress) + ' / ' + fmtDurationMinutes(target*60000)]);
       }
       if (!entry.beatNotNeeded && !entry.beatUnavailable && (entry.mainStoryHours || entry.mainExtraHours)) {
         const loggedMs = contentSessions(key).filter(row => row.stop !== null).reduce((sum,row) => sum + (row.durationMs || 0),0);
-        beatProgress += '<section class="finish-beat-progress"><h4>' + escHtml(contentName(session.gameId,dlcId)) + ' - HLTB</h4>' + beatProgressRows(entry,loggedMs) + '</section>';
+        beatProgress += '<section class="finish-beat-progress"><h4>' + 'HLTB</h4>' + beatProgressRows(entry,loggedMs) + '</section>';
       }
     }
     document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + escHtml(label) + '</span><strong>' + escHtml(value) + '</strong></p>').join('') + beatProgress + pendingMilestones;
@@ -14476,10 +13968,10 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     finishReview.classList.add('open');
     document.getElementById('session-finish-close').focus();
   }
-  function finishMilestoneRecord(library,parentId,dlcId,runId) {
+  function finishMilestoneRecord(library,parentId,runId) {
     const parent=library.find(game=>game.id===parentId);if(!parent)return null;
-    if(runId)return parent.playthroughs?.find(run=>run.id===runId)?.content?.[dlcId||'base'];
-    return dlcId?parent.dlcs?.find(dlc=>dlc.id===dlcId):parent;
+    if(runId)return parent.playthroughs?.find(run=>run.id===runId)?.content?.base;
+    return parent;
   }
   function updateFinishMilestone(control) {
     const row=control.closest('[data-finish-item]'),error=row?.querySelector('[data-finish-error]');if(!row||settings.sessionMilestonePrompts===false)return;
@@ -14487,8 +13979,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     try{
       const session=sessions.find(session=>session.id===finishReviewId&&session.stop!==null),entry=contentEntry(row.dataset.content),runId=row.dataset.run||'';
       if(!session||!entry||entry.archived||session.gameId!==(entry.parentId||entry.id)||runId!==(session.playthroughId||''))throw Error('This milestone review is out of date. Close and reopen it.');
-      if(!allocatedPlaytime(session).has(entry.dlcId||null))throw Error('This content was not part of the saved session.');
-      const library=structuredClone(games),data=finishMilestoneRecord(library,session.gameId,entry.dlcId||null,runId),items=normalizeGameMilestones(data?.milestones),item=items.find(item=>item.id===row.dataset.finishItem);
+      const library=structuredClone(games),data=finishMilestoneRecord(library,session.gameId,runId),items=normalizeGameMilestones(data?.milestones),item=items.find(item=>item.id===row.dataset.finishItem);
       if(!item||item.completedAt)throw Error('This milestone is no longer pending.');
       const before=new Set(items.filter(item=>item.completedAt).map(item=>item.id));
       if(control.hasAttribute('data-finish-manual')&&item.type==='manual')item.manualDone=control.checked;
@@ -14496,7 +13987,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       else if(control.hasAttribute('data-finish-save-counter')&&item.type==='counter'){const field=row.querySelector('[data-finish-counter]'),value=Number(field.value);if(!field.checkValidity()||!Number.isSafeInteger(value)||value<0)throw Error('Enter a whole count of zero or more.');item.current=value;}
       else return;
       data.milestones=items;d2SaveLibrary(library);
-      const saved=finishMilestoneRecord(games,session.gameId,entry.dlcId||null,runId),completed=saved.milestones.filter(item=>item.completedAt&&!before.has(item.id)).length;
+      const saved=finishMilestoneRecord(games,session.gameId,runId),completed=saved.milestones.filter(item=>item.completedAt&&!before.has(item.id)).length;
       showFinishReview(session.id);toast(completed?completed===1?'Milestone completed':completed+' milestones completed':'Milestone progress saved');
       const current=[...finishReview.querySelectorAll('[data-finish-item]')].find(candidate=>candidate.dataset.finishItem===row.dataset.finishItem&&candidate.dataset.content===row.dataset.content&&candidate.dataset.run===row.dataset.run);
       const focus=current&&(control.hasAttribute('data-finish-step')?[...current.querySelectorAll('[data-finish-step]')].find(input=>input.dataset.finishStep===control.dataset.finishStep):current.querySelector(control.hasAttribute('data-finish-manual')?'[data-finish-manual]':'[data-finish-save-counter]'));
@@ -14691,7 +14182,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&ensureRotationWeek()){renderTodayTab();renderGamesTab();}});
 
   // Progression, weekly planning, and Dropbox review tools.
-  const playthroughUI={gameId:null,runId:null,contentId:null,selection:new Map(),contentSelection:new Map()};
+  const playthroughUI={gameId:null,runId:null,selection:new Map()};
   const plannerUI={draft:null,draftOriginal:'',returnFocus:null,raw:{},weekdayOpen:false};
   const syncUI={state:null,merge:null,reviewing:false};
   const editorUI={save:null,cancel:null,busy:false,onClose:null};
@@ -14782,7 +14273,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function appendDashboardPlaythroughs(game){
     const parent=games.find(entry=>entry.id===(game.parentId||game.id));if(!parent)return;
-    playthroughUI.gameId=parent.id;playthroughUI.contentId=game.parentId?game.dlcId:null;playthroughUI.dashboardKey=game.id;
+    playthroughUI.gameId=parent.id;playthroughUI.dashboardKey=game.id;
     const selected=playthroughUI.selection.get(parent.id);
     playthroughUI.runId=parent.playthroughs?.some(run=>run.id===selected)?selected:defaultPlaythrough(parent)?.id||parent.playthroughs?.find(run=>!run.finishedAt)?.id||parent.playthroughs?.[0]?.id||null;
     const section=document.createElement('section');section.id='dashboard-playthroughs';section.className='game-milestones playthrough-section';
@@ -14793,30 +14284,28 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const runs=parent.playthroughs||[];
     if(!runs.some(run=>run.id===playthroughUI.runId))playthroughUI.runId=defaultPlaythrough(parent)?.id||runs.find(run=>!run.finishedAt)?.id||runs[0]?.id||null;
     playthroughUI.selection.set(parent.id,playthroughUI.runId);
-    const run=d2Run(),isDlc=!!playthroughUI.contentId;
-    let html='<div class="game-milestones-heading"><div><h4>Playthroughs</h4><p>'+(isDlc?'Runs for '+escHtml(parent.name):'Separate progress for each run; lifetime totals stay in the game summary.')+'</p></div>'+d2Button('New playthrough','run-new')+'</div>';
+    const run=d2Run();
+    let html='<div class="game-milestones-heading"><div><h4>Playthroughs</h4><p>'+'Separate progress for each run; lifetime totals stay in the game summary.'+'</p></div>'+d2Button('New playthrough','run-new')+'</div>';
     if(!run){host.innerHTML=html+'<p class="backup-hint">No playthroughs yet. Create a run when you want fresh objectives and HLTB progress. Existing sessions stay unassigned.</p>';return;}
     html+='<label class="d2-field">Playthrough<select id="playthrough-selector" aria-label="Playthrough">'+runs.map(item=>'<option value="'+d2Attr(item.id)+'"'+(item.id===run.id?' selected':'')+'>'+escHtml(item.name)+(parent.defaultPlaythroughId===item.id?' (default)':'')+(item.finishedAt?' (finished)':'')+'</option>').join('')+'</select></label>';
-    const stats=d2RunStats(parent,run),content=d2RunContent(parent,run),selectedKey=isDlc?playthroughUI.contentId:playthroughUI.contentSelection.get(parent.id)||'base';
+    const stats=d2RunStats(parent,run),content=d2RunContent(parent,run),selectedKey='base';
     const selected=content.find(item=>item.key===selectedKey)||content[0];
-    const relevantRows=isDlc?stats.rows.filter(session=>(allocatedPlaytime(session).get(playthroughUI.contentId)||0)>0):stats.rows;
-    const milestones=isDlc?selected.data.milestones||[]:stats.items;
-    html+='<p class="backup-hint">'+(run.finishedAt?'Finished '+fmtDateShort(run.finishedAt):'In progress · Created '+fmtDateShort(run.createdAt))+'</p><dl class="feature-summary"><div><dt>Recorded time</dt><dd>'+fmtDurationShort(isDlc?d2RunMs(parent.id,run.id,playthroughUI.contentId):stats.total)+'</dd></div><div><dt>Sessions</dt><dd>'+relevantRows.length+'</dd></div><div><dt>Milestones</dt><dd>'+milestones.filter(item=>item.completedAt).length+' / '+milestones.length+'</dd></div></dl>';
+    const relevantRows=stats.rows;
+    const milestones=stats.items;
+    html+='<p class="backup-hint">'+(run.finishedAt?'Finished '+fmtDateShort(run.finishedAt):'In progress · Created '+fmtDateShort(run.createdAt))+'</p><dl class="feature-summary"><div><dt>Recorded time</dt><dd>'+fmtDurationShort(stats.total)+'</dd></div><div><dt>Sessions</dt><dd>'+relevantRows.length+'</dd></div><div><dt>Milestones</dt><dd>'+milestones.filter(item=>item.completedAt).length+' / '+milestones.length+'</dd></div></dl>';
     html+='<div class="d2-actions">'+(!run.finishedAt&&!parent.archived?d2Button('Start run','run-start',activeSession?'disabled':''):'')+'<details class="playthrough-actions"><summary>Run actions</summary><div class="d2-actions">'+d2Button('Rename','run-rename')+(!run.finishedAt?d2Button(parent.defaultPlaythroughId===run.id?'Clear default':'Set as default','run-default'):'')+d2Button(run.finishedAt?'Reopen':'Finish run','run-finish')+d2Button('Assign sessions','run-assign')+d2Button('Compare runs','run-compare',runs.length<2?'disabled':'')+d2Button('Remove run','run-delete')+'</div></details></div>';
     html+='<div class="playthrough-progress"><h4>Playthrough progress</h4>';
-    if(!isDlc&&content.length>1)html+='<label class="d2-field">Content<select id="playthrough-content" aria-label="Playthrough content">'+content.map(entry=>'<option value="'+d2Attr(entry.key)+'"'+(entry.key===selected.key?' selected':'')+'>'+escHtml(entry.name)+'</option>').join('')+'</select></label>';
-    else html+='<p class="backup-hint">'+escHtml(selected.name)+'</p>';
-    const ms=d2RunMs(parent.id,run.id,selected.id),data=selected.data;
+    const ms=d2RunMs(parent.id,run.id),data=selected.data;
     html+='<div class="d2-section-head"><h4>Run HLTB</h4>'+d2Button('Edit estimates','run-hltb','data-content="'+d2Attr(selected.key)+'"')+'</div>'+beatProgressRows(data,ms);
     html+='<div class="d2-section-head playthrough-milestone-heading"><h4>Run milestones</h4>'+d2Button('Add milestone','run-milestone','data-content="'+d2Attr(selected.key)+'"')+'</div>';
     html+=(data.milestones||[]).map(item=>{
-      const p=milestoneProgress(item,parent.id,selected.id,stats.rows),blocked=(item.prerequisites||[]).some(id=>!(data.milestones||[]).find(other=>other.id===id)?.completedAt);let controls='';
+      const p=milestoneProgress(item,parent.id,stats.rows),blocked=(item.prerequisites||[]).some(id=>!(data.milestones||[]).find(other=>other.id===id)?.completedAt);let controls='';
       if(item.type==='counter')controls='<label class="d2-field">'+escHtml(item.unit||'Count')+'<input type="number" min="0" step="1" value="'+item.current+'" data-d2-counter="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"></label>';
       else if(item.type==='checklist')controls=item.checklist.map(step=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-step="'+d2Attr(step.id)+'" data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'" '+(step.done?'checked':'')+'>'+escHtml(step.name)+'</label>').join('');
       else if(item.type==='manual')controls='<label class="milestone-step-toggle"><input type="checkbox" data-d2-manual="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'" '+(item.manualDone?'checked':'')+'>Mark done</label>';
       return '<article class="d2-objective"><strong>'+escHtml(item.name)+'</strong><p class="backup-hint">'+(item.completedAt?'Completed '+fmtDateShort(item.completedAt):blocked?'Blocked by prerequisites':'In progress')+'</p>'+milestoneTargetDateHtml(item)+d2Progress(p.value,p.target,p.text)+controls+'<div class="d2-actions">'+d2Button('Edit','run-milestone','data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"')+d2Button('Remove','run-milestone-remove','data-item="'+d2Attr(item.id)+'" data-content="'+d2Attr(selected.key)+'"')+'</div></article>';
-    }).join('')||'<p class="backup-hint">No milestones for this run and content yet.</p>';
-    html+='</div><details class="playthrough-session-history"><summary>Run session history ('+relevantRows.length+')</summary>'+relevantRows.slice().sort((a,b)=>Date.parse(b.start)-Date.parse(a.start)).map(session=>'<div class="d2-history-row"><span>'+escHtml(fmtDateShort(session.start)+' '+fmtTime(session.start))+'<small>'+escHtml(contentBreakdown(session))+'</small></span><strong>'+fmtDurationShort(isDlc?allocatedPlaytime(session).get(playthroughUI.contentId)||0:session.durationMs||0)+'</strong></div>').join('')+'</details>';
+    }).join('')||'<p class="backup-hint">No milestones for this run yet.</p>';
+    html+='</div><details class="playthrough-session-history"><summary>Run session history ('+relevantRows.length+')</summary>'+relevantRows.slice().sort((a,b)=>Date.parse(b.start)-Date.parse(a.start)).map(session=>'<div class="d2-history-row"><span>'+escHtml(fmtDateShort(session.start)+' '+fmtTime(session.start))+'</span><strong>'+fmtDurationShort(session.durationMs||0)+'</strong></div>').join('')+'</details>';
     host.innerHTML=html;
   }
   function loadLastWeekIntoPlanner(){
@@ -14871,7 +14360,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   function focusPlaythroughField(id){requestAnimationFrame(()=>{const field=document.getElementById(id);if(!field)return;(field.classList.contains('mx-native-select')?field.nextElementSibling:field)?.focus();});}
   function handlePlaythroughChange(field){
     if(field.id==='playthrough-selector'){playthroughUI.runId=field.value;renderDashboardPlaythroughs();focusPlaythroughField('playthrough-selector');return;}
-    if(field.id==='playthrough-content'){playthroughUI.contentSelection.set(playthroughUI.gameId,field.value);renderDashboardPlaythroughs();focusPlaythroughField('playthrough-content');return;}
     if(field.dataset.d2Counter||field.dataset.d2Step||field.dataset.d2Manual){
       const retainFocus=document.activeElement===field,marker={...field.dataset};
       try{d2ChangeRun(run=>{const item=(run.content[field.dataset.content]?.milestones||[]).find(item=>item.id===(field.dataset.d2Counter||field.dataset.item||field.dataset.d2Manual));if(!item)throw Error('Milestone no longer exists.');if(field.dataset.d2Counter){const value=Number(field.value);if(!Number.isSafeInteger(value)||value<0)throw Error('Use a nonnegative whole number.');item.current=value;}else if(field.dataset.d2Step)item.checklist.find(step=>step.id===field.dataset.d2Step).done=field.checked;else item.manualDone=field.checked;});}catch(error){toast(error.message);renderDashboardPlaythroughs();}
@@ -14905,8 +14393,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function d2Run(gameId,runId){if(arguments.length===0){gameId=playthroughUI.gameId;runId=playthroughUI.runId;}return games.find(game=>game.id===gameId)?.playthroughs?.find(run=>run.id===runId);}
   function d2RunRows(gameId,runId,includeLive=false){return sessions.filter(session=>session.gameId===gameId&&session.playthroughId===runId&&(includeLive||session.stop!==null));}
-  function d2RunContent(parent,run){return [{id:null,name:'Base game'},...(parent.dlcs||[]).map(dlc=>({id:dlc.id,name:dlc.name})),...Object.keys(run.content||{}).filter(key=>key!=='base'&&!(parent.dlcs||[]).some(dlc=>dlc.id===key)).map(id=>({id,name:'Removed DLC (history)'}))].map(content=>({...content,key:content.id||'base',data:run.content?.[content.id||'base']||{milestones:[]}}));}
-  function d2RunMs(parentId,runId,dlcId=null){return d2RunRows(parentId,runId).reduce((sum,session)=>sum+(allocatedPlaytime(session).get(dlcId)||0),0);}
+  function d2RunContent(parent,run){return [{id:null,name:parent.name,key:'base',data:run.content?.base||{milestones:[]}}];}
+  function d2RunMs(parentId,runId){return d2RunRows(parentId,runId).reduce((sum,session)=>sum+recordedSessionMs(session),0);}
   function d2RunStats(parent,run){
     const rows=d2RunRows(parent.id,run.id),total=rows.reduce((sum,session)=>sum+(session.durationMs||0),0);
     const content=d2RunContent(parent,run),items=content.flatMap(entry=>entry.data.milestones||[]);
@@ -14919,11 +14407,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     for(const parent of library)for(const run of parent.playthroughs||[]){
       const before=d2Json(run),content=run.content||(run.content={});
       if(!content.base)content.base={milestones:[]};
-      const virtual={id:parent.id,milestones:content.base.milestones||[],dlcs:[]};
-      for(const key of Object.keys(content).filter(key=>key!=='base'))virtual.dlcs.push({id:key,milestones:content[key].milestones||[]});
+      const virtual={id:parent.id,milestones:content.base.milestones||[]};
       const outcome=d2CoreReconcile([virtual],rows.filter(session=>session.gameId===parent.id&&session.playthroughId===run.id));
       content.base.milestones=virtual.milestones;
-      for(const dlc of virtual.dlcs)content[dlc.id].milestones=dlc.milestones;
       if(d2Json(run)!==before)result.changed=true;
       result.completed.push(...outcome.completed.map(name=>run.name+': '+name));
     }
@@ -14940,7 +14426,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const name=document.getElementById('d2-run-name').value.trim();if(!name)throw Error('Enter a name.');
       if(parent.playthroughs?.some(run=>run.name.toLowerCase()===name.toLowerCase()))throw Error('A playthrough already uses this name.');
       const content={},copy=document.getElementById('d2-copy-goals').checked;
-      for(const entry of [parent,...(parent.dlcs||[])]){
+      for(const entry of [parent]){
         const key=entry===parent?'base':entry.id,ids=new Map((entry.milestones||[]).map(m=>[m.id,uid()]));
         content[key]={milestones:copy?normalizeGameMilestones((entry.milestones||[]).map(item=>({...d2Clone(item),id:ids.get(item.id),createdAt:new Date().toISOString(),completedAt:null,manualDone:false,pinned:false,targetDate:null,current:0,prerequisites:(item.prerequisites||[]).map(id=>ids.get(id)).filter(Boolean),checklist:(item.checklist||[]).map(step=>({id:uid(),name:step.name,done:false}))}))):[]};
         if(copy)for(const field of ['mainStoryHours','mainExtraHours','beatNotNeeded','beatUnavailable'])if(entry[field]!=null)content[key][field]=entry[field];
@@ -14951,18 +14437,18 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     },'Create playthrough');
   }
   function defaultPlaythrough(game){return game?.playthroughs?.find(run=>run.id===game.defaultPlaythroughId&&!run.finishedAt)||null;}
-  function choosePlaythrough(gameId,dlcId){
+  function choosePlaythrough(gameId){
     const game=games.find(g=>g.id===gameId);if(!game)return;
-    d2Edit('Choose playthrough','<p>'+escHtml(game.name)+' · '+escHtml(contentName(gameId,dlcId))+'</p><label class="d2-field">Playthrough<select id="d2-start-run"><option value="">Unassigned / lifetime only</option>'+(game.playthroughs||[]).filter(run=>!run.finishedAt).map(run=>'<option value="'+d2Attr(run.id)+'"'+(defaultPlaythrough(game)?.id===run.id?' selected':'')+'>'+escHtml(run.name)+(defaultPlaythrough(game)?.id===run.id?' (default)':'')+'</option>').join('')+'</select></label>',()=>{startGame(gameId,dlcId,document.getElementById('d2-start-run').value||null);},'Start session');
+    d2Edit('Choose playthrough','<p>'+escHtml(game.name)+'</p><label class="d2-field">Playthrough<select id="d2-start-run"><option value="">Unassigned / lifetime only</option>'+(game.playthroughs||[]).filter(run=>!run.finishedAt).map(run=>'<option value="'+d2Attr(run.id)+'"'+(defaultPlaythrough(game)?.id===run.id?' selected':'')+'>'+escHtml(run.name)+(defaultPlaythrough(game)?.id===run.id?' (default)':'')+'</option>').join('')+'</select></label>',()=>{startGame(gameId,document.getElementById('d2-start-run').value||null);},'Start session');
   }
-  function addPlaythroughAllocationField(panel){
+  function addSessionPlaythroughField(panel){
     const game=games.find(game=>game.id===panel.dataset.gameId);if(!game?.playthroughs?.length)return;
     const label=document.createElement('label');label.className='d2-field';label.innerHTML='Playthrough<select data-playthrough-choice aria-label="Session playthrough"><option value="">Unassigned / lifetime only</option>'+game.playthroughs.map(run=>'<option value="'+d2Attr(run.id)+'"'+(run.id===panel.dataset.playthroughId?' selected':'')+'>'+escHtml(run.name)+(run.finishedAt?' (finished)':'')+'</option>').join('')+'</select>';
     label.querySelector('select').onchange=event=>panel.dataset.playthroughId=event.target.value;panel.append(label);
   }
   function refreshLivePlaythrough(){
     let label=document.getElementById('d2-live-run');
-    if(!label){label=document.createElement('p');label.id='d2-live-run';label.className='d2-live-run';document.getElementById('live-content').before(label);}
+    if(!label){label=document.createElement('p');label.id='d2-live-run';label.className='d2-live-run';document.getElementById('live-milestone').before(label);}
     const run=activeSession?.playthroughId?d2Run(activeSession.gameId,activeSession.playthroughId):null;
     label.textContent=run?'Playthrough · '+run.name:'';label.hidden=!run;
   }
@@ -14970,7 +14456,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   function d2AssignHistory(){
     const parent=games.find(game=>game.id===playthroughUI.gameId);if(!parent)return;
     const history=sessions.filter(session=>session.gameId===parent.id&&session.stop!==null).sort((a,b)=>Date.parse(b.start)-Date.parse(a.start));
-    d2Edit('Assign session history','<p>Only selected sessions move. Active time, pauses, DLC allocation, sync flags and lifetime totals stay unchanged.</p><label class="d2-field">Destination<select id="d2-assign-run"><option value="">Unassigned</option>'+(parent.playthroughs||[]).map(run=>'<option value="'+d2Attr(run.id)+'"'+(run.id===playthroughUI.runId?' selected':'')+'>'+escHtml(run.name)+'</option>').join('')+'</select></label><div class="d2-assign-list">'+history.map(session=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-assign-id="'+d2Attr(session.id)+'"><span>'+escHtml(fmtDateShort(session.start)+' '+fmtTime(session.start))+' · '+fmtDurationShort(session.durationMs||0)+'<small>'+escHtml(d2Run(parent.id,session.playthroughId)?.name||'Unassigned')+'</small></span></label>').join('')+'</div>',()=>{
+    d2Edit('Assign session history','<p>Only selected sessions move. Active time, pauses, sync flags and lifetime totals stay unchanged.</p><label class="d2-field">Destination<select id="d2-assign-run"><option value="">Unassigned</option>'+(parent.playthroughs||[]).map(run=>'<option value="'+d2Attr(run.id)+'"'+(run.id===playthroughUI.runId?' selected':'')+'>'+escHtml(run.name)+'</option>').join('')+'</select></label><div class="d2-assign-list">'+history.map(session=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-assign-id="'+d2Attr(session.id)+'"><span>'+escHtml(fmtDateShort(session.start)+' '+fmtTime(session.start))+' · '+fmtDurationShort(session.durationMs||0)+'<small>'+escHtml(d2Run(parent.id,session.playthroughId)?.name||'Unassigned')+'</small></span></label>').join('')+'</div>',()=>{
       const ids=new Set([...document.querySelectorAll('[data-d2-assign-id]:checked')].map(input=>input.dataset.d2AssignId));if(!ids.size)throw Error('Choose at least one session.');
       const destination=document.getElementById('d2-assign-run').value||null;
       d2SaveLibrary(games,sessions.map(session=>ids.has(session.id)?{...session,playthroughId:destination}:session));renderDashboardPlaythroughs();toast('Session assignments updated');
@@ -14978,14 +14464,14 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function d2EditHltb(key){
     const run=d2Run(),data=run?.content?.[key]||{};if(!run)return;
-    d2Edit('Playthrough HLTB',d2Input('Main Story (hours)','d2-story',data.mainStoryHours||'','type="number" min="0.25" max="100000" step="0.25"')+d2Input('Main + Extra (hours)','d2-extra',data.mainExtraHours||'','type="number" min="0.25" max="100000" step="0.25"')+d2Input('Previously played (hours)','d2-prior',data.beatAlreadyPlayedHours||'','type="number" min="0" max="100000" step="0.25"')+'<p class="backup-hint">These estimates belong only to this playthrough and content. Previously played hours do not change recorded statistics or milestone playtime.</p>',()=>d2ChangeRun(target=>{
+    d2Edit('Playthrough HLTB',d2Input('Main Story (hours)','d2-story',data.mainStoryHours||'','type="number" min="0.25" max="100000" step="0.25"')+d2Input('Main + Extra (hours)','d2-extra',data.mainExtraHours||'','type="number" min="0.25" max="100000" step="0.25"')+d2Input('Previously played (hours)','d2-prior',data.beatAlreadyPlayedHours||'','type="number" min="0" max="100000" step="0.25"')+'<p class="backup-hint">These estimates belong only to this playthrough. Previously played hours do not change recorded statistics or milestone playtime.</p>',()=>d2ChangeRun(target=>{
       const entry=target.content[key]||(target.content[key]={milestones:[]});for(const [id,field] of [['d2-story','mainStoryHours'],['d2-extra','mainExtraHours'],['d2-prior','beatAlreadyPlayedHours']]){const value=document.getElementById(id).value;if(value)entry[field]=Number(value);else delete entry[field];}delete entry.beatNotNeeded;delete entry.beatUnavailable;
     }));
   }
   function d2EditObjective(key,id){
     const run=d2Run(),items=run?.content?.[key]?.milestones||[],item=items.find(m=>m.id===id);
     let dateField;
-    d2Edit(item?'Edit playthrough milestone':'Add playthrough milestone',d2Input('Name','d2-objective-name',item?.name||'','type="text" maxlength="120" required')+'<label class="d2-field">Type<select id="d2-objective-type">'+[['manual','Manual'],['checklist','Checklist'],['counter','Counter'],['playtime','Tracked playtime']].map(([value,label])=>'<option value="'+value+'"'+((item?.type||'manual')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label><div class="d2-objective-fields">'+d2Input('Counter target','d2-objective-target',item?.target||1,'type="number" min="1" step="1"')+d2Input('Counter unit (optional)','d2-objective-unit',item?.unit||'','type="text" maxlength="40"')+d2Input('Playtime target (hours)','d2-objective-hours',item?.targetHours||1,'type="number" min="0.25" max="100000" step="0.25"')+'<label class="d2-field">Checklist (one item per line)<textarea id="d2-objective-steps" rows="4">'+escHtml((item?.checklist||[]).map(step=>step.name).join('\n'))+'</textarea></label></div><div class="field-group"><label id="d2-objective-date-label">Target date (optional)</label>'+milestoneCalendarMarkup('d2-objective-date','d2-objective-date-label')+'</div>'+milestoneEstimateSourceSelect('d2-objective-estimate-source',milestoneEstimateSource(item,run?.content?.[key]))+d2Input('Custom hours remaining (optional)','d2-objective-remaining',item?.hoursRemaining??'','type="number" min="0.25" step="0.25"')+'<details><summary>Prerequisites</summary>'+items.filter(other=>other.id!==id).map(other=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-prereq="'+d2Attr(other.id)+'" '+(item?.prerequisites?.includes(other.id)?'checked':'')+'>'+escHtml(other.name)+'</label>').join('')+'</details><p class="backup-hint">Playtime uses completed sessions assigned to this playthrough and content. Changing type resets incompatible progress.</p>',()=>{
+    d2Edit(item?'Edit playthrough milestone':'Add playthrough milestone',d2Input('Name','d2-objective-name',item?.name||'','type="text" maxlength="120" required')+'<label class="d2-field">Type<select id="d2-objective-type">'+[['manual','Manual'],['checklist','Checklist'],['counter','Counter'],['playtime','Tracked playtime']].map(([value,label])=>'<option value="'+value+'"'+((item?.type||'manual')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label><div class="d2-objective-fields">'+d2Input('Counter target','d2-objective-target',item?.target||1,'type="number" min="1" step="1"')+d2Input('Counter unit (optional)','d2-objective-unit',item?.unit||'','type="text" maxlength="40"')+d2Input('Playtime target (hours)','d2-objective-hours',item?.targetHours||1,'type="number" min="0.25" max="100000" step="0.25"')+'<label class="d2-field">Checklist (one item per line)<textarea id="d2-objective-steps" rows="4">'+escHtml((item?.checklist||[]).map(step=>step.name).join('\n'))+'</textarea></label></div><div class="field-group"><label id="d2-objective-date-label">Target date (optional)</label>'+milestoneCalendarMarkup('d2-objective-date','d2-objective-date-label')+'</div>'+milestoneEstimateSourceSelect('d2-objective-estimate-source',milestoneEstimateSource(item,run?.content?.[key]))+d2Input('Custom hours remaining (optional)','d2-objective-remaining',item?.hoursRemaining??'','type="number" min="0.25" step="0.25"')+'<details><summary>Prerequisites</summary>'+items.filter(other=>other.id!==id).map(other=>'<label class="milestone-step-toggle"><input type="checkbox" data-d2-prereq="'+d2Attr(other.id)+'" '+(item?.prerequisites?.includes(other.id)?'checked':'')+'>'+escHtml(other.name)+'</label>').join('')+'</details><p class="backup-hint">Playtime uses completed sessions assigned to this playthrough. Changing type resets incompatible progress.</p>',()=>{
       const name=document.getElementById('d2-objective-name').value.trim(),type=document.getElementById('d2-objective-type').value;
       if(!name)throw Error('Enter a name.');
       const checklistNames=document.getElementById('d2-objective-steps').value.split('\n').map(name=>name.trim()).filter(Boolean);
@@ -15007,7 +14493,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function d2CompareRuns(){
     const parent=games.find(game=>game.id===playthroughUI.gameId);if(!parent)return;
-    d2Edit('Compare playthroughs','<div class="d2-table-wrap"><table class="d2-table"><thead><tr><th>Playthrough</th><th>Active time</th><th>Sessions</th><th>Milestones</th><th>State</th></tr></thead><tbody>'+(parent.playthroughs||[]).map(run=>{const stats=d2RunStats(parent,run);return '<tr><th>'+escHtml(run.name)+'</th><td>'+fmtDurationShort(stats.total)+'</td><td>'+stats.rows.length+'</td><td>'+stats.completed+' / '+stats.items.length+'</td><td>'+(run.finishedAt?'Finished':'In progress')+'</td></tr>';}).join('')+'</tbody></table></div><p class="backup-hint">Includes recorded Base game and DLC time; excludes previously played HLTB hours.</p>',()=>{},'Done');
+    d2Edit('Compare playthroughs','<div class="d2-table-wrap"><table class="d2-table"><thead><tr><th>Playthrough</th><th>Active time</th><th>Sessions</th><th>Milestones</th><th>State</th></tr></thead><tbody>'+(parent.playthroughs||[]).map(run=>{const stats=d2RunStats(parent,run);return '<tr><th>'+escHtml(run.name)+'</th><td>'+fmtDurationShort(stats.total)+'</td><td>'+stats.rows.length+'</td><td>'+stats.completed+' / '+stats.items.length+'</td><td>'+(run.finishedAt?'Finished':'In progress')+'</td></tr>';}).join('')+'</tbody></table></div><p class="backup-hint">Includes recorded game time; excludes previously played HLTB hours.</p>',()=>{},'Done');
   }
   // Weekly planner keeps native rotation IDs, targets and weekdays for all existing views.
   const d2NativeDaily=effectiveDailyGoalMinutes,d2NativeGoal=renderGoal;
@@ -15033,7 +14519,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   function d2DraftGameTargets(){return plannerUI.draft.ids.reduce((sum,id)=>sum+(Number(plannerUI.draft.targets[id])||0),0);}
   function d2DraftPlanned(){return plannerUI.draft.enabled?plannedWeekdayMinutes(plannerUI.draft.hours):d2DraftGameTargets();}
   function plannerEntryLabel(entry){
-    return '<strong>'+escHtml(entry.contentName||entry.name)+'</strong><small>'+escHtml(entry.dlcId?'DLC / '+(contentEntry(entry.parentId)?.name||'Game'):'Base game')+'</small>';
+    return '<strong>'+escHtml(entry.name)+'</strong>';
   }
   function plannerValue(key,fallback){return Object.prototype.hasOwnProperty.call(plannerUI.raw,key)?plannerUI.raw[key]:fallback;}
   function updatePlannerSummary(){
@@ -15074,8 +14560,8 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const entry=contentEntry(id);if(!entry)return '';const target=draft.targets[id]||0;
       const runPicker=rotationRunPicker(id,draft.playthroughs);
       return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'" data-high-priority="'+(draft.priorities[id]===true)+'"><div class="planner-heading">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+'<span class="planner-recorded"></span></div><div class="planner-actions">'+plannerPriorityButton(id,entry,draft.priorities[id]===true)+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</div></div><div class="planner-controls'+(runPicker?'':' planner-controls--no-run')+'"><div class="planner-run">'+runPicker+'</div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" required min="1" max="168" step="1" placeholder="Required" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target/60))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label></div><div class="planner-estimates"><div data-planner-hltb></div><div data-planner-milestone-estimates></div></div></article>';
-    }).join(''):'<div class="planner-empty"><strong>Plan your next week of games</strong><p>Add Base games or DLCs, set optional targets, then choose days if you like. Reuse last week or a preset to get started.</p></div>';
-    html+='</div><details id="planner-weekdays"'+(plannerUI.weekdayOpen?' open':'')+'><summary id="planner-weekday-summary" tabindex="0">Weekday targets</summary><p class="backup-hint">Optional daily goals within the same weekly capacity. Weekday hours and game targets are independent allocations; they are never added together.</p><div id="planner-weekday-fields"><div class="d2-capacities">'+orderedWeekdays().map(day=>'<div class="d2-field"><label for="planner-weekday-hours-'+day+'">'+day.slice(0,3)+'</label><span class="planner-hour-control"><input id="planner-weekday-hours-'+day+'" type="number" required min="0" max="24" step="1" value="'+d2Attr(plannerValue('day:'+day,draft.hours[day]))+'" data-d2-capacity="'+day+'" aria-label="'+day+' planned hours"><span class="planner-hour-arrows"><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="1" aria-label="Increase '+day+' hours">&#9650;</button><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="-1" aria-label="Decrease '+day+' hours">&#9660;</button></span></span></div>').join('')+'</div><p class="backup-hint">Today&#39;s goal follows its weekday hours. Zero hours means a rest day. Your automatic-goal preference stays unchanged.</p>'+d2Button('Use daily goal instead','planner-weekday-off')+'</div></details><p class="backup-hint">Set at least 1 hour for every selected game or DLC before saving. Recorded sessions count toward targets regardless of the planned day.</p>';
+    }).join(''):'<div class="planner-empty"><strong>Plan your next week of games</strong><p>Add games, set targets, then choose days if you like. Reuse last week or a preset to get started.</p></div>';
+    html+='</div><details id="planner-weekdays"'+(plannerUI.weekdayOpen?' open':'')+'><summary id="planner-weekday-summary" tabindex="0">Weekday targets</summary><p class="backup-hint">Optional daily goals within the same weekly capacity. Weekday hours and game targets are independent allocations; they are never added together.</p><div id="planner-weekday-fields"><div class="d2-capacities">'+orderedWeekdays().map(day=>'<div class="d2-field"><label for="planner-weekday-hours-'+day+'">'+day.slice(0,3)+'</label><span class="planner-hour-control"><input id="planner-weekday-hours-'+day+'" type="number" required min="0" max="24" step="1" value="'+d2Attr(plannerValue('day:'+day,draft.hours[day]))+'" data-d2-capacity="'+day+'" aria-label="'+day+' planned hours"><span class="planner-hour-arrows"><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="1" aria-label="Increase '+day+' hours">&#9650;</button><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="-1" aria-label="Decrease '+day+' hours">&#9660;</button></span></span></div>').join('')+'</div><p class="backup-hint">Today&#39;s goal follows its weekday hours. Zero hours means a rest day. Your automatic-goal preference stays unchanged.</p>'+d2Button('Use daily goal instead','planner-weekday-off')+'</div></details><p class="backup-hint">Set at least 1 hour for every selected game before saving. Recorded sessions count toward targets regardless of the planned day.</p>';
     host.innerHTML=html;updatePlannerSummary();host.scrollTop=scroll;
   }
   function validatePlannerFields(){
@@ -15084,7 +14570,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       if(invalid.dataset.d2Capacity)document.getElementById('planner-weekdays').open=true;
       invalid.focus();
       const missingHours=!!invalid.dataset.d2Target&&(invalid.value.trim()===''||Number(invalid.value)===0);
-      const name=contentEntry(invalid.dataset.d2Target)?.name||'this game or DLC';
+      const name=contentEntry(invalid.dataset.d2Target)?.name||'this game';
       const error=Error(missingHours?'The target hours for '+name+' are empty or set to 0. Enter at least 1 whole hour before saving your plan.':invalid.dataset.d2Target?'Set a target of 1 to 168 whole hours for '+name+'.':'Weekday hours must be whole numbers from 0 to 24.');
       error.plannerField=true;error.missingHours=missingHours;throw error;
     }
@@ -15093,7 +14579,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     validatePlannerFields();
     ensureRotationWeek();const draft=plannerUI.draft;if(draft.ids.some(id=>!rotationEntryEligible(contentEntry(id))))throw Error('Remove unavailable games from this plan before saving.');if(draft.week!==settings.weeklyRotationWeek)throw Error('A new week has started. Close and reopen the planner to start a fresh plan.');
     for(const day of plannedWeekdays)if(!Number.isInteger(draft.hours[day])||draft.hours[day]<0||draft.hours[day]>24)throw Error('Planned hours must be whole numbers from 0 to 24.');
-    for(const id of draft.ids){const target=draft.targets[id];if(!Number.isInteger(target/60)||target<60||target>10080)throw Error('Set a target of 1 to 168 whole hours for '+(contentEntry(id)?.name||'each selected game or DLC')+'.');}
+    for(const id of draft.ids){const target=draft.targets[id];if(!Number.isInteger(target/60)||target<60||target>10080)throw Error('Set a target of 1 to 168 whole hours for '+(contentEntry(id)?.name||'each selected game')+'.');}
     const planned=d2DraftPlanned(),gameTargets=d2DraftGameTargets(),budget=d2DraftBudget();if(planned>budget)throw Error((draft.enabled?'Weekday plan':'Game targets')+' over weekly budget by '+fmtDurationMinutes((planned-budget)*60000)+'. Reduce planned hours or increase your weekly goal.');
     if(gameTargets>budget)throw Error('Game targets over weekly budget by '+fmtDurationMinutes((gameTargets-budget)*60000)+'. Reduce game targets or increase your weekly goal.');
     const next=d2Clone(settings),archived=archivedRotationIds();
@@ -15107,7 +14593,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function d2PlannerAdd(){
     const options=contentEntries().filter(entry=>rotationEntryEligible(entry)&&!plannerUI.draft.ids.includes(entry.id)).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
-    d2Edit('Add games','<label class="d2-field">Search games and DLCs<input type="search" id="planner-picker-search" placeholder="Search by game or DLC name"></label><p class="backup-hint">Select any number. Targets and days can be set after adding.</p><label class="milestone-step-toggle"><input type="checkbox" id="planner-select-all"'+(options.length?'':' disabled')+'>Select all available games and DLCs</label><div id="planner-picker" class="d2-assign-list">'+options.map(entry=>'<label class="planner-pick" data-search="'+d2Attr(entry.name.toLocaleLowerCase())+'"><input type="checkbox" data-d2-plan-add="'+d2Attr(entry.id)+'">'+gameCoverHtml(entry)+'<span>'+plannerEntryLabel(entry)+'</span></label>').join('')+'</div><p id="planner-picker-empty" class="backup-hint"'+(options.length?' hidden':'')+'>No available games or DLCs match. All active content may already be selected.</p>',()=>{
+    d2Edit('Add games','<label class="d2-field">Search games<input type="search" id="planner-picker-search" placeholder="Search by game name"></label><p class="backup-hint">Select any number. Targets and days can be set after adding.</p><label class="milestone-step-toggle"><input type="checkbox" id="planner-select-all"'+(options.length?'':' disabled')+'>Select all available games</label><div id="planner-picker" class="d2-assign-list">'+options.map(entry=>'<label class="planner-pick" data-search="'+d2Attr(entry.name.toLocaleLowerCase())+'"><input type="checkbox" data-d2-plan-add="'+d2Attr(entry.id)+'">'+gameCoverHtml(entry)+'<span>'+plannerEntryLabel(entry)+'</span></label>').join('')+'</div><p id="planner-picker-empty" class="backup-hint"'+(options.length?' hidden':'')+'>No available games match. All active content may already be selected.</p>',()=>{
       for(const input of document.querySelectorAll('[data-d2-plan-add]:checked')){plannerUI.draft.ids.push(input.dataset.d2PlanAdd);plannerUI.draft.targets[input.dataset.d2PlanAdd]=0;delete plannerUI.raw['target:'+input.dataset.d2PlanAdd];plannerUI.draft.days[input.dataset.d2PlanAdd]='Any day';}renderWeeklyPlanner();
     },'Add selected');
     const selectAll=document.getElementById('planner-select-all'),picker=document.getElementById('planner-picker');
@@ -15118,7 +14604,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   }
   function d2SavePreset(){
     validatePlannerFields();
-    d2Edit('Save rotation preset',d2Input('Preset name','d2-preset-name','','type="text" maxlength="80" required')+'<p class="backup-hint">Saves games, DLCs, targets, planned days and weekday planned hours. Applying a preset opens a draft and still requires budget validation.</p>',()=>{
+    d2Edit('Save rotation preset',d2Input('Preset name','d2-preset-name','','type="text" maxlength="80" required')+'<p class="backup-hint">Saves games, targets, planned days and weekday planned hours. Applying a preset opens a draft and still requires budget validation.</p>',()=>{
       const name=document.getElementById('d2-preset-name').value.trim();if(!name)throw Error('Enter a name.');if((settings.rotationPresets||[]).some(preset=>preset.name.toLowerCase()===name.toLowerCase()))throw Error('A preset already uses this name.');
       const next=d2Clone(settings);next.rotationPresets=[...(next.rotationPresets||[]),{id:uid(),name,plan:d2Clone(plannerUI.draft)}];d2SaveLibrary(games,sessions,next);renderWeeklyPlanner();toast('Preset saved');
     });
@@ -15192,6 +14678,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   };
   const d2ScheduleUpload=scheduleAutoUpload;
   scheduleAutoUpload=function(){
+    if(libraryConversionBlocked)return;
     if(syncUI.reviewing){
       if(dbx.accessToken&&!dbxSkipAutoUpload){++dbxCompareGeneration;clearTimeout(dbxSyncTimer);dbxSetDirty(true);}
       return;
@@ -15259,6 +14746,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
     let recovery;try{recovery=JSON.parse(localStorage.getItem(DBX_RECOVERY_KEY));}catch{}
     html+='<section class="sync-preference-section"><div class="d2-section-head"><h4>Local recovery</h4>'+d2Button('Export current copy','sync-export')+'</div>';
+    if(localStorage.getItem('playdex.content-conversion.recovery'))html+=d2Button('Export pre-conversion copy','sync-conversion-export');
     if(recovery){const time=Date.parse(recovery.exportedAt);html+='<p class="backup-hint">'+(Number.isFinite(time)?'Saved '+escHtml(new Date(time).toLocaleString()):'A recovery copy is available')+(recovery.reason?' before '+escHtml(recovery.reason):'')+'.</p>'+d2Button('Preview recovery','sync-recovery',busy?'disabled':'');}
     else html+='<p class="backup-hint">A local recovery copy is created before a download, sync merge or restore replaces data.</p>';
     html+='</section>';host.innerHTML=html;
@@ -15299,7 +14787,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(remote&&dbxSnapshot(remote)===dbxSnapshot(local)){toast('No changes to sync.');return;}
     if(syncUI.generation!==generation||currentTab!=='settings')return;
     syncUI.merge={localFingerprint:dbxSnapshot(local),revision:state.revision,connection:dbx,remote,merged,conflicts};
-    d2Edit('Review changes before syncing','<p>'+(localChanges?localChanges.length+' local changes · '+remoteChanges.length+' remote changes · ':'')+conflicts.length+' conflicts. Matching records and nonconflicting changes merge automatically.</p><p class="backup-hint">A game record includes its DLCs, milestones and playthroughs. Sessions and shared settings are separate records. Deletions must leave valid references.</p>'+conflicts.map((conflict,index)=>'<section class="d2-content"><h4>'+escHtml(conflict.kind+' · '+conflict.name)+'</h4><div class="d2-diff-values"><div><h4>This device</h4><pre>'+escHtml(JSON.stringify(conflict.local??'Removed',null,2))+'</pre></div><div><h4>Dropbox</h4><pre>'+escHtml(JSON.stringify(conflict.remote??'Removed',null,2))+'</pre></div></div><label class="d2-field">Keep<select data-d2-resolution="'+index+'" required><option value="">Choose a version</option><option value="local">This device</option><option value="remote">Dropbox</option></select></label></section>').join('')+(!conflicts.length?'<p>The combined changes are ready to apply.</p>':'')+(localChanges?'<details><summary>Local changes since the last sync</summary>'+d2DiffHtml(localChanges)+'</details><details><summary>Remote changes since the last sync</summary>'+d2DiffHtml(remoteChanges)+'</details>':'<details><summary>Differences between devices</summary>'+d2DiffHtml(d2Diff(remote||{games:[],sessions:[],settings:{}},local))+'</details>'),async()=>{
+    d2Edit('Review changes before syncing','<p>'+(localChanges?localChanges.length+' local changes · '+remoteChanges.length+' remote changes · ':'')+conflicts.length+' conflicts. Matching records and nonconflicting changes merge automatically.</p><p class="backup-hint">A game record includes its milestones and playthroughs. Sessions and shared settings are separate records. Deletions must leave valid references.</p>'+conflicts.map((conflict,index)=>'<section class="d2-content"><h4>'+escHtml(conflict.kind+' · '+conflict.name)+'</h4><div class="d2-diff-values"><div><h4>This device</h4><pre>'+escHtml(JSON.stringify(conflict.local??'Removed',null,2))+'</pre></div><div><h4>Dropbox</h4><pre>'+escHtml(JSON.stringify(conflict.remote??'Removed',null,2))+'</pre></div></div><label class="d2-field">Keep<select data-d2-resolution="'+index+'" required><option value="">Choose a version</option><option value="local">This device</option><option value="remote">Dropbox</option></select></label></section>').join('')+(!conflicts.length?'<p>The combined changes are ready to apply.</p>':'')+(localChanges?'<details><summary>Local changes since the last sync</summary>'+d2DiffHtml(localChanges)+'</details><details><summary>Remote changes since the last sync</summary>'+d2DiffHtml(remoteChanges)+'</details>':'<details><summary>Differences between devices</summary>'+d2DiffHtml(d2Diff(remote||{games:[],sessions:[],settings:{}},local))+'</details>'),async()=>{
       const proposal=syncUI.merge;
       for(const [index,conflict] of proposal.conflicts.entries()){const choice=document.querySelector('[data-d2-resolution="'+index+'"]').value;if(!choice)throw Error('Resolve every conflict first.');proposal.merged.set(conflict.key,choice==='local'?conflict.local:conflict.remote);}
       const result=d2Rebuild(proposal.merged);d2Validate(result);
@@ -15366,6 +14854,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(action==='sync-review')return d2ReviewSync();
     if(action==='sync-connect'){showSyncSettings();return;}
     if(action==='sync-device')return d2Edit('Name this device',d2Input('Device name','d2-device',d2Device().name,'type="text" maxlength="60" required'),()=>{const name=document.getElementById('d2-device').value.trim();if(!name)throw Error('Enter a name.');localStorage.setItem(DEVICE_KEY,JSON.stringify({...d2Device(),name}));renderSyncSettings();});
+    if(action==='sync-conversion-export')return triggerDownload('playdex-before-content-conversion.json',new Blob([localStorage.getItem('playdex.content-conversion.recovery')],{type:'application/json'}));
     if(action==='sync-export')return triggerDownload('playdex-recovery-'+todayStr()+'.json',new Blob([JSON.stringify({app:'PlayDex',version:1,exportedAt:new Date().toISOString(),games,sessions,settings},null,2)],{type:'application/json'}));
     if(action==='sync-restore'){const entry=d2SyncState().remote?.history?.[Number(button.dataset.history)];if(entry){const current=d2SyncState().remote;d2PreviewRestore({games:entry.games,sessions:entry.sessions,settings:entry.settings||current.settings||syncSettings(settings)},'saved version');}return;}
     if(action==='sync-recovery'){let copy;try{copy=JSON.parse(localStorage.getItem(DBX_RECOVERY_KEY));}catch{}if(copy)d2PreviewRestore({games:copy.games,sessions:copy.sessions,settings:copy.settings||syncSettings(settings)},'local recovery');return;}
@@ -15447,19 +14936,19 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const parent=games.find(game=>game.id===playthroughUI.gameId),run=d2Run();if(!run)return;
       if(activeSession?.gameId===parent.id&&activeSession.playthroughId===run.id){toast('Stop this playthrough\'s active session first.');return;}
       const stats=d2RunStats(parent,run);
-      return d2Edit(run.finishedAt?'Reopen playthrough':'Finish playthrough','<h4>'+escHtml(run.name)+'</h4><div class="d2-metrics"><div><strong>'+fmtDurationShort(stats.total)+'</strong><small>Active playtime</small></div><div><strong>'+stats.rows.length+'</strong><small>Sessions</small></div><div><strong>'+stats.completed+' / '+stats.items.length+'</strong><small>Milestones completed</small></div></div><p>Started '+fmtDateShort(run.createdAt)+'. '+(run.finishedAt?'Reopening retains all recorded progress.':'Finishing preserves every session and objective. You can reopen this run later.')+'</p>'+d2RunContent(parent,run).map(content=>'<div class="d2-history-row"><span>'+escHtml(content.name)+'</span><strong>'+fmtDurationShort(d2RunMs(parent.id,run.id,content.id))+'</strong></div>').join(''),()=>d2ChangeRun(item=>item.finishedAt=item.finishedAt?null:new Date().toISOString()),run.finishedAt?'Reopen':'Finish playthrough');
+      return d2Edit(run.finishedAt?'Reopen playthrough':'Finish playthrough','<h4>'+escHtml(run.name)+'</h4><div class="d2-metrics"><div><strong>'+fmtDurationShort(stats.total)+'</strong><small>Active playtime</small></div><div><strong>'+stats.rows.length+'</strong><small>Sessions</small></div><div><strong>'+stats.completed+' / '+stats.items.length+'</strong><small>Milestones completed</small></div></div><p>Started '+fmtDateShort(run.createdAt)+'. '+(run.finishedAt?'Reopening retains all recorded progress.':'Finishing preserves every session and objective. You can reopen this run later.')+'</p>'+d2RunContent(parent,run).map(content=>'<div class="d2-history-row"><span>'+escHtml(content.name)+'</span><strong>'+fmtDurationShort(d2RunMs(parent.id,run.id))+'</strong></div>').join(''),()=>d2ChangeRun(item=>item.finishedAt=item.finishedAt?null:new Date().toISOString()),run.finishedAt?'Reopen':'Finish playthrough');
     }
     if(action==='run-delete'){
       const run=d2Run();if(!run)return;
       if(activeSession?.playthroughId===run.id){toast('Stop this playthrough\'s active session first.');return;}
-      return d2Edit('Remove playthrough?','<p>Remove '+escHtml(run.name)+' and its separate milestone and HLTB progress? Its sessions will become unassigned. All tracked playtime, DLC allocations and lifetime totals are preserved.</p>',()=>{
+      return d2Edit('Remove playthrough?','<p>Remove '+escHtml(run.name)+' and its separate milestone and HLTB progress? Its sessions will become unassigned. All tracked playtime and lifetime totals are preserved.</p>',()=>{
         const library=d2Clone(games),parent=library.find(game=>game.id===playthroughUI.gameId);parent.playthroughs=parent.playthroughs.filter(item=>item.id!==run.id);if(parent.defaultPlaythroughId===run.id)delete parent.defaultPlaythroughId;
         d2SaveLibrary(library,sessions.map(session=>session.gameId===parent.id&&session.playthroughId===run.id?{...session,playthroughId:null}:session));playthroughUI.runId=null;renderDashboardPlaythroughs();
       },'Remove playthrough');
     }
     if(action==='run-start'){
       const parent=games.find(game=>game.id===playthroughUI.gameId),run=d2Run();if(!parent||!run||run.finishedAt||parent.archived)return;
-      return d2Edit('Start '+run.name,'<label class="d2-field">Content<select id="d2-run-content">'+contentOptions(parent.id,playthroughUI.contentId||(playthroughUI.contentSelection.get(parent.id)==='base'?null:playthroughUI.contentSelection.get(parent.id)))+'</select></label>',()=>{const dlcId=document.getElementById('d2-run-content').value||null;document.getElementById('dashboard-modal').classList.remove('open');startGame(parent.id,dlcId,run.id);goTab('today');},'Start session');
+      document.getElementById('dashboard-modal').classList.remove('open');startGame(parent.id,run.id);goTab('today');return;
     }
   }
 
@@ -15473,11 +14962,23 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const host=document.getElementById('session-finish-details');
     host.querySelectorAll('.finish-beat-progress,.finish-milestones').forEach(section=>section.remove());
     const context=document.createElement('p');context.className='d2-live-run';context.textContent='Playthrough · '+run.name;host.querySelector('h4')?.after(context);
-    const parent=games.find(game=>game.id===session.gameId),ids=[...new Set(sessionSegments(session).map(segment=>segment.dlcId||null))];
-    for(const dlcId of ids){const entry=run.content?.[dlcId||'base'];if(!entry)continue;const section=document.createElement('section');section.className='finish-beat-progress';section.innerHTML='<h4>'+escHtml(contentName(parent.id,dlcId))+' · Playthrough HLTB</h4>'+beatProgressRows(entry,d2RunMs(parent.id,run.id,dlcId));host.append(section);host.insertAdjacentHTML('beforeend',finishMilestonesHtml(dlcId?dlcKey(parent.id,dlcId):parent.id,entry,d2RunRows(parent.id,run.id),'Playthrough',run.id));}
+    const parent=games.find(game=>game.id===session.gameId),entry=run.content?.base;
+    if(entry){const section=document.createElement('section');section.className='finish-beat-progress';section.innerHTML='<h4>Playthrough HLTB</h4>'+beatProgressRows(entry,d2RunMs(parent.id,run.id));host.append(section);host.insertAdjacentHTML('beforeend',finishMilestonesHtml(parent.id,entry,d2RunRows(parent.id,run.id),'Playthrough',run.id));}
   };
 
   // --- Initial render ---
+  try{migrateLegacyContent();}catch(error){
+    libraryConversionBlocked=true;dbxSkipAutoUpload=true;clearTimeout(dbxSyncTimer);
+    if(window.hideBootSplash)window.hideBootSplash();
+    for(const child of document.body.children)child.inert=true;
+    const overlay=document.createElement('div');overlay.className='modal-overlay open';overlay.style.zIndex='10000';
+    const modal=document.createElement('div');modal.className='modal';modal.setAttribute('role','alertdialog');modal.setAttribute('aria-modal','true');
+    const title=document.createElement('h3');title.textContent='Library conversion could not be saved';
+    const message=document.createElement('p');message.textContent='Your original library has been kept. '+error.message+' Free storage, then reload to retry. Export the original data if you need to recover an invalid library.';
+    const retry=document.createElement('button');retry.className='btn btn-start';retry.textContent='Reload and retry';retry.onclick=()=>location.reload();
+    const download=document.createElement('button');download.className='btn-ghost';download.textContent='Export original data';download.onclick=()=>triggerDownload('playdex-original-library.json',new Blob([JSON.stringify({app:'PlayDex',version:1,games:JSON.parse(localStorage.getItem(KEYS.games)||'[]'),sessions:JSON.parse(localStorage.getItem(KEYS.sessions)||'[]'),settings:JSON.parse(localStorage.getItem(KEYS.settings)||'{}')},null,2)],{type:'application/json'}));
+    modal.append(title,message,download,retry);overlay.append(modal);document.body.append(overlay);retry.focus();return;
+  }
   ensureRotationWeek();
   const initialMilestoneState=reconcileMilestoneLibrary(games,sessions);
   const milestoneMigration=games.length>0 && JSON.stringify(games)!==JSON.stringify(JSON.parse(localStorage.getItem(KEYS.games)||'[]'));
@@ -15494,7 +14995,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     scheduleAutoUpload();
     if (window.hideBootSplash) window.hideBootSplash();
     queueStartupSyncReview();
-    setTimeout(explainDlcRotation, 5500);
   });
 
   // --- PWA install ---
@@ -15529,7 +15029,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.1.4';
+    const APP_VERSION = '2.1.5';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
@@ -15638,7 +15138,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     flame:'<path d="M13 2c2 7-5 6-3 12-4-1-4-5-4-5-9 17 18 18 13 3-1 4-5 2-3-2 1-4-3-8-3-8Z"/>'
   };
   function sectionIcon(label,used){
-    const rules=[[/milestone targets/i,'flag'],[/milestone/i,'target'],[/goal/i,'target'],[/rotation|week review/i,'week'],[/last 7/i,'calendar'],[/last 30/i,'month'],[/monthly/i,'month'],[/weekly.*trend/i,'trend'],[/calendar/i,'calendar'],[/length/i,'timer'],[/current session/i,'timer'],[/sessions/i,'history'],[/total playtime/i,'clock'],[/consistency|consistent/i,'grid'],[/dlc/i,'layers'],[/platform/i,'game'],[/compare|comparison/i,'compare'],[/recap/i,'book'],[/records|podium/i,'trophy'],[/favorite/i,'heart'],[/quest/i,'flag'],[/badge|achievement/i,'medal'],[/profile/i,'user'],[/playstyle/i,'compass'],[/heatmap|time.of.day/i,'sun'],[/streak|dedication/i,'flame'],[/theme|colour|appearance|interface/i,'palette'],[/dropbox|sync/i,'sync'],[/backup|export/i,'archive'],[/maintenance/i,'tools'],[/shortcut/i,'keyboard'],[/filter|game list/i,'list'],[/split/i,'pie'],[/game|discover/i,'game'],[/movers/i,'trend']];
+    const rules=[[/milestone targets/i,'flag'],[/milestone/i,'target'],[/goal/i,'target'],[/rotation|week review/i,'week'],[/last 7/i,'calendar'],[/last 30/i,'month'],[/monthly/i,'month'],[/weekly.*trend/i,'trend'],[/calendar/i,'calendar'],[/length/i,'timer'],[/current session/i,'timer'],[/sessions/i,'history'],[/total playtime/i,'clock'],[/consistency|consistent/i,'grid'],[/platform/i,'game'],[/compare|comparison/i,'compare'],[/recap/i,'book'],[/records|podium/i,'trophy'],[/favorite/i,'heart'],[/quest/i,'flag'],[/badge|achievement/i,'medal'],[/profile/i,'user'],[/playstyle/i,'compass'],[/heatmap|time.of.day/i,'sun'],[/streak|dedication/i,'flame'],[/theme|colour|appearance|interface/i,'palette'],[/dropbox|sync/i,'sync'],[/backup|export/i,'archive'],[/maintenance/i,'tools'],[/shortcut/i,'keyboard'],[/filter|game list/i,'list'],[/split/i,'pie'],[/game|discover/i,'game'],[/movers/i,'trend']];
     const preferred=rules.find(([pattern])=>pattern.test(label))?.[1]||'bars';
     const key=!used.has(preferred)?preferred:Object.keys(sectionIconShapes).find(key=>!used.has(key));
     used.add(key);

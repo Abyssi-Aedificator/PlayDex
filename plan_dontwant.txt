@@ -14,3 +14,6 @@ Backlog picks
 
 Repeatable milestones
 - Reset selected challenges weekly or monthly while keeping their completion history.
+
+DLC support
+- Child DLC records, content switching, split-time sessions, and independent DLC milestones or HLTB progress.
