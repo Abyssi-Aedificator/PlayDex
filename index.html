@@ -9436,8 +9436,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>rotationMilestoneEstimateHtml(item,compactHltb)).join('');
   }
   function rotationOpenRunMilestonesHtml(key,targetMinutes,live=false,selection=settings.weeklyRotationPlaythroughs||{}){
-    const game=contentEntry(key);if(!game||game.archived)return '';
-    return (game.playthroughs||[]).filter(run=>!run.finishedAt&&(!selection[key]||run.id===selection[key])).map(run=>{
+    const game=contentEntry(key);if(!game||game.archived||!selection[key])return '';
+    return (game.playthroughs||[]).filter(run=>!run.finishedAt&&run.id===selection[key]).map(run=>{
       const items=milestoneSorted(normalizeGameMilestones(run.content?.base?.milestones));if(!items.length)return '';
       const scoped={...selection,[key]:run.id},history=sessions.filter(session=>session.playthroughId===run.id&&session.gameId===key);
       const estimates=new Map(rotationMilestoneEstimates(key,targetMinutes,live,scoped,selection).map(item=>[item.id,item]));
