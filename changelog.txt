@@ -1,6 +1,11 @@
 PlayDex - Changelog
 ====================
 
+Version 2.1.5
+-------------------
+- Set one open playthrough per game as the default from Run actions; it is preselected for new sessions and cleared when finished or removed, without changing existing session assignments.
+- Removed DLC management, content switching, allocation editing, filters, and split-time statistics; existing sessions retain their full active durations under their games, with a pre-conversion recovery export and automatic conversion of older backups.
+
 Version 2.1.4
 -------------------
 - Removed the “Completion stays manual.” reminder from weekly rotation milestone estimates.
