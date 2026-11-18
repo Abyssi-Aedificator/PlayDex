@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.0.1
 -------------------
+- Rotation milestone projections now add the current playthrough and milestone playthrough remaining time using the saved estimate source, show the two-part breakdown, and include other open-run milestones alongside a selected run without double-counting the same run.
 - Grouped milestone targets show the milestone name first, followed by Multiple and its expand arrow.
 
 Version 3.0.0
