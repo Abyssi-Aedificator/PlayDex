@@ -9441,7 +9441,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const items=milestoneSorted(normalizeGameMilestones(run.content?.base?.milestones));if(!items.length)return '';
       const scoped={...selection,[key]:run.id},history=sessions.filter(session=>session.playthroughId===run.id&&session.gameId===key);
       const estimates=new Map(rotationMilestoneEstimates(key,targetMinutes,live,scoped,selection).map(item=>[item.id,item]));
-      return '<div class="rotation-run-objectives"><small class="rotation-run-heading">Playthrough: '+escHtml(run.name)+'</small>'+items.map(item=>{
+      return '<div class="rotation-run-objectives">'+items.map(item=>{
         if(estimates.has(item.id))return rotationMilestoneEstimateHtml(estimates.get(item.id));
         const progress=milestoneProgress(item,key,history,live),blocked=milestoneBlocked(item,items);
         const text=item.completedAt?'Completed '+item.completedAt:progress.text+(milestoneValidDate(item.targetDate)?' / Target: '+item.targetDate:'')+(blocked.length?' / Blocked: '+blocked.join(', '):'');
