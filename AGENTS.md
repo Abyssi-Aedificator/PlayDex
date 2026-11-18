@@ -30,7 +30,7 @@ Before proposing or implementing features, consult `plan_dontwant.txt`. Do not p
 - `main` is the current local branch and the remote default. The user removed local `dev`; do not recreate it automatically or follow stale remote-tracking refs as if they were live branches.
 - Inspect branch and working-tree state before changes. Respect the user's explicit branch selection and preserve unrelated work.
 - The user has requested an individual commit for each completed change. Follow that standing instruction and the existing message style (`git log --oneline`). Push only when explicitly requested.
-- **Never push `main`.** Publishing the production branch remains the user's job. No documentation update or release request implicitly authorizes pushing it.
+- `main` is the delivery branch. Push to `origin/main` only when the user explicitly requests a push. Never push automatically after committing, updating documentation, changing a version, or finishing a task.
 
 ## Commit policy
 
