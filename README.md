@@ -41,7 +41,7 @@ Open **Plan week** from **This week's rotation** on Today:
 3. Optionally choose a planned day, mark high priority with the star, or select a playthrough.
 4. Review the budget and choose **Save plan**. Cancel, Escape, and backdrop dismissal ask before discarding changed drafts.
 
-Games with a default playthrough use it when newly added or when the current plan has no saved run choice. Explicit run choices and **Any playthrough** remain saved. A selected run scopes weekly progress, HLTB, and milestone estimates to that run. Presets and **Load last week** preserve their original run choices.
+Games with a default playthrough use it when newly added or when the current plan has no saved run choice. Explicit run choices and **Any playthrough** remain saved. With Any playthrough selected, the editor and Today also list all milestones from every open run, grouped by playthrough, including undated and completed objectives. Each run's milestone progress and estimates use only its own assigned sessions; finished runs are excluded. A selected run scopes weekly progress, HLTB, and milestone estimates to that run. Presets and **Load last week** preserve their original run choices.
 
 The weekly capacity comes from the daily goal times seven, or the automatic average from the previous calendar week times seven. **Game targets** and optional **Weekday targets** are independent allocations against that capacity; they are never added together. Zero-hour weekdays are rest days. Remaining game time is displayed as complete hours, rounded down; less than one hour shows 0h and 0% remaining. Budget validation still uses exact values.
 

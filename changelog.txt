@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.6
 -------------------
+- Any playthrough in Weekly rotation now shows all milestones from every open run, labelled by playthrough with run-specific progress and estimates; finished runs are excluded.
 - Today groups matching milestone target names into one row with a Multiple label and game names on hover; expand the row to open individual targets, with the earliest date shown in the summary.
 - Personal milestones can move into an open playthrough of the same game from More; a preview includes linked prerequisites and dependents, preserves entered progress and dates, and recalculates tracked goals for the destination run.
 - Settings now opens the latest release notes or full changelog in a themed viewer, and the update popup offers What's new for the pending release; release history is cached for offline access.
