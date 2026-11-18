@@ -9807,7 +9807,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return rotationEstimateNumbers(text).replace(/\b(before target|after target)\b/g,phrase=>'<span class="rotation-timing-'+(phrase==='before target'?'before':'after')+'">'+phrase+'</span>');
   }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false,selection=settings.weeklyRotationPlaythroughs||{}) {
-    return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'. Completion stays manual.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>').join('');
+    return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>').join('');
   }
 
   function rotationHltbCompletionEstimates(key,targetMinutes,selection=settings.weeklyRotationPlaythroughs||{}) {
