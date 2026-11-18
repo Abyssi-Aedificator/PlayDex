@@ -41,6 +41,15 @@ Before proposing or implementing features, consult `plan_dontwant.txt`. Do not p
 - **Changelog entries describe user-facing changes only.** Never write a standalone version/cache-bump line in a `changelog.txt` bullet (e.g. "Bumped SW_VERSION/cache to playdex-vX"). Version/cache bumps are implicit in the release commit, not listed as a change.
 - **Every changelog bullet is exactly one line.** Never wrap a bullet onto a continuation line — keep each entry on a single line regardless of length.
 
+## Version-update requests
+
+- When the user asks to update or bump the version, inspect the current app version and ask them to choose **Consolidation**, **Major**, **Minor**, or **Patch** before editing any version markers. Use the user-input tool when available and show the resulting version for each bump choice.
+- For a current version `A.B.C`, Major increments the first segment and resets the others (`(A+1).0.0`); Minor increments the second segment and resets the patch (`A.(B+1).0`); Patch increments the third segment (`A.B.(C+1)`). These correspond to `x.z.z`, `z.x.z`, and `z.z.x` respectively.
+- Consolidation combines existing release entries rather than adding a new empty release. Ask for any missing start/end range and target version, then follow the consolidation rules below.
+- An exact version number alone does not replace the release-type question. Keep an explicitly supplied target; clarify any mismatch with the chosen release type rather than silently changing it.
+- Do not repeat a choice the user has already answered for the same release request. An explicit request such as "bump patch" already supplies the type.
+- After the choice, keep version markers and cache handling consistent with the rules below. Preserve the existing commit policy and push only on explicit request.
+
 ## Version representation
 
 - `APP_VERSION` in `index.html`, used by the new-version prompt.
