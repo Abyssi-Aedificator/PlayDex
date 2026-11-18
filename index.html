@@ -9869,7 +9869,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const visible = candidates.filter(id => {
       const day = settings.weeklyRotationDays?.[id];
       return !plannedWeekdays.includes(day) || day === today;
-    }).sort((a,b)=>Number(settings.weeklyRotationPriorities?.[b]===true)-Number(settings.weeklyRotationPriorities?.[a]===true));
+    }).sort((a,b)=>Number(settings.weeklyRotationPriorities?.[b]===true)-Number(settings.weeklyRotationPriorities?.[a]===true)||(contentEntry(a)?.name||'').localeCompare(contentEntry(b)?.name||'',undefined,{sensitivity:'base',numeric:true})||a.localeCompare(b));
     const empty = candidates.length
       ? '<p class="backup-hint">No rotation games planned for today.</p>'
       : ids.length && !remaining.length && !activeSession
