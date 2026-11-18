@@ -5800,7 +5800,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">2.1.3</span>
+    <span class="version-badge">2.1.4</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -9807,7 +9807,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return rotationEstimateNumbers(text).replace(/\b(before target|after target)\b/g,phrase=>'<span class="rotation-timing-'+(phrase==='before target'?'before':'after')+'">'+phrase+'</span>');
   }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false,selection=settings.weeklyRotationPlaythroughs||{}) {
-    return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'. Completion stays manual.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>').join('');
+    return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>').join('');
   }
 
   function rotationHltbCompletionEstimates(key,targetMinutes,selection=settings.weeklyRotationPlaythroughs||{}) {
@@ -9869,7 +9869,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const visible = candidates.filter(id => {
       const day = settings.weeklyRotationDays?.[id];
       return !plannedWeekdays.includes(day) || day === today;
-    }).sort((a,b)=>Number(settings.weeklyRotationPriorities?.[b]===true)-Number(settings.weeklyRotationPriorities?.[a]===true));
+    }).sort((a,b)=>Number(settings.weeklyRotationPriorities?.[b]===true)-Number(settings.weeklyRotationPriorities?.[a]===true)||(contentEntry(a)?.name||'').localeCompare(contentEntry(b)?.name||'',undefined,{sensitivity:'base',numeric:true})||a.localeCompare(b));
     const empty = candidates.length
       ? '<p class="backup-hint">No rotation games planned for today.</p>'
       : ids.length && !remaining.length && !activeSession
@@ -11570,7 +11570,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     dateField=createCalField('general-date');dateField.value=original?.targetDate||'';
   }
   function assignGeneralMilestone(id){
-    const options=games.filter(game=>!game.archived).flatMap(game=>[{key:game.id,name:game.name+' / Base game'},...(game.dlcs||[]).filter(dlc=>!dlc.archived).map(dlc=>({key:dlcKey(game.id,dlc.id),name:game.name+' / '+dlc.name}))]);
+    const options=games.filter(game=>!game.archived).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id)).flatMap(game=>[{key:game.id,name:game.name+' / Base game'},...(game.dlcs||[]).filter(dlc=>!dlc.archived).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id)).map(dlc=>({key:dlcKey(game.id,dlc.id),name:game.name+' / '+dlc.name}))]);
     if(!options.length){toast('Add an active game before assigning a milestone.');return;}
     d2Edit('Assign milestone','<p class="backup-hint">Move this objective into a game or DLC. It will leave General milestones.</p><label class="d2-field">Game / content<select id="general-destination">'+options.map(option=>'<option value="'+milestoneAttr(option.key)+'">'+escHtml(option.name)+'</option>').join('')+'</select></label>',()=>{
       checkStorageFresh();
@@ -15104,7 +15104,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     d2SaveLibrary(games,sessions,next);d2LoadDraft();renderWeeklyPlanner();closeWeeklyPlanner(true);toast('Weekly plan saved');
   }
   function d2PlannerAdd(){
-    const options=contentEntries().filter(entry=>rotationEntryEligible(entry)&&!plannerUI.draft.ids.includes(entry.id));
+    const options=contentEntries().filter(entry=>rotationEntryEligible(entry)&&!plannerUI.draft.ids.includes(entry.id)).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
     d2Edit('Add games','<label class="d2-field">Search games and DLCs<input type="search" id="planner-picker-search" placeholder="Search by game or DLC name"></label><p class="backup-hint">Select any number. Targets and days can be set after adding.</p><label class="milestone-step-toggle"><input type="checkbox" id="planner-select-all"'+(options.length?'':' disabled')+'>Select all available games and DLCs</label><div id="planner-picker" class="d2-assign-list">'+options.map(entry=>'<label class="planner-pick" data-search="'+d2Attr(entry.name.toLocaleLowerCase())+'"><input type="checkbox" data-d2-plan-add="'+d2Attr(entry.id)+'">'+gameCoverHtml(entry)+'<span>'+plannerEntryLabel(entry)+'</span></label>').join('')+'</div><p id="planner-picker-empty" class="backup-hint"'+(options.length?' hidden':'')+'>No available games or DLCs match. All active content may already be selected.</p>',()=>{
       for(const input of document.querySelectorAll('[data-d2-plan-add]:checked')){plannerUI.draft.ids.push(input.dataset.d2PlanAdd);plannerUI.draft.targets[input.dataset.d2PlanAdd]=0;delete plannerUI.raw['target:'+input.dataset.d2PlanAdd];plannerUI.draft.days[input.dataset.d2PlanAdd]='Any day';}renderWeeklyPlanner();
     },'Add selected');
@@ -15525,7 +15525,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     document.getElementById('target-reached-modal').classList.remove('open');
   });
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '2.1.3';
+    const APP_VERSION = '2.1.4';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
