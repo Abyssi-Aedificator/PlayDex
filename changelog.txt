@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 2.1.6
 -------------------
+- Today groups matching milestone target names into one row with a Multiple label and game names on hover; expand the row to open individual targets, with the earliest date shown in the summary.
 - Personal milestones can move into an open playthrough of the same game from More; a preview includes linked prerequisites and dependents, preserves entered progress and dates, and recalculates tracked goals for the destination run.
 - Settings now opens the latest release notes or full changelog in a themed viewer, and the update popup offers What's new for the pending release; release history is cached for offline access.
 - Reorganized the README around current app workflows and refreshed contributor guidance for playthrough defaults, rotation behavior, legacy-backup conversion, validation, and the current branch setup.

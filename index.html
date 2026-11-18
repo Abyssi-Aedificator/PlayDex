@@ -1434,6 +1434,19 @@ opacity: 0.18;
   #today-milestone-list .stats-objective-link { color:var(--text); flex:1; min-width:0; }
   #today-milestone-list .stats-objective-link { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 10px; }
   .today-milestone-game { color:var(--text3); font-size:12px; font-weight:400; overflow-wrap:anywhere; }
+  .today-milestone-group > summary { list-style:none; cursor:pointer; flex-wrap:wrap; }
+  .today-milestone-group > summary::-webkit-details-marker { display:none; }
+  .today-milestone-group-label { display:flex; align-items:baseline; flex:1 1 180px; min-width:0; gap:8px; }
+  .today-milestone-group-name { color:var(--text); font-size:14px; font-weight:600; min-width:0; overflow-wrap:anywhere; }
+  .today-milestone-multiple { flex-shrink:0; padding:2px 7px; border-radius:999px; background:var(--accent-dim); color:var(--accent); font-size:11px; font-weight:600; }
+  .today-milestone-chevron { color:var(--text3); font-size:11px; }
+  .today-milestone-group[open] .today-milestone-chevron { transform:rotate(180deg); }
+  .today-milestone-group > summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
+  .today-milestone-group > summary .milestone-due { max-width:100%; margin-left:auto; }
+  .today-milestone-members { margin:10px 0 0 8px; padding-left:12px; border-left:2px solid var(--border); }
+  .today-milestone-member { padding:8px 0; }
+  #today-milestone-list .today-milestone-member .stats-objective-link { font-size:12px; color:var(--text2); }
+
   .today-milestone-heading { display:flex; align-items:baseline; justify-content:space-between; gap:8px 16px; }
   .today-milestone-heading .milestone-due { flex:0 1 auto; max-width:60%; margin:0; text-align:right; overflow-wrap:anywhere; }
   .stats-objective-link:hover { text-decoration:underline; }
@@ -9493,7 +9506,19 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.getElementById('setTodayMilestones').checked=enabled;
     document.getElementById('setSessionMilestonePrompts').checked=settings.sessionMilestonePrompts!==false;
     const rows=enabled&&!activeSession?todayMilestoneRows():[];card.hidden=!rows.length;
-    host.innerHTML=rows.map(row=>'<article class="stats-insight-row"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" '+(row.general?'data-general-target="'+milestoneAttr(row.item.id)+'"':'data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':''))+'>'+escHtml(row.item.name)+(row.general?'':'<span class="today-milestone-game">'+escHtml(games.find(game=>game.id===row.parentId)?.name||'')+'</span>')+'</a>'+milestoneTargetDateHtml(row.item)+'</div>'+(row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'')+'</article>').join('');
+    const expanded=new Set([...host.querySelectorAll('details[open][data-today-group]')].map(element=>element.dataset.todayGroup));
+    const groups=new Map();for(const row of rows){const key=row.item.name.trim().replace(/\s+/g,' ').toLocaleLowerCase();if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}
+    const attributes=row=>row.general?'data-general-target="'+milestoneAttr(row.item.id)+'"':'data-stats-objective="'+milestoneAttr(row.key)+'" data-parent="'+milestoneAttr(row.parentId)+'"'+(row.runId?' data-run="'+milestoneAttr(row.runId)+'"':'');
+    const scope=row=>row.general?'General milestones':(games.find(game=>game.id===row.parentId)?.name||'Game')+(row.runId?' / '+(games.find(game=>game.id===row.parentId)?.playthroughs?.find(run=>run.id===row.runId)?.name||'Playthrough'):'');
+    const blocked=row=>row.blocked.length?'<p>Blocked: '+escHtml(row.blocked.join(', '))+'</p>':'';
+    host.innerHTML=[...groups].map(([key,members])=>{
+      const row=members[0];
+      if(members.length===1)return '<article class="stats-insight-row"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" '+attributes(row)+'>'+escHtml(row.item.name)+(row.general?'':'<span class="today-milestone-game">'+escHtml(games.find(game=>game.id===row.parentId)?.name||'')+'</span>')+'</a>'+milestoneTargetDateHtml(row.item)+'</div>'+blocked(row)+'</article>';
+      const names=[...new Set(members.map(scope))].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base',numeric:true})).join('\n');
+      const differentDates=new Set(members.map(member=>member.item.targetDate)).size>1;
+      const date=milestoneTargetDateHtml(row.item).replace('Target:',differentDates?'Earliest target:':'Target:');
+      return '<article class="stats-insight-row"><details class="today-milestone-group" data-today-group="'+milestoneAttr(key)+'"'+(expanded.has(key)?' open':'')+'><summary class="today-milestone-heading" title="'+milestoneAttr(names)+'" aria-label="'+milestoneAttr(row.item.name+'. Multiple targets: '+names.replace(/\n/g,'; ')+'. Earliest target: '+row.item.targetDate)+'"><span class="today-milestone-group-label"><span class="today-milestone-multiple" title="'+milestoneAttr(names)+'">Multiple</span><span class="today-milestone-group-name">'+escHtml(row.item.name)+'</span><span class="today-milestone-chevron" aria-hidden="true">&#9662;</span></span>'+date+'</summary><div class="today-milestone-members">'+members.map(member=>'<div class="today-milestone-member"><div class="today-milestone-heading"><a class="stats-objective-link" href="#milestones" '+attributes(member)+'>'+escHtml(scope(member))+'</a>'+milestoneTargetDateHtml(member.item)+'</div>'+blocked(member)+'</div>').join('')+'</div></details></article>';
+    }).join('');
   }
   document.getElementById('setTodayMilestones').addEventListener('change',event=>{
     const next={...settings,showTodayMilestones:event.target.checked};
