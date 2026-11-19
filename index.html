@@ -14077,6 +14077,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     const next = sessions.map(entry => entry === session ? { ...entry, synced } : entry);
     saveSessions(next);
     sessions = next;
+    scheduleAutoUpload();
   }
   function showFinishReview(id) {
     const session = sessions.find(entry => entry.id === id && entry.stop !== null);
