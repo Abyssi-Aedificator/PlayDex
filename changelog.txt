@@ -3,7 +3,6 @@ PlayDex - Changelog
 
 Version 3.0.2
 -------------------
-- Weekly rotation milestone titles are bold, with black text in light mode and high-contrast text in dark mode.
 - Weekly rotation milestone projections match the HLTB completion format, with target details on a separate line.
 
 Version 3.0.1
