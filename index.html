@@ -5810,7 +5810,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">3.0.2</span>
+    <span class="version-badge">3.1.0</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -7311,6 +7311,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     cover: ['Cover', { yes:'Has cover', no:'No cover' }],
     hltb: ['HLTB', { set:'Estimates set', missing:'HLTB not set', unavailable:'HLTB not available', exempt:'HLTB not needed' }],
     milestones: ['Personal milestones', { none:'No milestones', open:'Has unfinished milestones', done:'All milestones completed' }],
+    playthroughs: ['Playthroughs', { yes:'Has playthroughs', no:'No playthroughs', open:'Has open playthroughs', finished:'Has finished playthroughs' }],
     rotation: ['Weekly rotation', { yes:'In rotation', no:'Not in rotation' }],
     played: ['Play history', { yes:'Played', no:'Never played' }]
   };
@@ -11641,6 +11642,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
   }
 
+  function matchesPlaythroughFilter(game,value){
+    const runs=game.playthroughs||[];
+    return !value || (value==='yes'?runs.length>0:value==='no'?runs.length===0:value==='open'?runs.some(run=>!run.finishedAt):value==='finished'?runs.some(run=>!!run.finishedAt):false);
+  }
   function gameCoverHtml(game) {
     return '<span class="library-game-cover">'+(game.image?'<img src="'+milestoneAttr(game.image)+'" alt="" loading="lazy" onerror="this.remove()">':'')+'<span aria-hidden="true">&#127918;</span></span>';
   }
@@ -11675,7 +11680,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         played: playedIds.has(g.id) ? 'yes' : 'no'
       };
       return Object.entries(gameAttributeSelections).every(([key, value]) =>
-        values[key] === value);
+        key==='playthroughs'?matchesPlaythroughFilter(g,value):values[key] === value);
     };
     const matches = g => textMatch(g) && tagMatch(g) && platformMatch(g) && attributesMatch(g) && (gamesArchiveFilter==='all' || (gamesArchiveFilter==='archived' ? g.archived : !g.archived));
     const platformFilter=document.getElementById('games-platform-filter');
@@ -15247,7 +15252,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   },true);
 
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '3.0.2';
+    const APP_VERSION = '3.1.0';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');

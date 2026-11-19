@@ -1,8 +1,9 @@
 PlayDex - Changelog
 ====================
 
-Version 3.0.2
+Version 3.1.0
 -------------------
+- Games filters include Playthroughs: has playthroughs, none, open runs or finished runs, alongside existing library filters.
 - Game HLTB stores reference hours only; progress, remaining time and completion estimates use playthrough settings and assigned sessions, with Any playthrough combining open runs and no game-level fallback.
 - Marking a session synced in the Session saved popup now queues Dropbox change detection with the updated sync status instead of the previous session snapshot.
 - Weekly rotation milestone projections match the HLTB completion format, with target details on a separate line.
