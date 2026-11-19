@@ -2094,7 +2094,8 @@ opacity: 0.18;
   .add-game-form .btn { flex-shrink: 0; padding: 10px 18px; }
 
   .rotation-run-objectives { margin-top:8px; padding-top:8px; border-top:1px solid var(--border); overflow-wrap:anywhere; }
-  .rotation-run-objectives .rotation-run-heading { font-weight:600; color:var(--text); }
+  .rotation-milestone-title { font-weight:700; color:#000; }
+  :root[data-theme="dark"] .rotation-milestone-title { color:var(--text); }
   .milestone-move-list { padding-left:22px; margin:14px 0; max-height:32dvh; overflow-y:auto; overflow-wrap:anywhere; }
   .milestone-move-list li { margin:6px 0; font-size:.85rem; }
   #changelog-modal { z-index:500; }
@@ -9434,7 +9435,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return rotationEstimateNumbers(text).replace(/\b(before target|after target)\b/g,phrase=>'<span class="rotation-timing-'+(phrase==='before target'?'before':'after')+'">'+phrase+'</span>');
   }
   function rotationMilestoneEstimateHtml(item,compactHltb=false){
-    return compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+(item.projection?rotationEstimateNumbers(item.projection)+'<br>':'')+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>';
+    const title='<strong class="rotation-milestone-title">'+escHtml(item.name)+'</strong>';
+    return compactHltb&&item.hltbFallback?'<small>'+title+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+title+': '+(item.projection?rotationEstimateNumbers(item.projection)+'<br>':'')+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>';
   }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false,selection=settings.weeklyRotationPlaythroughs||{}) {
     return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>rotationMilestoneEstimateHtml(item,compactHltb)).join('');
@@ -9449,7 +9451,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         if(estimates.has(item.id))return rotationMilestoneEstimateHtml(estimates.get(item.id));
         const progress=milestoneProgress(item,key,history,live),blocked=milestoneBlocked(item,items);
         const text=item.completedAt?'Completed '+item.completedAt:progress.text+(milestoneValidDate(item.targetDate)?' / Target: '+item.targetDate:'')+(blocked.length?' / Blocked: '+blocked.join(', '):'');
-        return '<small>'+escHtml(item.name)+': '+rotationEstimateNumbers(text)+'</small>';
+        return '<small><strong class="rotation-milestone-title">'+escHtml(item.name)+'</strong>: '+rotationEstimateNumbers(text)+'</small>';
       }).join('')+'</div>';
     }).join('');
   }
