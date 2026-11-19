@@ -11771,7 +11771,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         return '<div class="game-item' + (staleIds.has(g.id) ? ' stale' : '') + ' fade-in" style="--i:' + Math.min(i * 40, 320) + 'ms">' +
           '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
-            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' + missingBeatTimeBadge(g) +
+            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' + missingBeatTimeBadge(g) + missingPlaythroughBadge(g) +
             tagsHtml(g) +
             gameMeta(count, e, staleIds.has(g.id)) +
           '</div></div>' +
@@ -11795,7 +11795,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         return '<div class="game-item archived fade-in" style="--i:' + Math.min((i + active.length) * 40, 360) + 'ms">' +
           '<div class="game-item-info library-game-info">' + gameCoverHtml(g) + '<div class="library-game-copy">' +
             '<div class="game-item-name-row"><span class="game-item-name">' + escHtml(g.name) + '</span><span class="classic-archived-label">Archived</span>' + (g.image ? '' : '<span class="no-cover-tag">No cover</span>') + '</div>' +
-            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' + missingBeatTimeBadge(g) +
+            '<span class="game-platform-badge">'+escHtml(normalizePlatform(g.platform)||'No platform')+'</span>' + missingBeatTimeBadge(g) + missingPlaythroughBadge(g) +
             tagsHtml(g) +
             gameMeta(count, e) +
           '</div></div>' +
@@ -13805,6 +13805,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     return '<section class="game-milestones beat-time-section"><div class="game-milestones-heading"><div><h4>HLTB</h4><p>Reference estimates</p></div>' +
       '<button class="btn-ghost" type="button" data-edit-beat-time>' + (hasEstimates || game.beatNotNeeded || game.beatUnavailable ? 'Edit estimates' : '+ Add estimates') + '</button></div>' +
       (game.beatNotNeeded ? '<p class="backup-hint">Not needed for this game.</p>' : game.beatUnavailable ? '<p class="backup-hint">HLTB not available.</p>' : [['Main Story',game.mainStoryHours],['Main + Extra',game.mainExtraHours]].map(([label,hours])=>'<div class="beat-progress-row"><div class="beat-progress-label"><strong>'+label+'</strong><span>'+(hours?escHtml(String(hours))+'h':'Not set')+'</span></div></div>').join('')) + '</section>';
+  }
+  function missingPlaythroughBadge(game) {
+    return game.playthroughs?.length?'':' <span class="game-platform-badge">No playthrough</span>';
   }
   function missingBeatTimeBadge(game) {
     if (game.beatUnavailable) return ' <span class="game-platform-badge">HLTB not available</span>';

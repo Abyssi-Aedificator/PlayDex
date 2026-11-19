@@ -24,7 +24,7 @@ Browser storage belongs to the browser profile and origin you use. Export a back
 - Use Sessions to filter history, edit or delete entries, and export matching rows. A session's **Synced** flag is a manual status, separate from Dropbox synchronization.
 - Settings includes **Check session history** for overlaps, sessions under five active minutes, unusually long sessions, and missing game references. Review, edit, reassign, or delete flagged sessions; nothing is changed automatically.
 
-The Games tab includes a **Playthroughs** filter for games with runs, without runs, with open runs, or with finished runs. It combines with other filters and supports removable filter chips and Clear filters.
+The Games tab includes a **Playthroughs** filter for games with runs, without runs, with open runs, or with finished runs. It combines with other filters and supports removable filter chips and Clear filters. Games without runs also show a **No playthrough** badge.
 
 ### HLTB and playthroughs
 
