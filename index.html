@@ -1477,7 +1477,6 @@ opacity: 0.18;
   #session-finish-review .modal-actions { flex-wrap:wrap; }
   .beat-time-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:10px; }
   .beat-time-fields input { min-width:0; }
-  .beat-time-fields .beat-played-field { grid-column:1 / -1; }
   .beat-progress-row { padding:10px 0; border-top:1px solid var(--border); }
   .beat-progress-label { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; font-size:.8rem; }
   .beat-progress-label > span { color:var(--text2); font-variant-numeric:tabular-nums; }
@@ -2095,6 +2094,10 @@ opacity: 0.18;
 
   .rotation-run-objectives { margin-top:8px; padding-top:8px; border-top:1px solid var(--border); overflow-wrap:anywhere; }
   .rotation-run-objectives .rotation-run-heading { font-weight:600; color:var(--text); }
+  .rotation-run-breakdown { margin-top:12px; }
+  .rotation-run-breakdown > summary { cursor:pointer; color:var(--text); font-size:12px; padding:6px 0; }
+  .rotation-milestone-heading { display:flex; justify-content:space-between; align-items:baseline; gap:6px 16px; flex-wrap:wrap; }
+  .rotation-milestone-heading .rotation-milestone-run { color:var(--text3); margin-left:auto; text-align:right; font-weight:400; }
   .milestone-move-list { padding-left:22px; margin:14px 0; max-height:32dvh; overflow-y:auto; overflow-wrap:anywhere; }
   .milestone-move-list li { margin:6px 0; font-size:.85rem; }
   #changelog-modal { z-index:500; }
@@ -6872,15 +6875,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     <h3 id="beat-time-title">HLTB</h3>
     <form id="beat-time-form">
       <div class="field-group"><label for="beat-status">HLTB status</label><select id="beat-status"><option value="estimates">Use estimates</option><option value="not-needed">Not needed for this game</option><option value="unavailable">Not available</option></select></div>
-      <p class="backup-hint">Enter estimates in hours. Leave a field blank to clear it.</p>
+      <p class="backup-hint">Store reference estimates in hours. Progress is calculated only within playthroughs. Leave a field blank to clear it.</p>
       <div class="beat-time-fields">
         <div class="field-group"><label for="beat-main">Main Story (hours)</label><input id="beat-main" type="number" min="0.01" step="any" placeholder="Optional"></div>
         <div class="field-group"><label for="beat-extra">Main + Extra (hours)</label><input id="beat-extra" type="number" min="0.01" step="any" placeholder="Optional"></div>
-        <div class="field-group beat-played-field">
-          <label for="beat-played">Already played (hours)</label>
-          <input id="beat-played" type="number" min="0" step="any" placeholder="Optional" aria-describedby="beat-played-hint">
-          <small class="backup-hint" id="beat-played-hint">Enter time played outside PlayDex. Logged sessions are added automatically.</small>
-        </div>
       </div>
       <div class="modal-actions">
         <button class="btn-ghost" type="button" id="beat-time-cancel">Cancel</button>
@@ -9353,7 +9351,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function rotationPlayedTime(ms) { return fmtDurationMinutes(ms); }
   function rotationHltbEstimates(key,selection=settings.weeklyRotationPlaythroughs||{}) {
-    const entry=rotationContentData(key,selection);if(!entry||entry.beatNotNeeded||entry.beatUnavailable)return [];
+    const game=contentEntry(key);if(!game||game.archived)return [];
+    if(!selection[key]){
+      const totals=new Map();
+      for(const run of (game.playthroughs||[]).filter(run=>!run.finishedAt))for(const estimate of rotationHltbEstimates(key,{...selection,[key]:run.id}))totals.set(estimate.label,(totals.get(estimate.label)||0)+estimate.hoursRemaining);
+      return ['Main Story','Main + Extra'].filter(label=>totals.has(label)).map(label=>({label,hoursRemaining:totals.get(label)}));
+    }
+    const run=rotationRun(key,selection);if(!run||run.finishedAt)return [];
+    const entry=run.content?.base;if(!entry||entry.beatNotNeeded||entry.beatUnavailable)return [];
     const estimates=[['Main Story',entry.mainStoryHours],['Main + Extra',entry.mainExtraHours]].filter(([,hours])=>Number.isFinite(hours)&&hours>0);
     if(!estimates.length)return [];
     const context=contentEntry(key),parentId=context.parentId||context.id,now=Date.now();
@@ -9386,6 +9391,17 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function rotationMilestonePath(key,ownSelection,originSelection,basisLabel,ownRemaining){
     if(!originSelection||!Number.isFinite(ownRemaining))return null;
     const game=contentEntry(key),selected=originSelection[key],current=selected?rotationRun(key,originSelection):null;
+    if(!selected){
+      const parts=[];
+      for(const run of (game.playthroughs||[]).filter(run=>!run.finishedAt&&run.id!==ownSelection[key])){
+        const choices=rotationHltbEstimates(key,{...originSelection,[key]:run.id}),estimate=basisLabel?choices.find(item=>item.label===basisLabel):choices[0];
+        if(!estimate)return {missing:'Combined estimate unavailable: set '+(basisLabel||'an')+' HLTB estimate for '+run.name+'.'};
+        parts.push({name:run.name,ms:Math.round(estimate.hoursRemaining*3600000)});
+      }
+      parts.push({name:rotationRun(key,ownSelection)?.name||'Milestone playthrough',ms:Math.round(ownRemaining*3600000)});
+      const total=parts.reduce((sum,part)=>sum+part.ms,0),format=ms=>fmtDurationMinutes(Math.ceil(ms/60000)*60000);
+      return {remaining:total/3600000,text:'Includes '+parts.map(part=>part.name+': '+format(part.ms)).join(' + ')+' = '+format(total)+'. Uses the shared weekly allocation across open playthroughs.'};
+    }
     if(current?.id===ownSelection[key])return null;
     if(selected&&(!current||current.finishedAt))return {missing:'Choose an open current playthrough to estimate combined completion.'};
     const currentSelection=current?{...originSelection,[key]:current.id}:{...originSelection,[key]:''};
@@ -9404,13 +9420,15 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const items=normalizeGameMilestones(rotationContentData(key,selection)?.milestones);
     return items.filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate)).map(item=>{
       const progress=item.type==='playtime'?milestoneProgress(item,key,sessions.filter(session=>rotationRunMatches(session,key,selection)),live):null;
-      const source=item.estimateSource,estimates=rotationHltbEstimates(key,selection);
+      const source=item.estimateSource,estimates=selection[key]?rotationHltbEstimates(key,selection):[];
+      const needsRun=!selection[key]&&!progress&&(source==='mainStory'||source==='mainExtra'||source!=='hours'&&!Number.isFinite(item.hoursRemaining));
       const fallback=progress?null:source==='mainStory'||source==='mainExtra'?estimates.find(estimate=>estimate.label===(source==='mainExtra'?'Main + Extra':'Main Story')):source!=='hours'&&!Number.isFinite(item.hoursRemaining)?estimates[0]:null;
       const ownRemaining=progress?Math.max(0,(progress.target-progress.value)/3600000):fallback?fallback.hoursRemaining:(!source||source==='hours')&&Number.isFinite(item.hoursRemaining)?item.hoursRemaining:undefined;
       const basis=progress?null:fallback?.label||(source==='mainExtra'?'Main + Extra':source==='mainStory'?'Main Story':null);
       const path=rotationMilestonePath(key,selection,originSelection,basis,ownRemaining),remaining=path?.missing?undefined:path?.remaining??ownRemaining;
       let text,projection='',targetTiming='';
-      if(path?.missing)text=path.missing;
+      if(needsRun)text='Move this milestone to a playthrough to calculate its HLTB completion estimate.';
+      else if(path?.missing)text=path.missing;
       else if(remaining===0)text=fallback?'The HLTB estimate has been reached; milestone completion stays manual.':'Playtime target reached; awaiting completion or prerequisites.';
       else if(!Number.isFinite(remaining))text=source==='mainStory'||source==='mainExtra'?'Set '+(source==='mainExtra'?'Main + Extra':'Main Story')+' HLTB to estimate days needed.':'Set Hours remaining to estimate days needed.';
       else if(!Number.isInteger(targetMinutes/60)||targetMinutes<60||targetMinutes>10080)text='Set a whole-hour weekly target to estimate days needed.';
@@ -9433,14 +9451,23 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function rotationTargetTimingHtml(text) {
     return rotationEstimateNumbers(text).replace(/\b(before target|after target)\b/g,phrase=>'<span class="rotation-timing-'+(phrase==='before target'?'before':'after')+'">'+phrase+'</span>');
   }
-  function rotationMilestoneEstimateHtml(item,compactHltb=false){
-    return compactHltb&&item.hltbFallback?'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+escHtml(item.name)+': '+(item.projection?rotationEstimateNumbers(item.projection)+'<br>':'')+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>';
+  function rotationMilestoneEstimateHtml(item,compactHltb=false,showName=true){
+    return compactHltb&&item.hltbFallback?'<small>'+(showName?escHtml(item.name)+': ':'')+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+(showName?escHtml(item.name)+': ':'')+(item.projection?rotationEstimateNumbers(item.projection)+'<br>':'')+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>';
   }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false,selection=settings.weeklyRotationPlaythroughs||{}) {
     return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>rotationMilestoneEstimateHtml(item,compactHltb)).join('');
   }
   function rotationOpenRunMilestonesHtml(key,targetMinutes,live=false,selection=settings.weeklyRotationPlaythroughs||{}){
-    const game=contentEntry(key);if(!game||game.archived||!selection[key]||!rotationRun(key,selection)||rotationRun(key,selection).finishedAt)return '';
+    const game=contentEntry(key);if(!game||game.archived||(selection[key]&&(!rotationRun(key,selection)||rotationRun(key,selection).finishedAt)))return '';
+    if(!selection[key]){
+      const runs=(game.playthroughs||[]).filter(run=>!run.finishedAt);if(!runs.length)return '';
+      const breakdown=runs.map(run=>{
+        const scoped={...selection,[key]:run.id};
+        return '<div class="rotation-run-objectives"><small class="rotation-run-heading">'+escHtml(run.name)+'</small>'+(rotationHltbHtml(key,scoped)||'<small>No HLTB estimate available.</small>')+rotationHltbCompletionEstimates(key,targetMinutes,scoped).map(item=>'<small>'+escHtml(item.label)+': '+rotationEstimateNumbers(item.text)+'</small>').join('')+'</div>';
+      }).join('');
+      const milestones=runs.map(run=>rotationMilestoneEstimates(key,targetMinutes,live,{...selection,[key]:run.id},selection).map(item=>'<div class="rotation-run-objectives"><div class="rotation-milestone-heading"><small class="rotation-run-heading">'+escHtml(item.name)+'</small><small class="rotation-milestone-run">'+escHtml(run.name)+'</small></div>'+rotationMilestoneEstimateHtml(item,false,false)+'</div>').join('')).join('');
+      return '<details class="rotation-run-breakdown"><summary>'+runs.length+' open playthrough'+(runs.length===1?'':'s')+'</summary>'+breakdown+'</details>'+milestones;
+    }
     return (game.playthroughs||[]).filter(run=>!run.finishedAt).map(run=>{
       const items=milestoneSorted(normalizeGameMilestones(run.content?.base?.milestones));if(!items.length)return '';
       const scoped={...selection,[key]:run.id},history=sessions.filter(session=>session.playthroughId===run.id&&session.gameId===key);
@@ -11915,7 +11942,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       '<div class="dash-row"><span class="dash-label">Best day</span><span class="dash-value">' + (best ? best[0] + ' (' + fmtDurationShort(best[1]) + ')' : '-') + '</span></div>';
 
     html = '<div class="milestone-dashboard-summary">' + html + '</div><div class="dashboard-milestone-column">' +
-      beatTimeSection(game, contentSessions(game.id).filter(s => s.stop !== null).reduce((sum,s) => sum + (s.durationMs || 0),0)) + gameMilestonesHtml(game) + '</div><div class="milestone-dashboard-history">';
+      beatTimeSection(game) + gameMilestonesHtml(game) + '</div><div class="milestone-dashboard-history">';
 
     if (completed.length > 0) {
       html += '<div class="modal-subheader">Last 6 months</div>' +
@@ -13768,11 +13795,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         '<div class="progress-track" role="progressbar" aria-label="' + label + ' playtime progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + percent + '"><div class="progress-fill" style="width:' + percent + '%"></div></div></div>';
     }).join('');
   }
-  function beatTimeSection(game, loggedMs) {
-    const hasEstimates = game.mainStoryHours || game.mainExtraHours || game.beatAlreadyPlayedHours;
-    return '<section class="game-milestones beat-time-section"><div class="game-milestones-heading"><div><h4>HLTB</h4><p>Estimated playtime</p></div>' +
+  function beatTimeSection(game) {
+    const hasEstimates = game.mainStoryHours || game.mainExtraHours;
+    return '<section class="game-milestones beat-time-section"><div class="game-milestones-heading"><div><h4>HLTB</h4><p>Reference estimates</p></div>' +
       '<button class="btn-ghost" type="button" data-edit-beat-time>' + (hasEstimates || game.beatNotNeeded || game.beatUnavailable ? 'Edit estimates' : '+ Add estimates') + '</button></div>' +
-      (game.beatNotNeeded ? '<p class="backup-hint">Not needed for this game.</p>' : game.beatUnavailable ? '<p class="backup-hint">HLTB not available.</p>' : beatProgressRows(game, loggedMs)) + '</section>';
+      (game.beatNotNeeded ? '<p class="backup-hint">Not needed for this game.</p>' : game.beatUnavailable ? '<p class="backup-hint">HLTB not available.</p>' : [['Main Story',game.mainStoryHours],['Main + Extra',game.mainExtraHours]].map(([label,hours])=>'<div class="beat-progress-row"><div class="beat-progress-label"><strong>'+label+'</strong><span>'+(hours?escHtml(String(hours))+'h':'Not set')+'</span></div></div>').join('')) + '</section>';
   }
   function missingBeatTimeBadge(game) {
     if (game.beatUnavailable) return ' <span class="game-platform-badge">HLTB not available</span>';
@@ -13782,8 +13809,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   const beatTimeModal = document.getElementById('beat-time-modal');
   const beatTimeFields = [
     ['mainStoryHours', document.getElementById('beat-main')],
-    ['mainExtraHours', document.getElementById('beat-extra')],
-    ['beatAlreadyPlayedHours', document.getElementById('beat-played')]
+    ['mainExtraHours', document.getElementById('beat-extra')]
   ];
   const beatStatus = document.getElementById('beat-status');
   function updateBeatTimeFields() {
@@ -14088,7 +14114,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       ['Active playtime', fmtDuration(session.durationMs || 0)],
       ['Paused time', fmtDuration(totalPausedMs(session, Date.parse(session.stop)))]
     ];
-    let beatProgress = '',pendingMilestones = '';
+    let pendingMilestones = '';
     for (const key of [session.gameId]) {
       const entry = contentEntry(key);
       if (!entry) continue;
@@ -14101,12 +14127,9 @@ document.getElementById('import-confirm').addEventListener('click', () => {
         const progress = rotationWeekProgress([key]).games[key].ms;
         rows.push(['Weekly rotation', fmtDurationMinutes(progress) + ' / ' + fmtDurationMinutes(target*60000)]);
       }
-      if (!entry.beatNotNeeded && !entry.beatUnavailable && (entry.mainStoryHours || entry.mainExtraHours)) {
-        const loggedMs = contentSessions(key).filter(row => row.stop !== null).reduce((sum,row) => sum + (row.durationMs || 0),0);
-        beatProgress += '<section class="finish-beat-progress"><h4>' + 'HLTB</h4>' + beatProgressRows(entry,loggedMs) + '</section>';
-      }
+
     }
-    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + escHtml(label) + '</span><strong>' + escHtml(value) + '</strong></p>').join('') + beatProgress + pendingMilestones;
+    document.getElementById('session-finish-details').innerHTML = '<h4>' + escHtml(session.gameName) + '</h4>' + rows.map(([label,value]) => '<p class="goal-week-budget"><span>' + escHtml(label) + '</span><strong>' + escHtml(value) + '</strong></p>').join('') + pendingMilestones;
     const button = document.getElementById('session-finish-sync');
     button.disabled = !!session.synced;
     finishReview.classList.add('open');
@@ -15108,7 +15131,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     host.querySelectorAll('.finish-beat-progress,.finish-milestones').forEach(section=>section.remove());
     const context=document.createElement('p');context.className='d2-live-run';context.textContent='Playthrough · '+run.name;host.querySelector('h4')?.after(context);
     const parent=games.find(game=>game.id===session.gameId),entry=run.content?.base;
-    if(entry){const section=document.createElement('section');section.className='finish-beat-progress';section.innerHTML='<h4>Playthrough HLTB</h4>'+beatProgressRows(entry,d2RunMs(parent.id,run.id));host.append(section);host.insertAdjacentHTML('beforeend',finishMilestonesHtml(parent.id,entry,d2RunRows(parent.id,run.id),'Playthrough',run.id));}
+    if(entry){if(!entry.beatNotNeeded&&!entry.beatUnavailable&&(entry.mainStoryHours||entry.mainExtraHours)){const section=document.createElement('section');section.className='finish-beat-progress';section.innerHTML='<h4>Playthrough HLTB</h4>'+beatProgressRows(entry,d2RunMs(parent.id,run.id));host.append(section);}host.insertAdjacentHTML('beforeend',finishMilestonesHtml(parent.id,entry,d2RunRows(parent.id,run.id),'Playthrough',run.id));}
   };
 
   // --- Initial render ---

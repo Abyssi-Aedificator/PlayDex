@@ -26,7 +26,7 @@ Browser storage belongs to the browser profile and origin you use. Export a back
 
 ### HLTB and playthroughs
 
-Set **Main Story**, **Main + Extra**, and already-played hours in a game's HLTB section. Progress combines recorded time with already-played hours, while statistics and tracked-playtime milestones exclude already-played hours. Games can also be marked as not requiring HLTB or having no available estimate.
+Store **Main Story** and **Main + Extra** reference hours in a game's HLTB section. This card has no progress calculation. Games can also be marked as not requiring HLTB or having no available estimate. HLTB progress belongs only to playthroughs: each run combines its assigned recorded time with its own previously played hours. Statistics and tracked-playtime milestones exclude previously played hours. New playthroughs can copy the game's reference estimates; existing runs remain independent.
 
 Create named playthroughs from the game's dashboard. Each run has independent HLTB and milestone progress, while lifetime totals continue to include all sessions. Assign older sessions to a run, compare runs, or finish and reopen them through **Run actions**. Unassigned sessions remain part of lifetime history.
 
@@ -41,7 +41,7 @@ Open **Plan week** from **This week's rotation** on Today:
 3. Optionally choose a planned day, mark high priority with the star, or select a playthrough.
 4. Review the budget and choose **Save plan**. Cancel, Escape, and backdrop dismissal ask before discarding changed drafts.
 
-Games with a default playthrough use it when newly added or when the current plan has no saved run choice. Explicit run choices and **Any playthrough** remain saved. Extra playthrough milestone sections are hidden for Any playthrough. Selecting a specific open playthrough shows milestone sections from all open runs of that game, including undated and completed objectives. Other-run projections add the selected run's remaining HLTB to the milestone's configured remaining time and show both parts. Each run's progress uses its own assigned sessions; finished runs are excluded. A selected run scopes weekly progress and the main HLTB summary to that run. A specifically selected run is counted once. Explicit Main Story/Main + Extra choices are respected; custom hours and tracked-time targets remain the milestone's own estimate. Missing required estimates are reported instead of silently substituting another track. Presets and **Load last week** preserve their original run choices.
+Games with a default playthrough use it when newly added or when the current plan has no saved run choice. Explicit run choices and **Any playthrough** remain saved. Any playthrough combines open-run HLTB, shows a collapsible per-run breakdown and keeps combined milestone calculations visible outside it. Selecting a specific open playthrough shows milestone sections from all open runs of that game, including undated and completed objectives. Other-run projections add the selected run's remaining HLTB to the milestone's configured remaining time and show both parts. Each run's progress uses its own assigned sessions; finished runs are excluded. A selected run scopes weekly progress and the main HLTB summary to that run. A specifically selected run is counted once. Explicit Main Story/Main + Extra choices are respected; custom hours and tracked-time targets remain the milestone's own estimate. Missing required estimates are reported instead of silently substituting another track. Presets and **Load last week** preserve their original run choices.
 
 The weekly capacity comes from the daily goal times seven, or the automatic average from the previous calendar week times seven. **Game targets** and optional **Weekday targets** are independent allocations against that capacity; they are never added together. Zero-hour weekdays are rest days. Remaining game time is displayed as complete hours, rounded down; less than one hour shows 0h and 0% remaining. Budget validation still uses exact values.
 
@@ -49,7 +49,7 @@ Today lists high-priority games first, alphabetically within each priority level
 
 Plans reset to empty at the start of the calendar week selected in **Week starts on**. **Load last week** copies available games, targets, days, and run choices into the draft while retaining current weekday hours. **More actions** includes presets, previous-week comparisons, and unfinished-target reviews. Archived or unavailable games are skipped when reusing a plan.
 
-Where estimates are available, rotation entries show remaining HLTB time and completion projections at the allocated weekly hours. Dated milestones use the same completion format as HLTB projections and show target timing and before/on/after-target status on a separate line when a projection is available. Projections assume an even weekly pace and never complete objectives automatically.
+Rotation HLTB estimates use playthroughs only. Any playthrough sums remaining estimates across open runs; games without runs have no HLTB completion projection. Where run estimates are available, entries show remaining time and completion projections at the allocated weekly hours. Dated milestones use the same completion format as HLTB projections and show target timing and before/on/after-target status on a separate line when a projection is available. Projections assume an even weekly pace and never complete objectives automatically.
 
 ## Personal milestones
 
@@ -64,7 +64,7 @@ Milestones support four progress types:
 
 Use prerequisites, optional target dates, and manual ordering. Pin a game milestone to show it during play and in rotation. Progress can be updated while prerequisites are incomplete, but completion waits for them. Corrections can reopen objectives and their dependents. Milestones use a single ordered list without groups.
 
-Choose **Estimate completion using** to base a dated objective on Main Story HLTB, Main + Extra HLTB, or custom hours remaining. Explicit HLTB choices do not fall back to another track when unavailable. Older objectives retain their existing fallback behavior until edited; tracked-playtime milestones use their own remaining target.
+Choose **Estimate completion using** to base a dated objective on Main Story HLTB, Main + Extra HLTB, or custom hours remaining. HLTB-based game milestones must be moved to a playthrough to calculate completion; custom-hours and tracked-time estimates remain available at game level. Explicit HLTB choices do not fall back to another track when unavailable. Older objectives retain their existing fallback behavior until edited; tracked-playtime milestones use their own remaining target.
 
 Save milestone sets as templates, preview and apply independent copies, or delete unused templates. Applied templates start with fresh progress and remapped prerequisite links.
 
@@ -92,7 +92,7 @@ The five previous remote versions are retained. Restores first save a local reco
 
 ### Older DLC-enabled backups
 
-DLC support has been removed. Older libraries and backups convert to ordinary game sessions while preserving recorded active durations, pauses, session IDs and counts, sync flags, and playthrough assignments. DLC details and DLC-only rotation entries are discarded. Game HLTB and milestones subsequently count all recorded time for the game.
+DLC support has been removed. Older libraries and backups convert to ordinary game sessions while preserving recorded active durations, pauses, session IDs and counts, sync flags, and playthrough assignments. DLC details and DLC-only rotation entries are discarded. Game statistics and tracked milestones subsequently count all recorded time for the game; HLTB progress remains scoped to playthroughs.
 
 An existing local library receives a pre-conversion recovery copy before its first upgrade. Find **Export pre-conversion copy** under Settings → Dropbox → Local recovery. Failed conversions preserve the original records and block editing until the problem is resolved.
 
