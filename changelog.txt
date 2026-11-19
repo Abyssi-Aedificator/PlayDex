@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.1.0
 -------------------
+- Game rows show a No platform badge only when no platform is assigned; assigned platform badges are hidden.
 - Games without any playthroughs display a No playthrough badge alongside their platform and HLTB badges.
 - Games filters include Playthroughs: has playthroughs, none, open runs or finished runs, alongside existing library filters.
 - Game HLTB stores reference hours only; progress, remaining time and completion estimates use playthrough settings and assigned sessions, with Any playthrough combining open runs and no game-level fallback.
