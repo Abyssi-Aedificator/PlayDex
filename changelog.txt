@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.1.0
 -------------------
+- Fixed milestone target dates and status breaking into oversized separate lines; compact summaries now inherit the HLTB text size in every interface.
 - Compact milestone summaries use a regular-weight themed name followed by the HLTB source, target date and target timing on one line.
 - Compact rotation milestone summaries stay on one horizontally scrollable line and use the theme colour for the milestone name.
 - Selected-playthrough HLTB milestones show a compact target date, target timing and estimate source instead of repeating the HLTB completion projection.
