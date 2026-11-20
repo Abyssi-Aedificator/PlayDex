@@ -5449,6 +5449,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 .rotation-estimate-number { color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
 .rotation-milestone-summary { display:block; max-width:100%; white-space:nowrap; overflow-x:auto; }
 .rotation-milestone-summary .rotation-milestone-name { display:inline; color:var(--text); font-size:inherit; font-weight:700; }
+.planner-estimates .rotation-milestone-name { display:inline; color:var(--text); font-size:inherit; font-weight:700; }
 :root .rotation-game .rotation-milestone-summary strong { display:inline; font-size:inherit; font-family:inherit; line-height:inherit; font-weight:600; overflow-wrap:normal; }
 .planner-recorded { margin-top:4px; }
 .planner-target-reached { display:inline-block; margin-left:8px; color:var(--green-ink); font-weight:600; }
@@ -5813,7 +5814,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">3.1.0</span>
+    <span class="version-badge">3.1.1</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -9456,7 +9457,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return rotationEstimateNumbers(text).replace(/\b(before target|after target)\b/g,phrase=>'<span class="rotation-timing-'+(phrase==='before target'?'before':'after')+'">'+phrase+'</span>');
   }
   function rotationMilestoneEstimateHtml(item,compactHltb=false,showName=true){
-    return compactHltb&&item.hltbFallback&&item.targetTiming?'<small class="rotation-milestone-summary" tabindex="0">'+(showName?'<span class="rotation-milestone-name">'+escHtml(item.name)+'</span>: ':'')+(item.estimateLabel?'Based on '+escHtml(item.estimateLabel)+' HLTB, target: ':'Target: ')+'<strong>'+rotationEstimateNumbers(item.targetDate)+'</strong> / <strong>'+rotationTargetTimingHtml(item.targetTiming)+'</strong>.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+(showName?escHtml(item.name)+': ':'')+(item.projection?rotationEstimateNumbers(item.projection)+'<br>':'')+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>';
+    return compactHltb&&item.hltbFallback&&item.targetTiming?'<small class="rotation-milestone-summary" tabindex="0">'+(showName?'<span class="rotation-milestone-name">'+escHtml(item.name)+'</span>: ':'')+(item.estimateLabel?'Based on '+escHtml(item.estimateLabel)+' HLTB, target: ':'Target: ')+'<strong>'+rotationEstimateNumbers(item.targetDate)+'</strong> / <strong>'+rotationTargetTimingHtml(item.targetTiming)+'</strong>.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+(showName?'<span class="rotation-milestone-name">'+escHtml(item.name)+'</span>: ':'')+(item.projection?rotationEstimateNumbers(item.projection)+'<br>':'')+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>';
   }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false,selection=settings.weeklyRotationPlaythroughs||{}) {
     return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>rotationMilestoneEstimateHtml(item,compactHltb)).join('');
@@ -14724,7 +14725,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const hltb=rotationHltbHtml(id,draft.playthroughs),validTarget=Number.isInteger(target/60)&&target>=60&&target<=10080;
       const pending=draft.playthroughs[id]?[]:normalizeGameMilestones(rotationContentData(id,draft.playthroughs)?.milestones).filter(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
       const openRuns=validTarget?'':rotationOpenRunMilestonesHtml(id,target,false,draft.playthroughs);
-      const estimates=validTarget?rotationCompletionEstimatesHtml(id,target,false,draft.playthroughs):pending.map(item=>'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+'</small>').join('')+openRuns+(hltb||pending.length||openRuns?'<small class="planner-estimate-hint">Set target hours to see completion dates.</small>':'');
+      const estimates=validTarget?rotationCompletionEstimatesHtml(id,target,false,draft.playthroughs):pending.map(item=>'<small>'+escHtml(item.name)+': '+rotationEstimateNumbers('Target: '+item.targetDate)+'</small>').join('')+openRuns;
       row.querySelector('[data-planner-hltb]').innerHTML=hltb;
       row.querySelector('[data-planner-milestone-estimates]').innerHTML=estimates;
       row.querySelector('.planner-estimates').hidden=!hltb&&!estimates;
@@ -15261,7 +15262,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   },true);
 
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '3.1.0';
+    const APP_VERSION = '3.1.1';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');

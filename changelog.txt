@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 3.1.1
+-------------------
+- Weekly rotation editor milestone names stay bold when no target is set, and the redundant Set target hours to see completion dates hint is removed.
+
 Version 3.1.0
 -------------------
 - Compact milestone names use bold primary text while preserving their existing HLTB-sized inline layout.
