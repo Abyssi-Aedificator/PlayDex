@@ -9453,7 +9453,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return rotationEstimateNumbers(text).replace(/\b(before target|after target)\b/g,phrase=>'<span class="rotation-timing-'+(phrase==='before target'?'before':'after')+'">'+phrase+'</span>');
   }
   function rotationMilestoneEstimateHtml(item,compactHltb=false,showName=true){
-    return compactHltb&&item.hltbFallback?'<small>'+(showName?escHtml(item.name)+': ':'')+rotationEstimateNumbers('Target: '+item.targetDate)+(item.targetTiming?' / '+rotationTargetTimingHtml(item.targetTiming):'')+(item.estimateLabel?' / '+escHtml(item.estimateLabel)+' HLTB':'')+'.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+(showName?escHtml(item.name)+': ':'')+(item.projection?rotationEstimateNumbers(item.projection)+'<br>':'')+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>';
+    return compactHltb&&item.hltbFallback&&item.targetTiming?'<small>'+(showName?'<strong>'+escHtml(item.name)+'</strong>: ':'')+'Target: '+rotationEstimateNumbers(item.targetDate)+' / '+rotationTargetTimingHtml(item.targetTiming)+'.'+(item.estimateLabel?' Based on '+escHtml(item.estimateLabel)+' HLTB.':'')+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+(showName?escHtml(item.name)+': ':'')+(item.projection?rotationEstimateNumbers(item.projection)+'<br>':'')+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>';
   }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false,selection=settings.weeklyRotationPlaythroughs||{}) {
     return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>rotationMilestoneEstimateHtml(item,compactHltb)).join('');
@@ -9474,7 +9474,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       const scoped={...selection,[key]:run.id},history=sessions.filter(session=>session.playthroughId===run.id&&session.gameId===key);
       const estimates=new Map(rotationMilestoneEstimates(key,targetMinutes,live,scoped,selection).map(item=>[item.id,item]));
       return '<div class="rotation-run-objectives">'+items.map(item=>{
-        if(estimates.has(item.id))return rotationMilestoneEstimateHtml(estimates.get(item.id));
+        if(estimates.has(item.id))return rotationMilestoneEstimateHtml(estimates.get(item.id),run.id===selection[key]);
         const progress=milestoneProgress(item,key,history,live),blocked=milestoneBlocked(item,items);
         const text=item.completedAt?'Completed '+item.completedAt:progress.text+(milestoneValidDate(item.targetDate)?' / Target: '+item.targetDate:'')+(blocked.length?' / Blocked: '+blocked.join(', '):'');
         return '<small>'+escHtml(item.name)+': '+rotationEstimateNumbers(text)+'</small>';

@@ -51,7 +51,7 @@ Today lists high-priority games first, alphabetically within each priority level
 
 Plans reset to empty at the start of the calendar week selected in **Week starts on**. **Load last week** copies available games, targets, days, and run choices into the draft while retaining current weekday hours. **More actions** includes presets, previous-week comparisons, and unfinished-target reviews. Archived or unavailable games are skipped when reusing a plan.
 
-Rotation HLTB estimates use playthroughs only. Any playthrough sums remaining estimates across open runs; games without runs have no HLTB completion projection. Where run estimates are available, entries show remaining time and completion projections at the allocated weekly hours. Dated milestones use the same completion format as HLTB projections and show target timing and before/on/after-target status on a separate line when a projection is available. Projections assume an even weekly pace and never complete objectives automatically.
+Rotation HLTB estimates use playthroughs only. Any playthrough sums remaining estimates across open runs; games without runs have no HLTB completion projection. Where run estimates are available, entries show remaining time and completion projections at the allocated weekly hours. HLTB milestones in the selected playthrough show the target date, before/on/after-target status and HLTB source without repeating the completion projection. Other-run and combined milestone projections retain their detailed calculations. Projections assume an even weekly pace and never complete objectives automatically.
 
 ## Personal milestones
 
