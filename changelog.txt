@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.1.0
 -------------------
+- Compact milestone names use bold primary text while preserving their existing HLTB-sized inline layout.
 - Fixed milestone target dates and status breaking into oversized separate lines; compact summaries now inherit the HLTB text size in every interface.
 - Compact milestone summaries use a regular-weight themed name followed by the HLTB source, target date and target timing on one line.
 - Compact rotation milestone summaries stay on one horizontally scrollable line and use the theme colour for the milestone name.
