@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.1.2
 -------------------
+- Check session history flags completed sessions whose recorded active playtime ends in :00 seconds, with existing review, edit and delete actions.
 - Weekly rotation removes Any playthrough and selects a valid saved run, the default open run, or the alphabetically first open run; reused plans resolve old combined selections when opened.
 
 Version 3.1.1

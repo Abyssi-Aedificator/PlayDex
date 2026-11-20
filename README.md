@@ -82,6 +82,8 @@ Stats includes recent daily playtime, a twelve-month playtime chart, session-len
 
 Top supports **This week**, **7 days**, **Month**, and **All time**, with rankings, trends, most consistent games, and distribution insights. Profile brings together personal records, favorite-game information, completion history, badges, quests, and earned levels.
 
+Check session history also flags recorded active durations ending in **:00 seconds**. Running sessions are excluded, and flags never change or delete sessions automatically.
+
 ## Dropbox, backups, and recovery
 
 JSON export/import and CSV session export are available in Settings. Importing replaces the local library after confirmation. Keep regular exports even when using sync.

@@ -6741,7 +6741,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 <div class="modal-overlay" id="history-health-modal">
   <div class="modal history-health-modal" role="dialog" aria-modal="true" aria-labelledby="history-health-title">
     <h3 id="history-health-title">Session history health check</h3>
-    <p class="backup-hint">Review overlapping completed sessions, sessions under 5 minutes of active playtime, sessions lasting 12 hours or more (elapsed or active), and missing games. Running sessions are excluded. Nothing changes automatically.</p>
+    <p class="backup-hint">Review overlapping completed sessions, sessions under 5 minutes of active playtime, active playtime ending in :00 seconds, sessions lasting 12 hours or more (elapsed or active), and missing games. Running sessions are excluded. Nothing changes automatically.</p>
     <p id="history-health-summary" role="status"></p>
     <div id="history-health-list" class="history-health-list"></div>
     <div class="modal-actions"><button type="button" class="btn-ghost" id="history-health-rescan">Rescan</button><button type="button" class="btn btn-start" id="history-health-close">Done</button></div>
@@ -13252,6 +13252,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     for(const row of rows){
       if(!gameIds.has(row.session.gameId))row.reasons.push('missing');
       if(Number.isFinite(row.session.durationMs)&&row.session.durationMs>=0&&row.session.durationMs<5*60000)row.reasons.push('short');
+      if(Number.isFinite(row.session.durationMs)&&row.session.durationMs>=0&&Math.floor(row.session.durationMs/1000)%60===0)row.reasons.push('zero-seconds');
       if(row.end-row.start>=12*3600000 || Number(row.session.durationMs)>=12*3600000)row.reasons.push('long');
     }
     const sorted=rows.filter(row=>Number.isFinite(row.start)&&Number.isFinite(row.end)&&row.end>row.start).sort((a,b)=>a.start-b.start);
@@ -13277,6 +13278,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const reasons=document.createElement('ul');
       if(missing){const li=document.createElement('li');li.textContent='Missing game: this session references a game no longer in the library.';reasons.append(li);}
       if(issue.reasons.includes('short')){const li=document.createElement('li');li.textContent='Short session: under 5 minutes of active playtime.';reasons.append(li);}
+      if(issue.reasons.includes('zero-seconds')){const li=document.createElement('li');li.textContent='Active playtime ends in :00 seconds.';reasons.append(li);}
       if(issue.reasons.includes('long')){const li=document.createElement('li');li.textContent='Unusually long: at least 12 hours of elapsed or active time. Elapsed: '+fmtDuration(issue.end-issue.start)+'.';reasons.append(li);}
       if(issue.overlaps.length){const li=document.createElement('li');li.textContent='Overlaps '+issue.overlaps.length+' other session'+(issue.overlaps.length===1?'':'s')+': '+issue.overlaps.map(other=>(games.find(game=>game.id===other.gameId)?.name||other.gameName||'Unknown game')+' ('+fmtDateShort(other.start)+' '+fmtTime(other.start)+' - '+fmtTime(other.stop)+')').join('; ');reasons.append(li);}
       row.append(reasons);
@@ -13310,7 +13312,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     }
   }
   const healthButton=document.createElement('button');healthButton.type='button';healthButton.className='btn-ghost btn-danger';healthButton.style.cssText='padding:10px 14px;font-size:0.8rem;';healthButton.id='btn-history-health';healthButton.textContent='Check session history';healthButton.setAttribute('aria-haspopup','dialog');healthButton.setAttribute('aria-controls','history-health-modal');
-  const healthHint=document.createElement('p');healthHint.className='backup-hint';healthHint.style.margin='8px 0';healthHint.textContent='Review overlapping, short (under 5 minutes), or unusually long completed sessions and sessions with missing games. Nothing changes automatically.';
+  const healthHint=document.createElement('p');healthHint.className='backup-hint';healthHint.style.margin='8px 0';healthHint.textContent='Review overlapping, short (under 5 minutes), or unusually long completed sessions, active playtime ending in :00 seconds, and sessions with missing games. Nothing changes automatically.';
   document.querySelector('.settings-maintenance-card').append(healthHint,healthButton);
   healthButton.onclick=()=>{healthReturnFocus=document.activeElement;renderHistoryHealth();healthModal.classList.add('open');document.getElementById('history-health-close').focus();};
   document.getElementById('history-health-rescan').onclick=renderHistoryHealth;
