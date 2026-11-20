@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 3.1.2
+-------------------
+- Weekly rotation removes Any playthrough and selects a valid saved run, the default open run, or the alphabetically first open run; reused plans resolve old combined selections when opened.
+
 Version 3.1.1
 -------------------
 - Weekly rotation editor milestone names stay bold when no target is set, and the redundant Set target hours to see completion dates hint is removed.
