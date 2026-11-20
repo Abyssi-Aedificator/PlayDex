@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.1.0
 -------------------
+- Compact milestone summaries use a regular-weight themed name followed by the HLTB source, target date and target timing on one line.
 - Compact rotation milestone summaries stay on one horizontally scrollable line and use the theme colour for the milestone name.
 - Selected-playthrough HLTB milestones show a compact target date, target timing and estimate source instead of repeating the HLTB completion projection.
 - Game rows show a No platform badge only when no platform is assigned; assigned platform badges are hidden.

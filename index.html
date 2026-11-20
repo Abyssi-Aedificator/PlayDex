@@ -5448,7 +5448,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 .planner-identity small,.planner-pick small,.planner-recorded { display:block; font-size:12px; color:var(--text2); line-height:1.6; }
 .rotation-estimate-number { color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums; }
 .rotation-milestone-summary { display:block; max-width:100%; white-space:nowrap; overflow-x:auto; }
-.rotation-milestone-summary .rotation-milestone-name { color:var(--accent); }
+.rotation-milestone-summary .rotation-milestone-name { display:inline; color:var(--accent); font-weight:400; }
 .planner-recorded { margin-top:4px; }
 .planner-target-reached { display:inline-block; margin-left:8px; color:var(--green-ink); font-weight:600; }
 .planner-controls { display:grid; grid-template-columns:minmax(0,1fr) 120px 160px; align-items:end; gap:12px; margin-top:14px; }
@@ -9455,7 +9455,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return rotationEstimateNumbers(text).replace(/\b(before target|after target)\b/g,phrase=>'<span class="rotation-timing-'+(phrase==='before target'?'before':'after')+'">'+phrase+'</span>');
   }
   function rotationMilestoneEstimateHtml(item,compactHltb=false,showName=true){
-    return compactHltb&&item.hltbFallback&&item.targetTiming?'<small class="rotation-milestone-summary" tabindex="0">'+(showName?'<strong class="rotation-milestone-name">'+escHtml(item.name)+'</strong>: ':'')+'Target: '+rotationEstimateNumbers(item.targetDate)+' / '+rotationTargetTimingHtml(item.targetTiming)+'.'+(item.estimateLabel?' Based on '+escHtml(item.estimateLabel)+' HLTB.':'')+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+(showName?escHtml(item.name)+': ':'')+(item.projection?rotationEstimateNumbers(item.projection)+'<br>':'')+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>';
+    return compactHltb&&item.hltbFallback&&item.targetTiming?'<small class="rotation-milestone-summary" tabindex="0">'+(showName?'<span class="rotation-milestone-name">'+escHtml(item.name)+'</span>: ':'')+(item.estimateLabel?'Based on '+escHtml(item.estimateLabel)+' HLTB, target: ':'Target: ')+'<strong>'+rotationEstimateNumbers(item.targetDate)+'</strong> / <strong>'+rotationTargetTimingHtml(item.targetTiming)+'</strong>.'+(item.blocked?' Prerequisites must also be completed.':'')+'</small>':'<small>'+(showName?escHtml(item.name)+': ':'')+(item.projection?rotationEstimateNumbers(item.projection)+'<br>':'')+rotationTargetTimingHtml(item.text+' Target: '+item.targetDate)+'</small>';
   }
   function rotationMilestoneEstimatesHtml(key,targetMinutes,live=false,compactHltb=false,selection=settings.weeklyRotationPlaythroughs||{}) {
     return rotationMilestoneEstimates(key,targetMinutes,live,selection).map(item=>rotationMilestoneEstimateHtml(item,compactHltb)).join('');
