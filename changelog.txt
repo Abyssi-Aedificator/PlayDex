@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 3.1.4
+-------------------
+- Raised the playthrough Edit estimates button slightly to give it clearance above the HLTB divider.
+
 Version 3.1.3
 -------------------
 - Games return to Start a Game after reaching their weekly rotation target; unfinished rotation games remain excluded.
