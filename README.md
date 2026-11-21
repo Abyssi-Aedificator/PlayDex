@@ -36,6 +36,9 @@ Use **Run actions → Set as default** to preselect an open run for new sessions
 
 ## Weekly rotation
 
+Rotation games are excluded from **Start a Game** until their weekly target is reached, then return to that section. Progress follows the rotation's selected playthrough; games with unfinished or unset targets remain excluded.
+
+
 Open **Plan week** from **This week's rotation** on Today:
 
 1. Use the alphabetical **Add games** picker to select games individually or select all available games.
