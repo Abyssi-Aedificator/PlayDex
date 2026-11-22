@@ -804,6 +804,8 @@ opacity: 0.18;
     flex-shrink: 0;
   }
 
+  .start-game-status { display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-shrink:0; margin-left:12px; }
+  .start-game-target-badge { color:var(--accent); background:var(--accent-dim); border:1px solid var(--border); border-radius:999px; padding:3px 8px; font-size:.68rem; line-height:1.3; font-weight:600; max-width:130px; white-space:normal; }
   .start-game-info {
     display: flex;
     flex-direction: column;
@@ -9688,6 +9690,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const platformFilter = startPlatformField.value;
     const platformGames=games.filter(game=>!game.archived&&(!platformFilter||normalizePlatform(game.platform)===platformFilter));
     const rotationParents=new Set(pendingRotationGameIds());
+    const reachedRotationGames=new Set(rotationGameIds().filter(id=>!rotationParents.has(id)));
     const activeGames=platformGames.filter(game=>!rotationParents.has(game.id));
     const lastUsed = new Map();
     sessions.forEach(s => {
@@ -9712,7 +9715,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
           '<span class="start-game-info">' +
             '<span class="start-game-name">' + escHtml(g.name) + '</span>' +
           '</span>' +
-          '<span class="play-icon">&#9654;</span>' +
+          '<span class="start-game-status">'+(reachedRotationGames.has(g.id)?'<span class="start-game-target-badge">Weekly target reached</span>':'')+'<span class="play-icon">&#9654;</span></span>' +
         '</button>'
       ).join('');
       container.querySelectorAll('.btn-start-game').forEach(btn => {

@@ -37,7 +37,7 @@ Use **Run actions → Set as default** to preselect an open run for new sessions
 
 ## Weekly rotation
 
-Rotation games are excluded from **Start a Game** until their weekly target is reached, then return to that section. Progress follows the rotation's selected playthrough; games with unfinished or unset targets remain excluded.
+Rotation games are excluded from **Start a Game** until their weekly target is reached, then return to that section with a right-side **Weekly target reached** badge. Progress follows the rotation's selected playthrough; games with unfinished or unset targets remain excluded.
 
 
 Open **Plan week** from **This week's rotation** on Today:
