@@ -44,7 +44,7 @@ Open **Plan week** from **This week's rotation** on Today:
 
 1. Use the alphabetical **Add games** picker to select games individually or select all available games.
 2. Give each selected game a target of **1 to 168 whole hours** within the weekly budget. New and re-added entries start at 0 and cannot be saved until a positive target is set.
-3. Optionally choose a planned day, mark high priority with the star, or select a playthrough.
+3. Optionally choose a planned day or select a playthrough. High priority is automatic when the game or any open playthrough has an unfinished milestone with a target date (including overdue or blocked objectives).
 4. Review the budget and choose **Save plan**. Cancel, Escape, and backdrop dismissal ask before discarding changed drafts.
 
 Weekly rotation requires a specific run when open playthroughs exist. Valid saved selections remain; otherwise it chooses the default open run or the alphabetically first open run. The picker has no Any playthrough option. Changes from older combined selections stay in the planner draft until Save plan. Games without open runs remain usable without a run assignment. Other-run milestone projections retain their existing combined calculations. Presets and Load last week use the same selection rules.

@@ -208,7 +208,7 @@ Before proposing or implementing features, consult `plan_dontwant.txt`. Do not p
 
 ## Weekly rotation reset
 
-- Optional settings.weeklyRotationPriorities maps game IDs to booleans; draft/preset/history/snapshot maps use priorities. Missing flags mean normal priority. Keep draft row order stable, sort high-priority entries first on Today and alphabetically within each priority level, and preserve flags through reset snapshots, reuse, sync and backups.
+- Optional settings.weeklyRotationPriorities maps game IDs to booleans; draft/preset/history/snapshot maps use priorities. Stored flags are compatibility/history snapshots only; current priority derives from unfinished dated milestones on the active game or any open run. Do not restore manual priority controls. Keep draft row order stable, sort high-priority entries first on Today and alphabetically within each priority level, and preserve flags through reset snapshots, reuse, sync and backups.
 
 - weeklyRotationWeek and weeklyRotationWeekStartsOn tag the current plan. rollWeeklyRotation clears games, targets, days, run selections, and priorities on a new calendar week and keeps weeklyRotationLastWeek as a synced snapshot. First-upgrade data adopts the current week without discarding selections.
 - ensureRotationWeek guards rendering, settings saves, midnight, and resume. When Week starts on changes, rebase the plan's original week using the optional synced weeklyRotationWeekAnchor before testing for rollover; preserve same-week plans, reset across a newly elapsed boundary, and never clear a plan because the device clock moved backward.

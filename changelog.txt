@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 3.1.6
+-------------------
+- Weekly rotation automatically gives high priority to games with unfinished dated milestones in the game or any open playthrough; manual priority buttons are removed and completed milestones or finished runs no longer confer priority.
+
 Version 3.1.5
 -------------------
 - Start a Game shows a right-side Weekly target reached badge for games that have completed their current rotation target.

@@ -5622,10 +5622,6 @@ body:has(.modal-overlay.open,dialog[open]) :is(#section-navigation,#section-tool
   .rotation-timing-after { color:var(--red); font-weight:600; }
 
 .planner-actions { display:flex; align-items:center; gap:8px; align-self:start; }
-#weekly-planner-modal .planner-priority { width:44px; min-width:44px; min-height:44px; padding:10px!important; display:grid; place-items:center; color:var(--text2); }
-.planner-priority svg { width:20px; height:20px; }
-#weekly-planner-modal .planner-priority[aria-pressed="true"] { color:var(--accent); background:var(--accent-dim); border-color:var(--accent); }
-.planner-priority[aria-pressed="true"] svg { fill:currentColor; }
 .planner-row[data-high-priority="true"] { box-shadow:inset 3px 0 0 var(--accent); }
 .rotation-game-heading { display:flex; align-items:center; flex-wrap:wrap; gap:6px 8px; }
 .rotation-priority-badge { display:inline-flex; flex-shrink:0; margin:0; padding:3px 8px; border-radius:999px; background:var(--accent-dim); color:var(--accent); font-size:11px; font-weight:600; }
@@ -5817,7 +5813,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">3.1.5</span>
+    <span class="version-badge">3.1.6</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -9188,10 +9184,15 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     if(value===undefined)return;
     if(!value||typeof value!=='object'||Array.isArray(value)||Object.entries(value).some(([key,priority])=>!key||typeof priority!=='boolean'))throw Error('Invalid rotation priorities');
   }
-  function rotationPriorityBadge(id){return settings.weeklyRotationPriorities?.[id]===true?'<span class="rotation-priority-badge">High priority</span>':'';}
-  function plannerPriorityButton(id,entry,high){
-    return '<button class="btn-ghost planner-priority" type="button" data-d2="planner-priority" data-entry="'+d2Attr(id)+'" aria-pressed="'+high+'" aria-label="High priority for '+d2Attr(entry.name)+'" title="'+(high?'Remove high priority':'Mark high priority')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"/></svg></button>';
+  function rotationHasDatedMilestone(id){
+    const game=contentEntry(id);if(!game||game.archived)return false;
+    const pending=items=>(items||[]).some(item=>!item.completedAt&&milestoneValidDate(item.targetDate));
+    return pending(game.milestones)||(game.playthroughs||[]).some(run=>!run.finishedAt&&pending(run.content?.base?.milestones));
   }
+  function automaticPlannerPriorities(draft){
+    draft.priorities=Object.fromEntries(draft.ids.filter(rotationHasDatedMilestone).map(id=>[id,true]));
+  }
+  function rotationPriorityBadge(id){return rotationHasDatedMilestone(id)?'<span class="rotation-priority-badge">High priority</span>':'';}
   function validateRotationPlaythroughs(value){
     if(value===undefined)return;
     if(!value||typeof value!=='object'||Array.isArray(value)||Object.entries(value).some(([key,id])=>!key||typeof id!=='string'))throw Error('Invalid rotation playthrough selections');
@@ -9563,7 +9564,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const visible = candidates.filter(id => {
       const day = settings.weeklyRotationDays?.[id];
       return !plannedWeekdays.includes(day) || day === today;
-    }).sort((a,b)=>Number(settings.weeklyRotationPriorities?.[b]===true)-Number(settings.weeklyRotationPriorities?.[a]===true)||(contentEntry(a)?.name||'').localeCompare(contentEntry(b)?.name||'',undefined,{sensitivity:'base',numeric:true})||a.localeCompare(b));
+    }).sort((a,b)=>Number(rotationHasDatedMilestone(b))-Number(rotationHasDatedMilestone(a))||(contentEntry(a)?.name||'').localeCompare(contentEntry(b)?.name||'',undefined,{sensitivity:'base',numeric:true})||a.localeCompare(b));
     const empty = candidates.length
       ? '<p class="backup-hint">No rotation games planned for today.</p>'
       : ids.length && !remaining.length && !activeSession
@@ -14552,11 +14553,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     if(action==='planner-rebalance')return d2Rebalance();
     if(action==='planner-last-week')return d2PreviousWeek();
     if(action==='planner-load-last')return loadLastWeekIntoPlanner();
-    if(action==='planner-priority'){
-      const id=button.dataset.entry,high=plannerUI.draft.priorities[id]!==true;
-      if(high)plannerUI.draft.priorities[id]=true;else delete plannerUI.draft.priorities[id];
-      button.setAttribute('aria-pressed',String(high));button.title=high?'Remove high priority':'Mark high priority';button.closest('[data-planner-row]').dataset.highPriority=String(high);return;
-    }
     if(action==='planner-remove'){delete plannerUI.draft.targets[button.dataset.entry];delete plannerUI.draft.days[button.dataset.entry];delete plannerUI.draft.playthroughs[button.dataset.entry];delete plannerUI.draft.priorities[button.dataset.entry];delete plannerUI.raw['target:'+button.dataset.entry];plannerUI.draft.ids=plannerUI.draft.ids.filter(id=>id!==button.dataset.entry);renderWeeklyPlanner();document.querySelector('#weekly-planner-body [data-d2="planner-add"]')?.focus();return;}
 
   }
@@ -14709,6 +14705,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     plannerUI.draft.playthroughs=Object.fromEntries(plannerUI.draft.ids.filter(id=>Object.hasOwn(plannerUI.draft.playthroughs,id)||contentEntry(id)?.playthroughs?.length).map(id=>[id,Object.hasOwn(plannerUI.draft.playthroughs,id)?plannerUI.draft.playthroughs[id]:source?'':defaultPlaythrough(contentEntry(id))?.id||'']));
     plannerUI.draft.priorities=Object.fromEntries(plannerUI.draft.ids.filter(id=>plannerUI.draft.priorities[id]===true).map(id=>[id,true]));
     normalizePlannerRuns(plannerUI.draft);
+    automaticPlannerPriorities(plannerUI.draft);
     plannerUI.draftOriginal=d2PlannerSignature();plannerUI.raw={};plannerUI.weekdayOpen=false;
   }
   function d2PlannerSignature(){
@@ -14752,6 +14749,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   function renderWeeklyPlanner(){
     if(!plannerUI.draft)d2LoadDraft();const draft=plannerUI.draft,days=['Any day',...orderedWeekdays()],host=document.getElementById('weekly-planner-body'),scroll=host.scrollTop;
     normalizePlannerRuns(draft);
+    automaticPlannerPriorities(draft);
     const open=host.querySelector('#planner-weekdays');if(open)plannerUI.weekdayOpen=open.open;
     const last=lastWeekRotation(),canLoad=last?.ids?.some(id=>{const entry=contentEntry(id);return rotationEntryEligible(entry);});
     let html='<p class="backup-hint">'+escHtml(draft.week)+' - '+addDays(draft.week,6)+' / Changes stay in this draft until Save plan.</p>';
@@ -14761,7 +14759,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     html+=draft.ids.length?draft.ids.map(id=>{
       const entry=contentEntry(id);if(!entry)return '';const target=draft.targets[id]||0;
       const runPicker=rotationRunPicker(id,draft.playthroughs);
-      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'" data-high-priority="'+(draft.priorities[id]===true)+'"><div class="planner-heading">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+'<span class="planner-recorded"></span></div><div class="planner-actions">'+plannerPriorityButton(id,entry,draft.priorities[id]===true)+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</div></div><div class="planner-controls'+(runPicker?'':' planner-controls--no-run')+'"><div class="planner-run">'+runPicker+'</div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" required min="1" max="168" step="1" placeholder="Required" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target/60))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label></div><div class="planner-estimates"><div data-planner-hltb></div><div data-planner-milestone-estimates></div></div></article>';
+      return '<article class="planner-row" data-planner-row="'+d2Attr(id)+'" data-high-priority="'+(draft.priorities[id]===true)+'"><div class="planner-heading">'+gameCoverHtml(entry)+'<div class="planner-identity">'+plannerEntryLabel(entry)+'<span class="planner-recorded"></span></div><div class="planner-actions">'+rotationPriorityBadge(id)+d2Button('Remove','planner-remove','data-entry="'+d2Attr(id)+'" aria-label="Remove '+d2Attr(entry.name)+'"')+'</div></div><div class="planner-controls'+(runPicker?'':' planner-controls--no-run')+'"><div class="planner-run">'+runPicker+'</div><div class="d2-field"><label for="planner-hours-'+d2Attr(id)+'">Target (hours)</label><span class="planner-hour-control"><input id="planner-hours-'+d2Attr(id)+'" type="number" required min="1" max="168" step="1" placeholder="Required" aria-label="Target hours for '+d2Attr(entry.name)+'" value="'+d2Attr(plannerValue('target:'+id,target/60))+'" data-d2-target="'+d2Attr(id)+'"><span class="planner-hour-arrows"><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="1" aria-label="Increase target hours for '+d2Attr(entry.name)+'">&#9650;</button><button type="button" data-d2="planner-hour" data-entry="'+d2Attr(id)+'" data-step="-1" aria-label="Decrease target hours for '+d2Attr(entry.name)+'">&#9660;</button></span></span></div><label class="d2-field">Planned day<select aria-label="Planned day for '+d2Attr(entry.name)+'" data-d2-day="'+d2Attr(id)+'">'+days.map(day=>'<option'+(day===(draft.days[id]||'Any day')?' selected':'')+'>'+day+'</option>').join('')+'</select></label></div><div class="planner-estimates"><div data-planner-hltb></div><div data-planner-milestone-estimates></div></div></article>';
     }).join(''):'<div class="planner-empty"><strong>Plan your next week of games</strong><p>Add games, set targets, then choose days if you like. Reuse last week or a preset to get started.</p></div>';
     html+='</div><details id="planner-weekdays"'+(plannerUI.weekdayOpen?' open':'')+'><summary id="planner-weekday-summary" tabindex="0">Weekday targets</summary><p class="backup-hint">Optional daily goals within the same weekly capacity. Weekday hours and game targets are independent allocations; they are never added together.</p><div id="planner-weekday-fields"><div class="d2-capacities">'+orderedWeekdays().map(day=>'<div class="d2-field"><label for="planner-weekday-hours-'+day+'">'+day.slice(0,3)+'</label><span class="planner-hour-control"><input id="planner-weekday-hours-'+day+'" type="number" required min="0" max="24" step="1" value="'+d2Attr(plannerValue('day:'+day,draft.hours[day]))+'" data-d2-capacity="'+day+'" aria-label="'+day+' planned hours"><span class="planner-hour-arrows"><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="1" aria-label="Increase '+day+' hours">&#9650;</button><button type="button" data-d2="planner-weekday-hour" data-day="'+day+'" data-step="-1" aria-label="Decrease '+day+' hours">&#9660;</button></span></span></div>').join('')+'</div><p class="backup-hint">Today&#39;s goal follows its weekday hours. Zero hours means a rest day. Your automatic-goal preference stays unchanged.</p>'+d2Button('Use daily goal instead','planner-weekday-off')+'</div></details><p class="backup-hint">Set at least 1 hour for every selected game before saving. Recorded sessions count toward targets regardless of the planned day.</p>';
     host.innerHTML=html;updatePlannerSummary();host.scrollTop=scroll;
@@ -14784,6 +14782,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     for(const id of draft.ids){const target=draft.targets[id];if(!Number.isInteger(target/60)||target<60||target>10080)throw Error('Set a target of 1 to 168 whole hours for '+(contentEntry(id)?.name||'each selected game')+'.');}
     const planned=d2DraftPlanned(),gameTargets=d2DraftGameTargets(),budget=d2DraftBudget();if(planned>budget)throw Error((draft.enabled?'Weekday plan':'Game targets')+' over weekly budget by '+fmtDurationMinutes((planned-budget)*60000)+'. Reduce planned hours or increase your weekly goal.');
     if(gameTargets>budget)throw Error('Game targets over weekly budget by '+fmtDurationMinutes((gameTargets-budget)*60000)+'. Reduce game targets or increase your weekly goal.');
+    automaticPlannerPriorities(draft);
     const next=d2Clone(settings),archived=archivedRotationIds();
     next.weeklyRotation=[...draft.ids,...archived];next.weeklyRotationTargets={};next.weeklyRotationDays={};next.weeklyRotationPlaythroughs={};next.weeklyRotationPriorities={};
     for(const id of draft.ids){if(draft.priorities[id]===true)next.weeklyRotationPriorities[id]=true;if(draft.playthroughs[id]){const run=rotationRun(id,draft.playthroughs);if(!run||run.finishedAt)throw Error('Choose an open playthrough for '+contentEntry(id).name+'.');next.weeklyRotationPlaythroughs[id]=run.id;}else if(Object.hasOwn(draft.playthroughs,id))next.weeklyRotationPlaythroughs[id]='';if(draft.targets[id])next.weeklyRotationTargets[id]=draft.targets[id];next.weeklyRotationDays[id]=draft.days[id]||'Any day';}
@@ -14818,7 +14817,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
       const available=new Set(contentEntries().filter(rotationEntryEligible).map(entry=>entry.id)),skipped=preset.plan.ids.filter(id=>!available.has(id)).length;
       const original=plannerUI.draftOriginal;d2LoadDraft(preset.plan);plannerUI.draftOriginal=original;renderWeeklyPlanner();toast('Preset loaded into draft'+(skipped?' · '+skipped+' unavailable entries skipped':''));
     },'Load into draft');
-    const paint=()=>{const preset=presets.find(item=>item.id===document.getElementById('d2-preset-choice').value);document.getElementById('d2-preset-preview').innerHTML=preset?'<ul>'+preset.plan.ids.map(id=>'<li>'+escHtml(contentEntry(id)?.name||'Unavailable content')+' · '+fmtDurationMinutes((preset.plan.targets[id]||0)*60000)+' · '+escHtml(preset.plan.days[id]||'Any day')+(preset.plan.priorities?.[id]===true?' · High priority':'')+(rotationRunLabel(id,preset.plan.playthroughs||{})?' · '+escHtml(rotationRunLabel(id,preset.plan.playthroughs)):'')+'</li>').join('')+'</ul>':'<p class="backup-hint">No saved presets yet.</p>';};document.getElementById('d2-preset-choice').onchange=paint;paint();
+    const paint=()=>{const preset=presets.find(item=>item.id===document.getElementById('d2-preset-choice').value);document.getElementById('d2-preset-preview').innerHTML=preset?'<ul>'+preset.plan.ids.map(id=>'<li>'+escHtml(contentEntry(id)?.name||'Unavailable content')+' · '+fmtDurationMinutes((preset.plan.targets[id]||0)*60000)+' · '+escHtml(preset.plan.days[id]||'Any day')+(rotationHasDatedMilestone(id)?' · High priority':'')+(rotationRunLabel(id,preset.plan.playthroughs||{})?' · '+escHtml(rotationRunLabel(id,preset.plan.playthroughs)):'')+'</li>').join('')+'</ul>':'<p class="backup-hint">No saved presets yet.</p>';};document.getElementById('d2-preset-choice').onchange=paint;paint();
   }
   function d2Rebalance(){
     const draft=d2Clone(plannerUI.draft),today=plannedWeekdays[new Date().getDay()],week=orderedWeekdays(),todayIndex=week.indexOf(today),remainingDays=week.slice(todayIndex),progress=rotationWeekProgress(draft.ids,new Date(),draft.playthroughs),moves=[],load=Object.fromEntries(remainingDays.map(day=>[day,0]));
@@ -15281,7 +15280,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   },true);
 
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '3.1.5';
+    const APP_VERSION = '3.1.6';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');
