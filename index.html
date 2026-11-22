@@ -5815,7 +5815,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   <div class="app-title">
     <img class="app-brand-icon" src="icon-192.png" alt="" width="32" height="32">
     <h1 aria-label="PlayDex">LAYDEX</h1>
-    <span class="version-badge">3.1.4</span>
+    <span class="version-badge">3.1.5</span>
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
@@ -8764,8 +8764,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const entry = contentEntry(gameId);
     const game = games.find(g => g.id === gameId);
     if (!game || game.archived) return;
-    if(playthroughId===undefined && game.playthroughs?.some(run=>!run.finishedAt)){choosePlaythrough(gameId);return;}
-    if(playthroughId&&!game.playthroughs?.some(run=>run.id===playthroughId&&!run.finishedAt)){toast('This playthrough is no longer available. Choose an open playthrough or start unassigned.');return;}
+    if(!playthroughId)playthroughId=rotationPreferredRun(game)?.id||null;
+    if(playthroughId&&!game.playthroughs?.some(run=>run.id===playthroughId&&!run.finishedAt)){toast('This playthrough is no longer available. Choose an open playthrough.');return;}
     const session = {
       id: uid(),
       playthroughId: playthroughId || null,
@@ -14637,10 +14637,6 @@ document.getElementById('import-confirm').addEventListener('click', () => {
     },'Create playthrough');
   }
   function defaultPlaythrough(game){return game?.playthroughs?.find(run=>run.id===game.defaultPlaythroughId&&!run.finishedAt)||null;}
-  function choosePlaythrough(gameId){
-    const game=games.find(g=>g.id===gameId);if(!game)return;
-    d2Edit('Choose playthrough','<p>'+escHtml(game.name)+'</p><label class="d2-field">Playthrough<select id="d2-start-run"><option value="">Unassigned / lifetime only</option>'+(game.playthroughs||[]).filter(run=>!run.finishedAt).map(run=>'<option value="'+d2Attr(run.id)+'"'+(defaultPlaythrough(game)?.id===run.id?' selected':'')+'>'+escHtml(run.name)+(defaultPlaythrough(game)?.id===run.id?' (default)':'')+'</option>').join('')+'</select></label>',()=>{startGame(gameId,document.getElementById('d2-start-run').value||null);},'Start session');
-  }
   function addSessionPlaythroughField(panel){
     const game=games.find(game=>game.id===panel.dataset.gameId);if(!game?.playthroughs?.length)return;
     const label=document.createElement('label');label.className='d2-field';label.innerHTML='Playthrough<select data-playthrough-choice aria-label="Session playthrough"><option value="">Unassigned / lifetime only</option>'+game.playthroughs.map(run=>'<option value="'+d2Attr(run.id)+'"'+(run.id===panel.dataset.playthroughId?' selected':'')+'>'+escHtml(run.name)+(run.finishedAt?' (finished)':'')+'</option>').join('')+'</select>';
@@ -15282,7 +15278,7 @@ document.getElementById('import-confirm').addEventListener('click', () => {
   },true);
 
   if ('serviceWorker' in navigator) {
-    const APP_VERSION = '3.1.4';
+    const APP_VERSION = '3.1.5';
     let updateRegistration = null, offeredUpdate = null, updateDismissed = false, updateCheck = 0;
     const updateModal = () => document.getElementById('update-modal');
     const updateAvailable = document.getElementById('update-available');

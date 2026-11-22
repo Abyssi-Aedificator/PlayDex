@@ -261,3 +261,5 @@ Before proposing or implementing features, consult `plan_dontwant.txt`. Do not p
 - Cache changelog.txt in APP_SHELL. The update popup must obtain pending-release notes from that worker's PLAYDEX_CHANGELOG message, never from the approved old cache or an unrelated network release. Viewing notes must not approve or install an update.
 
 - Weekly rotation picker no longer offers Any playthrough. normalizePlannerRuns resolves missing, empty or unavailable draft selections to a valid saved run, default open run, then alphabetically first open run. Resolve current plans, reuse and added games in the draft only; commit on Save plan. With no open runs omit the assignment and show no editable run picker. Keep old combined maps readable.
+
+- startGame resolves omitted/empty run choices to the default open playthrough or alphabetically first open run via rotationPreferredRun. Preserve explicit valid run choices and reject invalid explicit IDs. Do not restore a start-session Unassigned picker; games without open runs remain lifetime-only and historical session editors retain unassigned corrections.

@@ -19,6 +19,7 @@ Browser storage belongs to the browser profile and origin you use. Export a back
 ## Games and sessions
 
 - Add games with optional artwork, tags, and a platform. Pin, search, filter, archive, or restore them from Games. Platform statistics use the game's assigned platform.
+- Start a Game automatically uses the default open playthrough, or the alphabetically first open run when no default is available. Games with no open runs still record lifetime sessions. Existing session corrections retain unassigned history.
 - Start a session with an optional time target, pause and resume it, then stop to review active time, paused time, daily totals, HLTB progress, and pending milestones.
 - Add or correct sessions manually. Unchanged timing preserves the recorded duration; changed timing accounts for saved pauses. Overlap warnings help identify conflicting sessions.
 - Use Sessions to filter history, edit or delete entries, and export matching rows. A session's **Synced** flag is a manual status, separate from Dropbox synchronization.

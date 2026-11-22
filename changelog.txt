@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 3.1.5
+-------------------
+- Start a Game starts the default open playthrough automatically, falling back to the alphabetically first open run, without offering Unassigned / lifetime only; explicit rotation run choices remain respected.
+
 Version 3.1.4
 -------------------
 - Raised the playthrough Edit estimates button slightly to give it clearance above the HLTB divider.
