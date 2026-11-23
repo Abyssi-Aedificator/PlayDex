@@ -1753,11 +1753,6 @@ opacity: 0.18;
   .upcoming-summary-metrics > div { display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); font-size:.8rem; }
   .upcoming-summary-metrics dt { color:var(--text2); }
   .upcoming-summary-metrics dd { margin:0; color:var(--accent); font-weight:700; }
-  .upcoming-ready-list { list-style:none; margin:0; padding:0; max-height:360px; overflow-y:auto; }
-  .upcoming-ready-list li { padding:12px 0; border-top:1px solid var(--border); overflow-wrap:anywhere; }
-  .upcoming-ready-list strong { font-size:.82rem; }
-  .upcoming-ready-list p { font-size:.75rem; margin:6px 0; color:var(--text2); }
-  .upcoming-ready-list button { margin-top:6px; }
   @media(min-width:1100px) { #tab-upcoming.active { display:grid; grid-template-columns:minmax(0,1fr) 280px; gap:20px; align-items:start; } }
   .upcoming-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; }
   .upcoming-heading .card-header { margin:0; }
@@ -11758,7 +11753,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
   function renderUpcomingSummary(){
     const host=document.getElementById('upcoming-summary'),data=upcomingReleaseSummary(settings.upcomingGames||[],games);
-    host.innerHTML='<dl class="upcoming-summary-metrics">'+[['This month',data.thisMonth],['Next month',data.nextMonth],['High priority',data.high],['Ready to add',data.ready.length]].map(([label,count])=>'<div><dt>'+label+'</dt><dd>'+count+'</dd></div>').join('')+'</dl><h3 style="font-size:.85rem">Released · ready for Games</h3>'+(data.ready.length?'<ul class="upcoming-ready-list" tabindex="0" aria-label="Released games ready to add">'+data.ready.map(item=>'<li><strong>'+escHtml(item.name)+'</strong><p>'+escHtml(item.platform||'No platform')+' · '+escHtml(item.releaseDate)+'</p><button class="btn-ghost" type="button" data-upcoming-library="'+milestoneAttr(item.id)+'" aria-label="Add '+milestoneAttr(item.name)+' to Games">Add to Games</button></li>').join('')+'</ul>':'<p class="backup-hint">No released entries waiting to be added.</p>')+(data.alreadyAdded?'<p class="backup-hint">'+data.alreadyAdded+' released '+(data.alreadyAdded===1?'entry is':'entries are')+' already in Games.</p>':'');
+    host.innerHTML='<dl class="upcoming-summary-metrics">'+[['This month',data.thisMonth],['Next month',data.nextMonth],['High priority',data.high],['Ready to add',data.ready.length]].map(([label,count])=>'<div><dt>'+label+'</dt><dd>'+count+'</dd></div>').join('')+'</dl>';
   }
   function renderUpcomingGames(){
     const host=document.getElementById('upcoming-list');if(!host)return;
@@ -11825,7 +11820,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   document.getElementById('upcoming-release-filter').addEventListener('change',event=>{upcomingFilters.release=event.target.value;renderUpcomingGames();});
   document.getElementById('upcoming-clear-filters').onclick=()=>{upcomingFilters.search=upcomingFilters.platform=upcomingFilters.release=upcomingFilters.priority='';document.getElementById('upcoming-search').value='';renderUpcomingGames();};
   document.getElementById('upcoming-add').onclick=()=>editUpcomingGame();
-  document.getElementById('upcoming-summary').onclick=event=>{const button=event.target.closest('[data-upcoming-library]');if(button)addUpcomingToGames(button.dataset.upcomingLibrary);};
   document.getElementById('upcoming-list').onclick=event=>{
     const edit=event.target.closest('[data-upcoming-edit]'),remove=event.target.closest('[data-upcoming-delete]');
     const library=event.target.closest('[data-upcoming-library]');if(library){addUpcomingToGames(library.dataset.upcomingLibrary);return;}
