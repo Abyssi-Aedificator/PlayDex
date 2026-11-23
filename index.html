@@ -1753,6 +1753,7 @@ opacity: 0.18;
   .upcoming-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 0; border-top:1px solid var(--border); }
   .upcoming-info { min-width:0; overflow-wrap:anywhere; }
   .upcoming-info h3 { margin:0 0 5px; font-size:.9rem; }
+  .upcoming-priority { display:inline-block; margin-left:6px; padding:2px 7px; border:1px solid var(--border); border-radius:999px; font-size:.68rem; font-weight:500; color:var(--text2); vertical-align:middle; white-space:nowrap; }
   .upcoming-info p { margin:3px 0; color:var(--text2); font-size:.78rem; }
   .upcoming-info .upcoming-countdown { color:var(--accent); font-weight:600; }
   .upcoming-actions { display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
@@ -11706,12 +11707,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const days=upcomingDays(item.releaseDate,today);
     return !filters.release||(filters.release==='released'?days<=0:filters.release==='upcoming'?days>=0:days>=0&&days<=Number(filters.release));
   }
+  function upcomingPriority(item){return ['high','medium','low'].includes(item?.priority)?item.priority:'medium';}
   function validateUpcomingGames(items){
     if(items===undefined)return;
     if(!Array.isArray(items))throw Error('Invalid upcoming games');
     const ids=new Set();
     for(const item of items){
       if(!item||typeof item.id!=='string'||!item.id||ids.has(item.id)||typeof item.name!=='string'||!item.name.trim()||item.name.length>140||typeof item.platform!=='string'||item.platform.length>80||!milestoneValidDate(item.releaseDate))throw Error('Invalid upcoming game');
+      if(item.priority!==undefined&&!['high','medium','low'].includes(item.priority))throw Error('Invalid upcoming game priority');
       ids.add(item.id);
     }
   }
@@ -11737,7 +11740,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     platformField.value=upcomingFilters.platform;document.getElementById('upcoming-release-filter').value=upcomingFilters.release;
     const items=all.filter(item=>matchesUpcomingFilters(item)).slice().sort((a,b)=>a.releaseDate.localeCompare(b.releaseDate)||a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
     document.getElementById('upcoming-count').textContent=items.length+' of '+all.length+' upcoming games';
-    host.innerHTML=items.length?items.map(item=>'<article class="upcoming-row"><div class="upcoming-info"><h3>'+escHtml(item.name)+'</h3><p>'+escHtml(item.platform||'No platform')+' · Release: <time datetime="'+milestoneAttr(item.releaseDate)+'">'+escHtml(item.releaseDate)+'</time></p><p class="upcoming-countdown">'+escHtml(upcomingCountdown(item.releaseDate))+'</p></div><div class="upcoming-actions">'+(upcomingDays(item.releaseDate)<=0?'<button type="button" class="btn-ghost" data-upcoming-library="'+milestoneAttr(item.id)+'" aria-label="Add '+milestoneAttr(item.name)+' to Games">Add to Games</button>':'<button type="button" class="btn-ghost" data-upcoming-convert="'+milestoneAttr(item.id)+'" aria-label="Convert '+milestoneAttr(item.name)+' to milestone">Convert to milestone</button>')+'<button type="button" class="btn-ghost" data-upcoming-edit="'+milestoneAttr(item.id)+'" aria-label="Edit '+milestoneAttr(item.name)+'">Edit</button><button type="button" class="btn-ghost btn-danger" data-upcoming-delete="'+milestoneAttr(item.id)+'" aria-label="Delete '+milestoneAttr(item.name)+'">Delete</button></div></article>').join(''):'<p class="backup-hint">'+(all.length?'No upcoming games match these filters.':'No upcoming games yet. Add a game and its release date.')+'</p>';
+    host.innerHTML=items.length?items.map(item=>'<article class="upcoming-row"><div class="upcoming-info"><h3>'+escHtml(item.name)+' <span class="upcoming-priority">'+escHtml(upcomingPriority(item)[0].toUpperCase()+upcomingPriority(item).slice(1))+' priority</span></h3><p>'+escHtml(item.platform||'No platform')+' · Release: <time datetime="'+milestoneAttr(item.releaseDate)+'">'+escHtml(item.releaseDate)+'</time></p><p class="upcoming-countdown">'+escHtml(upcomingCountdown(item.releaseDate))+'</p></div><div class="upcoming-actions">'+(upcomingDays(item.releaseDate)<=0?'<button type="button" class="btn-ghost" data-upcoming-library="'+milestoneAttr(item.id)+'" aria-label="Add '+milestoneAttr(item.name)+' to Games">Add to Games</button>':'<button type="button" class="btn-ghost" data-upcoming-convert="'+milestoneAttr(item.id)+'" aria-label="Convert '+milestoneAttr(item.name)+' to milestone">Convert to milestone</button>')+'<button type="button" class="btn-ghost" data-upcoming-edit="'+milestoneAttr(item.id)+'" aria-label="Edit '+milestoneAttr(item.name)+'">Edit</button><button type="button" class="btn-ghost btn-danger" data-upcoming-delete="'+milestoneAttr(item.id)+'" aria-label="Delete '+milestoneAttr(item.name)+'">Delete</button></div></article>').join(''):'<p class="backup-hint">'+(all.length?'No upcoming games match these filters.':'No upcoming games yet. Add a game and its release date.')+'</p>';
   }
   function prepareUpcomingLibraryGame(library,preferences,id){
     const source=(preferences.upcomingGames||[]).find(item=>item.id===id);if(!source)throw Error('This upcoming entry no longer exists.');
@@ -11777,11 +11780,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function editUpcomingGame(id){
     const original=(settings.upcomingGames||[]).find(item=>item.id===id);let dateField;
     const platforms=[...new Set([...PLATFORM_CHOICES,original?.platform].filter(Boolean))];
-    d2Edit(original?'Edit upcoming game':'Add upcoming game','<label class="d2-field">Game name<input id="upcoming-name" type="text" maxlength="140" required value="'+milestoneAttr(original?.name||'')+'"></label><label class="d2-field">Platform<select id="upcoming-platform"><option value="">No platform</option>'+platforms.map(platform=>'<option value="'+milestoneAttr(platform)+'"'+(platform===original?.platform?' selected':'')+'>'+escHtml(platform)+'</option>').join('')+'</select></label><div class="field-group"><label id="upcoming-date-label">Release date</label>'+milestoneCalendarMarkup('upcoming-date','upcoming-date-label')+'</div>',()=>{
+    d2Edit(original?'Edit upcoming game':'Add upcoming game','<label class="d2-field">Game name<input id="upcoming-name" type="text" maxlength="140" required value="'+milestoneAttr(original?.name||'')+'"></label><label class="d2-field">Platform<select id="upcoming-platform"><option value="">No platform</option>'+platforms.map(platform=>'<option value="'+milestoneAttr(platform)+'"'+(platform===original?.platform?' selected':'')+'>'+escHtml(platform)+'</option>').join('')+'</select></label><label class="d2-field">Priority<select id="upcoming-priority">'+[['high','High'],['medium','Medium'],['low','Low']].map(([value,label])=>'<option value="'+value+'"'+(upcomingPriority(original)===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label><div class="field-group"><label id="upcoming-date-label">Release date</label>'+milestoneCalendarMarkup('upcoming-date','upcoming-date-label')+'</div>',()=>{
       const items=settings.upcomingGames||[],old=items.find(item=>item.id===id);if(id&&!old)throw Error('This upcoming game no longer exists.');
       const name=document.getElementById('upcoming-name').value.trim(),platform=document.getElementById('upcoming-platform').value,releaseDate=dateField.value;
       if(!name)throw Error('Enter a game name.');if(!milestoneValidDate(releaseDate))throw Error('Choose a valid release date.');
-      const item={id:old?.id||uid(),name,platform,releaseDate};saveUpcomingGames(old?items.map(row=>row.id===id?item:row):items.concat(item));
+      const item={id:old?.id||uid(),name,platform,releaseDate,priority:document.getElementById('upcoming-priority').value};saveUpcomingGames(old?items.map(row=>row.id===id?item:row):items.concat(item));
     },'Save',null,{onClose:()=>mxFieldRegistry.delete('upcoming-date')});
     dateField=createCalField('upcoming-date');dateField.value=original?.releaseDate||'';
   }
