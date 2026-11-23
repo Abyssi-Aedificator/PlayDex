@@ -1744,6 +1744,10 @@ opacity: 0.18;
     :root:is([data-ui="classic"],:not([data-ui])) .app-content { padding-bottom:calc(var(--mx-nav-height,132px) + 24px); }
     :root:is([data-ui="classic"],:not([data-ui])) #toast { bottom:calc(var(--mx-nav-height,132px) + 16px); }
   }
+  .upcoming-filters { display:grid; grid-template-columns:2fr 1fr 1fr; gap:10px; align-items:end; }
+  .upcoming-filters .field-group { min-width:0; margin:0; }
+  .upcoming-filters > button { grid-column:1 / -1; justify-self:end; }
+  @media(max-width:599px) { .upcoming-filters { grid-template-columns:1fr; } }
   .upcoming-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; }
   .upcoming-heading .card-header { margin:0; }
   .upcoming-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 0; border-top:1px solid var(--border); }
@@ -6249,7 +6253,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   <!-- GAMES TAB -->
   <div id="tab-upcoming" class="tab-panel">
-    <section class="card"><div class="upcoming-heading"><h2 class="card-header">Upcoming games</h2><button class="btn-primary" type="button" id="upcoming-add">+ Add game</button></div><div id="upcoming-list"></div></section>
+    <section class="card"><div class="upcoming-heading"><h2 class="card-header">Upcoming games</h2><button class="btn-primary" type="button" id="upcoming-add">+ Add game</button></div><div class="upcoming-filters"><label class="field-group">Search<input id="upcoming-search" type="text" placeholder="Search game names" autocomplete="off"></label><label class="field-group">Platform<select id="upcoming-platform-filter"><option value="">All platforms</option></select></label><label class="field-group">Release<select id="upcoming-release-filter"><option value="">All releases</option><option value="upcoming">Upcoming</option><option value="7">Within 7 days</option><option value="30">Within 30 days</option><option value="released">Released</option></select></label><button id="upcoming-clear-filters" class="btn-ghost" type="button">Clear filters</button></div><p id="upcoming-count" class="backup-hint" role="status"></p><div id="upcoming-list"></div></section>
   </div>
   <div id="tab-games" class="tab-panel">
     <div class="games-layout">
@@ -11694,6 +11698,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const runs=game.playthroughs||[];
     return !value || (value==='yes'?runs.length>0:value==='no'?runs.length===0:value==='open'?runs.some(run=>!run.finishedAt):value==='finished'?runs.some(run=>!!run.finishedAt):false);
   }
+  const upcomingFilters={search:'',platform:'',release:''};
+  function matchesUpcomingFilters(item,filters=upcomingFilters,today=todayStr()){
+    if(filters.search.trim()&&!item.name.toLowerCase().includes(filters.search.trim().toLowerCase()))return false;
+    if(filters.platform==='missing'&&item.platform)return false;
+    if(filters.platform&&filters.platform!=='missing'&&item.platform!==filters.platform)return false;
+    const days=upcomingDays(item.releaseDate,today);
+    return !filters.release||(filters.release==='released'?days<=0:filters.release==='upcoming'?days>=0:days>=0&&days<=Number(filters.release));
+  }
   function validateUpcomingGames(items){
     if(items===undefined)return;
     if(!Array.isArray(items))throw Error('Invalid upcoming games');
@@ -11718,8 +11730,14 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function renderUpcomingGames(){
     const host=document.getElementById('upcoming-list');if(!host)return;
     renderUpcomingGames.lastDay=todayStr();
-    const items=(settings.upcomingGames||[]).slice().sort((a,b)=>a.releaseDate.localeCompare(b.releaseDate)||a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
-    host.innerHTML=items.length?items.map(item=>'<article class="upcoming-row"><div class="upcoming-info"><h3>'+escHtml(item.name)+'</h3><p>'+escHtml(item.platform||'No platform')+' · Release: <time datetime="'+milestoneAttr(item.releaseDate)+'">'+escHtml(item.releaseDate)+'</time></p><p class="upcoming-countdown">'+escHtml(upcomingCountdown(item.releaseDate))+'</p></div><div class="upcoming-actions">'+(upcomingDays(item.releaseDate)<=0?'<button type="button" class="btn-ghost" data-upcoming-library="'+milestoneAttr(item.id)+'" aria-label="Add '+milestoneAttr(item.name)+' to Games">Add to Games</button>':'')+'<button type="button" class="btn-ghost" data-upcoming-convert="'+milestoneAttr(item.id)+'" aria-label="Convert '+milestoneAttr(item.name)+' to milestone">Convert to milestone</button><button type="button" class="btn-ghost" data-upcoming-edit="'+milestoneAttr(item.id)+'" aria-label="Edit '+milestoneAttr(item.name)+'">Edit</button><button type="button" class="btn-ghost btn-danger" data-upcoming-delete="'+milestoneAttr(item.id)+'" aria-label="Delete '+milestoneAttr(item.name)+'">Delete</button></div></article>').join(''):'<p class="backup-hint">No upcoming games yet. Add a game and its release date.</p>';
+    const all=settings.upcomingGames||[],platforms=[...new Set(all.map(item=>item.platform).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
+    const platformField=document.getElementById('upcoming-platform-filter');
+    platformField.innerHTML='<option value="">All platforms</option><option value="missing">No platform</option>'+platforms.map(platform=>'<option value="'+milestoneAttr(platform)+'">'+escHtml(platform)+'</option>').join('');
+    if(upcomingFilters.platform&&upcomingFilters.platform!=='missing'&&!platforms.includes(upcomingFilters.platform))upcomingFilters.platform='';
+    platformField.value=upcomingFilters.platform;document.getElementById('upcoming-release-filter').value=upcomingFilters.release;
+    const items=all.filter(item=>matchesUpcomingFilters(item)).slice().sort((a,b)=>a.releaseDate.localeCompare(b.releaseDate)||a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
+    document.getElementById('upcoming-count').textContent=items.length+' of '+all.length+' upcoming games';
+    host.innerHTML=items.length?items.map(item=>'<article class="upcoming-row"><div class="upcoming-info"><h3>'+escHtml(item.name)+'</h3><p>'+escHtml(item.platform||'No platform')+' · Release: <time datetime="'+milestoneAttr(item.releaseDate)+'">'+escHtml(item.releaseDate)+'</time></p><p class="upcoming-countdown">'+escHtml(upcomingCountdown(item.releaseDate))+'</p></div><div class="upcoming-actions">'+(upcomingDays(item.releaseDate)<=0?'<button type="button" class="btn-ghost" data-upcoming-library="'+milestoneAttr(item.id)+'" aria-label="Add '+milestoneAttr(item.name)+' to Games">Add to Games</button>':'')+'<button type="button" class="btn-ghost" data-upcoming-convert="'+milestoneAttr(item.id)+'" aria-label="Convert '+milestoneAttr(item.name)+' to milestone">Convert to milestone</button><button type="button" class="btn-ghost" data-upcoming-edit="'+milestoneAttr(item.id)+'" aria-label="Edit '+milestoneAttr(item.name)+'">Edit</button><button type="button" class="btn-ghost btn-danger" data-upcoming-delete="'+milestoneAttr(item.id)+'" aria-label="Delete '+milestoneAttr(item.name)+'">Delete</button></div></article>').join(''):'<p class="backup-hint">'+(all.length?'No upcoming games match these filters.':'No upcoming games yet. Add a game and its release date.')+'</p>';
   }
   function prepareUpcomingLibraryGame(library,preferences,id){
     const source=(preferences.upcomingGames||[]).find(item=>item.id===id);if(!source)throw Error('This upcoming entry no longer exists.');
@@ -11767,6 +11785,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     },'Save',null,{onClose:()=>mxFieldRegistry.delete('upcoming-date')});
     dateField=createCalField('upcoming-date');dateField.value=original?.releaseDate||'';
   }
+  document.getElementById('upcoming-search').addEventListener('input',event=>{upcomingFilters.search=event.target.value;renderUpcomingGames();});
+  document.getElementById('upcoming-platform-filter').addEventListener('change',event=>{upcomingFilters.platform=event.target.value;renderUpcomingGames();});
+  document.getElementById('upcoming-release-filter').addEventListener('change',event=>{upcomingFilters.release=event.target.value;renderUpcomingGames();});
+  document.getElementById('upcoming-clear-filters').onclick=()=>{upcomingFilters.search=upcomingFilters.platform=upcomingFilters.release='';document.getElementById('upcoming-search').value='';renderUpcomingGames();};
   document.getElementById('upcoming-add').onclick=()=>editUpcomingGame();
   document.getElementById('upcoming-list').onclick=event=>{
     const edit=event.target.closest('[data-upcoming-edit]'),remove=event.target.closest('[data-upcoming-delete]');

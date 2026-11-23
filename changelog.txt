@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.2.0
 -------------------
+- Upcoming supports name search, platform filters, upcoming/released and 7/30-day release windows, with matching counts and Clear filters.
 - Released Upcoming entries can be added to Games with their name and platform, with duplicate-name protection and atomic removal from Upcoming after saving.
 - Upcoming uses a 750px desktop layout with more room for release details and actions.
 - Upcoming entries can be converted into personal milestones assigned to an active game, using their release date as the target date and removing the source entry only after a successful save.
