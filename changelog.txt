@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 3.4.0
+-------------------
+- Redesigned Settings with compact icon navigation, clearer category descriptions, quieter cards, spaced preference rows and responsive desktop columns while preserving every existing control and sync workflow.
+
 Version 3.3.0
 -------------------
 - Optional Upcoming release reminders on Today show releases within 7 or 30 days; Settings can turn them off, and reminders stay hidden while tracking a session.

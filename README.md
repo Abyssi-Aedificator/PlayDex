@@ -115,6 +115,8 @@ An existing local library receives a pre-conversion recovery copy before its fir
 
 ## Appearance, navigation, and installation
 
+Settings groups Appearance, Session tracking, Dropbox and Data behind compact category navigation. Tracking and Data use two columns on wide screens and stack on mobile. Every preference, backup/recovery action and release-note control remains available in the redesigned cards.
+
 Choose Classic, Material 3, or Liquid Glass, with light/dark themes and accent colours. Liquid Glass includes device-local transparency and contrast options. Motion follows the system's reduced-motion preference.
 
 The bottom tabs switch pages. On desktop, the left section rail jumps between features within the current page; smaller screens use **Sections**. Hover or focus a section icon for its label.
