@@ -35,6 +35,10 @@ Create named playthroughs from the game's dashboard. Each run has independent HL
 
 Use **Run actions → Set as default** to preselect an open run for new sessions. **Clear default** removes the preference; finishing or removing the run clears it automatically. Editing an existing session preserves its assignment.
 
+## Upcoming games
+
+The **Upcoming** tab, after Games, stores a game name, platform and required release date. Add, edit or delete entries and see days until release, Releases today, or days since release. Entries sort by release date and use local calendar days. This list is separate from the tracked library and is included in JSON backups and Dropbox sync.
+
 ## Weekly rotation
 
 Rotation games are excluded from **Start a Game** until their weekly target is reached, then return to that section with a right-side **Weekly target reached** badge. Progress follows the rotation's selected playthrough; games with unfinished or unset targets remain excluded.

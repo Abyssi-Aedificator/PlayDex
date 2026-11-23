@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 3.2.0
+-------------------
+- Upcoming tab after Games tracks game names, platforms and release dates with local-day countdowns, editing and deletion, and backup/Dropbox support.
+
 Version 3.1.6
 -------------------
 - Weekly rotation automatically gives high priority to games with unfinished dated milestones in the game or any open playthrough; manual priority buttons are removed and completed milestones or finished runs no longer confer priority.
