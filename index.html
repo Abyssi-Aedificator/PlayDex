@@ -1752,7 +1752,7 @@ opacity: 0.18;
   .upcoming-info p { margin:3px 0; color:var(--text2); font-size:.78rem; }
   .upcoming-info .upcoming-countdown { color:var(--accent); font-weight:600; }
   .upcoming-actions { display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
-  @media(max-width:599px) { .upcoming-row { flex-wrap:wrap; } .upcoming-actions { margin-left:auto; } }
+  @media(max-width:599px) { .upcoming-row { flex-wrap:wrap; } .upcoming-actions { margin-left:auto; max-width:100%; } }
   .games-filter-panel { order:-1; }
   .games-filter-panel #games-clear-filters { width:100%; }
   .games-filter-label { font-size:.75rem; font-weight:600; color:var(--text2); margin:16px 0 8px; }
@@ -11719,7 +11719,21 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const host=document.getElementById('upcoming-list');if(!host)return;
     renderUpcomingGames.lastDay=todayStr();
     const items=(settings.upcomingGames||[]).slice().sort((a,b)=>a.releaseDate.localeCompare(b.releaseDate)||a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
-    host.innerHTML=items.length?items.map(item=>'<article class="upcoming-row"><div class="upcoming-info"><h3>'+escHtml(item.name)+'</h3><p>'+escHtml(item.platform||'No platform')+' · Release: <time datetime="'+milestoneAttr(item.releaseDate)+'">'+escHtml(item.releaseDate)+'</time></p><p class="upcoming-countdown">'+escHtml(upcomingCountdown(item.releaseDate))+'</p></div><div class="upcoming-actions"><button type="button" class="btn-ghost" data-upcoming-convert="'+milestoneAttr(item.id)+'" aria-label="Convert '+milestoneAttr(item.name)+' to milestone">Convert to milestone</button><button type="button" class="btn-ghost" data-upcoming-edit="'+milestoneAttr(item.id)+'" aria-label="Edit '+milestoneAttr(item.name)+'">Edit</button><button type="button" class="btn-ghost btn-danger" data-upcoming-delete="'+milestoneAttr(item.id)+'" aria-label="Delete '+milestoneAttr(item.name)+'">Delete</button></div></article>').join(''):'<p class="backup-hint">No upcoming games yet. Add a game and its release date.</p>';
+    host.innerHTML=items.length?items.map(item=>'<article class="upcoming-row"><div class="upcoming-info"><h3>'+escHtml(item.name)+'</h3><p>'+escHtml(item.platform||'No platform')+' · Release: <time datetime="'+milestoneAttr(item.releaseDate)+'">'+escHtml(item.releaseDate)+'</time></p><p class="upcoming-countdown">'+escHtml(upcomingCountdown(item.releaseDate))+'</p></div><div class="upcoming-actions">'+(upcomingDays(item.releaseDate)<=0?'<button type="button" class="btn-ghost" data-upcoming-library="'+milestoneAttr(item.id)+'" aria-label="Add '+milestoneAttr(item.name)+' to Games">Add to Games</button>':'')+'<button type="button" class="btn-ghost" data-upcoming-convert="'+milestoneAttr(item.id)+'" aria-label="Convert '+milestoneAttr(item.name)+' to milestone">Convert to milestone</button><button type="button" class="btn-ghost" data-upcoming-edit="'+milestoneAttr(item.id)+'" aria-label="Edit '+milestoneAttr(item.name)+'">Edit</button><button type="button" class="btn-ghost btn-danger" data-upcoming-delete="'+milestoneAttr(item.id)+'" aria-label="Delete '+milestoneAttr(item.name)+'">Delete</button></div></article>').join(''):'<p class="backup-hint">No upcoming games yet. Add a game and its release date.</p>';
+  }
+  function prepareUpcomingLibraryGame(library,preferences,id){
+    const source=(preferences.upcomingGames||[]).find(item=>item.id===id);if(!source)throw Error('This upcoming entry no longer exists.');
+    if(upcomingDays(source.releaseDate)>0)throw Error('This game has not been released yet.');
+    const name=source.name.trim();
+    if(library.some(game=>game.name.trim().toLowerCase()===name.toLowerCase()))throw Error('A game with this name already exists, including archived games.');
+    const game={id:uid(),name,platform:source.platform,archived:false,image:null,pinned:false,tags:[]};
+    return {games:structuredClone(library).concat(game),settings:{...preferences,upcomingGames:preferences.upcomingGames.filter(item=>item.id!==id)}};
+  }
+  function addUpcomingToGames(id){
+    const item=(settings.upcomingGames||[]).find(row=>row.id===id);if(!item)return;
+    d2Edit('Add to Games','<p>Add <strong>'+escHtml(item.name)+'</strong> to the tracked Games library?</p><p class="backup-hint">Platform: '+escHtml(item.platform||'No platform')+'. This removes the Upcoming entry after saving. No sessions or playthroughs are created.</p>',()=>{
+      const next=prepareUpcomingLibraryGame(games,settings,id);d2SaveLibrary(next.games,sessions,next.settings);toast('Added to Games.');
+    },'Add to Games');
   }
   function prepareUpcomingMilestone(library,preferences,id,gameId,name){
     const source=(preferences.upcomingGames||[]).find(item=>item.id===id);if(!source)throw Error('This upcoming entry no longer exists.');
@@ -11756,6 +11770,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   document.getElementById('upcoming-add').onclick=()=>editUpcomingGame();
   document.getElementById('upcoming-list').onclick=event=>{
     const edit=event.target.closest('[data-upcoming-edit]'),remove=event.target.closest('[data-upcoming-delete]');
+    const library=event.target.closest('[data-upcoming-library]');if(library){addUpcomingToGames(library.dataset.upcomingLibrary);return;}
     const convert=event.target.closest('[data-upcoming-convert]');if(convert){convertUpcomingGame(convert.dataset.upcomingConvert);return;}
     if(edit){editUpcomingGame(edit.dataset.upcomingEdit);return;}
     if(remove){const id=remove.dataset.upcomingDelete,item=(settings.upcomingGames||[]).find(row=>row.id===id);if(!item)return;d2Edit('Delete upcoming game?','<p>Delete '+escHtml(item.name)+' from Upcoming?</p>',()=>saveUpcomingGames((settings.upcomingGames||[]).filter(row=>row.id!==id)),'Delete',null,{destructive:true});}

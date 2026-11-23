@@ -37,7 +37,7 @@ Use **Run actions → Set as default** to preselect an open run for new sessions
 
 ## Upcoming games
 
-The **Upcoming** tab, after Games, stores a game name, platform and required release date. Add, edit or delete entries and see days until release, Releases today, or days since release. Entries sort by release date and use local calendar days. This list is separate from the tracked library and is included in JSON backups and Dropbox sync. **Convert to milestone** moves an entry into an active game as an unfinished manual objective, using its release date as the target date. Choose the game and confirm the milestone name (up to 80 characters); conversion removes the Upcoming entry only after the milestone is saved.
+The **Upcoming** tab, after Games, stores a game name, platform and required release date. Add, edit or delete entries and see days until release, Releases today, or days since release. Entries sort by release date and use local calendar days. Once released, **Add to Games** transfers the name and platform into the tracked library and removes the Upcoming entry after saving. Existing game names, including archived games, are protected from duplicates. This list is separate from the tracked library and is included in JSON backups and Dropbox sync. **Convert to milestone** moves an entry into an active game as an unfinished manual objective, using its release date as the target date. Choose the game and confirm the milestone name (up to 80 characters); conversion removes the Upcoming entry only after the milestone is saved.
 
 ## Weekly rotation
 
