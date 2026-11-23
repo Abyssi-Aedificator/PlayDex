@@ -3,7 +3,7 @@ PlayDex - Changelog
 
 Version 3.2.0
 -------------------
-- Upcoming uses a wider desktop layout with more room for release details and actions.
+- Upcoming uses a 750px desktop layout with more room for release details and actions.
 - Upcoming entries can be converted into personal milestones assigned to an active game, using their release date as the target date and removing the source entry only after a successful save.
 - Upcoming release calendars use the compact themed grid and expand within the editor so dates and Today/Clear controls remain accessible.
 - Upcoming tab after Games tracks game names, platforms and release dates with local-day countdowns, editing and deletion, and backup/Dropbox support.
