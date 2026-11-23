@@ -1744,9 +1744,6 @@ opacity: 0.18;
     :root:is([data-ui="classic"],:not([data-ui])) .app-content { padding-bottom:calc(var(--mx-nav-height,132px) + 24px); }
     :root:is([data-ui="classic"],:not([data-ui])) #toast { bottom:calc(var(--mx-nav-height,132px) + 16px); }
   }
-  .upcoming-results-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin:12px 0; flex-wrap:wrap; }
-  .upcoming-sort-label { display:flex; align-items:center; gap:8px; font-size:.75rem; color:var(--text2); margin-left:auto; }
-  .upcoming-sort-label select { width:180px; }
   .upcoming-filters { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:10px; align-items:end; }
   .upcoming-filters .field-group { display:flex; flex-direction:column; gap:8px; min-width:0; margin:0; }
   .upcoming-filters > button { grid-column:1 / -1; justify-self:end; }
@@ -6272,7 +6269,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   <!-- GAMES TAB -->
   <div id="tab-upcoming" class="tab-panel">
-    <section class="card"><div class="upcoming-heading"><h2 class="card-header">Upcoming games</h2><button class="btn-primary" type="button" id="upcoming-add">+ Add game</button></div><div class="upcoming-filters"><label class="field-group">Search<input id="upcoming-search" type="text" placeholder="Search game names" autocomplete="off"></label><label class="field-group">Platform<select id="upcoming-platform-filter"><option value="">All platforms</option></select></label><label class="field-group">Release<select id="upcoming-release-filter"><option value="">All releases</option><option value="upcoming">Upcoming</option><option value="7">Within 7 days</option><option value="30">Within 30 days</option><option value="released">Released</option></select></label><label class="field-group">Priority<select id="upcoming-priority-filter"><option value="">All priorities</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label><button id="upcoming-clear-filters" class="btn-ghost" type="button">Clear filters</button></div><div class="upcoming-results-bar"><p id="upcoming-count" class="backup-hint" role="status"></p><label class="upcoming-sort-label">Sort<select id="upcoming-sort"><option value="date">Release date</option><option value="priority">Priority: High to Low</option></select></label></div><div id="upcoming-list"></div></section>
+    <section class="card"><div class="upcoming-heading"><h2 class="card-header">Upcoming games</h2><button class="btn-primary" type="button" id="upcoming-add">+ Add game</button></div><div class="upcoming-filters"><label class="field-group">Search<input id="upcoming-search" type="text" placeholder="Search game names" autocomplete="off"></label><label class="field-group">Platform<select id="upcoming-platform-filter"><option value="">All platforms</option></select></label><label class="field-group">Release<select id="upcoming-release-filter"><option value="">All releases</option><option value="upcoming">Upcoming</option><option value="7">Within 7 days</option><option value="30">Within 30 days</option><option value="released">Released</option></select></label><label class="field-group">Priority<select id="upcoming-priority-filter"><option value="">All priorities</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label><button id="upcoming-clear-filters" class="btn-ghost" type="button">Clear filters</button></div><p id="upcoming-count" class="backup-hint" role="status"></p><div id="upcoming-list"></div></section>
     <aside class="card upcoming-summary-card" aria-labelledby="upcoming-summary-title"><h2 class="card-header" id="upcoming-summary-title">Release summary</h2><p class="backup-hint">All saved entries, regardless of filters.</p><div id="upcoming-summary"></div></aside>
   </div>
   <div id="tab-games" class="tab-panel">
@@ -11735,11 +11732,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     return !value || (value==='yes'?runs.length>0:value==='no'?runs.length===0:value==='open'?runs.some(run=>!run.finishedAt):value==='finished'?runs.some(run=>!!run.finishedAt):false);
   }
   const upcomingFilters={search:'',platform:'',release:'',priority:''};
-  let upcomingSort='date';
-  function sortedUpcomingEntries(items,sort='date'){
-    const weights={high:0,medium:1,low:2};
-    return items.slice().sort((a,b)=>(sort==='priority'?weights[upcomingPriority(a)]-weights[upcomingPriority(b)]:0)||a.releaseDate.localeCompare(b.releaseDate)||a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
-  }
   function matchesUpcomingFilters(item,filters=upcomingFilters,today=todayStr()){
     if(filters.priority&&upcomingPriority(item)!==filters.priority)return false;
     if(filters.search.trim()&&!item.name.toLowerCase().includes(filters.search.trim().toLowerCase()))return false;
@@ -11791,8 +11783,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     platformField.innerHTML='<option value="">All platforms</option><option value="missing">No platform</option>'+platforms.map(platform=>'<option value="'+milestoneAttr(platform)+'">'+escHtml(platform)+'</option>').join('');
     if(upcomingFilters.platform&&upcomingFilters.platform!=='missing'&&!platforms.includes(upcomingFilters.platform))upcomingFilters.platform='';
     platformField.value=upcomingFilters.platform;document.getElementById('upcoming-release-filter').value=upcomingFilters.release;document.getElementById('upcoming-priority-filter').value=upcomingFilters.priority;
-    const items=sortedUpcomingEntries(all.filter(item=>matchesUpcomingFilters(item)),upcomingSort);
-    document.getElementById('upcoming-sort').value=upcomingSort;
+    const items=all.filter(item=>matchesUpcomingFilters(item)).slice().sort((a,b)=>a.releaseDate.localeCompare(b.releaseDate)||a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
     document.getElementById('upcoming-count').textContent=items.length+' of '+all.length+' upcoming games';
     host.innerHTML=items.length?items.map(item=>'<article class="upcoming-row">'+gameCoverHtml(item)+'<div class="upcoming-info"><h3>'+escHtml(item.name)+' <span class="upcoming-priority" data-priority="'+upcomingPriority(item)+'">'+escHtml(upcomingPriority(item)[0].toUpperCase()+upcomingPriority(item).slice(1))+' priority</span></h3><p>'+escHtml(item.platform||'No platform')+' · Release: <time datetime="'+milestoneAttr(item.releaseDate)+'">'+escHtml(item.releaseDate)+'</time></p><p class="upcoming-countdown">'+escHtml(upcomingCountdown(item.releaseDate))+'</p></div><div class="upcoming-actions">'+(upcomingDays(item.releaseDate)<=0?'<button type="button" class="btn-ghost" data-upcoming-library="'+milestoneAttr(item.id)+'" aria-label="Add '+milestoneAttr(item.name)+' to Games">Add to Games</button>':'<button type="button" class="btn-ghost" data-upcoming-convert="'+milestoneAttr(item.id)+'" aria-label="Convert '+milestoneAttr(item.name)+' to milestone">Convert to milestone</button>')+'<button type="button" class="btn-ghost" data-upcoming-edit="'+milestoneAttr(item.id)+'" aria-label="Edit '+milestoneAttr(item.name)+'">Edit</button><button type="button" class="btn-ghost btn-danger" data-upcoming-delete="'+milestoneAttr(item.id)+'" aria-label="Delete '+milestoneAttr(item.name)+'">Delete</button></div></article>').join(''):'<p class="backup-hint">'+(all.length?'No upcoming games match these filters.':'No upcoming games yet. Add a game and its release date.')+'</p>';
   }
@@ -11850,7 +11841,6 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     document.getElementById('upcoming-cover-file').onchange=event=>{const file=event.target.files[0];event.target.value='';if(!file)return;if(!file.type.startsWith('image/')){toast('Choose an image file.');return;}const revision=++coverRevision;coverBusy=true;document.getElementById('d2-editor-save').disabled=true;fileToThumb(file,url=>{if(!coverOpen||revision!==coverRevision)return;finishCover();cover=url;document.getElementById('upcoming-cover-url').value=url;paintCover();},()=>{if(!coverOpen||revision!==coverRevision)return false;finishCover();return true;});};
     paintCover();
   }
-  document.getElementById('upcoming-sort').addEventListener('change',event=>{upcomingSort=event.target.value==='priority'?'priority':'date';renderUpcomingGames();});
   document.getElementById('upcoming-search').addEventListener('input',event=>{upcomingFilters.search=event.target.value;renderUpcomingGames();});
   document.getElementById('upcoming-platform-filter').addEventListener('change',event=>{upcomingFilters.platform=event.target.value;renderUpcomingGames();});
   document.getElementById('upcoming-priority-filter').addEventListener('change',event=>{upcomingFilters.priority=event.target.value;renderUpcomingGames();});
