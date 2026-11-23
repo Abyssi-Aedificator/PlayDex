@@ -1751,7 +1751,7 @@ opacity: 0.18;
   .upcoming-info h3 { margin:0 0 5px; font-size:.9rem; }
   .upcoming-info p { margin:3px 0; color:var(--text2); font-size:.78rem; }
   .upcoming-info .upcoming-countdown { color:var(--accent); font-weight:600; }
-  .upcoming-actions { display:flex; gap:6px; flex-shrink:0; }
+  .upcoming-actions { display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
   @media(max-width:599px) { .upcoming-row { flex-wrap:wrap; } .upcoming-actions { margin-left:auto; } }
   .games-filter-panel { order:-1; }
   .games-filter-panel #games-clear-filters { width:100%; }
@@ -11718,7 +11718,28 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const host=document.getElementById('upcoming-list');if(!host)return;
     renderUpcomingGames.lastDay=todayStr();
     const items=(settings.upcomingGames||[]).slice().sort((a,b)=>a.releaseDate.localeCompare(b.releaseDate)||a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
-    host.innerHTML=items.length?items.map(item=>'<article class="upcoming-row"><div class="upcoming-info"><h3>'+escHtml(item.name)+'</h3><p>'+escHtml(item.platform||'No platform')+' · Release: <time datetime="'+milestoneAttr(item.releaseDate)+'">'+escHtml(item.releaseDate)+'</time></p><p class="upcoming-countdown">'+escHtml(upcomingCountdown(item.releaseDate))+'</p></div><div class="upcoming-actions"><button type="button" class="btn-ghost" data-upcoming-edit="'+milestoneAttr(item.id)+'" aria-label="Edit '+milestoneAttr(item.name)+'">Edit</button><button type="button" class="btn-ghost btn-danger" data-upcoming-delete="'+milestoneAttr(item.id)+'" aria-label="Delete '+milestoneAttr(item.name)+'">Delete</button></div></article>').join(''):'<p class="backup-hint">No upcoming games yet. Add a game and its release date.</p>';
+    host.innerHTML=items.length?items.map(item=>'<article class="upcoming-row"><div class="upcoming-info"><h3>'+escHtml(item.name)+'</h3><p>'+escHtml(item.platform||'No platform')+' · Release: <time datetime="'+milestoneAttr(item.releaseDate)+'">'+escHtml(item.releaseDate)+'</time></p><p class="upcoming-countdown">'+escHtml(upcomingCountdown(item.releaseDate))+'</p></div><div class="upcoming-actions"><button type="button" class="btn-ghost" data-upcoming-convert="'+milestoneAttr(item.id)+'" aria-label="Convert '+milestoneAttr(item.name)+' to milestone">Convert to milestone</button><button type="button" class="btn-ghost" data-upcoming-edit="'+milestoneAttr(item.id)+'" aria-label="Edit '+milestoneAttr(item.name)+'">Edit</button><button type="button" class="btn-ghost btn-danger" data-upcoming-delete="'+milestoneAttr(item.id)+'" aria-label="Delete '+milestoneAttr(item.name)+'">Delete</button></div></article>').join(''):'<p class="backup-hint">No upcoming games yet. Add a game and its release date.</p>';
+  }
+  function prepareUpcomingMilestone(library,preferences,id,gameId,name){
+    const source=(preferences.upcomingGames||[]).find(item=>item.id===id);if(!source)throw Error('This upcoming entry no longer exists.');
+    const nextGames=structuredClone(library),game=nextGames.find(item=>item.id===gameId);
+    if(!game||game.archived)throw Error('Choose an active game.');
+    name=name.trim();if(!name||name.length>80)throw Error('Enter a milestone name of 1 to 80 characters.');
+    if(!milestoneValidDate(source.releaseDate))throw Error('This entry has an invalid release date.');
+    const existing=normalizeGameMilestones(game.milestones);
+    game.milestones=existing.concat({id:uid(),name,type:'manual',createdAt:new Date().toISOString(),targetDate:source.releaseDate,completedAt:null,manualDone:false,prerequisites:[],pinned:false,order:Math.max(-1,...existing.map(item=>item.order))+1});
+    return {games:nextGames,settings:{...preferences,upcomingGames:preferences.upcomingGames.filter(item=>item.id!==id)}};
+  }
+  function convertUpcomingGame(id){
+    const original=(settings.upcomingGames||[]).find(item=>item.id===id);if(!original)return;
+    const options=games.filter(game=>!game.archived).slice().sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true})||a.id.localeCompare(b.id));
+    if(!options.length){toast('Add an active game before converting this entry.');return;}
+    const signature=JSON.stringify(original);
+    d2Edit('Convert to milestone','<p class="backup-hint">Move this Upcoming entry into the selected game as a personal milestone. Its release date becomes the target date. The entry is removed from Upcoming after conversion.</p><label class="d2-field">Milestone name<input id="upcoming-milestone-name" type="text" maxlength="80" required value="'+milestoneAttr(original.name)+'"></label><label class="d2-field">Assign to game<select id="upcoming-milestone-game">'+options.map(game=>'<option value="'+milestoneAttr(game.id)+'">'+escHtml(game.name)+'</option>').join('')+'</select></label><p class="backup-hint">Target: '+escHtml(original.releaseDate)+'</p>',()=>{
+      if(JSON.stringify((settings.upcomingGames||[]).find(item=>item.id===id))!==signature)throw Error('This entry changed. Close and reopen the conversion.');
+      const result=prepareUpcomingMilestone(games,settings,id,document.getElementById('upcoming-milestone-game').value,document.getElementById('upcoming-milestone-name').value);
+      d2SaveLibrary(result.games,sessions,result.settings);toast('Converted and assigned to game.');
+    },'Convert and assign');
   }
   function editUpcomingGame(id){
     const original=(settings.upcomingGames||[]).find(item=>item.id===id);let dateField;
@@ -11734,6 +11755,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   document.getElementById('upcoming-add').onclick=()=>editUpcomingGame();
   document.getElementById('upcoming-list').onclick=event=>{
     const edit=event.target.closest('[data-upcoming-edit]'),remove=event.target.closest('[data-upcoming-delete]');
+    const convert=event.target.closest('[data-upcoming-convert]');if(convert){convertUpcomingGame(convert.dataset.upcomingConvert);return;}
     if(edit){editUpcomingGame(edit.dataset.upcomingEdit);return;}
     if(remove){const id=remove.dataset.upcomingDelete,item=(settings.upcomingGames||[]).find(row=>row.id===id);if(!item)return;d2Edit('Delete upcoming game?','<p>Delete '+escHtml(item.name)+' from Upcoming?</p>',()=>saveUpcomingGames((settings.upcomingGames||[]).filter(row=>row.id!==id)),'Delete',null,{destructive:true});}
   };
