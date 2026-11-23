@@ -5836,7 +5836,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   </div>
   <div class="header-actions">
   <button type="button" id="update-available" class="sync-btn" hidden aria-haspopup="dialog" aria-controls="update-modal">Update available</button>
-  <button id="sync-btn" class="sync-btn" title="Sync to Dropbox" style="display:none">
+  <button id="sync-btn" class="sync-btn" title="Connect Dropbox to sync">
     <svg class="sync-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M17 2l3 3-3 3M7 22l-3-3 3-3"/><path d="M20 5H9a5 5 0 0 0-5 5M4 19h11a5 5 0 0 0 5-5"/></svg>
     <span>Sync</span>
   </button>
@@ -7791,7 +7791,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   function dbxRefreshIndicators() {
     const btn = document.getElementById('sync-btn');
     const conn = !!dbx.accessToken;
-    if (btn) btn.style.display = conn ? '' : 'none';
+    if (btn) { btn.style.display=''; btn.title=conn?'Sync to Dropbox':'Connect Dropbox to sync'; btn.setAttribute('aria-label',btn.title); }
     if (btn) btn.classList.toggle('dirty', isDbxDirty());
     const banner = document.getElementById('dbx-banner');
     if (!banner) return;
@@ -13255,7 +13255,11 @@ document.getElementById('import-confirm').addEventListener('click', () => {
 
 
   document.getElementById('sync-btn').addEventListener('click', () => {
-    if (!dbx.accessToken) return;
+    if (!dbx.accessToken) {
+      goTab('settings');
+      document.getElementById('settings-dropbox')?.scrollIntoView({block:'start',behavior:'auto'});
+      toast('Connect Dropbox to sync your data.');return;
+    }
     clearTimeout(dbxSyncTimer);
     dropboxUpload(false);
   });

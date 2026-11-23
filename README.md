@@ -94,6 +94,8 @@ Check session history also flags recorded active durations ending in **:00 secon
 
 ## Dropbox, backups, and recovery
 
+The header **Sync** button stays visible. When disconnected, it opens Dropbox settings to connect; when connected, it keeps the existing quick-sync behavior.
+
 JSON export/import and CSV session export are available in Settings. Importing replaces the local library after confirmation. Keep regular exports even when using sync.
 
 To connect Dropbox, create an app with **App folder** access in the [Dropbox App Console](https://www.dropbox.com/developers/apps), register the app's exact URL as a redirect URI, then enter the app key in Settings → Dropbox. Use HTTPS or localhost. Requests go directly from the browser to Dropbox.
