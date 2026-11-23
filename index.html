@@ -4816,8 +4816,8 @@ opacity: 0.18;
 
   /* In Material 3, hide the second Theme Colour column and let the first one
      spread across the full picker width, using the space the second column had. */
-  :root[data-ui="material"] #accent-picker .accent-col:last-child { display: none; }
-  :root[data-ui="material"] #accent-picker { grid-template-columns: 1fr; }
+  :root[data-ui="material"] #accent-picker .accent-col { display:flex; }
+  :root[data-ui="material"] #accent-picker { grid-template-columns:repeat(4,minmax(0,1fr)); }
   :root[data-ui="material"] #accent-picker .accent-col { max-width: none; }
 
   /* Reduced motion */
@@ -5441,7 +5441,7 @@ dialog.mx-dialog:not(.mx-menu):not(#mx-filter-sheet){position:fixed;inset:0;marg
 :root[data-ui="apple"] { --apple-backdrop-image:
   radial-gradient(ellipse 85vw 85vh at 0% 0%,color-mix(in srgb,var(--apple-tint) var(--apple-backdrop-strength-a),transparent),transparent 75%),
   radial-gradient(ellipse 90vw 100vh at 100% 45%,color-mix(in srgb,var(--apple-backdrop-secondary) var(--apple-backdrop-strength-b),transparent),transparent 76%),
-  radial-gradient(ellipse 95vw 75vh at 25% 100%,color-mix(in srgb,var(--apple-tint) var(--apple-backdrop-strength-c),transparent),transparent 80%); }
+  radial-gradient(ellipse 95vw 75vh at 25% 100%,color-mix(in srgb,var(--apple-backdrop-tertiary,var(--apple-tint)) var(--apple-backdrop-strength-c),transparent),transparent 80%); }
 :root[data-ui="apple"] body,:root[data-ui="apple"] #boot-splash {
  background-color:var(--bg);
  background-image:var(--apple-backdrop-image);
@@ -5708,6 +5708,21 @@ body:has(.modal-overlay.open,dialog[open]) :is(#section-navigation,#section-tool
 .rotation-game-heading { display:flex; align-items:center; flex-wrap:wrap; gap:6px 8px; }
 .rotation-priority-badge { display:inline-flex; flex-shrink:0; margin:0; padding:3px 8px; border-radius:999px; background:var(--accent-dim); color:var(--accent); font-size:11px; font-weight:600; }
 @media(max-width:700px) { .planner-actions { flex-direction:column; align-items:flex-end; gap:6px; } }
+
+  #accent-picker { grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; width:100%; }
+  #accent-picker .accent-group { min-width:0; }
+  #accent-picker .accent-group h4 { margin:0 0 12px; color:var(--text2); font-size:.75rem; font-weight:600; }
+  #accent-picker .accent-col { max-width:none; gap:10px; }
+  @media(max-width:799px) { #accent-picker,:root[data-ui="material"] #accent-picker { grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px 16px; } }
+  @keyframes accent-gradient-drift { from { background-position:0% 50%; } to { background-position:100% 50%; } }
+  :root[data-accent-rich="true"] .progress-fill { background-image:var(--accent-gradient); }
+  :root[data-accent-motion="true"] .progress-fill,
+  :root[data-accent-motion="true"]:is([data-ui="classic"],:not([data-ui])) :is(header h1,.btn-start,.btn-primary),
+  .accent-swatch-motion { background-size:250% 250%; animation:accent-gradient-drift 12s cubic-bezier(0.4,0,0.2,1) infinite alternate; }
+  :root[data-accent-paused="true"] :is(.progress-fill,.btn-start,.btn-primary,header h1,.accent-swatch-motion) { animation-play-state:paused; }
+  @media(prefers-reduced-motion:reduce) {
+    :root :is(.accent-swatch-motion,.progress-fill,.btn-start,.btn-primary,header h1) { animation:none!important; background-position:50% 50%; }
+  }
 </style>
 <script>
 // Generated with Google's Material Color Utilities 0.4.0; TonalSpot and Monochrome HCT schemes.
@@ -5731,6 +5746,18 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
    hslToHex, m3Tone, m3TertiaryHsl) so the splash's first painted frame already
    carries the saved Theme Colour instead of the stylesheet's violet default.
    Keep the two copies in sync when presets or the M3 tone maths change. */
+var EXTRA_ACCENT_PRESETS = {
+  aurora3:{c1:'#22d3ee',c2:'#3b82f6',c3:'#8b5cf6',palette:'cyanblue',name:'Aurora'},
+  sunrise3:{c1:'#fb923c',c2:'#f43f5e',c3:'#a855f7',palette:'sunset',name:'Sunrise'},
+  meadow3:{c1:'#10b981',c2:'#14b8a6',c3:'#3b82f6',palette:'greenteal',name:'Meadow'},
+  blossom3:{c1:'#ec4899',c2:'#a855f7',c3:'#3b82f6',palette:'pinkviolet',name:'Blossom'},
+  ember3:{c1:'#f59e0b',c2:'#f97316',c3:'#ef4444',palette:'gold',name:'Ember'},
+  twilight3:{c1:'#8b5cf6',c2:'#6366f1',c3:'#ec4899',palette:'violet',name:'Twilight'},
+  auroraFlow:{c1:'#22d3ee',c2:'#3b82f6',c3:'#8b5cf6',palette:'cyanblue',name:'Aurora flow',animated:true},
+  sunsetFlow:{c1:'#fb923c',c2:'#f43f5e',c3:'#a855f7',palette:'sunset',name:'Sunset flow',animated:true},
+  forestFlow:{c1:'#10b981',c2:'#14b8a6',c3:'#3b82f6',palette:'greenteal',name:'Forest flow',animated:true},
+  violetFlow:{c1:'#8b5cf6',c2:'#6366f1',c3:'#ec4899',palette:'violet',name:'Violet flow',animated:true}
+};
 (function () {
   try {
     var PRESETS = {
@@ -5756,6 +5783,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       mango:       ['#fbbf24', '#f97316'],
       grey:        ['#94a3b8', '#64748b', '#475569', '#334155']
     };
+    Object.keys(EXTRA_ACCENT_PRESETS).forEach(function(key){var preset=EXTRA_ACCENT_PRESETS[key];PRESETS[key]=[preset.c1,preset.c2];});
     function hexToRgb(h) {
       h = h.replace('#', '');
       if (h.length === 3) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2);
@@ -5810,6 +5838,8 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
     // Resolve the chosen accent exactly as applyAccent() will.
     var p = (s.accent && PRESETS[s.accent]) || PRESETS.sunset;
+    var extra=EXTRA_ACCENT_PRESETS[s.accent];
+    document.documentElement.dataset.accentRich=extra?'true':'false';document.documentElement.dataset.accentMotion=extra&&extra.animated?'true':'false';
     var light = t === 'light';
     var c1 = null, c2 = null;
     if (p) {
@@ -5831,10 +5861,10 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         c2 = hslToHex(terHsl.h, terHsl.s, tone);
       }
       var root = document.documentElement;
-      if(apple){var appleRoles=appleAccentRoles(c1,t,t==='light'?[220,220,224]:[76,76,78]);root.style.setProperty('--apple-backdrop-secondary',c2);root.style.setProperty('--apple-tint',c1);root.style.setProperty('--apple-ink',appleRoles.ink);root.style.setProperty('--apple-on-accent',appleRoles.onAccent);}
+      if(apple){var appleRoles=appleAccentRoles(c1,t,t==='light'?[220,220,224]:[76,76,78]);root.style.setProperty('--apple-backdrop-secondary',c2);root.style.setProperty('--apple-backdrop-tertiary',extra?extra.c3:c1);root.style.setProperty('--apple-tint',c1);root.style.setProperty('--apple-ink',appleRoles.ink);root.style.setProperty('--apple-on-accent',appleRoles.onAccent);}
       var rgb = hexToRgb(c1);
       root.style.setProperty('--accent', apple ? appleRoles.ink : c1);
-      root.style.setProperty('--accent-gradient', c1);
+      root.style.setProperty('--accent-gradient',extra?'linear-gradient(135deg,'+c1+','+c2+','+extra.c3+')':c1);
       root.style.setProperty('--accent-violet', c1);
       root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + (light ? 0.1 : 0.14) + ')');
       if (material) {
@@ -5849,7 +5879,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         root.style.setProperty('--bg-tint2', 'rgba(' + rgb2.r + ',' + rgb2.g + ',' + rgb2.b + ',' + bgA + ')');
         root.style.setProperty('--orb1', c1);
         root.style.setProperty('--orb2', c2);
-        root.style.setProperty('--orb3', c1);
+        root.style.setProperty('--orb3',extra?extra.c3:c1);
       }
     }
 
@@ -5859,12 +5889,12 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
       meta.setAttribute('content', c1 || (light ? '#f2f4fa' : '#0b0d14'));
     }
     if(material){
-      var roles=(MX_PALETTES[s.accent]||MX_PALETTES.sunset)[t];
+      var roles=(MX_PALETTES[s.accent]||MX_PALETTES[extra&&extra.palette]||MX_PALETTES.sunset)[t];
       Object.keys(roles).forEach(function(key){document.documentElement.style.setProperty('--md-'+key,roles[key]);});
       var tokens={'--bg':'background','--surface':'surface-container-low','--surface2':'surface-container-high','--surface3':'surface-container-highest','--text':'on-surface','--text2':'on-surface-variant','--text3':'on-surface-variant','--border':'outline-variant','--border-strong':'outline','--glass-bg':'surface-container'};
       Object.keys(tokens).forEach(function(key){document.documentElement.style.setProperty(key,'var(--md-'+tokens[key]+')');});
       document.documentElement.style.setProperty('--accent',roles.primary);
-      document.documentElement.style.setProperty('--accent-gradient',roles.primary);
+      document.documentElement.style.setProperty('--accent-gradient',extra?'linear-gradient(135deg,'+roles.primary+','+roles.tertiary+','+roles.secondary+')':roles.primary);
       document.documentElement.style.setProperty('--accent-dim',roles['primary-container']);
     }
   } catch (e) {}
@@ -7564,6 +7594,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   // --- Accent colour ---
   const ACCENT_PRESETS = {
+    ...EXTRA_ACCENT_PRESETS,
     cyanblue:    { c1: '#22d3ee', c2: '#3b82f6' },
     greenteal:   { c1: '#10b981', c2: '#14b8a6' },
     rose:        { c1: '#f43f5e', c2: '#ec4899' },
@@ -7590,6 +7621,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     grey:        { c1: '#94a3b8', c2: '#64748b', lightC1: '#475569', lightC2: '#334155' }
   };
 
+  const accentPicker=document.getElementById('accent-picker');
+  [...accentPicker.children].forEach((column,index)=>{const group=document.createElement('div');group.className='accent-group';const label=document.createElement('h4');label.textContent=index?'Duotone':'Classic';accentPicker.insertBefore(group,column);group.append(label,column);});
+  for(const animated of [false,true]){
+    const group=document.createElement('div');group.className='accent-group';const title=document.createElement('h4');title.textContent=animated?'Animated gradients':'Three colours';const column=document.createElement('div');column.className='accent-col';
+    Object.entries(EXTRA_ACCENT_PRESETS).filter(([,preset])=>!!preset.animated===animated).forEach(([key,preset])=>{const button=document.createElement('button');button.type='button';button.className='accent-swatch'+(animated?' accent-swatch-motion':'');button.dataset.accent=key;button.title=preset.name;button.setAttribute('aria-label',preset.name+(animated?' animated gradient':' three-colour palette'));button.style.backgroundImage='linear-gradient(135deg,'+preset.c1+','+preset.c2+','+preset.c3+')';column.append(button);});group.append(title,column);accentPicker.append(group);
+  }
+  document.addEventListener('visibilitychange',()=>{document.documentElement.dataset.accentPaused=document.hidden?'true':'false';});
   function hexToRgb(hex) {
     let h = hex.replace('#', '');
     if (h.length === 3) h = h.split('').map(c => c + c).join('');
@@ -7662,7 +7700,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
   }
 
   function m3Roles(theme) {
-    return (MX_PALETTES[settings.accent]||MX_PALETTES.sunset)[theme];
+    return (MX_PALETTES[settings.accent]||MX_PALETTES[EXTRA_ACCENT_PRESETS[settings.accent]?.palette]||MX_PALETTES.sunset)[theme];
   }
 
   // Names written by the last Material render, so switching back to the classic
@@ -7718,6 +7756,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     const root = document.documentElement;
     const preset = (settings.accent && ACCENT_PRESETS[settings.accent]) || ACCENT_PRESETS.sunset;
     const material = settings.uiStyle === 'material';
+    root.dataset.accentRich=preset?.c3?'true':'false';root.dataset.accentMotion=preset?.animated?'true':'false';
     if (preset || material) {
       let c1 = preset ? ((theme === 'light' && preset.lightC1) ? preset.lightC1 : preset.c1) : accentSourceHex(theme);
       let c2 = preset ? ((theme === 'light' && preset.lightC2) ? preset.lightC2 : preset.c2) : accentSourceHex(theme);
@@ -7731,10 +7770,11 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         c1 = roles.primary;
         c2 = roles.tertiary;
       }
+      const c3=preset?.c3?(material?m3Roles(theme).secondary:preset.c3):null;
       const rgb = hexToRgb(c1);
       const alpha = theme === 'light' ? 0.1 : 0.14;
       root.style.setProperty('--accent', c1);
-      root.style.setProperty('--accent-gradient', c1);
+      root.style.setProperty('--accent-gradient',c3?'linear-gradient(135deg,'+c1+','+c2+','+c3+')':c1);
       root.style.setProperty('--accent-violet', c1);
       root.style.setProperty('--accent-dim', 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + alpha + ')');
       // Classic body background: the ambient corner glows and drifting orbs
@@ -7747,7 +7787,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
         root.style.setProperty('--bg-tint2', 'rgba(' + rgb2.r + ',' + rgb2.g + ',' + rgb2.b + ',' + bgAlpha + ')');
         root.style.setProperty('--orb1', c1);
         root.style.setProperty('--orb2', c2);
-        root.style.setProperty('--orb3', c1);
+        root.style.setProperty('--orb3',c3||c1);
       } else {
         root.style.removeProperty('--bg-tint1');
         root.style.removeProperty('--bg-tint2');
@@ -7770,6 +7810,7 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
     }
     document.querySelectorAll('.accent-swatch').forEach(c => {
       c.classList.toggle('active', (c.dataset.accent || null) === (settings.accent || null));
+      c.setAttribute('aria-pressed',String((c.dataset.accent||null)===(settings.accent||null)));
     });
   }
 
@@ -7786,12 +7827,13 @@ var MX_SYMBOLS = {"home": "<svg class=\"mx-symbol\" aria-hidden=\"true\" xmlns=\
 
   function applyAppleAccent(theme) {
     const root=document.documentElement;
-    ['--apple-tint','--apple-ink','--apple-on-accent','--apple-backdrop-secondary'].forEach(key=>root.style.removeProperty(key));
+    ['--apple-tint','--apple-ink','--apple-on-accent','--apple-backdrop-secondary','--apple-backdrop-tertiary'].forEach(key=>root.style.removeProperty(key));
     if(settings.uiStyle!=='apple')return;
     const preset=(settings.accent&&ACCENT_PRESETS[settings.accent])||ACCENT_PRESETS.sunset;
     const tint=theme==='light'&&preset.lightC1?preset.lightC1:preset.c1;
     const roles=appleAccentRoles(tint,theme,theme==='light'?[220,220,224]:[76,76,78]);
     root.style.setProperty('--apple-backdrop-secondary',theme==='light'&&preset.lightC2?preset.lightC2:preset.c2);
+    root.style.setProperty('--apple-backdrop-tertiary',preset.c3||tint);
     root.style.setProperty('--apple-tint',tint);root.style.setProperty('--apple-ink',roles.ink);root.style.setProperty('--apple-on-accent',roles.onAccent);
     root.style.setProperty('--accent',roles.ink);root.style.setProperty('--accent-violet',roles.ink);
   }

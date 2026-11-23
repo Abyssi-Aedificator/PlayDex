@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.4.0
 -------------------
+- Theme Colour adds six three-colour palettes and four animated gradients, with grouped swatches in every interface, stable text colours and reduced-motion support.
 - Session tracking settings stack independently in desktop columns so shorter cards no longer leave gaps beneath them.
 - Redesigned Settings with compact icon navigation, clearer category descriptions, quieter cards, spaced preference rows and responsive desktop columns while preserving every existing control and sync workflow.
 

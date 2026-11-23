@@ -115,6 +115,8 @@ An existing local library receives a pre-conversion recovery copy before its fir
 
 ## Appearance, navigation, and installation
 
+Theme Colour includes Classic, Duotone, Three colours and Animated gradients. New palettes add three-colour progress accents and ambient tones; animated choices gently shift gradients while text colours stay stable. Motion pauses when the page is hidden and stops with system reduced motion. Material and Liquid Glass retain their interface-specific filled controls.
+
 Settings groups Appearance, Session tracking, Dropbox and Data behind compact category navigation. Tracking and Data use two columns on wide screens and stack on mobile. Every preference, backup/recovery action and release-note control remains available in the redesigned cards.
 
 Choose Classic, Material 3, or Liquid Glass, with light/dark themes and accent colours. Liquid Glass includes device-local transparency and contrast options. Motion follows the system's reduced-motion preference.
