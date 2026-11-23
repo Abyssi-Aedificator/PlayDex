@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 3.3.0
+-------------------
+- Upcoming entries support optional cover URLs and uploads with previews, removal and image fallbacks; Add to Games carries artwork into the library.
+
 Version 3.2.0
 -------------------
 - Release summary keeps compact counts without the separate released-games list.
