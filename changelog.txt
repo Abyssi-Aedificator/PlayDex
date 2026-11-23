@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.2.0
 -------------------
+- Upcoming release calendars use the compact themed grid and expand within the editor so dates and Today/Clear controls remain accessible.
 - Upcoming tab after Games tracks game names, platforms and release dates with local-day countdowns, editing and deletion, and backup/Dropbox support.
 
 Version 3.1.6
