@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.2.0
 -------------------
+- Upcoming adds a responsive Release summary column with this/next-month counts, high-priority totals and released entries ready to add to Games; summary totals ignore list filters.
 - Upcoming can be filtered by priority, with distinct red High, amber Medium and blue Low badges adapted for light and dark themes.
 - Upcoming entries support High, Medium and Low priority, with a visible label and Medium as the default for new and existing entries.
 - The header Sync button remains visible when Dropbox is disconnected and opens Dropbox settings to reconnect instead of disappearing.
