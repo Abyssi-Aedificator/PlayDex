@@ -4054,7 +4054,12 @@ opacity: 0.18;
   :root[data-ui="apple"] #tab-settings { --settings-radius:20px; }
   @media(min-width:1000px) {
     .app-content:has(#tab-settings.active) { max-width:1060px; }
-    #tab-settings #settings-tracking,#tab-settings #settings-data { grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; }
+    #tab-settings #settings-tracking { display:block; column-count:2; column-gap:14px; }
+    #tab-settings #settings-tracking > h2,#tab-settings #settings-tracking > .settings-section-description { column-span:all; }
+    #tab-settings #settings-tracking > h2 { margin-bottom:10px; }
+    #tab-settings #settings-tracking > .settings-section-description { margin:0 0 18px; }
+    #tab-settings #settings-tracking > .card { display:inline-block; vertical-align:top; width:100%; margin:0 0 14px; break-inside:avoid; }
+    #tab-settings #settings-data { grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; }
     #tab-settings #settings-data .settings-maintenance-card { grid-column:2; grid-row:3 / span 2; }
     #tab-settings #settings-data > .card:not(.settings-maintenance-card) { grid-column:1; }
   }
