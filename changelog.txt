@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.3.0
 -------------------
+- Upcoming can switch between release-date sorting and High-to-Low priority, breaking priority ties by release date and name while retaining active filters.
 - Optional Upcoming release reminders on Today show releases within 7 or 30 days; Settings can turn them off, and reminders stay hidden while tracking a session.
 - Upcoming entries support optional cover URLs and uploads with previews, removal and image fallbacks; Add to Games carries artwork into the library.
 
