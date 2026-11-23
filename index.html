@@ -1745,7 +1745,7 @@ opacity: 0.18;
     :root:is([data-ui="classic"],:not([data-ui])) #toast { bottom:calc(var(--mx-nav-height,132px) + 16px); }
   }
   .upcoming-filters { display:grid; grid-template-columns:2fr 1fr 1fr; gap:10px; align-items:end; }
-  .upcoming-filters .field-group { min-width:0; margin:0; }
+  .upcoming-filters .field-group { display:flex; flex-direction:column; gap:8px; min-width:0; margin:0; }
   .upcoming-filters > button { grid-column:1 / -1; justify-self:end; }
   @media(max-width:599px) { .upcoming-filters { grid-template-columns:1fr; } }
   .upcoming-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; }

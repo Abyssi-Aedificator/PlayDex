@@ -3,6 +3,7 @@ PlayDex - Changelog
 
 Version 3.2.0
 -------------------
+- Added consistent spacing between Upcoming filter labels and their input fields.
 - Released Upcoming entries show Add to Games instead of Convert to milestone; milestone conversion remains available before release.
 - Upcoming supports name search, platform filters, upcoming/released and 7/30-day release windows, with matching counts and Clear filters.
 - Released Upcoming entries can be added to Games with their name and platform, with duplicate-name protection and atomic removal from Upcoming after saving.
