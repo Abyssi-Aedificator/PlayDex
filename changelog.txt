@@ -1,6 +1,10 @@
 PlayDex - Changelog
 ====================
 
+Version 3.4.1
+-------------------
+- Today release reminders support a minimum priority: all priorities, Medium and above, or High only, saved with backups and Dropbox settings.
+
 Version 3.4.0
 -------------------
 - Upcoming no longer shows covers or platforms in entries, editors, filters or Today reminders; Add to Games creates a name-only library entry.
